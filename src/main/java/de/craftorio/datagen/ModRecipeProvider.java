@@ -34,6 +34,7 @@ public final class ModRecipeProvider extends RecipeProvider {
         // Cave metals smelt in any furnace, including the electric furnace.
         smelt(output, ModItems.RAW_TIN.get(), ModItems.TIN_INGOT.get(), "tin_ingot");
         smelt(output, ModItems.RAW_LEAD.get(), ModItems.LEAD_INGOT.get(), "lead_ingot");
+        smelt(output, ModItems.RAW_TITANIUM.get(), ModItems.TITANIUM_INGOT.get(), "titanium_ingot");
 
         // The only vanilla recipes: everything else is unlocked as a blueprint and built at the workbench.
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.WORKBENCH.get())
@@ -81,6 +82,14 @@ public final class ModRecipeProvider extends RecipeProvider {
         assemble(output, "advanced_circuit", new ItemStack(ModItems.ADVANCED_CIRCUIT.get()), 80,
                 SizedIngredient.of(ModItems.CIRCUIT.get(), 2), SizedIngredient.of(ModItems.TIN_INGOT.get(), 2),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
+        // Mine products
+        press(output, "titanium_plate", ModItems.TITANIUM_INGOT.get(), new ItemStack(ModItems.TITANIUM_PLATE.get()));
+        press(output, "uranium_pellet", ModItems.RAW_URANIUM.get(), new ItemStack(ModItems.URANIUM_PELLET.get()));
+        assemble(output, "energy_crystal", new ItemStack(ModItems.ENERGY_CRYSTAL.get()), 120,
+                SizedIngredient.of(ModItems.CRYSTAL_SHARD.get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 1),
+                SizedIngredient.of(ModItems.BATTERY.get(), 1));
+        assemble(output, "fuel_rod", new ItemStack(ModItems.FUEL_ROD.get()), 100,
+                SizedIngredient.of(ModItems.URANIUM_PELLET.get(), 3), SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 2));
         // Ammunition for automated tower supply
         assemble(output, "bolt", new ItemStack(ModItems.BOLT.get(), 16), 20,
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 1), SizedIngredient.of(Items.STICK, 2));

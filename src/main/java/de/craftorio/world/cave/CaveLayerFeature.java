@@ -11,7 +11,8 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 
 /**
  * Runs once per overworld chunk after all other decoration and rewrites the bands below the surface:
- * cap rock I, the sealed cave layer (unbreakable fill until an entrance unlocks it) and cap rock II.
+ * cap rock I, the sealed cave layer (unbreakable fill until an entrance unlocks it), cap rock II and the sealed
+ * mine layer.
  */
 public final class CaveLayerFeature extends Feature<NoneFeatureConfiguration> {
     public CaveLayerFeature() {
@@ -24,9 +25,10 @@ public final class CaveLayerFeature extends Feature<NoneFeatureConfiguration> {
         ChunkAccess chunk = level.getChunk(context.origin());
         int minX = chunk.getPos().getMinBlockX();
         int minZ = chunk.getPos().getMinBlockZ();
-        int bottom = Math.max(level.getMinBuildHeight(), CaveLayers.CAP_TWO_BOTTOM);
+        int bottom = Math.max(level.getMinBuildHeight(), CaveLayers.MINE_BOTTOM);
         BlockState cap = ModBlocks.CAP_ROCK.get().defaultBlockState();
         BlockState fill = ModBlocks.CAVE_RUBBLE.get().defaultBlockState();
+        BlockState mineFill = ModBlocks.MINE_RUBBLE.get().defaultBlockState();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
@@ -37,6 +39,7 @@ public final class CaveLayerFeature extends Feature<NoneFeatureConfiguration> {
                         case KEEP -> null;
                         case CAP -> cap;
                         case FILL -> fill;
+                        case MINE_FILL -> mineFill;
                         case CAP_IF_SOLID -> current.isAir() || !current.getFluidState().isEmpty() ? null : cap;
                     };
                     if (replacement != null) {

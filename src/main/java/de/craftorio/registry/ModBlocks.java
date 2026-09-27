@@ -8,17 +8,21 @@ import de.craftorio.defense.TowerType;
 import de.craftorio.defense.ZoneBlocks;
 import de.craftorio.blueprint.WorkbenchBlock;
 import de.craftorio.economy.block.TradingPostBlock;
-import de.craftorio.energy.CoalGeneratorBlock;
+import de.craftorio.energy.GeneratorBlock;
+import de.craftorio.energy.GeneratorType;
 import de.craftorio.energy.PowerPoleBlock;
 import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.machine.MachineType;
 import de.craftorio.machine.ProcessingMachineBlock;
+import de.craftorio.logistics.BeltTier;
 import de.craftorio.logistics.ConveyorBeltBlock;
 import de.craftorio.logistics.ElevatorBlock;
 import de.craftorio.logistics.InserterBlock;
-import de.craftorio.machine.BurnerDrillBlock;
+import de.craftorio.machine.DrillBlock;
+import de.craftorio.machine.DrillTier;
 import de.craftorio.world.OreFieldBlock;
 import de.craftorio.world.cave.CaveEntranceBlock;
+import de.craftorio.world.cave.Layer;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -68,7 +72,8 @@ public final class ModBlocks {
                     .isValidSpawn(Blocks::never)
                     .pushReaction(PushReaction.BLOCK)
                     .sound(SoundType.GRAVEL));
-    public static final DeferredBlock<CaveEntranceBlock> CAVE_ENTRANCE = BLOCKS.registerBlock("cave_entrance", CaveEntranceBlock::new,
+    public static final DeferredBlock<CaveEntranceBlock> CAVE_ENTRANCE = BLOCKS.registerBlock("cave_entrance",
+            properties -> new CaveEntranceBlock(Layer.CAVES, properties),
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(3.0F, 1200.0F).noOcclusion().sound(SoundType.WOOD));
     public static final DeferredBlock<OreFieldBlock> TIN_ORE_FIELD = oreField("tin_ore_field", () -> ModItems.RAW_TIN.get(), MapColor.COLOR_LIGHT_GRAY);
     public static final DeferredBlock<OreFieldBlock> LEAD_ORE_FIELD = oreField("lead_ore_field", () -> ModItems.RAW_LEAD.get(), MapColor.COLOR_BLUE);
@@ -76,20 +81,31 @@ public final class ModBlocks {
     public static final DeferredBlock<OreFieldBlock> GOLD_ORE_FIELD = oreField("gold_ore_field", () -> Items.RAW_GOLD, MapColor.GOLD);
     public static final DeferredBlock<OreFieldBlock> QUARTZ_FIELD = oreField("quartz_field", () -> Items.QUARTZ, MapColor.QUARTZ);
 
-    public static final DeferredBlock<BurnerDrillBlock> BURNER_DRILL = BLOCKS.registerBlock("burner_drill", BurnerDrillBlock::new,
+    // Mine layer (M7)
+    /** Seals the mine layer until a mine shaft unlocks the area. */
+    public static final DeferredBlock<Block> MINE_RUBBLE = BLOCKS.registerSimpleBlock("mine_rubble",
             BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.METAL)
-                    .strength(3.5F)
-                    .requiresCorrectToolForDrops()
-                    .lightLevel(state -> state.getValue(BurnerDrillBlock.LIT) ? 10 : 0)
-                    .sound(SoundType.METAL));
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(-1.0F, 3_600_000.0F)
+                    .noLootTable()
+                    .isValidSpawn(Blocks::never)
+                    .pushReaction(PushReaction.BLOCK)
+                    .sound(SoundType.DEEPSLATE));
+    public static final DeferredBlock<CaveEntranceBlock> MINE_SHAFT = BLOCKS.registerBlock("mine_shaft",
+            properties -> new CaveEntranceBlock(Layer.MINES, properties),
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(4.0F, 1200.0F).noOcclusion().sound(SoundType.METAL));
+    public static final DeferredBlock<OreFieldBlock> DIAMOND_FIELD = oreField("diamond_field", () -> Items.DIAMOND, MapColor.DIAMOND);
+    public static final DeferredBlock<OreFieldBlock> TITANIUM_ORE_FIELD = oreField("titanium_ore_field", () -> ModItems.RAW_TITANIUM.get(), MapColor.COLOR_LIGHT_BLUE);
+    public static final DeferredBlock<OreFieldBlock> URANIUM_ORE_FIELD = oreField("uranium_ore_field", () -> ModItems.RAW_URANIUM.get(), MapColor.COLOR_LIGHT_GREEN);
+    public static final DeferredBlock<OreFieldBlock> CRYSTAL_FIELD = oreField("crystal_field", () -> ModItems.CRYSTAL_SHARD.get(), MapColor.COLOR_MAGENTA);
 
-    public static final DeferredBlock<ConveyorBeltBlock> CONVEYOR_BELT = BLOCKS.registerBlock("conveyor_belt", ConveyorBeltBlock::new,
-            BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_GRAY)
-                    .strength(1.5F)
-                    .noOcclusion()
-                    .sound(SoundType.METAL));
+    public static final DeferredBlock<DrillBlock> BURNER_DRILL = drill("burner_drill", DrillTier.BURNER);
+    public static final DeferredBlock<DrillBlock> ELECTRIC_DRILL = drill("electric_drill", DrillTier.ELECTRIC);
+    public static final DeferredBlock<DrillBlock> DEEP_DRILL = drill("deep_drill", DrillTier.DEEP);
+
+    public static final DeferredBlock<ConveyorBeltBlock> CONVEYOR_BELT = belt("conveyor_belt", BeltTier.BASIC);
+    public static final DeferredBlock<ConveyorBeltBlock> FAST_BELT = belt("fast_belt", BeltTier.FAST);
+    public static final DeferredBlock<ConveyorBeltBlock> EXPRESS_BELT = belt("express_belt", BeltTier.EXPRESS);
 
     public static final DeferredBlock<InserterBlock> INSERTER = BLOCKS.registerBlock("inserter", InserterBlock::new,
             BlockBehaviour.Properties.of()
@@ -98,8 +114,12 @@ public final class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.METAL));
 
-    public static final DeferredBlock<CoalGeneratorBlock> COAL_GENERATOR = BLOCKS.registerBlock("coal_generator", CoalGeneratorBlock::new,
+    public static final DeferredBlock<GeneratorBlock> COAL_GENERATOR = BLOCKS.registerBlock("coal_generator",
+            properties -> new GeneratorBlock(GeneratorType.COAL, properties),
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 12 : 0));
+    public static final DeferredBlock<GeneratorBlock> REACTOR = BLOCKS.registerBlock("reactor",
+            properties -> new GeneratorBlock(GeneratorType.REACTOR, properties),
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 15 : 4));
 
     public static final DeferredBlock<PowerPoleBlock> POWER_POLE = BLOCKS.registerBlock("power_pole", PowerPoleBlock::new,
             BlockBehaviour.Properties.of()
@@ -131,6 +151,7 @@ public final class ModBlocks {
     public static final DeferredBlock<TowerBlock> CROSSBOW_TOWER = tower("crossbow_tower", TowerType.CROSSBOW, SoundType.WOOD);
     public static final DeferredBlock<TowerBlock> GUN_TURRET = tower("gun_turret", TowerType.GUN, SoundType.METAL);
     public static final DeferredBlock<TowerBlock> TESLA_TOWER = tower("tesla_tower", TowerType.TESLA, SoundType.COPPER);
+    public static final DeferredBlock<TowerBlock> LASER_TOWER = tower("laser_tower", TowerType.LASER, SoundType.METAL);
     public static final DeferredBlock<TowerRuin> TOWER_RUIN = BLOCKS.registerBlock("tower_ruin", TowerRuin::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.0F).noLootTable().noOcclusion().sound(SoundType.GRAVEL));
 
@@ -139,6 +160,7 @@ public final class ModBlocks {
             case CROSSBOW -> CROSSBOW_TOWER;
             case GUN -> GUN_TURRET;
             case TESLA -> TESLA_TOWER;
+            case LASER -> LASER_TOWER;
         };
     }
 
@@ -173,6 +195,25 @@ public final class ModBlocks {
     private static DeferredBlock<ProcessingMachineBlock> machine(String name, MachineType type) {
         return BLOCKS.registerBlock(name, properties -> new ProcessingMachineBlock(type, properties),
                 machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 8 : 0));
+    }
+
+    private static DeferredBlock<ConveyorBeltBlock> belt(String name, BeltTier tier) {
+        return BLOCKS.registerBlock(name, properties -> new ConveyorBeltBlock(tier, properties),
+                BlockBehaviour.Properties.of()
+                        .mapColor(MapColor.COLOR_GRAY)
+                        .strength(1.5F)
+                        .noOcclusion()
+                        .sound(SoundType.METAL));
+    }
+
+    private static DeferredBlock<DrillBlock> drill(String name, DrillTier tier) {
+        return BLOCKS.registerBlock(name, properties -> new DrillBlock(tier, properties),
+                BlockBehaviour.Properties.of()
+                        .mapColor(MapColor.METAL)
+                        .strength(3.5F)
+                        .requiresCorrectToolForDrops()
+                        .lightLevel(state -> state.getValue(DrillBlock.LIT) ? 10 : 0)
+                        .sound(SoundType.METAL));
     }
 
     private static DeferredBlock<OreFieldBlock> oreField(String name, Supplier<? extends ItemLike> resource, MapColor color) {

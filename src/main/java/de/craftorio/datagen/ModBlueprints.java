@@ -84,10 +84,34 @@ public final class ModBlueprints {
         add(context, "elevator", stack(ModItems.ELEVATOR.get(), 2), 2, 1_000, List.of(), List.of(id("cave_entrance")),
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 8), SizedIngredient.of(ModItems.MOTOR.get(), 2),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 4));
+        add(context, "electric_drill", stack(ModItems.ELECTRIC_DRILL.get(), 1), 2, 1_500,
+                List.of(SizedIngredient.of(ModItems.RESONANCE_CRYSTAL.get(), 1)), List.of(id("assembler")),
+                SizedIngredient.of(ModItems.BURNER_DRILL.get(), 1), SizedIngredient.of(ModItems.MOTOR.get(), 2),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 2), SizedIngredient.of(ModItems.IRON_PLATE.get(), 8));
+        add(context, "fast_belt", stack(ModItems.FAST_BELT.get(), 4), 2, 800, List.of(), List.of(id("assembler")),
+                SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 4), SizedIngredient.of(ModItems.IRON_GEAR.get(), 4),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 1));
         add(context, "workbench_upgrade_3", stack(ModItems.WORKBENCH_UPGRADE_3.get(), 1), 2, 10_000,
                 List.of(SizedIngredient.of(ModItems.DEEP_CORE.get(), 1)), List.of(id("assembler")),
                 SizedIngredient.of(ModItems.MOTOR.get(), 10), SizedIngredient.of(ModItems.CIRCUIT.get(), 20),
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 40));
+
+        // Tier 3 – mine layer
+        add(context, "mine_shaft", stack(ModItems.MINE_SHAFT.get(), 1), 3, 25_000, List.of(), List.of(id("elevator"), id("workbench_upgrade_3")),
+                SizedIngredient.of(ModItems.LEAD_INGOT.get(), 16), SizedIngredient.of(ModItems.MOTOR.get(), 8),
+                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 4), SizedIngredient.of(ModItems.BATTERY.get(), 4));
+        add(context, "deep_drill", stack(ModItems.DEEP_DRILL.get(), 1), 3, 8_000, List.of(), List.of(id("electric_drill"), id("mine_shaft")),
+                SizedIngredient.of(ModItems.ELECTRIC_DRILL.get(), 1), SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 12),
+                SizedIngredient.of(ModItems.MOTOR.get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 2));
+        add(context, "express_belt", stack(ModItems.EXPRESS_BELT.get(), 4), 3, 3_000, List.of(), List.of(id("fast_belt"), id("mine_shaft")),
+                SizedIngredient.of(ModItems.FAST_BELT.get(), 4), SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 2),
+                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 1));
+        add(context, "reactor", stack(ModItems.REACTOR.get(), 1), 3, 20_000, List.of(), List.of(id("mine_shaft")),
+                SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 20), SizedIngredient.of(ModItems.LEAD_INGOT.get(), 32),
+                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 8), SizedIngredient.of(ModItems.BATTERY.get(), 8));
+        add(context, "laser_tower", stack(ModItems.LASER_TOWER.get(), 1), 3, 15_000, List.of(), List.of(id("tesla_tower"), id("mine_shaft")),
+                SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 12), SizedIngredient.of(ModItems.ENERGY_CRYSTAL.get(), 2),
+                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 4), SizedIngredient.of(ModItems.BATTERY.get(), 4));
     }
 
     private static void add(BootstrapContext<Blueprint> context, String name, ItemStack result, int tier, long cost,

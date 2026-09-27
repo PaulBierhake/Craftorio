@@ -18,9 +18,14 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> COPPER_ORE_FIELD = ITEMS.registerSimpleBlockItem("copper_ore_field", ModBlocks.COPPER_ORE_FIELD);
     public static final DeferredItem<BlockItem> COAL_FIELD = ITEMS.registerSimpleBlockItem("coal_field", ModBlocks.COAL_FIELD);
     public static final DeferredItem<BlockItem> BURNER_DRILL = ITEMS.registerSimpleBlockItem("burner_drill", ModBlocks.BURNER_DRILL);
+    public static final DeferredItem<BlockItem> ELECTRIC_DRILL = ITEMS.registerSimpleBlockItem("electric_drill", ModBlocks.ELECTRIC_DRILL);
+    public static final DeferredItem<BlockItem> DEEP_DRILL = ITEMS.registerSimpleBlockItem("deep_drill", ModBlocks.DEEP_DRILL);
     public static final DeferredItem<BlockItem> CONVEYOR_BELT = ITEMS.registerSimpleBlockItem("conveyor_belt", ModBlocks.CONVEYOR_BELT);
+    public static final DeferredItem<BlockItem> FAST_BELT = ITEMS.registerSimpleBlockItem("fast_belt", ModBlocks.FAST_BELT);
+    public static final DeferredItem<BlockItem> EXPRESS_BELT = ITEMS.registerSimpleBlockItem("express_belt", ModBlocks.EXPRESS_BELT);
     public static final DeferredItem<BlockItem> INSERTER = ITEMS.registerSimpleBlockItem("inserter", ModBlocks.INSERTER);
     public static final DeferredItem<BlockItem> COAL_GENERATOR = ITEMS.registerSimpleBlockItem("coal_generator", ModBlocks.COAL_GENERATOR);
+    public static final DeferredItem<BlockItem> REACTOR = ITEMS.registerSimpleBlockItem("reactor", ModBlocks.REACTOR);
     public static final DeferredItem<BlockItem> POWER_POLE = ITEMS.registerSimpleBlockItem("power_pole", ModBlocks.POWER_POLE);
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE = ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);
     public static final DeferredItem<BlockItem> PRESS = ITEMS.registerSimpleBlockItem("press", ModBlocks.PRESS);
@@ -42,6 +47,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CROSSBOW_TOWER = ITEMS.registerSimpleBlockItem("crossbow_tower", ModBlocks.CROSSBOW_TOWER);
     public static final DeferredItem<BlockItem> GUN_TURRET = ITEMS.registerSimpleBlockItem("gun_turret", ModBlocks.GUN_TURRET);
     public static final DeferredItem<BlockItem> TESLA_TOWER = ITEMS.registerSimpleBlockItem("tesla_tower", ModBlocks.TESLA_TOWER);
+    public static final DeferredItem<BlockItem> LASER_TOWER = ITEMS.registerSimpleBlockItem("laser_tower", ModBlocks.LASER_TOWER);
     public static final DeferredItem<Item> BOLT = ITEMS.registerSimpleItem("bolt");
     public static final DeferredItem<Item> CARTRIDGE = ITEMS.registerSimpleItem("cartridge");
 
@@ -61,6 +67,20 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> QUARTZ_FIELD = ITEMS.registerSimpleBlockItem("quartz_field", ModBlocks.QUARTZ_FIELD);
 
     // Cave resources and their products
+    public static final DeferredItem<BlockItem> MINE_RUBBLE = ITEMS.registerSimpleBlockItem("mine_rubble", ModBlocks.MINE_RUBBLE);
+    public static final DeferredItem<BlockItem> MINE_SHAFT = ITEMS.registerSimpleBlockItem("mine_shaft", ModBlocks.MINE_SHAFT);
+    public static final DeferredItem<BlockItem> DIAMOND_FIELD = ITEMS.registerSimpleBlockItem("diamond_field", ModBlocks.DIAMOND_FIELD);
+    public static final DeferredItem<BlockItem> TITANIUM_ORE_FIELD = ITEMS.registerSimpleBlockItem("titanium_ore_field", ModBlocks.TITANIUM_ORE_FIELD);
+    public static final DeferredItem<BlockItem> URANIUM_ORE_FIELD = ITEMS.registerSimpleBlockItem("uranium_ore_field", ModBlocks.URANIUM_ORE_FIELD);
+    public static final DeferredItem<BlockItem> CRYSTAL_FIELD = ITEMS.registerSimpleBlockItem("crystal_field", ModBlocks.CRYSTAL_FIELD);
+    public static final DeferredItem<Item> RAW_TITANIUM = ITEMS.registerSimpleItem("raw_titanium");
+    public static final DeferredItem<Item> TITANIUM_INGOT = ITEMS.registerSimpleItem("titanium_ingot");
+    public static final DeferredItem<Item> TITANIUM_PLATE = ITEMS.registerSimpleItem("titanium_plate");
+    public static final DeferredItem<Item> RAW_URANIUM = ITEMS.registerSimpleItem("raw_uranium");
+    public static final DeferredItem<Item> URANIUM_PELLET = ITEMS.registerSimpleItem("uranium_pellet");
+    public static final DeferredItem<Item> CRYSTAL_SHARD = ITEMS.registerSimpleItem("crystal_shard");
+    public static final DeferredItem<Item> ENERGY_CRYSTAL = ITEMS.registerSimpleItem("energy_crystal");
+    public static final DeferredItem<Item> FUEL_ROD = ITEMS.registerSimpleItem("fuel_rod");
     public static final DeferredItem<Item> RAW_TIN = ITEMS.registerSimpleItem("raw_tin");
     public static final DeferredItem<Item> TIN_INGOT = ITEMS.registerSimpleItem("tin_ingot");
     public static final DeferredItem<Item> RAW_LEAD = ITEMS.registerSimpleItem("raw_lead");

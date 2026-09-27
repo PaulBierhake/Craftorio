@@ -12,25 +12,32 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public final class CoalGeneratorBlock extends MachineBaseBlock {
-    public static final MapCodec<CoalGeneratorBlock> CODEC = simpleCodec(CoalGeneratorBlock::new);
+public final class GeneratorBlock extends MachineBaseBlock {
+    private final GeneratorType type;
+    private final MapCodec<GeneratorBlock> codec;
 
-    public CoalGeneratorBlock(Properties properties) {
+    public GeneratorBlock(GeneratorType type, Properties properties) {
         super(properties);
+        this.type = type;
+        this.codec = simpleCodec(p -> new GeneratorBlock(type, p));
+    }
+
+    public GeneratorType type() {
+        return type;
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return codec;
     }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new CoalGeneratorBlockEntity(pos, state);
+        return new GeneratorBlockEntity(pos, state);
     }
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.COAL_GENERATOR.get(), CoalGeneratorBlockEntity::serverTick);
+        return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.GENERATOR.get(), GeneratorBlockEntity::serverTick);
     }
 }

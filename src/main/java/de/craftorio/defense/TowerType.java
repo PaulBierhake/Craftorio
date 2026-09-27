@@ -5,7 +5,9 @@ public enum TowerType {
     CROSSBOW(100, 4, 10, 20, 0, 1),
     GUN(200, 7, 12, 12, 0, 1),
     /** Uses grid power instead of ammunition and jumps to up to three enemies. */
-    TESLA(150, 10, 8, 30, 400, 3);
+    TESLA(150, 10, 8, 30, 400, 3),
+    /** Long-range energy beam that burns through crystal armour. */
+    LASER(250, 30, 14, 20, 800, 1);
 
     private final int health;
     private final double damage;
@@ -47,6 +49,16 @@ public enum TowerType {
         return energyPerShot > 0;
     }
 
+    /** Energy weapons deal magic damage, which armour against physical hits does not reduce. */
+    public boolean energyWeapon() {
+        return usesEnergy();
+    }
+
+    /** Buffer of energy towers: ten shots. */
+    public int energyCapacity() {
+        return energyPerShot * 10;
+    }
+
     public int targets() {
         return targets;
     }
@@ -57,6 +69,7 @@ public enum TowerType {
             case CROSSBOW -> 60;
             case GUN -> 250;
             case TESLA -> 400;
+            case LASER -> 1_200;
         };
     }
 }

@@ -168,6 +168,32 @@ public final class ModLanguageProvider {
 
             add("craftorio.drill.status", "Drill: %s/%s field blocks · %s items/s · fuel for %s s");
             add("craftorio.drill.overlap", "Too close to another drill – mining areas must not overlap.");
+            add(ModBlocks.MINE_RUBBLE.get(), "Mine Rubble");
+            add(ModBlocks.MINE_SHAFT.get(), "Mine Shaft");
+            add(ModBlocks.DIAMOND_FIELD.get(), "Diamond Field");
+            add(ModBlocks.TITANIUM_ORE_FIELD.get(), "Titanium Ore Field");
+            add(ModBlocks.URANIUM_ORE_FIELD.get(), "Uranium Ore Field");
+            add(ModBlocks.CRYSTAL_FIELD.get(), "Crystal Field");
+            add(ModItems.RAW_TITANIUM.get(), "Raw Titanium");
+            add(ModItems.TITANIUM_INGOT.get(), "Titanium Ingot");
+            add(ModItems.TITANIUM_PLATE.get(), "Titanium Plate");
+            add(ModItems.RAW_URANIUM.get(), "Raw Uranium");
+            add(ModItems.URANIUM_PELLET.get(), "Uranium Pellet");
+            add(ModItems.CRYSTAL_SHARD.get(), "Crystal Shard");
+            add(ModItems.ENERGY_CRYSTAL.get(), "Energy Crystal");
+            add(ModItems.FUEL_ROD.get(), "Fuel Rod");
+            add(ModBlocks.ELECTRIC_DRILL.get(), "Electric Drill");
+            add(ModBlocks.DEEP_DRILL.get(), "Deep Drill");
+            add(ModBlocks.FAST_BELT.get(), "Fast Belt");
+            add(ModBlocks.EXPRESS_BELT.get(), "Express Belt");
+            add(ModBlocks.REACTOR.get(), "Reactor");
+            add(ModBlocks.LASER_TOWER.get(), "Laser Tower");
+            add("entity.craftorio.crystal_golem", "Crystal Golem");
+            add("craftorio.command.layer_unlocked", "Unlocked %s chunks of the layer (Y %s to %s); they are being dug out.");
+            add("craftorio.mine.open", "Mine shaft open – take the scaffolding down into the mine layer.");
+            add("craftorio.mine.opened", "A mine shaft has opened! The mine area around chunk %s, %s is being dug out.");
+            add("craftorio.mine.error.not_in_caves", "Build mine shafts in an unlocked area of the cave layer (Y 0 to 39).");
+            add("craftorio.drill.status_electric", "Drill: %s/%s field blocks · %s items/s · %s FE stored (needs %s FE/t)");
 
             add("craftorio.tooltip.sell_price", "Sell value: %s");
             add("craftorio.tooltip.sell_price_stack", "Sell value: %s (stack: %s)");
@@ -351,6 +377,32 @@ public final class ModLanguageProvider {
 
             add("craftorio.drill.status", "Bohrer: %s/%s Feldblöcke · %s Items/s · Brennstoff für %s s");
             add("craftorio.drill.overlap", "Zu nah an einem anderen Bohrer – Abbauflächen dürfen sich nicht überlappen.");
+            add(ModBlocks.MINE_RUBBLE.get(), "Minengeröll");
+            add(ModBlocks.MINE_SHAFT.get(), "Minenschacht");
+            add(ModBlocks.DIAMOND_FIELD.get(), "Diamantfeld");
+            add(ModBlocks.TITANIUM_ORE_FIELD.get(), "Titanerzfeld");
+            add(ModBlocks.URANIUM_ORE_FIELD.get(), "Uranerzfeld");
+            add(ModBlocks.CRYSTAL_FIELD.get(), "Kristallfeld");
+            add(ModItems.RAW_TITANIUM.get(), "Roh-Titan");
+            add(ModItems.TITANIUM_INGOT.get(), "Titanbarren");
+            add(ModItems.TITANIUM_PLATE.get(), "Titanplatte");
+            add(ModItems.RAW_URANIUM.get(), "Roh-Uran");
+            add(ModItems.URANIUM_PELLET.get(), "Uranpellet");
+            add(ModItems.CRYSTAL_SHARD.get(), "Kristallsplitter");
+            add(ModItems.ENERGY_CRYSTAL.get(), "Energiekristall");
+            add(ModItems.FUEL_ROD.get(), "Brennstab");
+            add(ModBlocks.ELECTRIC_DRILL.get(), "Elektrischer Bohrer");
+            add(ModBlocks.DEEP_DRILL.get(), "Tiefenbohrer");
+            add(ModBlocks.FAST_BELT.get(), "Schnelles Förderband");
+            add(ModBlocks.EXPRESS_BELT.get(), "Express-Förderband");
+            add(ModBlocks.REACTOR.get(), "Reaktor");
+            add(ModBlocks.LASER_TOWER.get(), "Laserturm");
+            add("entity.craftorio.crystal_golem", "Kristallgolem");
+            add("craftorio.command.layer_unlocked", "%s Chunks der Schicht freigeschaltet (Y %s bis %s); sie werden ausgehöhlt.");
+            add("craftorio.mine.open", "Minenschacht offen – über das Gerüst hinab in die Minenschicht.");
+            add("craftorio.mine.opened", "Ein Minenschacht wurde geöffnet! Der Minenbereich um Chunk %s, %s wird ausgehöhlt.");
+            add("craftorio.mine.error.not_in_caves", "Minenschächte in einem freigeschalteten Bereich der Höhlenschicht bauen (Y 0 bis 39).");
+            add("craftorio.drill.status_electric", "Bohrer: %s/%s Feldblöcke · %s Items/s · %s FE gespeichert (braucht %s FE/t)");
 
             add("craftorio.tooltip.sell_price", "Verkaufswert: %s");
             add("craftorio.tooltip.sell_price_stack", "Verkaufswert: %s (Stapel: %s)");

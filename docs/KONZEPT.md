@@ -45,7 +45,7 @@ Designprinzipien:
 | *Deckgestein I* | 40 … 50 | unzerstörbar | – |
 | **Höhlen** | 0 … 40 | über gebauten **Höhleneingang** | Zinn, Gold, Blei, Schwefel, Quarz (Öl folgt mit Fluiden) |
 | *Deckgestein II* | −10 … 0 | unzerstörbar | – |
-| **Minen** | −64 … −10 | über gebauten **Minenschacht** (in den Höhlen) | Diamant, Titan, Uran, seltene Erden, Kristalle |
+| **Minen** | −59 … −10 | über gebauten **Minenschacht** (in den Höhlen) | Diamant, Titan, Uran, Kristalle (seltene Erden folgen) |
 
 - **Deckgestein**: Härte −1, extrem hohe Explosionsresistenz, nicht von Kolben verschiebbar, Wither-immun. Kein Durchgraben, kein Enderperlen-Trick (Teleport-Check beim Landen unterhalb einer nicht freigeschalteten Schicht).
 - **Worldgen:** Eigene Noise-Settings/Density-Functions über ein Welt-Preset „Craftorio“: normale Oberfläche, darunter die Deckschichten und große, begehbare Höhlensysteme bzw. Minengänge.
@@ -55,7 +55,7 @@ Designprinzipien:
 - Ein **Höhleneingang** ist eine Multiblock-Baustelle. Voraussetzung: Technologie freigeschaltet (Geld) **und** das passende **Schlüsselmaterial aus der Tower-Defense** (siehe 6.4). Dann Materialien anliefern (z. B. 200 Stein, 100 Eisenplatten, 20 Stützbalken); die Baustelle bohrt über Zeit den Schacht durch Deckgestein I.
 - Jeder Eingang **erschließt einen Bereich** von 7×7 Chunks in der Höhlenschicht *(umgesetzt in M6)*. Die gesamte Höhlenschicht ist anfangs unzerstörbares **Höhlengeröll**; beim Freischalten wird der Bereich Chunk für Chunk zu einer Säulenhalle ausgehöhlt, außerhalb bleibt eine Geröllwand. Weitere Eingänge bzw. „Stollenerweiterungen“ vergrößern den Bereich.
 - Der Schacht (3×3, oberhalb der Höhlen mit Stein verkleidet) enthält ein **Gerüst** zum Auf- und Absteigen. Vertikaler Warentransport über **Warenaufzüge**: zwei Aufzüge in derselben Spalte verbinden sich automatisch (auch durch Gestein), einer sendet, einer empfängt.
-- Der **Minenschacht** funktioniert identisch, eine Stufe tiefer, teurer, mit Bauteilen aus der Höhlenstufe und einem höheren Schlüsselmaterial.
+- Der **Minenschacht** funktioniert identisch, eine Stufe tiefer, teurer, mit Bauteilen aus der Höhlenstufe und einem höheren Schlüsselmaterial *(umgesetzt in M7: Bau nur in freigeschalteten Höhlenbereichen, 64 Bleibarren, 16 Motoren, 8 Batterien, 8 fortgeschrittene Schaltkreise, 80 FE/t; Freischaltung über die Präzisionswerkbank = Tiefenkern aus TD-Level 30; die Minenschicht ist anfangs unzerstörbares Minengeröll)*.
 
 ### 3.3 Erzfelder – unendlich, aber mit festem Maximaldurchsatz *(entschieden)*
 
@@ -63,7 +63,7 @@ Designprinzipien:
 - **Unendlich:** Erzfeld-Blöcke erschöpfen nie.
 - **Begrenzt durch Größe:** Ein Bohrer baut eine feste Fläche ab (z. B. 3×3 Blöcke, Stufe-3-Bohrer 5×5) und **Abbauflächen dürfen sich nicht überlappen**. Ein Erzfeld-Block kann also nur von genau einem Bohrer genutzt werden.
   → Jedes Feld hat einen **harten Maximaldurchsatz** = (Anzahl Blöcke) × (Abbaurate pro Block der besten Bohrer-Stufe). Ist ein Feld voll bebaut, hilft nur ein **neues Feld**.
-- Bohrer-Upgrades erhöhen die Rate pro Block (Stufe 1 Brenner-Bohrer: 0,03/s pro Block = 0,27/s bei 3×3; Stufe 2: ≈0,06/s; Stufe 3: ≈0,12/s – Richtwerte), aber nie über die Feldgröße hinaus.
+- Bohrer-Upgrades erhöhen die Rate pro Block (Stufe 1 Brenner-Bohrer: 0,03/s pro Block = 0,27/s bei 3×3; Stufe 2: ≈0,06/s; Stufe 3: ≈0,12/s – umgesetzt in M7: Elektrischer Bohrer 3×3 mit 30 FE/t, Tiefenbohrer 5×5 mit 80 FE/t), aber nie über die Feldgröße hinaus.
 - **Feldgrößen:** klein nahe Spawn (≈ 20–40 Blöcke), größer mit Entfernung (≈ 60–150 Blöcke). Tiefere Schichten: seltener, aber wertvoller.
 - **Fluide** (Öl, Wasser) als Quellen mit fester Förderrate pro Pumpe und begrenzter Anzahl Pumpenplätze – gleiche Logik.
 - Anzeige per Jade/Scanner: Feldgröße, belegte Blöcke, aktueller und maximaler Durchsatz.
@@ -205,7 +205,7 @@ Schlüsselmaterialien sind **nicht verkäuflich** und **nicht herstellbar** – 
 | Brecher | 5 | hohe HP, greift Türme gezielt an |
 | Spucker | 10 | Fernangriff auf Türme |
 | Höhlenwurm | 20 | taucht unter, nur kurz angreifbar |
-| Kristallgolem | 30 | gepanzert, braucht Durchschlags-/Laserschaden |
+| Kristallgolem | 20 | gepanzert: nur 35 % Munitionsschaden, Energietürme (Tesla/Laser) voll *(umgesetzt in M7)* |
 | Boss (z. B. Brutmutter) | jedes 10. Level | bewacht das Schlüsselmaterial |
 
 ### 6.6 Türme
@@ -339,4 +339,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M6 abgeschlossen**, als Nächstes **M7 – Minenschicht**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M7 abgeschlossen**, als Nächstes **M8 – Coop & Polish**.

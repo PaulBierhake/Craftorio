@@ -38,5 +38,14 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAVE_RUBBLE.get());
+        tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.MINE_RUBBLE.get());
+        tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.MINE_RUBBLE.get());
+        tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.MINE_RUBBLE.get());
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.DIAMOND_FIELD.get(), ModBlocks.TITANIUM_ORE_FIELD.get(),
+                ModBlocks.URANIUM_ORE_FIELD.get(), ModBlocks.CRYSTAL_FIELD.get(), ModBlocks.MINE_SHAFT.get(),
+                ModBlocks.ELECTRIC_DRILL.get(), ModBlocks.DEEP_DRILL.get(), ModBlocks.FAST_BELT.get(), ModBlocks.EXPRESS_BELT.get(),
+                ModBlocks.REACTOR.get(), ModBlocks.LASER_TOWER.get());
+        tag(BlockTags.NEEDS_DIAMOND_TOOL).add(ModBlocks.DIAMOND_FIELD.get(), ModBlocks.TITANIUM_ORE_FIELD.get(),
+                ModBlocks.URANIUM_ORE_FIELD.get(), ModBlocks.CRYSTAL_FIELD.get());
     }
 }

@@ -27,19 +27,27 @@ import org.jetbrains.annotations.Nullable;
 
 /** Two-lane conveyor running towards {@link #FACING}. Also carries dropped items and walking entities. */
 public final class ConveyorBeltBlock extends BaseEntityBlock {
-    public static final MapCodec<ConveyorBeltBlock> CODEC = simpleCodec(ConveyorBeltBlock::new);
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 3, 16);
     private static final double ENTITY_PUSH = 0.04;
 
-    public ConveyorBeltBlock(Properties properties) {
+    private final BeltTier tier;
+    private final MapCodec<ConveyorBeltBlock> codec;
+
+    public ConveyorBeltBlock(BeltTier tier, Properties properties) {
         super(properties);
+        this.tier = tier;
+        this.codec = simpleCodec(p -> new ConveyorBeltBlock(tier, p));
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    public BeltTier tier() {
+        return tier;
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return codec;
     }
 
     @Override
@@ -81,7 +89,7 @@ public final class ConveyorBeltBlock extends BaseEntityBlock {
             }
         } else if (entity instanceof LivingEntity && !entity.isShiftKeyDown() && entity.onGround()) {
             Direction facing = state.getValue(FACING);
-            entity.setDeltaMovement(entity.getDeltaMovement().add(new Vec3(facing.getStepX(), 0, facing.getStepZ()).scale(ENTITY_PUSH)));
+            entity.setDeltaMovement(entity.getDeltaMovement().add(new Vec3(facing.getStepX(), 0, facing.getStepZ()).scale(ENTITY_PUSH * tier.blocksPerSecond() / BeltTier.BASIC.blocksPerSecond())));
         }
     }
 

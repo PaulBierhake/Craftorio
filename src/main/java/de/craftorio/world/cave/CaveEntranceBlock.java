@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -30,25 +31,35 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Cave entrance construction site: deliver materials (by hand or automation), then it drills down on grid power.
- * When finished it opens a shaft with scaffolding and unlocks the cave area around it.
+ * Entrance construction site (cave entrance on the surface, mine shaft in the cave layer): deliver materials (by hand
+ * or automation), then it drills down on grid power. When finished it opens a shaft with scaffolding and unlocks the
+ * area of the target layer around it.
  */
 public final class CaveEntranceBlock extends BaseEntityBlock {
-    public static final MapCodec<CaveEntranceBlock> CODEC = simpleCodec(CaveEntranceBlock::new);
     public static final int STAGE_MATERIALS = 0;
     public static final int STAGE_DRILLING = 1;
     public static final int STAGE_OPEN = 2;
     public static final IntegerProperty STAGE = IntegerProperty.create("stage", 0, 2);
     private static final VoxelShape FRAME = Block.box(0, 0, 0, 16, 2, 16);
 
-    public CaveEntranceBlock(Properties properties) {
+    private final Layer target;
+    private final MapCodec<CaveEntranceBlock> codec;
+
+    public CaveEntranceBlock(Layer target, Properties properties) {
         super(properties);
+        this.target = target;
+        this.codec = simpleCodec(p -> new CaveEntranceBlock(target, p));
         registerDefaultState(stateDefinition.any().setValue(STAGE, STAGE_MATERIALS));
+    }
+
+    /** The layer this entrance opens. */
+    public Layer target() {
+        return target;
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return codec;
     }
 
     @Override
@@ -63,14 +74,7 @@ public final class CaveEntranceBlock extends BaseEntityBlock {
             return defaultBlockState();
         }
         BlockPos pos = context.getClickedPos();
-        String error = null;
-        if (level.dimension() != Level.OVERWORLD) {
-            error = "craftorio.cave.error.overworld_only";
-        } else if (pos.getY() < CaveLayers.SURFACE_BOTTOM) {
-            error = "craftorio.cave.error.too_deep";
-        } else if (!hasCaveLayer(level, pos)) {
-            error = "craftorio.cave.error.no_layer";
-        }
+        String error = placementError(level, pos);
         if (error != null) {
             if (context.getPlayer() != null) {
                 context.getPlayer().displayClientMessage(Component.translatable(error).withStyle(ChatFormatting.RED), true);
@@ -80,11 +84,27 @@ public final class CaveEntranceBlock extends BaseEntityBlock {
         return defaultBlockState();
     }
 
-    /** Worlds created before M6 have no layers where their chunks were already generated. */
-    private static boolean hasCaveLayer(Level level, BlockPos pos) {
-        BlockPos probe = pos.atY(CaveLayers.CAP_ONE_BOTTOM - 1);
-        BlockState state = level.getBlockState(probe);
-        return state.is(ModBlocks.CAVE_RUBBLE.get()) || level.getBlockState(pos.atY(CaveLayers.CAP_ONE_BOTTOM)).is(ModBlocks.CAP_ROCK.get());
+    private @Nullable String placementError(Level level, BlockPos pos) {
+        if (level.dimension() != Level.OVERWORLD) {
+            return "craftorio.cave.error.overworld_only";
+        }
+        if (target == Layer.CAVES) {
+            if (pos.getY() < CaveLayers.SURFACE_BOTTOM) {
+                return "craftorio.cave.error.too_deep";
+            }
+        } else if (!Layer.CAVES.contains(pos.getY())
+                || level.getServer() == null
+                || !CaveAreas.get(level.getServer()).isUnlocked(Layer.CAVES, new ChunkPos(pos))) {
+            return "craftorio.mine.error.not_in_caves";
+        }
+        return hasLayer(level, pos, target) ? null : "craftorio.cave.error.no_layer";
+    }
+
+    /** Worlds created before M6/M7 have no layers where their chunks were already generated. */
+    private static boolean hasLayer(Level level, BlockPos pos, Layer layer) {
+        int capBottom = layer.maxY() + 1;
+        Block fill = CaveCarver.fill(layer);
+        return level.getBlockState(pos.atY(layer.maxY())).is(fill) || level.getBlockState(pos.atY(capBottom)).is(ModBlocks.CAP_ROCK.get());
     }
 
     @Override

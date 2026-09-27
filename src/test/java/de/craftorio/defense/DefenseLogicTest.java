@@ -83,4 +83,15 @@ class DefenseLogicTest {
                 (x, y, z) -> blocks.contains(List.of(x, y, z)),
                 (x, y, z) -> Math.abs(coreX - x) + Math.abs(z) == 1);
     }
+
+    @Test
+    void crystalGolemsArriveAtLevelTwentyAndResistAmmunition() {
+        assertTrue(LevelPlan.of(19, 1).waves().stream().flatMap(List::stream).noneMatch(type -> type == EnemyType.CRYSTAL_GOLEM));
+        assertTrue(LevelPlan.of(20, 1).waves().stream().flatMap(List::stream).anyMatch(type -> type == EnemyType.CRYSTAL_GOLEM));
+        assertEquals(3.5, EnemyType.CRYSTAL_GOLEM.damageTaken(10, false), 1e-9);
+        assertEquals(10, EnemyType.CRYSTAL_GOLEM.damageTaken(10, true), 1e-9);
+        assertEquals(10, EnemyType.BREAKER.damageTaken(10, false), 1e-9);
+        assertTrue(TowerType.LASER.energyWeapon());
+        assertTrue(TowerType.LASER.range() > TowerType.GUN.range());
+    }
 }

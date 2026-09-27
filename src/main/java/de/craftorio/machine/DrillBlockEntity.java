@@ -1,5 +1,6 @@
 package de.craftorio.machine;
 
+import de.craftorio.energy.EnergyBuffer;
 import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.world.OreFieldBlock;
 import net.minecraft.core.BlockPos;
@@ -17,20 +18,20 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public final class BurnerDrillBlockEntity extends BlockEntity {
-    /** Mining area radius: 1 = the 3x3 blocks below the drill. */
-    public static final int RADIUS = 1;
-    public static final int AREA = (2 * RADIUS + 1) * (2 * RADIUS + 1);
-    public static final double ITEMS_PER_BLOCK_PER_SECOND = 0.03;
+public final class DrillBlockEntity extends BlockEntity {
     public static final int FUEL_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
     private static final int RESCAN_INTERVAL = 40;
 
-    private final DrillProduction production = new DrillProduction(ITEMS_PER_BLOCK_PER_SECOND);
+    private final DrillTier tier;
+    private final DrillProduction production;
+    private final EnergyBuffer energy;
     private final IItemHandler handler = new Handler();
     private ItemStack fuel = ItemStack.EMPTY;
     private ItemStack output = ItemStack.EMPTY;
@@ -39,8 +40,20 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
     private int nextField;
     private int rescanIn;
 
-    public BurnerDrillBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.BURNER_DRILL.get(), pos, state);
+    public DrillBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.DRILL.get(), pos, state);
+        this.tier = state.getBlock() instanceof DrillBlock drill ? drill.tier() : DrillTier.BURNER;
+        this.production = new DrillProduction(tier.itemsPerBlockPerSecond());
+        this.energy = new EnergyBuffer(Math.max(1, tier.energyPerTick() * 200), tier.energyPerTick() * 4, 0, this::setChanged);
+    }
+
+    public DrillTier tier() {
+        return tier;
+    }
+
+    /** Grid buffer of electric tiers; burner drills have none. */
+    public @Nullable EnergyBuffer energy() {
+        return tier.usesFuel() ? null : energy;
     }
 
     public static boolean isFuel(ItemStack stack) {
@@ -51,21 +64,20 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
         return handler;
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, BurnerDrillBlockEntity drill) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, DrillBlockEntity drill) {
         drill.tick(level, pos, state);
     }
 
     private void tick(Level level, BlockPos pos, BlockState state) {
         if (--rescanIn <= 0) {
             rescanIn = RESCAN_INTERVAL;
-            fieldBlocks = scanFieldBlocks(level, pos);
+            fieldBlocks = scanFieldBlocks(level, pos, tier.radius());
         }
-        pushOutput(level, pos, state.getValue(BurnerDrillBlock.FACING));
+        pushOutput(level, pos, state.getValue(DrillBlock.FACING));
 
         boolean working = false;
         ItemStack next = nextResource(level);
-        if (!next.isEmpty() && hasRoomFor(next) && (burnTicks > 0 || consumeFuel())) {
-            burnTicks--;
+        if (!next.isEmpty() && hasRoomFor(next) && powered()) {
             working = true;
             int finished = production.tick(fieldBlocks.size());
             for (int i = 0; i < finished && hasRoomFor(nextResource(level)); i++) {
@@ -74,15 +86,27 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
             }
             setChanged();
         }
-        if (state.getValue(BurnerDrillBlock.LIT) != working) {
-            level.setBlock(pos, state.setValue(BurnerDrillBlock.LIT, working), 3);
+        if (state.getValue(DrillBlock.LIT) != working) {
+            level.setBlock(pos, state.setValue(DrillBlock.LIT, working), 3);
         }
     }
 
-    private static List<BlockPos> scanFieldBlocks(Level level, BlockPos pos) {
-        List<BlockPos> found = new ArrayList<>(AREA);
+    /** Pays for one tick of work with fuel or grid energy. */
+    private boolean powered() {
+        if (!tier.usesFuel()) {
+            return energy.consume(tier.energyPerTick());
+        }
+        if (burnTicks > 0 || consumeFuel()) {
+            burnTicks--;
+            return true;
+        }
+        return false;
+    }
+
+    private static List<BlockPos> scanFieldBlocks(Level level, BlockPos pos, int radius) {
+        List<BlockPos> found = new ArrayList<>((2 * radius + 1) * (2 * radius + 1));
         BlockPos center = pos.below();
-        for (BlockPos candidate : BlockPos.betweenClosed(center.offset(-RADIUS, 0, -RADIUS), center.offset(RADIUS, 0, RADIUS))) {
+        for (BlockPos candidate : BlockPos.betweenClosed(center.offset(-radius, 0, -radius), center.offset(radius, 0, radius))) {
             if (level.getBlockState(candidate).getBlock() instanceof OreFieldBlock) {
                 found.add(candidate.immutable());
             }
@@ -144,8 +168,12 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
     public Component status() {
         int blocks = fieldBlocks.size();
         String rate = String.format(Locale.ROOT, "%.2f", production.itemsPerSecond(blocks));
+        if (!tier.usesFuel()) {
+            return Component.translatable("craftorio.drill.status_electric", blocks, tier.area(), rate,
+                    energy.getEnergyStored(), tier.energyPerTick());
+        }
         int fuelSeconds = (burnTicks + (isFuel(fuel) ? fuel.getCount() * fuel.getBurnTime(RecipeType.SMELTING) : 0)) / 20;
-        return Component.translatable("craftorio.drill.status", blocks, AREA, rate, fuelSeconds);
+        return Component.translatable("craftorio.drill.status", blocks, tier.area(), rate, fuelSeconds);
     }
 
     public void dropContents() {
@@ -165,6 +193,7 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
         tag.putInt("burn_ticks", burnTicks);
         tag.putDouble("progress", production.progress());
         tag.putInt("next_field", nextField);
+        tag.putInt("energy", energy.getEnergyStored());
     }
 
     @Override
@@ -175,6 +204,7 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
         burnTicks = tag.getInt("burn_ticks");
         production.setProgress(tag.getDouble("progress"));
         nextField = tag.getInt("next_field");
+        energy.setEnergy(tag.getInt("energy"));
     }
 
     /** Slot 0 accepts fuel only; slot 1 holds mined output and can only be extracted. */
@@ -191,7 +221,7 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            if (slot != FUEL_SLOT || !isFuel(stack)) {
+            if (slot != FUEL_SLOT || !isFuel(stack) || !tier.usesFuel()) {
                 return stack;
             }
             if (!fuel.isEmpty() && !ItemStack.isSameItemSameComponents(fuel, stack)) {
@@ -234,7 +264,7 @@ public final class BurnerDrillBlockEntity extends BlockEntity {
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return slot == FUEL_SLOT && isFuel(stack);
+            return slot == FUEL_SLOT && isFuel(stack) && tier.usesFuel();
         }
     }
 }

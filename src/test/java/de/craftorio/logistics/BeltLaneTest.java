@@ -80,4 +80,20 @@ class BeltLaneTest {
 
         assertEquals(0.25F, lane.entries().get(0).renderProgress(0.5F), 1e-4);
     }
+
+    @Test
+    void fasterTiersMoveMoreItems() {
+        assertEquals(7.5F, BeltTier.BASIC.itemsPerSecondPerLane(), 1e-6F);
+        assertEquals(2 * BeltTier.BASIC.speedPerTick(), BeltTier.FAST.speedPerTick(), 1e-6F);
+        assertEquals(3 * BeltTier.BASIC.speedPerTick(), BeltTier.EXPRESS.speedPerTick(), 1e-6F);
+        BeltLane<String> lane = new BeltLane<>();
+        lane.insertAt("a", 0.0F);
+        List<String> delivered = new ArrayList<>();
+        int ticks = 0;
+        while (delivered.isEmpty()) {
+            lane.tick(BeltTier.EXPRESS.speedPerTick(), (item, overshoot) -> delivered.add(item));
+            ticks++;
+        }
+        assertEquals(4, ticks, "express belt crosses a block in 4 ticks");
+    }
 }

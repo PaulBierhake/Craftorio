@@ -29,8 +29,9 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
             int crawlers = 3 + level + wave;
             int breakers = level >= 5 ? (level + wave) / 4 : 0;
             int spitters = level >= 10 ? (level + wave) / 5 : 0;
+            int golems = level >= 20 ? (level + wave) / 8 : 0;
             // Interleave so tougher enemies are escorted by crawlers.
-            for (int i = 0; i < Math.max(crawlers, Math.max(breakers, spitters)); i++) {
+            for (int i = 0; i < Math.max(Math.max(crawlers, golems), Math.max(breakers, spitters)); i++) {
                 if (i < crawlers) {
                     enemies.add(EnemyType.CRAWLER);
                 }
@@ -39,6 +40,9 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
                 }
                 if (i < spitters) {
                     enemies.add(EnemyType.SPITTER);
+                }
+                if (i < golems) {
+                    enemies.add(EnemyType.CRYSTAL_GOLEM);
                 }
             }
             if (level % 10 == 0 && wave == waveCount) {

@@ -17,57 +17,64 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * Which cave chunks are open. Unlocking queues chunks for carving; one chunk is carved per server tick
- * (nearest to the entrance first) so a new area appears over a few seconds without a lag spike.
+ * Which chunks of the cave and mine layer are open. Unlocking queues chunks for carving; one chunk is carved per
+ * server tick (nearest to the entrance first) so a new area appears over a few seconds without a lag spike.
  */
 @EventBusSubscriber(modid = Craftorio.MOD_ID)
 public final class CaveAreas extends SavedData {
     private static final String FILE_NAME = "craftorio_cave_areas";
 
-    private final Set<Long> unlocked = new HashSet<>();
-    private final Deque<Long> pending = new ArrayDeque<>();
-    private CaveShape shape;
+    private final Map<Layer, Set<Long>> unlocked = new EnumMap<>(Layer.class);
+    private final Map<Layer, Deque<Long>> pending = new EnumMap<>(Layer.class);
+    private final Map<Layer, CaveShape> shapes = new EnumMap<>(Layer.class);
+
+    private CaveAreas() {
+        for (Layer layer : Layer.values()) {
+            unlocked.put(layer, new HashSet<>());
+            pending.put(layer, new ArrayDeque<>());
+        }
+    }
 
     public static CaveAreas get(MinecraftServer server) {
         CaveAreas areas = server.overworld().getDataStorage()
                 .computeIfAbsent(new SavedData.Factory<>(CaveAreas::new, CaveAreas::load), FILE_NAME);
-        if (areas.shape == null) {
-            areas.shape = new CaveShape(server.overworld().getSeed());
+        if (areas.shapes.isEmpty()) {
+            for (Layer layer : Layer.values()) {
+                areas.shapes.put(layer, CaveShape.of(server.overworld().getSeed(), layer));
+            }
         }
         return areas;
     }
 
-    public CaveShape shape() {
-        return shape;
+    public CaveShape shape(Layer layer) {
+        return shapes.get(layer);
     }
 
-    public boolean isUnlocked(ChunkPos chunk) {
-        return unlocked.contains(chunk.toLong());
-    }
-
-    public int pendingCount() {
-        return pending.size();
+    public boolean isUnlocked(Layer layer, ChunkPos chunk) {
+        return unlocked.get(layer).contains(chunk.toLong());
     }
 
     /** Unlocks the chunks within {@link CaveLayers#UNLOCK_RADIUS} of the entrance; returns how many were new. */
-    public int unlockAround(BlockPos entrance) {
+    public int unlockAround(Layer layer, BlockPos entrance) {
         ChunkPos center = new ChunkPos(entrance);
         List<ChunkPos> added = new ArrayList<>();
         for (int x = -CaveLayers.UNLOCK_RADIUS; x <= CaveLayers.UNLOCK_RADIUS; x++) {
             for (int z = -CaveLayers.UNLOCK_RADIUS; z <= CaveLayers.UNLOCK_RADIUS; z++) {
                 ChunkPos chunk = new ChunkPos(center.x + x, center.z + z);
-                if (unlocked.add(chunk.toLong())) {
+                if (unlocked.get(layer).add(chunk.toLong())) {
                     added.add(chunk);
                 }
             }
         }
         added.sort(Comparator.comparingInt(chunk -> chunk.getChessboardDistance(center)));
-        added.forEach(chunk -> pending.add(chunk.toLong()));
+        added.forEach(chunk -> pending.get(layer).add(chunk.toLong()));
         setDirty();
         return added.size();
     }
@@ -75,28 +82,37 @@ public final class CaveAreas extends SavedData {
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
         CaveAreas areas = get(event.getServer());
-        Long next = areas.pending.poll();
-        if (next != null) {
-            ServerLevel level = event.getServer().overworld();
-            CaveCarver.carveChunk(level, new ChunkPos(next), areas.shape);
-            areas.setDirty();
+        for (Layer layer : Layer.values()) {
+            Long next = areas.pending.get(layer).poll();
+            if (next != null) {
+                ServerLevel level = event.getServer().overworld();
+                CaveCarver.carveChunk(level, layer, new ChunkPos(next), areas.shapes.get(layer));
+                areas.setDirty();
+                return; // one chunk per tick in total
+            }
         }
     }
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put("unlocked", new LongArrayTag(unlocked.stream().mapToLong(Long::longValue).toArray()));
-        tag.put("pending", new LongArrayTag(pending.stream().mapToLong(Long::longValue).toArray()));
+        for (Layer layer : Layer.values()) {
+            String suffix = layer == Layer.CAVES ? "" : "_" + layer.name().toLowerCase();
+            tag.put("unlocked" + suffix, new LongArrayTag(unlocked.get(layer).stream().mapToLong(Long::longValue).toArray()));
+            tag.put("pending" + suffix, new LongArrayTag(pending.get(layer).stream().mapToLong(Long::longValue).toArray()));
+        }
         return tag;
     }
 
     private static CaveAreas load(CompoundTag tag, HolderLookup.Provider registries) {
         CaveAreas areas = new CaveAreas();
-        for (long chunk : tag.getLongArray("unlocked")) {
-            areas.unlocked.add(chunk);
-        }
-        for (long chunk : tag.getLongArray("pending")) {
-            areas.pending.add(chunk);
+        for (Layer layer : Layer.values()) {
+            String suffix = layer == Layer.CAVES ? "" : "_" + layer.name().toLowerCase();
+            for (long chunk : tag.getLongArray("unlocked" + suffix)) {
+                areas.unlocked.get(layer).add(chunk);
+            }
+            for (long chunk : tag.getLongArray("pending" + suffix)) {
+                areas.pending.get(layer).add(chunk);
+            }
         }
         return areas;
     }

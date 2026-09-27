@@ -11,6 +11,9 @@ import de.craftorio.team.Team;
 import de.craftorio.team.TeamData;
 import de.craftorio.team.TeamException;
 import de.craftorio.team.TeamRegistry;
+import de.craftorio.world.cave.CaveAreas;
+import de.craftorio.world.cave.Layer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -29,7 +32,7 @@ import java.util.stream.Collectors;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-/** {@code /craftorio team ...} and {@code /craftorio credits ...}. */
+/** {@code /craftorio team ...}, {@code /craftorio credits ...} and the admin command {@code /craftorio layer unlock ...}. */
 @EventBusSubscriber(modid = Craftorio.MOD_ID)
 public final class CraftorioCommands {
     private CraftorioCommands() {
@@ -65,7 +68,20 @@ public final class CraftorioCommands {
                         .then(literal("join")
                                 .then(argument("name", StringArgumentType.greedyString())
                                         .executes(ctx -> run(ctx, CraftorioCommands::teamJoin))))
-                        .then(literal("leave").executes(ctx -> run(ctx, CraftorioCommands::teamLeave)))));
+                        .then(literal("leave").executes(ctx -> run(ctx, CraftorioCommands::teamLeave))))
+                // Admin shortcut (tests, repairing old worlds): unlocks a layer area without building an entrance.
+                .then(literal("layer").requires(source -> source.hasPermission(2))
+                        .then(literal("unlock")
+                                .then(literal("caves").executes(ctx -> unlockLayer(ctx, Layer.CAVES)))
+                                .then(literal("mines").executes(ctx -> unlockLayer(ctx, Layer.MINES))))));
+    }
+
+    private static int unlockLayer(CommandContext<CommandSourceStack> ctx, Layer layer) {
+        BlockPos pos = BlockPos.containing(ctx.getSource().getPosition());
+        int added = CaveAreas.get(ctx.getSource().getServer()).unlockAround(layer, pos);
+        ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.layer_unlocked", added,
+                layer.minY(), layer.maxY()), true);
+        return added;
     }
 
     private static int showCredits(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

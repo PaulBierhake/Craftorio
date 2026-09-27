@@ -46,13 +46,12 @@ import java.util.List;
 
 /** Shoots enemies in range (furthest along the path first), takes damage from them and becomes a ruin at 0 HP. */
 public final class TowerBlockEntity extends BlockEntity implements MenuProvider {
-    public static final int ENERGY_CAPACITY = 4_000;
 
     private final TowerType type;
     private int upgradeLevel = 1;
     private int health;
     private int cooldown;
-    private final EnergyBuffer energy = new EnergyBuffer(ENERGY_CAPACITY, 200, 0, this::setChanged);
+    private final EnergyBuffer energy;
     private final ItemStackHandler ammo = new ItemStackHandler(1) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
@@ -91,6 +90,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     public TowerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TOWER.get(), pos, state);
         this.type = ((TowerBlock) state.getBlock()).towerType();
+        this.energy = new EnergyBuffer(Math.max(1, type.energyCapacity()), 200, 0, this::setChanged);
         this.health = TowerStats.maxHealth(type, 1);
     }
 
@@ -149,9 +149,10 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
                 case CROSSBOW -> ParticleTypes.CRIT;
                 case GUN -> ParticleTypes.SMOKE;
                 case TESLA -> ParticleTypes.ELECTRIC_SPARK;
+                case LASER -> ParticleTypes.END_ROD;
             });
             target.invulnerableTime = 0;
-            target.hurt(level.damageSources().generic(), damage);
+            target.hurt(type.energyWeapon() ? level.damageSources().magic() : level.damageSources().generic(), damage);
             if (type == TowerType.TESLA) {
                 from = to; // chain lightning jumps on
             }
@@ -160,6 +161,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             case CROSSBOW -> SoundEvents.CROSSBOW_SHOOT;
             case GUN -> SoundEvents.FIREWORK_ROCKET_BLAST;
             case TESLA -> SoundEvents.BEACON_POWER_SELECT;
+            case LASER -> SoundEvents.GUARDIAN_ATTACK;
         };
         level.playSound(null, worldPosition, sound, SoundSource.BLOCKS, 0.6F, 1.2F);
         return true;

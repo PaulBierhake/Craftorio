@@ -5,6 +5,7 @@ import de.craftorio.defense.TdEnemy;
 import net.minecraft.client.model.BlazeModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HoglinModel;
+import net.minecraft.client.model.PiglinModel;
 import net.minecraft.client.model.SpiderModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -40,6 +41,11 @@ public final class TdEnemyRenderer extends MobRenderer<TdEnemy, EntityModel<TdEn
     public static TdEnemyRenderer broodMother(EntityRendererProvider.Context context) {
         return new TdEnemyRenderer(context, new HoglinModel<>(context.bakeLayer(ModelLayers.HOGLIN)), 0.9F,
                 ResourceLocation.withDefaultNamespace("textures/entity/hoglin/hoglin.png"), 1.3F);
+    }
+
+    public static TdEnemyRenderer crystalGolem(EntityRendererProvider.Context context) {
+        return new TdEnemyRenderer(context, new PiglinModel<>(context.bakeLayer(ModelLayers.PIGLIN_BRUTE)), 0.6F,
+                ResourceLocation.withDefaultNamespace("textures/entity/piglin/piglin_brute.png"), 1.15F);
     }
 
     @Override

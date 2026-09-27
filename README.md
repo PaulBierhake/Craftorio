@@ -159,6 +159,34 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ![Höhle](docs/screenshots/m6-hoehle.png)
 ![Schacht](docs/screenshots/m6-schacht.png)
 
+### M7 – Minenschicht
+
+- **Minenschicht** (Y −59 bis −11, nur in neu erzeugten Chunks): unter dem zweiten Deckgestein, zunächst
+  komplett aus unzerstörbarem **Minengeröll**. Niedrigere Gänge mit vielen Säulen, Basaltboden und Tiefenschiefer.
+- **Minenschacht** (Bauplan Stufe 3 – Präzisionswerkbank, braucht den Warenaufzug): wird in einem
+  freigeschalteten Bereich der **Höhlenschicht** gebaut (sonst Fehlermeldung), braucht 64 Bleibarren,
+  16 Motoren, 8 Batterien und 8 fortgeschrittene Schaltkreise und bohrt mit **80 FE/t** (ein Kohlegenerator
+  reicht nicht). Danach führt ein Gerüstschacht durch das Deckgestein in die Minen und 7×7 Chunks werden ausgehöhlt.
+- **Minen-Rohstoffe**: **Diamant, Titan, Uran, Kristall**. Titan → Titanbarren (Ofen) → Titanplatte (Presse);
+  Uran → Uranpellet (Presse) → **Brennstab** (Montage, mit Titanplatten); Kristallsplitter → **Energiekristall**.
+- **Maschinen-Stufen**
+  - **Elektrischer Bohrer** (Stufe 2, Freischaltung mit dem Resonanzkristall aus TD-Level 20): 3×3, doppelt so
+    schnell wie der Brenner-Bohrer, 30 FE/t statt Brennstoff. **Tiefenbohrer** (Stufe 3): **5×5**, 4× schneller
+    pro Block (bis 3 Items/s), 80 FE/t. Abbauflächen verschiedener Bohrer dürfen sich weiterhin nicht überlappen.
+  - **Schnelles Förderband** (3,75 Blöcke/s, Stufe 2) und **Express-Förderband** (5,625 Blöcke/s, Stufe 3);
+    alle Bänder lassen sich beliebig verbinden.
+  - **Reaktor** (Stufe 3): 400 FE/t aus Brennstäben (5 Minuten pro Stab), 200.000 FE Puffer.
+- **Tower Defense**: Ab Level 20 kommen **Kristallgolems** – ihr Panzer lässt nur 35 % von Munitionsschaden
+  durch; Energietürme (Tesla, Laser) machen vollen Schaden. Der **Laserturm** (Stufe 3) schießt 14 Blöcke weit
+  mit 30 Schaden (800 FE pro Schuss).
+- Admin-Befehl: `/craftorio layer unlock caves|mines` schaltet den Bereich um die eigene Position ohne Eingang
+  frei (für Tests oder alte Welten).
+
+![Minenhalle](docs/screenshots/m7-mine-hall.png)
+![Neue Maschinen](docs/screenshots/m7-machines.png)
+![Minenschacht](docs/screenshots/m7-mine-shaft.png)
+![Platzierungsregel](docs/screenshots/m7-shaft-rule.png)
+
 ## Projektstruktur
 
 ```
@@ -169,10 +197,10 @@ src/main/java/de/craftorio/
 ├── team/                   Teams & Konto (TeamRegistry ist reine Logik mit Unit-Tests)
 ├── economy/                Preise (Data Map), Verkauf, Handelsposten
 ├── world/                  Erzfelder, Weltgenerierung, Start-Felder
-│   └── cave/               Schichten, Höhlenform (reine Logik mit Unit-Tests), Eingänge, Aushöhlen
-├── machine/                Bohrer (Abbaufläche, Produktionsrate)
-├── logistics/              Förderband (BeltLane = reine Spur-Logik mit Unit-Tests), Greifarm
-├── energy/                 Generator, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
+│   └── cave/               Höhlen-/Minenschicht, Form (reine Logik mit Unit-Tests), Eingänge/Schächte, Aushöhlen
+├── machine/                Bohrer-Stufen (Abbaufläche, Produktionsrate), Verarbeitungsmaschinen
+├── logistics/              Förderband-Stufen (BeltLane = reine Spur-Logik mit Unit-Tests), Greifarm, Warenaufzug
+├── energy/                 Kohlegenerator/Reaktor, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
 ├── recipe/                 Maschinenrezepte (Presse, Montage)
 ├── blueprint/              Baupläne, Freischalt-Regeln, Terminal, Werkbänke
 ├── defense/                Tower Defense: Zone, Level-Ablauf, Gegner, Türme (LevelPlan/PathTracer/TowerStats = reine Logik)

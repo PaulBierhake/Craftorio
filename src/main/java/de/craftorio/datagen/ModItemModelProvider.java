@@ -33,5 +33,13 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.SULFUR.get());
         basicItem(ModItems.BATTERY.get());
         basicItem(ModItems.ADVANCED_CIRCUIT.get());
+        basicItem(ModItems.RAW_TITANIUM.get());
+        basicItem(ModItems.TITANIUM_INGOT.get());
+        basicItem(ModItems.TITANIUM_PLATE.get());
+        basicItem(ModItems.RAW_URANIUM.get());
+        basicItem(ModItems.URANIUM_PELLET.get());
+        basicItem(ModItems.CRYSTAL_SHARD.get());
+        basicItem(ModItems.ENERGY_CRYSTAL.get());
+        basicItem(ModItems.FUEL_ROD.get());
     }
 }

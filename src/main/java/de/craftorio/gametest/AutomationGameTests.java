@@ -3,8 +3,12 @@ package de.craftorio.gametest;
 import de.craftorio.Craftorio;
 import de.craftorio.logistics.ConveyorBeltBlock;
 import de.craftorio.logistics.InserterBlock;
-import de.craftorio.machine.BurnerDrillBlock;
+import de.craftorio.energy.GeneratorBlockEntity;
+import de.craftorio.energy.GeneratorType;
+import de.craftorio.machine.DrillBlock;
+import de.craftorio.machine.DrillTier;
 import de.craftorio.registry.ModBlocks;
+import de.craftorio.registry.ModItems;
 import de.craftorio.team.Team;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,7 +41,7 @@ public final class AutomationGameTests {
             }
         }
         BlockPos drill = new BlockPos(2, 2, 2);
-        helper.setBlock(drill, ModBlocks.BURNER_DRILL.get().defaultBlockState().setValue(BurnerDrillBlock.FACING, Direction.EAST));
+        helper.setBlock(drill, ModBlocks.BURNER_DRILL.get().defaultBlockState().setValue(DrillBlock.FACING, Direction.EAST));
         BlockPos chest = drill.east();
         helper.setBlock(chest, Blocks.CHEST);
         handler(helper, drill, Direction.UP).insertItem(0, new ItemStack(Items.COAL, 1), false);
@@ -56,7 +60,7 @@ public final class AutomationGameTests {
             }
         }
         BlockPos drill = new BlockPos(2, 2, 2);
-        helper.setBlock(drill, ModBlocks.BURNER_DRILL.get().defaultBlockState().setValue(BurnerDrillBlock.FACING, Direction.EAST));
+        helper.setBlock(drill, ModBlocks.BURNER_DRILL.get().defaultBlockState().setValue(DrillBlock.FACING, Direction.EAST));
         BlockPos chest = drill.east();
         helper.setBlock(chest, Blocks.CHEST);
 
@@ -66,14 +70,51 @@ public final class AutomationGameTests {
         });
     }
 
+    @GameTest(template = EMPTY, timeoutTicks = 400)
+    public static void electricDrillRunsOnGridPower(GameTestHelper helper) {
+        for (int x = 1; x <= 3; x++) {
+            for (int z = 1; z <= 3; z++) {
+                helper.setBlock(new BlockPos(x, 1, z), ModBlocks.TITANIUM_ORE_FIELD.get());
+            }
+        }
+        BlockPos drill = new BlockPos(2, 2, 2);
+        helper.setBlock(drill, ModBlocks.ELECTRIC_DRILL.get().defaultBlockState().setValue(DrillBlock.FACING, Direction.EAST));
+        BlockPos chest = drill.east();
+        helper.setBlock(chest, Blocks.CHEST);
+        helper.assertTrue(handler(helper, drill, Direction.UP).insertItem(0, new ItemStack(Items.COAL), true).getCount() == 1,
+                "electric drills take no fuel");
+        helper.setBlock(new BlockPos(0, 2, 4), ModBlocks.COAL_GENERATOR.get());
+        helper.setBlock(new BlockPos(1, 2, 3), ModBlocks.POWER_POLE.get());
+        handler(helper, new BlockPos(0, 2, 4), Direction.UP).insertItem(0, new ItemStack(Items.COAL, 8), false);
+
+        helper.succeedWhen(() -> helper.assertTrue(count(helper, chest, ModItems.RAW_TITANIUM.get()) >= 3,
+                "electric drill output did not reach the chest"));
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 100)
+    public static void reactorBurnsFuelRodsOnly(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.REACTOR.get());
+        IItemHandler fuel = handler(helper, pos, Direction.UP);
+        helper.assertTrue(fuel.insertItem(0, new ItemStack(Items.COAL), false).getCount() == 1, "reactor rejects coal");
+        fuel.insertItem(0, new ItemStack(ModItems.FUEL_ROD.get()), false);
+        GeneratorBlockEntity reactor = helper.getBlockEntity(pos);
+
+        helper.runAtTickTime(50, () -> {
+            helper.assertTrue(reactor.energy().getEnergyStored() >= 40 * GeneratorType.REACTOR.fePerTick(), "reactor output");
+            helper.assertValueEqual(reactor.energy().getMaxEnergyStored(), GeneratorType.REACTOR.capacity(), "reactor buffer");
+            helper.succeed();
+        });
+    }
+
     @GameTest(template = EMPTY)
     public static void drillsCannotShareFieldBlocks(GameTestHelper helper) {
         BlockPos drill = new BlockPos(1, 2, 1);
         helper.setBlock(drill, ModBlocks.BURNER_DRILL.get());
 
-        helper.assertTrue(BurnerDrillBlock.findOverlappingDrill(helper.getLevel(), helper.absolutePos(new BlockPos(3, 2, 1))) != null,
+        helper.assertTrue(DrillBlock.findOverlappingDrill(helper.getLevel(), helper.absolutePos(new BlockPos(3, 2, 1)), DrillTier.BURNER) != null,
                 "3x3 areas two blocks apart overlap");
-        helper.assertTrue(BurnerDrillBlock.findOverlappingDrill(helper.getLevel(), helper.absolutePos(new BlockPos(4, 2, 1))) == null,
+        helper.assertTrue(DrillBlock.findOverlappingDrill(helper.getLevel(), helper.absolutePos(new BlockPos(4, 2, 1)), DrillTier.BURNER) == null,
                 "3x3 areas three blocks apart are fine");
         helper.succeed();
     }

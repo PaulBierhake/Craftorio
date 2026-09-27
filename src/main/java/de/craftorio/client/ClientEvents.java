@@ -65,6 +65,7 @@ public final class ClientEvents {
             event.registerEntityRenderer(ModEntities.BREAKER.get(), TdEnemyRenderer::breaker);
             event.registerEntityRenderer(ModEntities.SPITTER.get(), TdEnemyRenderer::spitter);
             event.registerEntityRenderer(ModEntities.BROOD_MOTHER.get(), TdEnemyRenderer::broodMother);
+            event.registerEntityRenderer(ModEntities.CRYSTAL_GOLEM.get(), TdEnemyRenderer::crystalGolem);
         }
 
         @SubscribeEvent

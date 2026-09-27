@@ -34,9 +34,9 @@ public final class CaveGameTests {
         for (int y = CaveLayers.CAVE_BOTTOM; y < CaveLayers.CAP_ONE_BOTTOM; y++) {
             helper.getLevel().setBlock(new BlockPos(x, y, z), ModBlocks.CAVE_RUBBLE.get().defaultBlockState(), 2);
         }
-        CaveShape shape = CaveAreas.get(helper.getLevel().getServer()).shape();
+        CaveShape shape = CaveAreas.get(helper.getLevel().getServer()).shape(Layer.CAVES);
 
-        CaveCarver.carveColumn(helper.getLevel(), x, z, shape);
+        CaveCarver.carveColumn(helper.getLevel(), Layer.CAVES, x, z, shape);
 
         for (int y = CaveLayers.CAVE_BOTTOM; y < CaveLayers.CAP_ONE_BOTTOM; y++) {
             helper.assertFalse(helper.getLevel().getBlockState(new BlockPos(x, y, z)).is(ModBlocks.CAVE_RUBBLE.get()), "fill left at y=" + y);
@@ -63,7 +63,7 @@ public final class CaveGameTests {
         ItemStack rest = materials.insertItem(0, new ItemStack(ModItems.MOTOR.get(), 12), false);
         helper.assertValueEqual(rest.getCount(), 4, "only 8 motors are needed");
         helper.assertValueEqual(site.stage(), CaveEntranceBlock.STAGE_MATERIALS, "still waiting for materials");
-        for (Map.Entry<Item, Integer> required : CaveEntranceBlockEntity.requirements().entrySet()) {
+        for (Map.Entry<Item, Integer> required : CaveEntranceBlockEntity.requirements(Layer.CAVES).entrySet()) {
             int left = required.getValue();
             while (left > 0) {
                 int batch = Math.min(64, left);
@@ -76,7 +76,62 @@ public final class CaveGameTests {
         ChunkPos chunk = new ChunkPos(helper.absolutePos(entrance));
         helper.succeedWhen(() -> {
             helper.assertBlockProperty(entrance, CaveEntranceBlock.STAGE, CaveEntranceBlock.STAGE_OPEN);
-            helper.assertTrue(CaveAreas.get(helper.getLevel().getServer()).isUnlocked(chunk), "cave area unlocked");
+            helper.assertTrue(CaveAreas.get(helper.getLevel().getServer()).isUnlocked(Layer.CAVES, chunk), "cave area unlocked");
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void carvingMineLayerUsesBasaltFloor(GameTestHelper helper) {
+        BlockPos column = helper.absolutePos(new BlockPos(2, 0, 2));
+        int x = column.getX();
+        int z = column.getZ();
+        for (int y = Layer.MINES.minY(); y <= Layer.MINES.maxY(); y++) {
+            helper.getLevel().setBlock(new BlockPos(x, y, z), ModBlocks.MINE_RUBBLE.get().defaultBlockState(), 2);
+        }
+        CaveShape shape = CaveAreas.get(helper.getLevel().getServer()).shape(Layer.MINES);
+
+        CaveCarver.carveColumn(helper.getLevel(), Layer.MINES, x, z, shape);
+
+        for (int y = Layer.MINES.minY(); y <= Layer.MINES.maxY(); y++) {
+            helper.assertFalse(helper.getLevel().getBlockState(new BlockPos(x, y, z)).is(ModBlocks.MINE_RUBBLE.get()), "fill left at y=" + y);
+        }
+        if (!shape.isPillar(x, z)) {
+            int floor = shape.floorY(x, z);
+            helper.assertTrue(helper.getLevel().getBlockState(new BlockPos(x, floor, z)).is(Blocks.SMOOTH_BASALT), "basalt floor");
+            helper.assertTrue(helper.getLevel().getBlockState(new BlockPos(x, floor + 1, z)).isAir(), "open above the floor");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 2400)
+    public static void mineShaftNeedsDeepMaterialsThenUnlocksMines(GameTestHelper helper) {
+        BlockPos shaft = new BlockPos(3, 1, 3);
+        helper.setBlock(shaft, ModBlocks.MINE_SHAFT.get());
+        helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.POWER_POLE.get());
+        // One coal generator (60 FE/t) is not enough for the shaft's 80 FE/t.
+        for (BlockPos generator : new BlockPos[]{new BlockPos(1, 1, 1), new BlockPos(1, 1, 3)}) {
+            helper.setBlock(generator, ModBlocks.COAL_GENERATOR.get());
+            items(helper, generator).insertItem(0, new ItemStack(Items.COAL, 32), false);
+        }
+        CaveEntranceBlockEntity site = helper.getBlockEntity(shaft);
+        IItemHandler materials = items(helper, shaft);
+
+        helper.assertValueEqual(site.target(), Layer.MINES, "mine shaft opens the mine layer");
+        helper.assertTrue(!materials.insertItem(0, new ItemStack(Items.COBBLESTONE), true).isEmpty(), "cobblestone is not needed");
+        for (Map.Entry<Item, Integer> required : CaveEntranceBlockEntity.requirements(Layer.MINES).entrySet()) {
+            int left = required.getValue();
+            while (left > 0) {
+                int batch = Math.min(64, left);
+                materials.insertItem(0, new ItemStack(required.getKey(), batch), false);
+                left -= batch;
+            }
+        }
+        helper.assertValueEqual(site.stage(), CaveEntranceBlock.STAGE_DRILLING, "drilling after all materials");
+
+        ChunkPos chunk = new ChunkPos(helper.absolutePos(shaft));
+        helper.succeedWhen(() -> {
+            helper.assertBlockProperty(shaft, CaveEntranceBlock.STAGE, CaveEntranceBlock.STAGE_OPEN);
+            helper.assertTrue(CaveAreas.get(helper.getLevel().getServer()).isUnlocked(Layer.MINES, chunk), "mine area unlocked");
         });
     }
 

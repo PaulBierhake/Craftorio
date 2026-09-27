@@ -33,4 +33,17 @@ class DrillTest {
         assertFalse(DrillArea.overlaps(0, 64, 0, 1, 2, 65, 0, 1), "different layers never overlap");
         assertTrue(DrillArea.overlaps(0, 64, 0, 2, 3, 64, 0, 1), "5x5 next to 3x3");
     }
+
+    @Test
+    void higherTiersMineFasterAndCoverMore() {
+        assertEquals(0.27, DrillTier.BURNER.maxItemsPerSecond(), 1e-9);
+        assertEquals(0.54, DrillTier.ELECTRIC.maxItemsPerSecond(), 1e-9);
+        assertEquals(25, DrillTier.DEEP.area());
+        assertEquals(3.0, DrillTier.DEEP.maxItemsPerSecond(), 1e-9);
+        assertTrue(DrillTier.BURNER.usesFuel());
+        assertFalse(DrillTier.DEEP.usesFuel());
+        for (DrillTier tier : DrillTier.values()) {
+            assertTrue(tier.radius() <= DrillTier.MAX_RADIUS);
+        }
+    }
 }

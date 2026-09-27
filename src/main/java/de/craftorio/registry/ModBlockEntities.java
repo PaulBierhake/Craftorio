@@ -4,7 +4,7 @@ import de.craftorio.Craftorio;
 import de.craftorio.economy.block.TradingPostBlockEntity;
 import de.craftorio.defense.TowerBlockEntity;
 import de.craftorio.defense.TowerRuinBlockEntity;
-import de.craftorio.energy.CoalGeneratorBlockEntity;
+import de.craftorio.energy.GeneratorBlockEntity;
 import de.craftorio.energy.PowerPoleBlockEntity;
 import de.craftorio.machine.ProcessingMachineBlockEntity;
 import de.craftorio.world.cave.CaveEntranceBlockEntity;
@@ -13,7 +13,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import de.craftorio.logistics.ConveyorBeltBlockEntity;
 import de.craftorio.logistics.ElevatorBlockEntity;
 import de.craftorio.logistics.InserterBlockEntity;
-import de.craftorio.machine.BurnerDrillBlockEntity;
+import de.craftorio.machine.DrillBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -32,20 +32,22 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(TradingPostBlockEntity::new, ModBlocks.TRADING_POST.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BurnerDrillBlockEntity>> BURNER_DRILL = BLOCK_ENTITIES.register("burner_drill",
-            () -> BlockEntityType.Builder.of(BurnerDrillBlockEntity::new, ModBlocks.BURNER_DRILL.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<DrillBlockEntity>> DRILL = BLOCK_ENTITIES.register("burner_drill",
+            () -> BlockEntityType.Builder.of(DrillBlockEntity::new, ModBlocks.BURNER_DRILL.get(), ModBlocks.ELECTRIC_DRILL.get(),
+                    ModBlocks.DEEP_DRILL.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ConveyorBeltBlockEntity>> CONVEYOR_BELT = BLOCK_ENTITIES.register("conveyor_belt",
-            () -> BlockEntityType.Builder.of(ConveyorBeltBlockEntity::new, ModBlocks.CONVEYOR_BELT.get()).build(null));
+            () -> BlockEntityType.Builder.of(ConveyorBeltBlockEntity::new, ModBlocks.CONVEYOR_BELT.get(), ModBlocks.FAST_BELT.get(),
+                    ModBlocks.EXPRESS_BELT.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InserterBlockEntity>> INSERTER = BLOCK_ENTITIES.register("inserter",
             () -> BlockEntityType.Builder.of(InserterBlockEntity::new, ModBlocks.INSERTER.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CoalGeneratorBlockEntity>> COAL_GENERATOR = BLOCK_ENTITIES.register("coal_generator",
-            () -> BlockEntityType.Builder.of(CoalGeneratorBlockEntity::new, ModBlocks.COAL_GENERATOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorBlockEntity>> GENERATOR = BLOCK_ENTITIES.register("coal_generator",
+            () -> BlockEntityType.Builder.of(GeneratorBlockEntity::new, ModBlocks.COAL_GENERATOR.get(), ModBlocks.REACTOR.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PowerPoleBlockEntity>> POWER_POLE = BLOCK_ENTITIES.register("power_pole",
@@ -59,7 +61,8 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerBlockEntity>> TOWER = BLOCK_ENTITIES.register("tower",
             () -> BlockEntityType.Builder.of(TowerBlockEntity::new,
-                    ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get()).build(null));
+                    ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get(),
+                    ModBlocks.LASER_TOWER.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerRuinBlockEntity>> TOWER_RUIN = BLOCK_ENTITIES.register("tower_ruin",
@@ -67,7 +70,7 @@ public final class ModBlockEntities {
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CaveEntranceBlockEntity>> CAVE_ENTRANCE = BLOCK_ENTITIES.register("cave_entrance",
-            () -> BlockEntityType.Builder.of(CaveEntranceBlockEntity::new, ModBlocks.CAVE_ENTRANCE.get()).build(null));
+            () -> BlockEntityType.Builder.of(CaveEntranceBlockEntity::new, ModBlocks.CAVE_ENTRANCE.get(), ModBlocks.MINE_SHAFT.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElevatorBlockEntity>> ELEVATOR = BLOCK_ENTITIES.register("elevator",
@@ -79,11 +82,12 @@ public final class ModBlockEntities {
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TRADING_POST.get(), (post, side) -> post.input());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BURNER_DRILL.get(), (drill, side) -> drill.handler());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, DRILL.get(), (drill, side) -> drill.handler());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, DRILL.get(), (drill, side) -> drill.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CONVEYOR_BELT.get(), ConveyorBeltBlockEntity::handler);
 
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, COAL_GENERATOR.get(), (generator, side) -> insertOnly(generator.fuel()));
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, COAL_GENERATOR.get(), (generator, side) -> generator.energy());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, GENERATOR.get(), (generator, side) -> insertOnly(generator.fuel()));
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, GENERATOR.get(), (generator, side) -> generator.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? null : insertOnly(tower.ammo()));

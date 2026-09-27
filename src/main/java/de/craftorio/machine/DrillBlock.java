@@ -28,20 +28,31 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-/** Mines the ore field blocks below it and pushes the output into the block in front. Burns furnace fuel. */
-public final class BurnerDrillBlock extends BaseEntityBlock {
-    public static final MapCodec<BurnerDrillBlock> CODEC = simpleCodec(BurnerDrillBlock::new);
+/**
+ * Mines the ore field blocks below it and pushes the output into the block in front. The burner tier burns furnace
+ * fuel, higher tiers run on grid power (see {@link DrillTier}).
+ */
+public final class DrillBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    public BurnerDrillBlock(Properties properties) {
+    private final DrillTier tier;
+    private final MapCodec<DrillBlock> codec;
+
+    public DrillBlock(DrillTier tier, Properties properties) {
         super(properties);
+        this.tier = tier;
+        this.codec = simpleCodec(p -> new DrillBlock(tier, p));
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, false));
+    }
+
+    public DrillTier tier() {
+        return tier;
     }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+        return codec;
     }
 
     @Override
@@ -52,7 +63,7 @@ public final class BurnerDrillBlock extends BaseEntityBlock {
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
-        if (findOverlappingDrill(context.getLevel(), pos) != null) {
+        if (findOverlappingDrill(context.getLevel(), pos, tier) != null) {
             if (context.getPlayer() != null && !context.getLevel().isClientSide) {
                 context.getPlayer().displayClientMessage(Component.translatable("craftorio.drill.overlap").withStyle(ChatFormatting.RED), true);
             }
@@ -61,13 +72,13 @@ public final class BurnerDrillBlock extends BaseEntityBlock {
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection());
     }
 
-    /** Another drill whose mining area would share field blocks with a drill at {@code pos}, or null. */
-    public static @Nullable BlockPos findOverlappingDrill(Level level, BlockPos pos) {
-        int reach = 2 * BurnerDrillBlockEntity.RADIUS;
+    /** Another drill whose mining area would share field blocks with a drill of {@code tier} at {@code pos}, or null. */
+    public static @Nullable BlockPos findOverlappingDrill(Level level, BlockPos pos, DrillTier tier) {
+        int reach = tier.radius() + DrillTier.MAX_RADIUS;
         for (BlockPos other : BlockPos.betweenClosed(pos.offset(-reach, 0, -reach), pos.offset(reach, 0, reach))) {
-            if (!other.equals(pos) && level.getBlockState(other).getBlock() instanceof BurnerDrillBlock
-                    && DrillArea.overlaps(pos.getX(), pos.getY(), pos.getZ(), BurnerDrillBlockEntity.RADIUS,
-                    other.getX(), other.getY(), other.getZ(), BurnerDrillBlockEntity.RADIUS)) {
+            if (!other.equals(pos) && level.getBlockState(other).getBlock() instanceof DrillBlock drill
+                    && DrillArea.overlaps(pos.getX(), pos.getY(), pos.getZ(), tier.radius(),
+                    other.getX(), other.getY(), other.getZ(), drill.tier().radius())) {
                 return other.immutable();
             }
         }
@@ -81,23 +92,23 @@ public final class BurnerDrillBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new BurnerDrillBlockEntity(pos, state);
+        return new DrillBlockEntity(pos, state);
     }
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.BURNER_DRILL.get(), BurnerDrillBlockEntity::serverTick);
+        return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.DRILL.get(), DrillBlockEntity::serverTick);
     }
 
     /** Right-click with fuel refuels. */
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
                                               InteractionHand hand, BlockHitResult hit) {
-        if (!BurnerDrillBlockEntity.isFuel(stack)) {
+        if (!tier.usesFuel() || !DrillBlockEntity.isFuel(stack)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof BurnerDrillBlockEntity drill) {
-            ItemStack rest = drill.handler().insertItem(BurnerDrillBlockEntity.FUEL_SLOT, stack.copy(), false);
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof DrillBlockEntity drill) {
+            ItemStack rest = drill.handler().insertItem(DrillBlockEntity.FUEL_SLOT, stack.copy(), false);
             player.setItemInHand(hand, rest);
         }
         return ItemInteractionResult.sidedSuccess(level.isClientSide);
@@ -106,8 +117,8 @@ public final class BurnerDrillBlock extends BaseEntityBlock {
     /** Right-click with an empty hand takes the buffered output and shows the drill's status. */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof BurnerDrillBlockEntity drill) {
-            ItemStack output = drill.handler().extractItem(BurnerDrillBlockEntity.OUTPUT_SLOT, 64, false);
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof DrillBlockEntity drill) {
+            ItemStack output = drill.handler().extractItem(DrillBlockEntity.OUTPUT_SLOT, 64, false);
             if (!output.isEmpty()) {
                 player.getInventory().placeItemBackInInventory(output);
             }
@@ -118,7 +129,7 @@ public final class BurnerDrillBlock extends BaseEntityBlock {
 
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof BurnerDrillBlockEntity drill) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof DrillBlockEntity drill) {
             drill.dropContents();
         }
         super.onRemove(state, level, pos, newState, movedByPiston);

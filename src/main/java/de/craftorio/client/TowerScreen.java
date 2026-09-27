@@ -37,7 +37,7 @@ public final class TowerScreen extends MachineScreenBase<TowerMenu> {
 
     @Override
     protected int capacity() {
-        return menu.tower().type().usesEnergy() ? TowerBlockEntity.ENERGY_CAPACITY : 0;
+        return menu.tower().type().energyCapacity();
     }
 
     @Override

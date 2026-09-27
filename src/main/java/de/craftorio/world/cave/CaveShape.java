@@ -1,38 +1,47 @@
 package de.craftorio.world.cave;
 
 /**
- * Shape of the cave layer: one large, connected hall with an uneven floor and ceiling and scattered rock pillars.
- * Deterministic from the world seed, so neighbouring unlocked areas join seamlessly.
+ * Shape of an underground layer: one large, connected hall with an uneven floor and ceiling and scattered rock
+ * pillars. Deterministic from the world seed, so neighbouring unlocked areas join seamlessly.
  */
 public final class CaveShape {
-    /** Floor between 4 and 10, ceiling between 16 and 34: always at least 6 blocks of headroom. */
-    private static final double FLOOR_BASE = 7;
-    private static final double FLOOR_AMPLITUDE = 3;
-    private static final double CEILING_BASE = 25;
-    private static final double CEILING_AMPLITUDE = 9;
-    private static final double PILLAR_THRESHOLD = 0.42;
+    /**
+     * @param floorBase    average floor height
+     * @param ceilingBase  average ceiling height
+     * @param pillarThreshold noise value above which a column is a pillar (lower = more pillars)
+     * @param salt         distinguishes the noise of different layers
+     */
+    public record Params(double floorBase, double floorAmplitude, double ceilingBase, double ceilingAmplitude,
+                         double pillarThreshold, long salt) {
+    }
 
+    private final Params params;
     private final Noise2D floor;
     private final Noise2D ceiling;
     private final Noise2D pillars;
 
-    public CaveShape(long seed) {
-        long base = seed ^ 0x43726166746F7269L;
+    public CaveShape(long seed, Params params) {
+        this.params = params;
+        long base = seed ^ 0x43726166746F7269L ^ (params.salt() * 0x9E3779B97F4A7C15L);
         this.floor = new Noise2D(base);
         this.ceiling = new Noise2D(base * 31 + 1);
         this.pillars = new Noise2D(base * 31 * 31 + 2);
     }
 
+    public static CaveShape of(long seed, Layer layer) {
+        return new CaveShape(seed, layer.shape());
+    }
+
     public int floorY(int x, int z) {
-        return (int) Math.round(FLOOR_BASE + FLOOR_AMPLITUDE * floor.noise(x * 0.045, z * 0.045));
+        return (int) Math.round(params.floorBase() + params.floorAmplitude() * floor.noise(x * 0.045, z * 0.045));
     }
 
     public int ceilingY(int x, int z) {
-        return (int) Math.round(CEILING_BASE + CEILING_AMPLITUDE * ceiling.noise(x * 0.03, z * 0.03));
+        return (int) Math.round(params.ceilingBase() + params.ceilingAmplitude() * ceiling.noise(x * 0.03, z * 0.03));
     }
 
     public boolean isPillar(int x, int z) {
-        return pillars.noise(x * 0.11, z * 0.11) > PILLAR_THRESHOLD;
+        return pillars.noise(x * 0.11, z * 0.11) > params.pillarThreshold();
     }
 
     /** Open air inside the hall (the floor block itself is solid). */

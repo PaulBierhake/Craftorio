@@ -2,7 +2,7 @@ package de.craftorio.datagen;
 
 import de.craftorio.Craftorio;
 import de.craftorio.registry.ModBlocks;
-import de.craftorio.machine.BurnerDrillBlock;
+import de.craftorio.machine.DrillBlock;
 import de.craftorio.logistics.ElevatorBlock;
 import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.world.cave.CaveEntranceBlock;
@@ -36,6 +36,11 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         oreField(ModBlocks.GOLD_ORE_FIELD.get());
         oreField(ModBlocks.QUARTZ_FIELD.get());
         simpleBlockWithItem(ModBlocks.CAVE_RUBBLE.get(), cubeAll(ModBlocks.CAVE_RUBBLE.get()));
+        oreField(ModBlocks.DIAMOND_FIELD.get());
+        oreField(ModBlocks.TITANIUM_ORE_FIELD.get());
+        oreField(ModBlocks.URANIUM_ORE_FIELD.get());
+        oreField(ModBlocks.CRYSTAL_FIELD.get());
+        simpleBlockWithItem(ModBlocks.MINE_RUBBLE.get(), cubeAll(ModBlocks.MINE_RUBBLE.get()));
 
         Map<ElevatorBlock.Mode, ModelFile> elevatorModels = new EnumMap<>(ElevatorBlock.Mode.class);
         for (ElevatorBlock.Mode mode : ElevatorBlock.Mode.values()) {
@@ -45,35 +50,32 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.ELEVATOR.get(), state -> elevatorModels.get(state.getValue(ElevatorBlock.MODE)));
         simpleBlockItem(ModBlocks.ELEVATOR.get(), elevatorModels.get(ElevatorBlock.Mode.RECEIVE));
 
-        ModelFile site = models().cubeBottomTop("cave_entrance_site", modLoc("block/cave_entrance_side"),
-                modLoc("block/cave_entrance_bottom"), modLoc("block/cave_entrance_top"));
-        ModelFile drilling = models().cubeBottomTop("cave_entrance_drilling", modLoc("block/cave_entrance_side"),
-                modLoc("block/cave_entrance_bottom"), modLoc("block/cave_entrance_drilling"));
-        ModelFile open = models().getExistingFile(modLoc("block/cave_entrance_open"));
-        getVariantBuilder(ModBlocks.CAVE_ENTRANCE.get()).forAllStates(state -> ConfiguredModel.builder()
-                .modelFile(switch (state.getValue(CaveEntranceBlock.STAGE)) {
-                    case CaveEntranceBlock.STAGE_MATERIALS -> site;
-                    case CaveEntranceBlock.STAGE_DRILLING -> drilling;
-                    default -> open;
-                }).build());
-        simpleBlockItem(ModBlocks.CAVE_ENTRANCE.get(), site);
+        entrance(ModBlocks.CAVE_ENTRANCE.get(), "cave_entrance", models().getExistingFile(modLoc("block/cave_entrance_open")));
+        entrance(ModBlocks.MINE_SHAFT.get(), "mine_shaft", models().withExistingParent("mine_shaft_open", modLoc("block/cave_entrance_open"))
+                .texture("particle", modLoc("block/mine_shaft_side")).texture("wood", modLoc("block/mine_shaft_side")));
 
-        ModelFile drillOff = models().orientable("burner_drill",
-                modLoc("block/burner_drill_side"), modLoc("block/burner_drill_front"), modLoc("block/burner_drill_top"));
-        ModelFile drillOn = models().orientable("burner_drill_on",
-                modLoc("block/burner_drill_side"), modLoc("block/burner_drill_front_on"), modLoc("block/burner_drill_top"));
-        horizontalBlock(ModBlocks.BURNER_DRILL.get(), state -> state.getValue(BurnerDrillBlock.LIT) ? drillOn : drillOff);
-        simpleBlockItem(ModBlocks.BURNER_DRILL.get(), drillOff);
+        drill(ModBlocks.BURNER_DRILL.get(), "burner_drill");
+        drill(ModBlocks.ELECTRIC_DRILL.get(), "electric_drill");
+        drill(ModBlocks.DEEP_DRILL.get(), "deep_drill");
 
         // Hand-written models in src/main/resources (belt and arm geometry), rotated by facing.
         ModelFile belt = models().getExistingFile(modLoc("block/conveyor_belt"));
         horizontalBlock(ModBlocks.CONVEYOR_BELT.get(), belt);
         simpleBlockItem(ModBlocks.CONVEYOR_BELT.get(), belt);
+        for (Block tieredBelt : new Block[]{ModBlocks.FAST_BELT.get(), ModBlocks.EXPRESS_BELT.get()}) {
+            String name = name(tieredBelt);
+            ModelFile model = models().withExistingParent(name, modLoc("block/conveyor_belt"))
+                    .texture("particle", modLoc("block/" + name + "_side"))
+                    .texture("top", modLoc("block/" + name)).texture("side", modLoc("block/" + name + "_side"));
+            horizontalBlock(tieredBelt, model);
+            simpleBlockItem(tieredBelt, model);
+        }
         ModelFile inserter = models().getExistingFile(modLoc("block/inserter"));
         horizontalBlock(ModBlocks.INSERTER.get(), inserter);
         simpleBlockItem(ModBlocks.INSERTER.get(), inserter);
 
         machine(ModBlocks.COAL_GENERATOR.get(), "coal_generator");
+        machine(ModBlocks.REACTOR.get(), "reactor");
         machine(ModBlocks.ELECTRIC_FURNACE.get(), "electric_furnace");
         machine(ModBlocks.PRESS.get(), "press");
         machine(ModBlocks.ASSEMBLER.get(), "assembler");
@@ -87,13 +89,14 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.ZONE_CORE.get(), cubeAll(ModBlocks.ZONE_CORE.get()));
         simpleBlockWithItem(ModBlocks.ENEMY_PORTAL.get(), models().cubeBottomTop("enemy_portal",
                 modLoc("block/enemy_portal_side"), modLoc("block/enemy_portal_top"), modLoc("block/enemy_portal_top")));
-        for (String name : new String[]{"path_block", "crossbow_tower", "gun_turret", "tesla_tower", "tower_ruin"}) {
+        for (String name : new String[]{"path_block", "crossbow_tower", "gun_turret", "tesla_tower", "laser_tower", "tower_ruin"}) {
             ModelFile model = models().getExistingFile(modLoc("block/" + name));
             Block block = switch (name) {
                 case "path_block" -> ModBlocks.PATH_BLOCK.get();
                 case "crossbow_tower" -> ModBlocks.CROSSBOW_TOWER.get();
                 case "gun_turret" -> ModBlocks.GUN_TURRET.get();
                 case "tesla_tower" -> ModBlocks.TESLA_TOWER.get();
+                case "laser_tower" -> ModBlocks.LASER_TOWER.get();
                 default -> ModBlocks.TOWER_RUIN.get();
             };
             simpleBlock(block, model);
@@ -117,6 +120,32 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         ModelFile off = models().orientable(name, modLoc("block/machine_side"), modLoc("block/" + name + "_front"), modLoc("block/machine_top"));
         ModelFile on = models().orientable(name + "_on", modLoc("block/machine_side"), modLoc("block/" + name + "_front_on"), modLoc("block/machine_top"));
         horizontalBlock(block, state -> state.getValue(MachineBaseBlock.ACTIVE) ? on : off);
+        simpleBlockItem(block, off);
+    }
+
+    private String name(Block block) {
+        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block).getPath();
+    }
+
+    /** Construction site, drilling and open frame of a cave entrance or mine shaft. */
+    private void entrance(Block block, String name, ModelFile open) {
+        ModelFile site = models().cubeBottomTop(name + "_site", modLoc("block/" + name + "_side"),
+                modLoc("block/" + name + "_bottom"), modLoc("block/" + name + "_top"));
+        ModelFile drilling = models().cubeBottomTop(name + "_drilling", modLoc("block/" + name + "_side"),
+                modLoc("block/" + name + "_bottom"), modLoc("block/" + name + "_drilling"));
+        getVariantBuilder(block).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(switch (state.getValue(CaveEntranceBlock.STAGE)) {
+                    case CaveEntranceBlock.STAGE_MATERIALS -> site;
+                    case CaveEntranceBlock.STAGE_DRILLING -> drilling;
+                    default -> open;
+                }).build());
+        simpleBlockItem(block, site);
+    }
+
+    private void drill(Block block, String name) {
+        ModelFile off = models().orientable(name, modLoc("block/" + name + "_side"), modLoc("block/" + name + "_front"), modLoc("block/" + name + "_top"));
+        ModelFile on = models().orientable(name + "_on", modLoc("block/" + name + "_side"), modLoc("block/" + name + "_front_on"), modLoc("block/" + name + "_top"));
+        horizontalBlock(block, state -> state.getValue(DrillBlock.LIT) ? on : off);
         simpleBlockItem(block, off);
     }
 

@@ -30,7 +30,6 @@ import java.util.Map;
 
 public final class CaveEntranceBlockEntity extends BlockEntity {
     public static final int DRILL_TICKS = 1_200;
-    public static final int ENERGY_PER_TICK = 40;
 
     private final Map<Item, Integer> delivered = new LinkedHashMap<>();
     private final EnergyBuffer energy = new EnergyBuffer(20_000, 500, 0, this::setChanged);
@@ -41,14 +40,33 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
         super(ModBlockEntities.CAVE_ENTRANCE.get(), pos, state);
     }
 
-    /** What the construction site needs in total. */
-    public static Map<Item, Integer> requirements() {
+    /** What a construction site for the given layer needs in total. */
+    public static Map<Item, Integer> requirements(Layer target) {
         Map<Item, Integer> required = new LinkedHashMap<>();
-        required.put(Items.COBBLESTONE, 128);
-        required.put(ModItems.IRON_PLATE.get(), 32);
-        required.put(ModItems.IRON_GEAR.get(), 16);
-        required.put(ModItems.MOTOR.get(), 8);
+        if (target == Layer.CAVES) {
+            required.put(Items.COBBLESTONE, 128);
+            required.put(ModItems.IRON_PLATE.get(), 32);
+            required.put(ModItems.IRON_GEAR.get(), 16);
+            required.put(ModItems.MOTOR.get(), 8);
+        } else {
+            required.put(ModItems.LEAD_INGOT.get(), 64);
+            required.put(ModItems.MOTOR.get(), 16);
+            required.put(ModItems.BATTERY.get(), 8);
+            required.put(ModItems.ADVANCED_CIRCUIT.get(), 8);
+        }
         return required;
+    }
+
+    public static int energyPerTick(Layer target) {
+        return target == Layer.CAVES ? 40 : 80;
+    }
+
+    public Layer target() {
+        return getBlockState().getBlock() instanceof CaveEntranceBlock block ? block.target() : Layer.CAVES;
+    }
+
+    public Map<Item, Integer> requirements() {
+        return requirements(target());
     }
 
     public EnergyBuffer energy() {
@@ -75,7 +93,7 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
         if (state.getValue(CaveEntranceBlock.STAGE) != CaveEntranceBlock.STAGE_DRILLING) {
             return;
         }
-        if (site.energy.consume(ENERGY_PER_TICK)) {
+        if (site.energy.consume(energyPerTick(site.target()))) {
             site.drillProgress++;
             site.setChanged();
             if (site.drillProgress % 40 == 0) {
@@ -94,18 +112,19 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
         }
     }
 
-    /** Opens the shaft down to the cave floor and unlocks the surrounding cave area. */
+    /** Opens the shaft down to the floor of the target layer and unlocks the surrounding area. */
     void open(ServerLevel level) {
+        Layer target = target();
         CaveAreas areas = CaveAreas.get(level.getServer());
-        int floor = areas.shape().floorY(worldPosition.getX(), worldPosition.getZ());
+        int floor = areas.shape(target).floorY(worldPosition.getX(), worldPosition.getZ());
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         BlockState lining = Blocks.COBBLESTONE.defaultBlockState();
         for (int y = worldPosition.getY() - 1; y > floor; y--) {
-            // Seal the walls above the cave layer so water and lava from vanilla caves cannot flood the shaft;
-            // inside the cave layer the shaft opens into the hall.
+            // Seal the walls above the target layer so water and lava cannot flood the shaft;
+            // inside the target layer the shaft opens into the hall.
             for (int dx = -2; dx <= 2; dx++) {
                 for (int dz = -2; dz <= 2; dz++) {
-                    if ((Math.abs(dx) == 2 || Math.abs(dz) == 2) && y >= CaveLayers.CAP_ONE_BOTTOM) {
+                    if ((Math.abs(dx) == 2 || Math.abs(dz) == 2) && y > target.maxY()) {
                         pos.set(worldPosition.getX() + dx, y, worldPosition.getZ() + dz);
                         BlockState wall = level.getBlockState(pos);
                         if (wall.isAir() || !wall.getFluidState().isEmpty() || wall.canBeReplaced()) {
@@ -117,10 +136,10 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     pos.set(worldPosition.getX() + dx, y, worldPosition.getZ() + dz);
-                    BlockState target = dx == 0 && dz == 0
+                    BlockState column = dx == 0 && dz == 0
                             ? Blocks.SCAFFOLDING.defaultBlockState().setValue(ScaffoldingBlock.DISTANCE, 0).setValue(ScaffoldingBlock.BOTTOM, false)
                             : Blocks.AIR.defaultBlockState();
-                    level.setBlock(pos, target, Block.UPDATE_CLIENTS);
+                    level.setBlock(pos, column, Block.UPDATE_CLIENTS);
                 }
             }
         }
@@ -128,12 +147,12 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
         if (level.getBlockState(pos).isAir()) {
             level.setBlock(pos, Blocks.STONE.defaultBlockState(), Block.UPDATE_CLIENTS);
         }
-        areas.unlockAround(worldPosition);
+        areas.unlockAround(target, worldPosition);
         level.setBlock(worldPosition, getBlockState().setValue(CaveEntranceBlock.STAGE, CaveEntranceBlock.STAGE_OPEN), Block.UPDATE_ALL);
         level.playSound(null, worldPosition, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 1F, 0.7F);
         level.players().stream()
                 .filter(player -> player.distanceToSqr(worldPosition.getCenter()) < 128 * 128)
-                .forEach(player -> player.sendSystemMessage(Component.translatable("craftorio.cave.opened",
+                .forEach(player -> player.sendSystemMessage(Component.translatable(target == Layer.CAVES ? "craftorio.cave.opened" : "craftorio.mine.opened",
                         new ChunkPos(worldPosition).x, new ChunkPos(worldPosition).z)));
     }
 
@@ -150,8 +169,8 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
                 yield line;
             }
             case CaveEntranceBlock.STAGE_DRILLING -> Component.translatable("craftorio.cave.drilling",
-                    100 * drillProgress / DRILL_TICKS, ENERGY_PER_TICK);
-            default -> Component.translatable("craftorio.cave.open");
+                    100 * drillProgress / DRILL_TICKS, energyPerTick(target()));
+            default -> Component.translatable(target() == Layer.CAVES ? "craftorio.cave.open" : "craftorio.mine.open");
         };
     }
 

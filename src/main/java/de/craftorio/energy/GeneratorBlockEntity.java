@@ -15,24 +15,23 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
-/** Burns furnace fuel into FE for the power grid. Only burns while its buffer has room, so no fuel is wasted. */
-public final class CoalGeneratorBlockEntity extends BlockEntity implements PowerSource, MenuProvider, MachineBaseBlock.DropsContents {
-    public static final int FE_PER_TICK = 60;
-    public static final int CAPACITY = 20_000;
-    public static final int MAX_OUTPUT = 1_000;
-
-    private final EnergyBuffer energy = new EnergyBuffer(CAPACITY, 0, MAX_OUTPUT, this::setChanged);
+/**
+ * Burns fuel into FE for the power grid (furnace fuel or fuel rods, see {@link GeneratorType}). Only burns while its
+ * buffer has room, so no fuel is wasted.
+ */
+public final class GeneratorBlockEntity extends BlockEntity implements PowerSource, MenuProvider, MachineBaseBlock.DropsContents {
+    private final GeneratorType type;
+    private final EnergyBuffer energy;
     private final ItemStackHandler fuel = new ItemStackHandler(1) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.getBurnTime(RecipeType.SMELTING) > 0;
+            return type.burnTime(stack) > 0;
         }
 
         @Override
@@ -51,6 +50,8 @@ public final class CoalGeneratorBlockEntity extends BlockEntity implements Power
                 case 1 -> SplitIntData.high(energy.getEnergyStored());
                 case 2 -> burnTicks;
                 case 3 -> burnTotal;
+                case 4 -> SplitIntData.low(type.capacity());
+                case 5 -> SplitIntData.high(type.capacity());
                 default -> 0;
             };
         }
@@ -65,8 +66,14 @@ public final class CoalGeneratorBlockEntity extends BlockEntity implements Power
         }
     };
 
-    public CoalGeneratorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.COAL_GENERATOR.get(), pos, state);
+    public GeneratorBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.GENERATOR.get(), pos, state);
+        this.type = state.getBlock() instanceof GeneratorBlock block ? block.type() : GeneratorType.COAL;
+        this.energy = new EnergyBuffer(type.capacity(), 0, type.maxOutput(), this::setChanged);
+    }
+
+    public GeneratorType type() {
+        return type;
     }
 
     public EnergyBuffer energy() {
@@ -77,21 +84,22 @@ public final class CoalGeneratorBlockEntity extends BlockEntity implements Power
         return fuel;
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, CoalGeneratorBlockEntity generator) {
-        if (generator.burnTicks <= 0 && generator.energy.freeSpace() >= FE_PER_TICK) {
+    public static void serverTick(Level level, BlockPos pos, BlockState state, GeneratorBlockEntity generator) {
+        int output = generator.type.fePerTick();
+        if (generator.burnTicks <= 0 && generator.energy.freeSpace() >= output) {
             generator.startBurning();
         }
         boolean burning = generator.burnTicks > 0;
         if (burning) {
             generator.burnTicks--;
-            generator.energy.generate(FE_PER_TICK);
+            generator.energy.generate(output);
         }
         MachineBaseBlock.setActive(level, pos, state, burning);
     }
 
     private void startBurning() {
         ItemStack stack = fuel.getStackInSlot(0);
-        int burnTime = stack.getBurnTime(RecipeType.SMELTING);
+        int burnTime = type.burnTime(stack);
         if (burnTime <= 0) {
             return;
         }

@@ -33,8 +33,6 @@ import java.util.List;
 public final class ConveyorBeltBlockEntity extends BlockEntity {
     public static final int LEFT = 0;
     public static final int RIGHT = 1;
-    /** 1.875 blocks per second, Factorio's basic belt. */
-    public static final float SPEED = 1.875F / 20F;
     private static final float SIDE_INSERT_POSITION = 0.5F;
 
     @SuppressWarnings("unchecked")
@@ -50,18 +48,23 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
         return getBlockState().getValue(ConveyorBeltBlock.FACING);
     }
 
+    public BeltTier tier() {
+        return getBlockState().getBlock() instanceof ConveyorBeltBlock belt ? belt.tier() : BeltTier.BASIC;
+    }
+
     public BeltLane<ItemStack> lane(int index) {
         return lanes[index];
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, ConveyorBeltBlockEntity belt) {
+        float speed = belt.tier().speedPerTick();
         for (int i = 0; i < belt.lanes.length; i++) {
             BeltLane<ItemStack> lane = belt.lanes[i];
             if (lane.isEmpty()) {
                 continue;
             }
             int laneIndex = i;
-            if (lane.tick(SPEED, (stack, overshoot) -> !level.isClientSide && belt.handOff(level, stack, laneIndex, overshoot))) {
+            if (lane.tick(speed, (stack, overshoot) -> !level.isClientSide && belt.handOff(level, stack, laneIndex, overshoot))) {
                 belt.dirty = true;
             }
         }

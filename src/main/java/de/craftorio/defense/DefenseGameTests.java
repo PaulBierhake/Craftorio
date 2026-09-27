@@ -52,6 +52,46 @@ public final class DefenseGameTests {
         });
     }
 
+    @GameTest(template = LARGE)
+    public static void crystalGolemArmourOnlyStopsAmmunition(GameTestHelper helper) {
+        List<Vec3> path = new ArrayList<>();
+        for (int x = 1; x <= 15; x++) {
+            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        }
+        LevelRun run = new LevelRun(LevelPlan.of(20, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
+        TdEnemy golem = ModEntities.CRYSTAL_GOLEM.get().create(helper.getLevel());
+        golem.start(run, path, 1.0);
+        helper.getLevel().addFreshEntity(golem);
+        float full = golem.getHealth();
+
+        golem.hurt(helper.getLevel().damageSources().generic(), 10);
+        helper.assertTrue(Math.abs(full - 3.5F - golem.getHealth()) < 0.01F, "ammunition hits are reduced to 35 %");
+        golem.invulnerableTime = 0;
+        golem.hurt(helper.getLevel().damageSources().magic(), 10);
+        helper.assertTrue(Math.abs(full - 13.5F - golem.getHealth()) < 0.01F, "energy hits pass the armour");
+        golem.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 300)
+    public static void laserTowerBurnsDownCrystalGolem(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(3, 1, 3);
+        helper.setBlock(towerPos, ModBlocks.LASER_TOWER.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        tower.energy().setEnergy(tower.energy().getMaxEnergyStored());
+
+        List<Vec3> path = new ArrayList<>();
+        for (int x = 1; x <= 15; x++) {
+            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        }
+        LevelRun run = new LevelRun(LevelPlan.of(20, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
+        TdEnemy golem = ModEntities.CRYSTAL_GOLEM.get().create(helper.getLevel());
+        golem.start(run, path, 1.0);
+        helper.getLevel().addFreshEntity(golem);
+
+        helper.succeedWhen(() -> helper.assertTrue(golem.isRemoved() && golem.isDeadOrDying(), "golem still alive"));
+    }
+
     @GameTest(template = EMPTY)
     public static void destroyedTowerBecomesRuinAndRebuildsWithItsLevel(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
