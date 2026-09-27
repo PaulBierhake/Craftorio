@@ -313,4 +313,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0 – Projekt-Setup** in Arbeit.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0 abgeschlossen**, als Nächstes **M1 – Wirtschaftskern**.
