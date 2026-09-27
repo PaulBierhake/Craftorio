@@ -1,62 +1,72 @@
 # Craftorio – Spielkonzept & Umsetzungsplan
 
-> Status: Entwurf v0.1 – Grundlage für die Umsetzung. Offene Entscheidungen sind in Abschnitt 11 gesammelt.
+> Status: Entwurf v0.2 – Entscheidungen aus Runde 1 eingearbeitet (siehe Abschnitt 11). Neue offene Punkte in Abschnitt 12.
 
 ## 1. Vision in einem Satz
 
-Craftorio macht Minecraft zu einem **wirtschaftsgetriebenen Factorio**: Man baut Förderanlagen und Produktionsketten, verkauft veredelte Waren für Geld, investiert das Geld in neue Technik und tiefere Erdschichten – und verteidigt die wachsende Fabrik mit Türmen gegen immer stärkere Angriffswellen. Allein oder im Team.
+Craftorio macht Minecraft zu einem **wirtschaftsgetriebenen Factorio**: Man baut Förderanlagen und Produktionsketten, verkauft veredelte Waren für Geld und investiert es in neue Technik und tiefere Erdschichten. In einer eigenen **Tower-Defense-Zone** spielt man parallel Level für Level gegen immer stärkere Wellen – und genau diese Level liefern die Schlüsselmaterialien, ohne die die Fabrik nicht auf die nächste Stufe kommt. Allein oder im Team.
 
 ## 2. Der Kern-Loop
 
 ```
-  Rohstoffe fördern ──► verarbeiten ──► verkaufen ──► Geld
-        ▲                                               │
-        │                                               ▼
-  neue Schichten  ◄── Technologie / Maschinen / Türme kaufen
-        │
-        └──► mehr Produktion = mehr „Aufmerksamkeit“ ──► stärkere Angriffswellen
+  Erzfelder erschließen ──► verarbeiten ──► verkaufen ──► Geld
+        ▲                        │                          │
+        │                        │ Bauteile/Munition        ▼
+        │                        ▼                 Maschinen, Türme, Freischaltungen
+  neue Fabrik-Stufe ◄── Schlüsselmaterial ◄── TD-Level (alle 10 Level)
+                                                    │
+                        Level verloren ─────────────┘
+                        → Türme reparieren/ausbauen → Fabrik muss mehr leisten
 ```
 
 Drei Säulen, die sich gegenseitig antreiben:
 
 | Säule | Was der Spieler tut | Was es der anderen Säule bringt |
 |---|---|---|
-| **Automatisierung** | Bohrer, Bänder, Maschinen, Produktionsketten | Waren zum Verkaufen, Munition & Bauteile für Türme |
-| **Wirtschaft** | Verkaufen, Kaufen, Freischalten | Zugang zu Maschinen, Schichten, Türmen |
-| **Tower Defense** | Türme bauen, versorgen, aufrüsten | Schutz der Fabrik; Belohnungen (Beute, Geldboni) |
+| **Automatisierung** | Erzfelder erschließen, Bänder, Maschinen, Produktionsketten | Waren zum Verkaufen, Bauteile & Munition für Türme |
+| **Wirtschaft** | Verkaufen, Kaufen, Freischalten | Zugang zu Maschinen, Schichten, Türmen, Reparaturen |
+| **Tower Defense** | Level spielen, Türme bauen, reparieren, aufrüsten | Geld pro Level, **Schlüsselmaterialien** alle 10 Level |
 
-Designprinzip: **Handarbeit ist möglich, aber schlecht bezahlt.** Mit der Spitzhacke gewonnene Erze geben nur einen Bruchteil; der Wert entsteht durch Automatisierung und Veredelung.
+Designprinzipien:
+
+- **Handarbeit ist möglich, aber schlecht bezahlt.** Wert entsteht durch Automatisierung und Veredelung.
+- **Wachstum statt Umbau.** Keine Marktsättigung – eine laufende Produktion bleibt immer profitabel. Fortschritt entsteht, weil höherwertige Produkte *mehr und verschiedenere* Rohstoffe brauchen und Erzfelder einen festen Maximaldurchsatz haben. Man muss also ständig **erweitern**, nie umbauen.
+- **Die Fabrik ist sicher.** Die Tower-Defense greift nie die Fabrik an. Druck entsteht durch verlorene Level, nicht durch Zerstörung.
 
 ## 3. Welt & Schichten (Progression nach unten)
 
 ### 3.1 Aufbau
 
-Wir nutzen **eine einzige Dimension (Overworld)** mit fest definierten Höhenschichten, getrennt durch unzerstörbares Gestein. Das hält Logistik (vertikale Förderung), Chunk-Loading und Multiplayer einfach.
+**Eine einzige Dimension (Overworld)** mit fest definierten Höhenschichten, getrennt durch unzerstörbares Gestein. Das hält Logistik (vertikale Förderung), Chunk-Loading und Multiplayer einfach. *(Entschieden)*
 
 | Schicht | Höhe (Y, Vorschlag) | Zugang | Rohstoffe (Beispiele) |
 |---|---|---|---|
 | **Oberfläche** | 50 … 320 | von Beginn an | Holz, Stein, Kohle, Eisen, Kupfer, Sand, Lehm |
 | *Deckgestein I* | 40 … 50 | unzerstörbar | – |
-| **Höhlen** | 0 … 40 | über gebauten **Höhleneingang** | Zinn, Gold, Blei, Schwefel, Quarz, Grundwasser/Öl |
+| **Höhlen** | 0 … 40 | über gebauten **Höhleneingang** | Zinn, Gold, Blei, Schwefel, Quarz, Öl |
 | *Deckgestein II* | −10 … 0 | unzerstörbar | – |
 | **Minen** | −64 … −10 | über gebauten **Minenschacht** (in den Höhlen) | Diamant, Titan, Uran, seltene Erden, Kristalle |
 
-- **Deckgestein** („Craftorio-Grundgestein“): Härte −1, extrem hohe Explosionsresistenz, Tag `minecraft:wither_immune`, `#c:relocation_not_supported` / nicht von Kolben verschiebbar. Kein Durchgraben, kein Enderperlen-Trick (Teleport-Check beim Landen unterhalb einer nicht freigeschalteten Schicht).
-- **Worldgen:** Eigene `NoiseSettings`/Density-Functions erzeugen die Oberfläche normal, darunter die Deckschichten und große, begehbare Höhlensysteme bzw. Minengänge.
+- **Deckgestein**: Härte −1, extrem hohe Explosionsresistenz, nicht von Kolben verschiebbar, Wither-immun. Kein Durchgraben, kein Enderperlen-Trick (Teleport-Check beim Landen unterhalb einer nicht freigeschalteten Schicht).
+- **Worldgen:** Eigene Noise-Settings/Density-Functions über ein Welt-Preset „Craftorio“: normale Oberfläche, darunter die Deckschichten und große, begehbare Höhlensysteme bzw. Minengänge.
 
 ### 3.2 Höhleneingänge & Minenschächte
 
-- Ein **Höhleneingang** ist eine Multiblock-Baustelle. Man kauft den „Bauplan“ (Geld) und liefert Materialien an (z. B. 200 Stein, 100 Eisenplatten, 20 Stützbalken). Danach „bohrt“ die Baustelle über Zeit einen Schacht durch Deckgestein I.
-- Jeder Eingang **erschließt einen Bereich** (Vorschlag: Radius 3 Chunks = 7×7 Chunks) in der Höhlenschicht. Außerhalb dieses Radius bleibt die Höhle durch **„Geröll-Barrieren“** unpassierbar. Weitere Eingänge oder das Kaufen von „Stollenerweiterungen“ vergrößern den Bereich → Expansion à la Factorio.
-- Der Schacht enthält automatisch eine **Leiter/Aufzug** und **zwei Förderschacht-Slots**, über die Bänder Güter nach oben/unten transportieren.
-- Der **Minenschacht** funktioniert identisch, nur eine Stufe tiefer, teurer und mit Bauteilen aus der Höhlenstufe.
+- Ein **Höhleneingang** ist eine Multiblock-Baustelle. Voraussetzung: Technologie freigeschaltet (Geld) **und** das passende **Schlüsselmaterial aus der Tower-Defense** (siehe 6.4). Dann Materialien anliefern (z. B. 200 Stein, 100 Eisenplatten, 20 Stützbalken); die Baustelle bohrt über Zeit den Schacht durch Deckgestein I.
+- Jeder Eingang **erschließt einen Bereich** (Vorschlag: 7×7 Chunks) in der Höhlenschicht. Außerhalb bleibt die Höhle durch **Geröll-Barrieren** unpassierbar. Weitere Eingänge bzw. „Stollenerweiterungen“ vergrößern den Bereich.
+- Der Schacht enthält eine **Leiter/Aufzug** und **zwei Förderschacht-Slots** für Bänder nach oben/unten.
+- Der **Minenschacht** funktioniert identisch, eine Stufe tiefer, teurer, mit Bauteilen aus der Höhlenstufe und einem höheren Schlüsselmaterial.
 
-### 3.3 Rohstoffvorkommen („Erzfelder“)
+### 3.3 Erzfelder – unendlich, aber mit festem Maximaldurchsatz *(entschieden)*
 
-- Rohstoffe liegen nicht als verstreute Erzblöcke vor, sondern als **Erzfelder** (Patch aus 20–200 Blöcken), chunk-basiert generiert – wie in Factorio.
-- Jeder Feldblock hat einen **Vorrat** (Block-Entity oder Chunk-Daten): z. B. 500–5 000 Einheiten. Leer → wird zu „erschöpftem Gestein“.
-- Felder weiter vom Spawn sind **ergiebiger** (Factorio-Prinzip: Expansion lohnt sich).
-- In tieferen Schichten optional **unendliche Quellen** mit sinkender Rate (Öl, Grundwasser), um Langzeitfabriken zu ermöglichen.
+- Rohstoffe liegen als **Erzfelder** (zusammenhängender Patch aus Erzfeld-Blöcken), chunk-basiert generiert.
+- **Unendlich:** Erzfeld-Blöcke erschöpfen nie.
+- **Begrenzt durch Größe:** Ein Bohrer baut eine feste Fläche ab (z. B. 3×3 Blöcke, Stufe-3-Bohrer 5×5) und **Abbauflächen dürfen sich nicht überlappen**. Ein Erzfeld-Block kann also nur von genau einem Bohrer genutzt werden.
+  → Jedes Feld hat einen **harten Maximaldurchsatz** = (Anzahl Blöcke) × (Abbaurate pro Block der besten Bohrer-Stufe). Ist ein Feld voll bebaut, hilft nur ein **neues Feld**.
+- Bohrer-Upgrades erhöhen die Rate pro Block (Stufe 1: 0,25/s, Stufe 2: 0,5/s, Stufe 3: 1/s – Richtwerte), aber nie über die Feldgröße hinaus.
+- **Feldgrößen:** klein nahe Spawn (≈ 20–40 Blöcke), größer mit Entfernung (≈ 60–150 Blöcke). Tiefere Schichten: seltener, aber wertvoller.
+- **Fluide** (Öl, Wasser) als Quellen mit fester Förderrate pro Pumpe und begrenzter Anzahl Pumpenplätze – gleiche Logik.
+- Anzeige per Jade/Scanner: Feldgröße, belegte Blöcke, aktueller und maximaler Durchsatz.
 
 ## 4. Automatisierung
 
@@ -64,14 +74,14 @@ Wir nutzen **eine einzige Dimension (Overworld)** mit fest definierten Höhensch
 
 | Kategorie | Stufe 1 (Oberfläche) | Stufe 2 (Höhlen) | Stufe 3 (Minen) |
 |---|---|---|---|
-| Förderung | Brenner-Bohrer | Elektrischer Bohrer, Pumpe | Tiefenbohrer, Laser-Bohrer |
+| Förderung | Brenner-Bohrer | Elektrischer Bohrer, Pumpe | Tiefenbohrer |
 | Transport | Förderband, Greifarm, Kiste | Schnellband, Splitter, Unterflurband, Rohre | Expressband, Filter-Greifarm, Logistikkisten |
 | Verarbeitung | Schmelzofen, Säge, Presse | Montagemaschine, Chemieanlage, Raffinerie | Präzisionsfabrik, Zentrifuge, Kristallformer |
 | Energie | Kohle-Generator, Strommast | Dampfturbine, Akku | Reaktor, Solarfeld |
 
-- **Energie** als eigenes Stromnetz (Masten mit Reichweite, Factorio-Stil), intern auf **FE (Forge Energy)**-Basis, damit andere Mods kompatibel bleiben.
-- **Förderbänder** sind eigene Blöcke mit sichtbaren Items (2 Spuren wie in Factorio). Das ist technisch der aufwendigste, aber identitätsstiftendste Teil.
-- Alle Rezepte sind **Datapack-JSON**, damit Balancing ohne Code-Änderungen möglich ist.
+- **Energie** als eigenes Stromnetz (Masten mit Reichweite, Factorio-Stil), intern auf **FE (Forge Energy)**-Basis.
+- **Förderbänder sind eigene Blöcke** *(entschieden)* mit sichtbaren Items auf zwei Spuren.
+- Alle Rezepte sind **Datapack-JSON**.
 
 ### 4.2 Produktionsketten (Beispiel Eisen)
 
@@ -81,17 +91,24 @@ Eisenerz ─► Schmelzofen ─► Eisenbarren ─► Presse ─► Eisenplatte 
 Zahnrad + Kupferkabel + Eisenplatte ─► Montagemaschine ─► Motor
 ```
 
+Höherwertige Produkte brauchen **mehrere Rohstoffarten gleichzeitig** und in steigender Menge. Wer Motoren im großen Stil bauen will, braucht mehr Eisen- *und* Kupferfelder – das erzwingt Expansion.
+
+### 4.3 Vanilla-Crafting *(entschieden)*
+
+Bleibt vorerst **unverändert**. Später denkbar: ein eigenes Crafting-System, in dem die Fabrik spezielle Rezepte (Ausrüstung für Raids) freischaltet – wird separat konzipiert.
+
 ## 5. Wirtschaft
 
 ### 5.1 Währung
 
-- **Teamkonto statt Münz-Items**: Geld ist eine Zahl im Speicher des Teams (Server-seitig, `SavedData`). Keine Dupe-Bugs, einfach für Coop.
+- **Credits (¢)** auf einem **Teamkonto** (Server-seitig, `SavedData`), keine Münz-Items. *(entschieden)*
 - Anzeige im HUD, Transaktionslog im Terminal.
 
 ### 5.2 Verkaufen
 
-- **Handelsposten** (Block): Items per Band/Greifarm hinein → werden sofort gutgeschrieben. Später **Frachtbahnhof/Frachtdrohne** für größere Mengen mit Bonus.
-- **Wertschöpfung pro Stufe:** Verkaufspreis ≈ Summe der Inputpreise × **1,3–1,6** + Energieanteil. Dadurch lohnt sich jede Verarbeitungsstufe, und tiefe Ketten sind am profitabelsten.
+- **Handelsposten** (Block): Items per Band/Greifarm hinein → sofort gutgeschrieben. Später **Frachtbahnhof** für größere Mengen.
+- **Feste Preise, keine Marktsättigung** *(entschieden)*. Ein Item hat immer denselben Preis, egal wie viel verkauft wird.
+- **Wertschöpfung pro Stufe:** Verkaufspreis ≈ Summe der Inputpreise × **1,3–1,6** + Energieanteil. Jede Verarbeitungsstufe lohnt sich; tiefe Ketten sind am profitabelsten.
 
 | Ware | Stufe | Preis (Beispiel) |
 |---|---|---|
@@ -102,95 +119,126 @@ Zahnrad + Kupferkabel + Eisenplatte ─► Montagemaschine ─► Motor
 | Motor | 4 | 60 ¢ |
 | Stahlträger | 4 | 45 ¢ |
 
-- **Marktsättigung (optional, empfohlen):** Wer eine Ware in großen Mengen verkauft, drückt ihren Preis temporär (erholt sich über Zeit). Motiviert diverse Produktion statt „nur Zahnräder“. Per Config abschaltbar.
-- **Aufträge/Kontrakte:** Zeitlich begrenzte Bestellungen („Liefere 500 Motoren in 2 Ingame-Tagen“) mit Bonus – gibt Ziele und Abwechslung.
+- **Aufträge/Kontrakte** (optional, später): zeitlich begrenzte Bestellungen mit Bonus als zusätzliche Ziele – ohne Einfluss auf die Grundpreise.
 
 ### 5.3 Kaufen & Freischalten
 
-Zentrales **Terminal** (Block + GUI) mit drei Tabs:
+Zentrales **Terminal** (Block + GUI) mit Tabs:
 
-1. **Technologie-Baum** – Freischaltungen kosten Geld (+ ab Stufe 2 zusätzlich eingelieferte Bauteile, damit man nicht nur „grindet“, sondern die Produktion ausbauen muss).
-2. **Shop** – freigeschaltete Maschinen, Bänder, Türme kaufen (als Item geliefert). Selbst herstellen ist günstiger, aber aufwendig → echte Entscheidung.
-3. **Aufträge & Statistik** – Kontrakte, Einnahmen/Ausgaben, Produktionsrate.
+1. **Technologie-Baum** – Freischaltungen kosten Geld; Stufenwechsel (Höhlen, Minen) zusätzlich **Schlüsselmaterialien** aus der Tower-Defense.
+2. **Shop** – freigeschaltete Maschinen, Bänder, Türme kaufen. Selbst herstellen ist günstiger, aber aufwendig.
+3. **Tower Defense** – Level-Übersicht, nächstes Level starten, Reparaturen.
+4. **Statistik** – Einnahmen/Ausgaben, Produktionsraten, Auslastung der Erzfelder.
 
-## 6. Tower Defense
+## 6. Tower Defense *(überarbeitet)*
 
-### 6.1 Bedrohung
+### 6.1 Grundprinzip
 
-- **Aufmerksamkeit** (analog zu Factorios Verschmutzung/Evolution): steigt mit Produktion, Stromverbrauch und Umsatz; sinkt langsam über Zeit.
-- **Nester** entstehen in Entfernung zur Basis (Oberfläche) bzw. in nicht erschlossenen Höhlenbereichen. Sie senden **Wellen** aus, deren Stärke von der Aufmerksamkeit abhängt.
-- Ziel der Gegner: Maschinen, Bänder, Strommasten und der **Basiskern** (Terminal). Zerstörte Blöcke hinterlassen eine „Ruine“, die man gegen Geld/Material reparieren kann (kein Totalverlust – frustfrei).
-- Ankündigung: Wellen-Timer im HUD, Richtung wird angezeigt. **Friedlicher Modus** per Config/Weltoption.
+- Die Tower-Defense findet ausschließlich in einer **Verteidigungszone** statt. Gegner greifen **nur Türme** an (Turm-HP) – **niemals Fabrik, Spieler-Bauten außerhalb der Zone oder die Welt**. Gegner-Entities können keine Blöcke zerstören.
+- Die Tower-Defense ist **levelbasiert**: Das Team startet ein Level im Terminal oder am Zonenkern. Ein Level besteht aus mehreren Wellen.
+- Die Fabrik läuft währenddessen normal weiter und wird nie beschädigt.
 
-### 6.2 Gegner (eigene Entities)
+### 6.2 Die Verteidigungszone
 
-| Gegner | Schicht | Besonderheit |
+- Jedes Team errichtet eine Zone durch Platzieren eines **Zonenkerns** (gekauft). Die Zone hat eine feste Größe (Vorschlag: 5×5 Chunks, später erweiterbar).
+- Am Rand liegt ein **Feindportal**, am anderen Ende der **Kern**. Gegner laufen einen **Pfad** vom Portal zum Kern (Pfad wird vom Spieler mit „Pfadblöcken“ gelegt oder ist vorgegeben – siehe offene Punkte).
+- Türme dürfen **nur innerhalb der Zone** gebaut werden; Förderbänder dürfen in die Zone hinein, um Munition zu liefern.
+
+### 6.3 Ablauf eines Levels
+
+- Gegner laufen zum Kern und **greifen Türme in Reichweite an**.
+- **Turm-HP = 0 → Turm wird zerstört** und hinterlässt eine **Turmruine** (Upgrades und Module bleiben in der Ruine gespeichert).
+- **Level verloren**, wenn zu viele Gegner den Kern erreichen (Lebenspunkte des Levels, z. B. 20). Der Kern selbst bleibt unbeschädigt – er ist nur der Zähler.
+- **Nach einer Niederlage:** Beschädigte Türme reparieren (Geld + Reparaturmaterial), Ruinen wiederaufbauen (Geld + Bauteile, günstiger als Neukauf), Türme aufrüsten oder neue bauen – dann Level erneut versuchen. Es gibt keine weitere Strafe.
+- **Nach einem Sieg:** Türme behalten ihren Schaden; Reparatur ist Teil der Vorbereitung auf das nächste Level.
+- Ziel: Niederlagen sollen den Spieler dazu bringen, die **Fabrik auszubauen**, weil bessere Türme, Upgrades, Reparaturen und Munition Produktionsleistung kosten.
+
+### 6.4 Belohnungen
+
+| Level | Belohnung |
+|---|---|
+| Jedes Level | Credits (steigend mit Level) |
+| **Alle 10 Level** | **Schlüsselmaterial** für den nächsten Fabrik-Fortschritt |
+
+Vorschlag für Schlüsselmaterialien (Beispiele, Balancing offen):
+
+| Level | Schlüsselmaterial | Schaltet frei (mit Geld) |
 |---|---|---|
-| Krabbler | Oberfläche | schnell, schwach, in Schwärmen |
-| Brecher | Oberfläche | greift gezielt Mauern & Bänder an |
-| Höhlenwurm | Höhlen | gräbt sich unter Mauern durch |
-| Kristallgolem | Minen | gepanzert, nur mit Spezialmunition effektiv |
-| Brutmutter | alle (Boss) | spawnt Nester, droppt seltene Belohnungen |
+| 10 | Bohrkern | Höhleneingang, Stufe-2-Bohrer |
+| 20 | Resonanzkristall | Montagemaschine II, Chemieanlage |
+| 30 | Tiefenkern | Minenschacht |
+| 40 | Sternenerz-Splitter | Stufe-3-Maschinen, Reaktor |
+| 50+ | … | Endgame-Technologien |
 
-### 6.3 Türme
+Schlüsselmaterialien sind **nicht verkäuflich** und **nicht herstellbar** – nur über die Tower-Defense erhältlich. Damit sind beide Spielhälften zwingend miteinander verzahnt.
 
-- Türme werden **mit Geld gekauft** (Shop) und benötigen **Munition/Energie aus der Fabrik** – hier greift die Automatisierung direkt ein (Munition per Band/Greifarm).
-- **Upgrades** (Stufe I–V) kosten Geld **plus verarbeitete Bauteile** (z. B. Motor, Stahlträger, Kristalllinse).
-- **Module** in Slots: Reichweite, Feuerrate, Schadenstyp (Feuer, Frost, Durchschlag).
+### 6.5 Gegner (eigene Entities)
+
+| Gegner | ab Level | Besonderheit |
+|---|---|---|
+| Krabbler | 1 | schnell, schwach, in Schwärmen |
+| Brecher | 5 | hohe HP, greift Türme gezielt an |
+| Spucker | 10 | Fernangriff auf Türme |
+| Höhlenwurm | 20 | taucht unter, nur kurz angreifbar |
+| Kristallgolem | 30 | gepanzert, braucht Durchschlags-/Laserschaden |
+| Boss (z. B. Brutmutter) | jedes 10. Level | bewacht das Schlüsselmaterial |
+
+### 6.6 Türme
+
+- Türme werden **mit Geld gekauft** und benötigen **Munition oder Strom aus der Fabrik** (Munition per Band/Greifarm).
+- **Upgrades** (Stufe I–V) kosten Geld **plus verarbeitete Bauteile** (Motor, Stahlträger, Kristalllinse …).
+- **Module** in Slots: Reichweite, Feuerrate, Schadenstyp, **Panzerung (mehr Turm-HP)**.
 
 | Turm | Munition | Rolle |
 |---|---|---|
 | Armbrustturm | Bolzen (Holz+Eisen) | Einstieg |
 | Geschützturm | Patronen (Kupfer+Eisen+Schwefel) | Allrounder |
-| Flammenwerfer | Öl/Treibstoff (Rohr) | Flächenschaden |
+| Flammenwerfer | Treibstoff (Rohr) | Flächenschaden |
 | Tesla-Turm | Strom | kein Nachschub, hoher Verbrauch |
-| Mörser | Granaten | Reichweite, gegen Nester |
+| Mörser | Granaten | Reichweite, gegen Gruppen |
 | Laser-Turm | Strom + Kristalle | Endgame, gegen Panzerung |
-
-Zusätzlich: **Mauern & Tore** (kaufbar, aufrüstbar), **Reparaturdrohnen-Station** (später).
+| Reparaturturm | Reparaturkits | heilt Türme in Reichweite |
 
 ## 7. Coop & Solo
 
-- **Teams**: Spieler gründen/treten einem Team bei (`/craftorio team …` + GUI). Das Team teilt **Konto, Technologien, Erschlossene Bereiche und Aufmerksamkeit**.
-- **Solo** = Team mit einem Mitglied, kein Sonderpfad.
-- **Mehrere Teams auf einem Server** möglich (kooperativ oder im Wettbewerb um Aufträge). Rechte pro Team: Maschinen/Kisten fremder Teams sind geschützt.
-- **Skalierung**: Wellenstärke skaliert moderat mit Anzahl aktiver Teammitglieder (z. B. +35 % pro weiterem Spieler), damit Coop nicht trivial wird.
-- **Technik**: Server ist autoritativ (Geld, Freischaltungen, Wellen); Client bekommt nur Sync-Pakete. Funktioniert im Singleplayer (integrierter Server), LAN und dedizierten Servern.
+- **Teams** *(eigenes System, optionale FTB-Teams-Kompatibilität – entschieden)*: Das Team teilt **Konto, Technologien, erschlossene Bereiche, Verteidigungszone und Level-Fortschritt**.
+- **Solo** = Team mit einem Mitglied.
+- **Mehrere Teams auf einem Server** möglich; fremde Maschinen/Kisten/Türme sind geschützt.
+- **Skalierung:** Gegner-HP/-Anzahl skalieren moderat mit der Anzahl **online** befindlicher Teammitglieder beim Levelstart.
+- **Technik:** Server ist autoritativ; Client bekommt nur Sync-Pakete. Singleplayer, LAN und dedizierte Server.
 
 ## 8. Minecraft-Version & Mod-Loader
 
-### Empfehlung: **Minecraft 1.21.1 + NeoForge (Java 21)**
+**Minecraft 1.21.1 + NeoForge (Java 21)** *(entschieden)*
 
-Begründung:
+- 1.21.1 ist die aktuelle Langzeit-Modding-Version mit den meisten stabilen Mods.
+- NeoForge bietet die APIs für Maschinen, Energie (FE), Item-/Fluid-Handler, Worldgen und GUIs.
+- Werkzeuge: ModDevGradle, Parchment-Mappings, Data-Generatoren, GameTests.
 
-- **1.21.1 ist die aktuelle „Langzeit-Modding-Version“**: Die meisten großen Mods (Create 6, Mekanism, AE2, JEI/EMI, FTB-Suite, GeckoLib …) haben dort stabile Releases. Neuere Versionen (1.21.2+) ändern Rendering, Items/Components und Worldgen in jedem Drop – ständiges Hinterherportieren kostet viel Zeit.
-- **NeoForge** statt Fabric: Für ein großes Mod mit Maschinen, Energie (FE-Capabilities), Item-/Fluid-Handlern, eigener Worldgen und vielen GUIs bietet NeoForge die passenden APIs „out of the box“. Die Tech-Mod-Szene (mit der wir kompatibel sein wollen) lebt überwiegend dort.
-- **Werkzeuge**: ModDevGradle, Parchment-Mappings, Data-Generatoren für Rezepte/Loot/Models/Sprachdateien, GameTests für automatisierte Tests.
-
-Portierung auf eine neuere Version ist später machbar, wenn der Kern steht. Unmittelbar vor dem Projekt-Setup prüfen wir die aktuellen Versionsstände noch einmal kurz.
+Unmittelbar vor dem Projekt-Setup werden die aktuellen Versionsstände geprüft.
 
 ## 9. Bestehende Mods
 
-### 9.1 Abhängigkeiten (werden benötigt)
+### 9.1 Abhängigkeiten
 
 | Mod | Wofür |
 |---|---|
-| **GeckoLib** | Animierte Gegner (Krabbler, Golems) und Türme (drehende Geschütze) |
+| **GeckoLib** | Animierte Gegner und Türme |
 
-Bewusst **wenige harte Abhängigkeiten**: Alles, was den Kern-Loop betrifft (Bänder, Wirtschaft, Schichten, Türme), bauen wir selbst, weil Preise, Freischaltungen und Balancing sonst nicht kontrollierbar sind.
+Alles, was den Kern-Loop betrifft, bauen wir selbst.
 
 ### 9.2 Empfohlen im Modpack / mit Integration
 
 | Mod | Wofür | Integration |
 |---|---|---|
 | **EMI** (oder JEI) | Rezeptanzeige | Plugin: eigene Rezepttypen + Verkaufspreis im Tooltip |
-| **Jade** | Blick-Tooltips | Plugin: Maschinenfortschritt, Erzfeld-Vorrat, Turm-Munition |
-| **FTB Teams** *(optional)* | Team-Verwaltung | Wenn vorhanden, Teams übernehmen; sonst eigenes Teamsystem |
-| **FTB Quests** *(optional)* | Tutorial/Story-Quests | Quest-Buch für den Einstieg, Belohnungen in Geld |
-| **Sodium/Embeddium, ModernFix, FerriteCore** | Performance | keine Integration nötig |
-| **Create** *(später optional)* | Beliebte Mechanik-Mod | Addon-Kompat: Create-Items verkaufbar, Energie konvertierbar |
+| **Jade** | Blick-Tooltips | Plugin: Maschinenfortschritt, Erzfeld-Auslastung, Turm-HP/Munition |
+| **FTB Teams** *(optional)* | Team-Verwaltung | Teams übernehmen, falls installiert |
+| **FTB Quests** *(optional)* | Tutorial/Story | Quest-Buch für den Einstieg |
+| **Sodium, ModernFix, FerriteCore** | Performance | – |
+| **Create** *(später optional)* | Mechanik-Mod | Addon-Kompat |
 
-**Nicht empfohlen**: Worldgen-Mods (Terralith, Tectonic, Biomes O' Plenty) – sie kollidieren mit unserer Schichten-Worldgen. Große Tech-Mods (Mekanism, Thermal) nur mit Vorsicht: Sie umgehen sonst die Progression (z. B. eigene Quarries). Dafür gibt es eine Config-Blacklist für „Durchbrechen“ des Deckgesteins.
+**Nicht empfohlen:** Worldgen-Mods (Terralith, Tectonic, BoP) und Tech-Mods mit eigenen Quarries (Mekanism, Thermal) ohne Config-Anpassung.
 
 ## 10. Technische Architektur
 
@@ -199,57 +247,68 @@ Bewusst **wenige harte Abhängigkeiten**: Alles, was den Kern-Loop betrifft (Bä
 ```
 de.craftorio
 ├── core         Registrierung, Config, Netzwerk, Team-/Weltdaten (SavedData)
-├── economy      Konto, Preistabelle (Datapack), Markt, Aufträge, Terminal-GUI
-├── progression  Technologie-Baum (Datapack), Freischaltungen, Rezept-Sperren
+├── economy      Konto, Preistabelle (Datapack), Handelsposten, Terminal-GUI
+├── progression  Technologie-Baum (Datapack), Freischaltungen, Schlüsselmaterialien
 ├── world        Schichten-Worldgen, Deckgestein, Erzfelder, Eingänge/Schächte, Bereichs-Freischaltung
 ├── logistics    Förderbänder, Greifarme, Splitter, Rohre, Kisten
-├── machines     Bohrer, Öfen, Montage, Energie-Netz
-├── defense      Aufmerksamkeit, Nester, Wellen-Director, Gegner, Türme, Mauern
+├── machines     Bohrer (mit Abbauflächen-Reservierung), Öfen, Montage, Energie-Netz
+├── defense      Verteidigungszone, Level-/Wellen-Director, Gegner, Türme, Ruinen, Reparatur
 └── compat       EMI, Jade, FTB Teams/Quests (nur wenn geladen)
 ```
 
 ### 10.2 Datengetrieben
 
-Alles Balancing-relevante liegt als **Datapack-JSON** vor und ist per `/reload` änderbar:
+Per `/reload` änderbar:
 
 - `data/craftorio/prices/*.json` – Verkaufspreise
-- `data/craftorio/tech/*.json` – Technologie-Knoten (Kosten, Voraussetzungen, Freischaltungen)
-- `data/craftorio/waves/*.json` – Wellenzusammensetzung pro Aufmerksamkeits-Stufe
-- `data/craftorio/ore_fields/*.json` – Erzfeld-Definitionen pro Schicht
+- `data/craftorio/tech/*.json` – Technologie-Knoten (Geld, Schlüsselmaterialien, Voraussetzungen)
+- `data/craftorio/td_levels/*.json` – Level-Definitionen (Wellen, Gegner, Belohnungen)
+- `data/craftorio/ore_fields/*.json` – Erzfeld-Definitionen (Schicht, Größe, Entfernungsskalierung)
 - `data/craftorio/recipe/*.json` – Maschinenrezepte
 
-### 10.3 Wichtige technische Risiken
+### 10.3 Technische Risiken
 
 | Risiko | Gegenmaßnahme |
 |---|---|
-| Performance von Bändern mit vielen Items | Item-Bewegung als Daten (kein Entity pro Item), Batch-Rendering, Tick nur bei Änderungen |
-| Wellen in ungeladenen Chunks | Wellen nur, wenn Basis geladen ist; Team-Chunkloader am Terminal |
-| Worldgen-Kompatibilität | Eigener Welt-Preset „Craftorio“, damit Vanilla-Welten unberührt bleiben |
-| Umgehen des Deckgesteins | Unzerstörbar, nicht verschiebbar, Teleport-/Enderperlen-Check, Config-Blacklist |
+| Performance von Bändern | Item-Bewegung als Daten (keine Entity pro Item), Batch-Rendering |
+| Erzfeld-Überlappung | Zentrale Reservierung der Feldblöcke pro Chunk; Bohrer prüft beim Platzieren |
+| TD in ungeladenen Chunks | Zonenkern hält die Zone während eines Levels geladen; Level pausiert, wenn kein Teammitglied online ist |
+| Gegner verlassen die Zone | Pfadfindung auf die Zone beschränkt, Zonengrenze als unsichtbare Barriere für TD-Entities |
+| Umgehen des Deckgesteins | Unzerstörbar, nicht verschiebbar, Teleport-Check, Config-Blacklist |
 
-## 11. Offene Entscheidungen (bitte bestätigen)
+## 11. Entscheidungslog
 
-1. **Ein Dimensionsansatz (Schichten in der Overworld)** statt separater Dimensionen für Höhlen/Minen? *(Empfehlung: ja)*
-2. **Erzfelder endlich** (mit Vorrat) oder **unendlich** mit Rate? *(Empfehlung: endlich an der Oberfläche, gemischt tiefer)*
-3. **Eigene Förderbänder** (Aufwand hoch, volle Kontrolle) oder auf **Create** aufbauen? *(Empfehlung: eigene)*
-4. **Eigenes Teamsystem** mit optionaler FTB-Teams-Kompat? *(Empfehlung: ja)*
-5. **Marktsättigung** aktiv per Default? *(Empfehlung: ja, moderat)*
-6. **Vanilla-Crafting** von Werkzeugen/Rüstung: normal lassen oder einschränken?
-7. Wie „hart“ sollen Angriffe sein – Blöcke zerstören (mit Ruinen-Reparatur) oder nur Schaden an Maschinen-HP?
-8. Name der Währung (Vorschlag: **Credits, „¢“**).
+| # | Frage | Entscheidung |
+|---|---|---|
+| 1 | Schichten vs. Dimensionen | Eine Dimension mit Schichten |
+| 2 | Erzfelder | Unendlich, aber Maximaldurchsatz durch Feldgröße begrenzt → Expansion nötig |
+| 3 | Förderbänder | Eigene |
+| 4 | Teamsystem | Eigenes, optionale FTB-Teams-Kompat |
+| 5 | Marktsättigung | Keine; feste Preise |
+| 6 | Vanilla-Crafting | Unverändert; eigenes Crafting (Raid-Ausrüstung) später |
+| 7 | Angriffe | Nur auf Türme (HP) in der Verteidigungszone; Fabrik bleibt unberührt; levelbasiert; Geld pro Level, Schlüsselmaterial alle 10 Level |
+| 8 | Währung | Credits (¢) |
 
-## 12. Umsetzungs-Roadmap
+## 12. Neue offene Punkte (Runde 2)
+
+1. **Ort der Verteidigungszone:** In der normalen Welt (Munition per Band aus der Fabrik direkt anlieferbar) oder in einer separaten Arena-Dimension pro Team (saubere Trennung, Munition über ein „Nachschub-Terminal“)? *(Empfehlung: normale Welt)*
+2. **Gegnerpfad:** Vom Spieler gebaut (Mazing, mehr Taktik) oder fest vorgegeben durch den Zonenkern? *(Empfehlung: vom Spieler gelegt, mit Mindestlänge)*
+3. **Levelstart:** Nur manuell oder zusätzlich ein Auto-Modus, der das nächste Level nach Sieg startet? *(Empfehlung: manuell + optionaler Auto-Modus)*
+4. **Eine Zone oder mehrere:** Später zusätzliche Zonen in Höhlen/Minen mit eigenen Levelreihen? *(Empfehlung: zunächst eine Zone, später erweiterbar)*
+5. **Kämpft der Spieler mit?** Darf der Spieler selbst in der Zone kämpfen, oder ist es reine Tower-Defense? *(Empfehlung: reine TD zunächst – passt zum späteren „Raid-Ausrüstungs“-Crafting)*
+
+## 13. Umsetzungs-Roadmap
 
 | Meilenstein | Inhalt | Ergebnis |
 |---|---|---|
-| **M0 – Setup** | NeoForge 1.21.1 Projekt, ModDevGradle, Datagen, CI (GitHub Actions Build) | Leere Mod startet im Client & Server |
-| **M1 – Wirtschaftskern** | Team-Konto, Preistabelle, Handelsposten, HUD, Befehle | Items verkaufen → Geld |
-| **M2 – Oberfläche** | Erzfelder, Brenner-Bohrer, Förderband, Greifarm, Kiste | Erste Automatisierungsschleife |
+| **M0 – Setup** | NeoForge-1.21.1-Projekt, ModDevGradle, Datagen, CI (GitHub Actions) | Leere Mod startet in Client & Server |
+| **M1 – Wirtschaftskern** | Teams, Teamkonto, Preistabelle, Handelsposten, HUD, Befehle | Items verkaufen → Geld |
+| **M2 – Oberfläche** | Erzfelder (unendlich, Flächenreservierung), Brenner-Bohrer, Förderband, Greifarm, Kiste | Erste Automatisierungsschleife |
 | **M3 – Verarbeitung & Energie** | Schmelzofen, Presse, Montagemaschine, Stromnetz | Produktionsketten mit Wertschöpfung |
-| **M4 – Terminal & Tech-Baum** | Terminal-GUI, Shop, Technologie-Freischaltungen | Vollständiger Wirtschafts-Loop |
-| **M5 – Tower Defense I** | Aufmerksamkeit, Nester, 2 Gegner, 3 Türme, Mauern | Verteidigung an der Oberfläche |
-| **M6 – Höhlenschicht** | Schichten-Worldgen, Deckgestein, Höhleneingang, Bereichs-Freischaltung, Höhlen-Ressourcen & -Gegner | Zweite Stufe spielbar |
-| **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen & -Türme, Boss | Vollständige Progression |
-| **M8 – Coop & Polish** | Mehrere Teams, Rechte, Aufträge, Balancing, Kompat (EMI/Jade), Quests | Erste spielbare Beta |
+| **M4 – Terminal & Tech-Baum** | Terminal-GUI, Shop, Technologien | Vollständiger Wirtschafts-Loop |
+| **M5 – Tower Defense I** | Zonenkern, Level-Director, 3 Gegner, 3 Türme, HP/Ruinen/Reparatur, Belohnungen Level 1–10 | Erstes Schlüsselmaterial erspielbar |
+| **M6 – Höhlenschicht** | Schichten-Worldgen, Deckgestein, Höhleneingang, Bereichs-Freischaltung, Höhlen-Ressourcen | Zweite Stufe spielbar |
+| **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
+| **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Nächster Schritt nach Freigabe dieses Konzepts: **M0 – Projekt-Setup**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Nächster Schritt: **M0 – Projekt-Setup** (kann parallel zur Klärung von Abschnitt 12 starten, da diese Punkte erst ab M5 relevant sind).
