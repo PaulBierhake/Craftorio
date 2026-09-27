@@ -1,5 +1,6 @@
 package de.craftorio.menu;
 
+import de.craftorio.defense.TargetMode;
 import de.craftorio.defense.TowerBlockEntity;
 import de.craftorio.registry.ModMenus;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,8 +12,9 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class TowerMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 5;
+    public static final int DATA_COUNT = 6;
     public static final int BUTTON_UPGRADE = 0;
+    public static final int BUTTON_TARGET = 1;
     public static final int AMMO_X = 26;
     public static final int AMMO_Y = 53;
 
@@ -55,8 +57,16 @@ public final class TowerMenu extends MachineMenuBase {
         return SplitIntData.join(data.get(3), data.get(4));
     }
 
+    public TargetMode targetMode() {
+        return TargetMode.values()[Math.floorMod(data.get(5), TargetMode.values().length)];
+    }
+
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id == BUTTON_TARGET) {
+            tower.cycleTargetMode();
+            return true;
+        }
         return id == BUTTON_UPGRADE && player instanceof ServerPlayer serverPlayer && tower.upgrade(serverPlayer);
     }
 }

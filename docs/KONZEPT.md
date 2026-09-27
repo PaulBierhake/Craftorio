@@ -163,11 +163,21 @@ Ein Shop für fertige Maschinen entfällt – Geld kauft **Wissen**, die Fabrik 
 - Die Tower-Defense ist **levelbasiert**: Das Team startet ein Level im Terminal oder am Zonenkern. Ein Level besteht aus mehreren Wellen.
 - Die Fabrik läuft währenddessen normal weiter und wird nie beschädigt.
 
-### 6.2 Die Verteidigungszone
+### 6.2 Die Arena *(neu gestaltet, umgesetzt)*
 
-- Jedes Team errichtet eine Zone durch Platzieren eines **Zonenkerns** (Gratis-Bauplan). Die Zone reicht **32 Blöcke** in jede Richtung um den Kern (≈ 5×5 Chunks, später erweiterbar).
-- Am Rand liegt ein **Feindportal**, am anderen Ende der **Kern**. Gegner laufen einen **Pfad** vom Portal zum Kern (Pfad wird vom Spieler mit „Pfadblöcken“ gelegt oder ist vorgegeben – siehe offene Punkte).
-- Türme dürfen **nur innerhalb der Zone** gebaut werden; Förderbänder dürfen in die Zone hinein, um Munition zu liefern.
+- Jedes Team hat eine eigene **Arena** in der Arena-Dimension. Hin kommt man über ein **Arena-Tor** (Gratis-Bauplan), das man in der Oberwelt aufstellt; auf der Tribüne der Arena gibt es den **Ausgang** und das **Turmdepot**.
+- Die Arena ist ein Stadion: ein Spielfeld von 41×41 Blöcken, Mauern mit drei **Gegnertoren** im Westen (pro Level ist eines offen), der **Kern** in der Ostmauer, eine Tribüne im Süden.
+- **Jedes Level bringt eine neue Karte**, erzeugt aus Team und Level. Themen im Wechsel, jeweils mit eigener Regel:
+  - **Wald**: Baumgruppen, Dickicht – Gegner im Dickicht sind getarnt (Türme sehen sie nur auf halbe Reichweite).
+  - **Berge**: Felsrücken, Plateaus – Türme auf Plateaus reichen 30 % weiter, Geröll bremst Gegner.
+  - **Feuer**: Lavaseen, Basaltsäulen – Lavaschlote brechen alle 3 s aus und verbrennen Gegner darauf.
+  - **Wasser**: Fluss mit Furten, Seen – Flachwasser bremst Gegner stark.
+  - **Kolosseum** (jedes 10. Level, Boss): offener Sand mit Säulen.
+- **Der Spieler legt den Weg selbst** im Rahmen der Karte: mit dem **Pfadstab** (Klick = Wegstück, zweiter Klick in derselben Reihe/Spalte = gerade Linie) vom offenen Tor zum Kern, durch alles, was der Weg betreten darf (Boden, Dickicht, Geröll, Schlote, Furten). Der Generator garantiert, dass ein Weg existiert.
+- **Türme stehen frei** auf freiem Boden oder Plateaus, nicht auf Weg, Bäumen, Fels, Wasser oder Lava.
+- Nach einem gewonnenen Level kommen alle Türme mit Stufe, HP und Munition ins **Turmdepot**; die neue Karte wird gebaut. Bei einer Niederlage bleibt die Karte für den nächsten Versuch.
+- **Arena-Einspeiser** in der Fabrik: nimmt Strom (für Tesla/Laser) und Munition per Band/Greifarm an und füllt den Arena-Vorrat, aus dem Türme schöpfen, wenn ihr eigener Vorrat leer ist.
+- **Ideen aus anderen TDs**: Wellenvorschau, **Welle früher rufen** (Bonus-Credits), **Zielmodus** pro Turm (Erster/Letzter/Stärkster/Schwächster), **Sterne** (3/2/1 nach verbliebenen Leben, bis +50 % Belohnung), **Mutatoren** ab Level 6 (Nebel, Eilmarsch, Gehärtet – mehr Belohnung). Später: Flieger, Endlosmodus.
 
 ### 6.3 Ablauf eines Levels
 
@@ -318,8 +328,8 @@ Per `/reload` änderbar:
 
 | # | Frage | Entscheidung |
 |---|---|---|
-| 9 | Ort der Verteidigungszone | Normale Welt; Munition per Band aus der Fabrik |
-| 10 | Gegnerpfad | Vom Spieler mit Pfadblöcken gelegt, mit Mindestlänge |
+| 9 | Ort der Verteidigungszone | Eigene Arena pro Team in einer Arena-Dimension (Arena-Tor); Versorgung über den Arena-Einspeiser *(geändert)* |
+| 10 | Gegnerpfad | Vom Spieler mit dem Pfadstab durch die jedes Level neue Karte gelegt; Türme frei auf passendem Gelände *(geändert)* |
 | 11 | Levelstart | Manuell, optionaler Auto-Modus nach Sieg |
 | 12 | Anzahl Zonen | Zunächst eine Zone pro Team, später erweiterbar (Höhlen/Minen) |
 | 13 | Spieler im Kampf | Reine Tower Defense (Spieler kämpft nicht mit) |

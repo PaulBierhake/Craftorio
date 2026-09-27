@@ -1,6 +1,12 @@
 package de.craftorio.datagen;
 
 import de.craftorio.registry.ModBlocks;
+import de.craftorio.registry.ModDataComponents;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -29,12 +35,14 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.WORKBENCH.get());
         dropSelf(ModBlocks.ASSEMBLY_WORKBENCH.get());
         dropSelf(ModBlocks.PRECISION_WORKBENCH.get());
-        dropSelf(ModBlocks.ZONE_CORE.get());
-        dropSelf(ModBlocks.ENEMY_PORTAL.get());
-        dropSelf(ModBlocks.PATH_BLOCK.get());
-        dropSelf(ModBlocks.CROSSBOW_TOWER.get());
-        dropSelf(ModBlocks.GUN_TURRET.get());
-        dropSelf(ModBlocks.TESLA_TOWER.get());
+        dropSelf(ModBlocks.ARENA_GATE.get());
+        dropSelf(ModBlocks.ARENA_FEEDER.get());
+        add(ModBlocks.PATH_BLOCK.get(), noDrop()); // laid with the path wand
+        add(ModBlocks.ZONE_CORE.get(), noDrop()); // built by the arena
+        add(ModBlocks.ENEMY_PORTAL.get(), noDrop());
+        tower(ModBlocks.CROSSBOW_TOWER.get());
+        tower(ModBlocks.GUN_TURRET.get());
+        tower(ModBlocks.TESLA_TOWER.get());
         dropSelf(ModBlocks.CAVE_ENTRANCE.get());
         dropSelf(ModBlocks.ELEVATOR.get());
         dropSelf(ModBlocks.MINE_SHAFT.get());
@@ -43,7 +51,16 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.FAST_BELT.get());
         dropSelf(ModBlocks.EXPRESS_BELT.get());
         dropSelf(ModBlocks.REACTOR.get());
-        dropSelf(ModBlocks.LASER_TOWER.get());
+        tower(ModBlocks.LASER_TOWER.get());
+    }
+
+    /** Towers keep their upgrade level and health when picked up. */
+    private void tower(Block block) {
+        add(block, LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1))
+                .add(LootItem.lootTableItem(block)
+                        .apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
+                                .include(ModDataComponents.TOWER_STATE.get()))))));
     }
 
     @Override

@@ -15,6 +15,7 @@ import java.util.Locale;
 
 public final class TowerScreen extends MachineScreenBase<TowerMenu> {
     private Button upgrade;
+    private Button target;
 
     public TowerScreen(TowerMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -28,6 +29,17 @@ public final class TowerScreen extends MachineScreenBase<TowerMenu> {
                 minecraft.gameMode.handleInventoryButtonClick(menu.containerId, TowerMenu.BUTTON_UPGRADE);
             }
         }).bounds(leftPos + 48, topPos + 52, 60, 18).build());
+        target = addRenderableWidget(Button.builder(Component.empty(), button -> {
+            if (minecraft != null && minecraft.gameMode != null) {
+                minecraft.gameMode.handleInventoryButtonClick(menu.containerId, TowerMenu.BUTTON_TARGET);
+            }
+        }).bounds(leftPos + 48, topPos + 71, 60, 12).build());
+    }
+
+    @Override
+    public void containerTick() {
+        super.containerTick();
+        target.setMessage(Component.translatable("craftorio.tower.target." + menu.targetMode().name().toLowerCase()));
     }
 
     @Override

@@ -1,6 +1,12 @@
 package de.craftorio.defense;
 
+import de.craftorio.defense.arena.ArenaLayout;
+import de.craftorio.defense.arena.ArenaTheme;
+import de.craftorio.defense.arena.Arenas;
+import de.craftorio.defense.arena.Mutator;
+import de.craftorio.defense.arena.Tile;
 import de.craftorio.registry.ModEntities;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -20,10 +26,16 @@ public final class LevelRun {
     }
 
     private static final int TOWER_REFRESH = 100;
+    private static final int VENT_INTERVAL = 60;
+
+    /** Where the level is fought: arena slot, map and mutator. Null in tests that build their own track. */
+    public record Arena(int slot, ArenaLayout layout, Mutator mutator) {
+    }
 
     private final LevelPlan plan;
     private final List<Vec3> path;
     private final BlockPos core;
+    private final @Nullable Arena arena;
     private final List<TdEnemy> alive = new ArrayList<>();
     private final Set<Long> forcedChunks = new HashSet<>();
     private List<BlockPos> towers = List.of();
@@ -33,11 +45,21 @@ public final class LevelRun {
     private int cooldown;
     private int lives = LevelPlan.LIVES;
     private boolean finished;
+    private int ventIn = VENT_INTERVAL;
 
     LevelRun(LevelPlan plan, List<Vec3> path, BlockPos core) {
+        this(plan, path, core, null);
+    }
+
+    LevelRun(LevelPlan plan, List<Vec3> path, BlockPos core, @Nullable Arena arena) {
         this.plan = plan;
         this.path = path;
         this.core = core;
+        this.arena = arena;
+    }
+
+    public @Nullable Arena arena() {
+        return arena;
     }
 
     public LevelPlan plan() {
@@ -65,10 +87,10 @@ public final class LevelRun {
     }
 
     void begin(ServerLevel level) {
-        ChunkPos center = new ChunkPos(core);
-        int radius = Math.floorDiv(TowerDefense.ZONE_RADIUS, 16) + 1;
-        for (int x = center.x - radius; x <= center.x + radius; x++) {
-            for (int z = center.z - radius; z <= center.z + radius; z++) {
+        ChunkPos min = new ChunkPos(towerAreaMin());
+        ChunkPos max = new ChunkPos(towerAreaMax());
+        for (int x = min.x; x <= max.x; x++) {
+            for (int z = min.z; z <= max.z; z++) {
                 long key = ChunkPos.asLong(x, z);
                 if (!level.getForcedChunks().contains(key)) {
                     level.setChunkForced(x, z, true);
@@ -78,10 +100,22 @@ public final class LevelRun {
         }
     }
 
+    private BlockPos towerAreaMin() {
+        return arena != null ? TowerDefense.arenaMin(arena.slot()) : core.offset(-32, 0, -32);
+    }
+
+    private BlockPos towerAreaMax() {
+        return arena != null ? TowerDefense.arenaMax(arena.slot()) : core.offset(32, 0, 32);
+    }
+
     Outcome tick(ServerLevel level) {
         if (--towerRefreshIn <= 0) {
             towerRefreshIn = TOWER_REFRESH;
-            towers = TowerDefense.findTowers(level, core);
+            towers = TowerDefense.findTowers(level, towerAreaMin(), towerAreaMax());
+        }
+        if (arena != null && arena.layout().theme() == ArenaTheme.FIRE && --ventIn <= 0) {
+            ventIn = VENT_INTERVAL;
+            erupt(level);
         }
         if (wave < plan.waves().size()) {
             if (cooldown > 0) {
@@ -107,9 +141,73 @@ public final class LevelRun {
     private void spawn(ServerLevel level, EnemyType type) {
         TdEnemy enemy = ModEntities.entityType(type).create(level);
         if (enemy != null) {
-            enemy.start(this, path, plan.healthMultiplier());
+            enemy.start(this, path, plan.healthMultiplier() * (arena != null ? arena.mutator().healthFactor() : 1));
             level.addFreshEntity(enemy);
             alive.add(enemy);
+        }
+    }
+
+    /** The wave that spawns next (or is spawning now). */
+    public int upcomingWave() {
+        return wave;
+    }
+
+    /** Between two waves the next one can be called early. */
+    public boolean canCallWave() {
+        return wave > 0 && wave < plan.waves().size() && spawnedInWave == 0 && cooldown > 0;
+    }
+
+    /** Starts the next wave now; returns the ticks of waiting time skipped. */
+    int callNextWave() {
+        if (!canCallWave()) {
+            return 0;
+        }
+        int skipped = cooldown;
+        cooldown = 0;
+        return skipped;
+    }
+
+    // --- terrain of the arena map
+
+    private @Nullable Tile tileAt(Vec3 position) {
+        if (arena == null) {
+            return null;
+        }
+        int[] tile = Arenas.tileAt(BlockPos.containing(position));
+        return tile == null ? null : arena.layout().tile(tile[0], tile[1]);
+    }
+
+    /** Shallow water and scree slow enemies down; the haste mutator speeds them up. */
+    double speedFactor(Vec3 position) {
+        if (arena == null) {
+            return 1;
+        }
+        double factor = arena.mutator().speedFactor();
+        if (tileAt(position) == Tile.ROUGH) {
+            factor *= switch (arena.layout().theme()) {
+                case WATER -> 0.55;
+                case MOUNTAIN -> 0.8;
+                default -> 1.0;
+            };
+        }
+        return factor;
+    }
+
+    /** In the forest thicket enemies are hidden until towers are close. */
+    boolean camouflaged(Vec3 position) {
+        return arena != null && arena.layout().theme() == ArenaTheme.FOREST && tileAt(position) == Tile.ROUGH;
+    }
+
+    /** Lava vents burn every enemy walking over them. */
+    private void erupt(ServerLevel level) {
+        float damage = 6 + plan.level();
+        for (TdEnemy enemy : alive) {
+            if (!enemy.isRemoved() && tileAt(enemy.position()) == Tile.ROUGH) {
+                enemy.invulnerableTime = 0;
+                enemy.hurt(level.damageSources().magic(), damage);
+                level.sendParticles(ParticleTypes.LAVA, enemy.getX(), enemy.getY() + 0.3, enemy.getZ(), 6, 0.3, 0.2, 0.3, 0);
+                level.sendParticles(ParticleTypes.FLAME, enemy.getX(), enemy.getY() + 0.5, enemy.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
+            }
         }
     }
 

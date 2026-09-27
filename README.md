@@ -113,29 +113,36 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ![Terminal](docs/screenshots/m4-terminal.png)
 ![Werkbank](docs/screenshots/m4-werkbank.png)
 
-### M5 – Tower Defense I
+### M5 – Tower Defense (Arena)
 
-- **Verteidigungszone**: Zonenkern aufstellen (ein Kern pro Team, nur Oberwelt). Im Umkreis von 32 Blöcken
-  kommen ein **Feindportal** und eine **durchgehende Linie aus Pfadblöcken** (≥ 20 Blöcke, ohne Abzweigungen,
-  Stufen von ±1 Block erlaubt) vom Portal bis zum Kern. Rechtsklick auf den Kern prüft den Pfad.
-- **Level** startet im Terminal (Tab *Verteidigung*), optional automatisch weiter nach einem Sieg. Jedes Level
-  hat 3–8 Wellen; Gegnerzahl und -leben steigen pro Level und pro weiterem Teammitglied online.
-  **10 Leben** – jeder durchgekommene Gegner kostet Leben (Brecher 2, Brutmutter 10).
-- **Gegner**: Krabbler (schnell, schwach), Brecher (ab Level 5, bleibt stehen und zertrümmert Türme),
-  Spucker (ab Level 10, greift aus 7 Blöcken an), **Brutmutter** als Boss jedes 10. Levels.
-  Gegner greifen **nur Türme** an – nie die Fabrik, Blöcke oder Spieler; Spieler können sie nicht verletzen.
-- **Türme** (Baupläne im Terminal): **Armbrustturm** (Bolzen), **Geschützturm** (Patronen), **Tesla-Turm**
-  (Strom aus dem Netz, trifft bis zu 3 Gegner). Munition per Hand, Trichter, Band oder Greifarm.
-  GUI mit Lebenspunkten und **Aufrüstung Stufe I–V** (Credits + Eisenplatten/Kupferkabel/Zahnräder/Motoren).
-- Bei 0 HP wird ein Turm zur **Ruine** (behält seine Stufe); Rechtsklick baut sie für Credits wieder auf.
-  *Alle Türme reparieren* im Terminal repariert Schäden und Ruinen auf einen Schlag.
-- **Belohnung**: Credits pro Level; alle 10 Level ein **Schlüsselmaterial** am Zonenkern (Level 10: Bohrkern →
-  Montagewerkbank, Level 20: Resonanzkristall, Level 30: Tiefenkern → Präzisionswerkbank, danach Sternenerz-Splitter).
-- Das HUD zeigt während eines Levels Welle, Leben und verbleibende Gegner.
+- **Arena**: Das **Arena-Tor** (Gratis-Bauplan) in der Oberwelt aufstellen und rechtsklicken – es führt in die
+  eigene Arena (eigene Dimension, ein Stadion pro Team). Auf der Tribüne: **Ausgang** und **Turmdepot**.
+- **Jedes Level eine neue Karte** (41×41) mit Thema und Regel: **Wald** (Tarnung im Dickicht), **Berge**
+  (Plateaus +30 % Reichweite, Geröll bremst), **Feuer** (Lavaschlote verbrennen Gegner), **Wasser** (Fluss mit
+  Furten, Flachwasser bremst) und jedes 10. Level das **Kolosseum** (Boss). Eines von drei Toren in der Westmauer ist
+  offen, der Kern sitzt in der Ostmauer.
+- **Weg legen**: mit dem **Pfadstab** vom offenen Tor zum Kern (Klick = Wegstück, nächster Klick in derselben
+  Reihe/Spalte = gerade Linie, Schleichen + Klick entfernt). Rechtsklick auf den Kern prüft den Weg.
+- **Türme** frei auf freiem Boden oder Plateaus: **Armbrustturm** (Bolzen), **Geschützturm** (Patronen),
+  **Tesla-Turm** und **Laserturm** (Strom). GUI mit Lebenspunkten, **Aufrüstung Stufe I–V** und **Zielmodus**
+  (Erster/Letzter/Stärkster/Schwächster). Versorgung per Hand oder über den **Arena-Einspeiser** in der Fabrik
+  (Strom und Munition per Band/Greifarm → Arena-Vorrat).
+- **Level** im Terminal-Tab *Abwehr* starten (optional automatisch weiter): Karte, Regel, Mutator,
+  **Wellenvorschau**, Arena-Vorrat; **Welle rufen** schickt die nächste Welle früher (Bonus-Credits).
+  10 Leben; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); ab Level 6 zufällige **Mutatoren**
+  (Nebel, Eilmarsch, Gehärtet) mit mehr Belohnung.
+- **Gegner**: Krabbler, Brecher (ab 5), Spucker (ab 10), Kristallgolem (ab 20), Brutmutter (Boss). Sie greifen
+  **nur Türme** an – nie die Fabrik oder Spieler.
+- Nach einem Sieg kommen alle Türme mit Stufe, HP und Munition ins **Turmdepot** und die nächste Karte entsteht;
+  Schlüsselmaterialien (alle 10 Level) liegen ebenfalls im Depot. Zerstörte Türme werden zu **Ruinen**
+  (Wiederaufbau für Credits, *Alle Türme reparieren* im Terminal).
+- Admin-Befehl: `/craftorio arena route` legt den kürzesten Weg (für Tests).
 
-![Level](docs/screenshots/m5-level.png)
-![Gegner](docs/screenshots/m5-gegner.png)
-![Verteidigung](docs/screenshots/m5-terminal-verteidigung.png)
+![Arena von oben](docs/screenshots/arena-draufsicht.png)
+![Kampf in der Wasser-Arena](docs/screenshots/arena-kampf.png)
+![Neue Karte: Feuer](docs/screenshots/arena-feuer.png)
+![Abwehr-Tab](docs/screenshots/arena-terminal.png)
+![Turmdepot](docs/screenshots/arena-depot.png)
 
 ### M6 – Höhlenschicht
 
@@ -238,7 +245,8 @@ src/main/java/de/craftorio/
 ├── energy/                 Kohlegenerator/Reaktor, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
 ├── recipe/                 Maschinenrezepte (Presse, Montage)
 ├── blueprint/              Baupläne, Freischalt-Regeln, Terminal, Werkbänke
-├── defense/                Tower Defense: Zone, Level-Ablauf, Gegner, Türme (LevelPlan/PathTracer/TowerStats = reine Logik)
+├── defense/                Tower Defense: Level-Ablauf, Gegner, Türme (LevelPlan/PathTracer/TowerStats = reine Logik)
+│   └── arena/              Arena-Dimension, Kartengenerator mit Themen (reine Logik), Bau, Regeln, Pfadstab, Einspeiser
 ├── menu/                   Container-Menüs der Maschinen
 ├── command/                /craftorio-Befehle
 ├── network/                Server→Client-Sync

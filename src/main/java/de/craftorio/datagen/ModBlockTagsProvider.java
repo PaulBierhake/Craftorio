@@ -39,6 +39,7 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAVE_RUBBLE.get());
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.MINE_RUBBLE.get());
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.ARENA_GATE.get(), ModBlocks.ARENA_FEEDER.get());
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.MINE_RUBBLE.get());
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.MINE_RUBBLE.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.DIAMOND_FIELD.get(), ModBlocks.TITANIUM_ORE_FIELD.get(),

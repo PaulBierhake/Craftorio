@@ -6,6 +6,8 @@ import de.craftorio.defense.TowerBlock;
 import de.craftorio.defense.TowerRuin;
 import de.craftorio.defense.TowerType;
 import de.craftorio.defense.ZoneBlocks;
+import de.craftorio.defense.arena.ArenaBlocks;
+import de.craftorio.defense.arena.ArenaFeederBlock;
 import de.craftorio.blueprint.WorkbenchBlock;
 import de.craftorio.economy.block.TradingPostBlock;
 import de.craftorio.energy.GeneratorBlock;
@@ -147,6 +149,27 @@ public final class ModBlocks {
                     .pushReaction(PushReaction.BLOCK).sound(SoundType.AMETHYST));
     public static final DeferredBlock<ZoneBlocks.Path> PATH_BLOCK = BLOCKS.registerBlock("path_block", ZoneBlocks.Path::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(0.8F).sound(SoundType.GRAVEL));
+
+    // Arena tower defense
+    /** Floor plate of the arenas; unbreakable. */
+    public static final DeferredBlock<Block> ARENA_BASE = BLOCKS.registerSimpleBlock("arena_base",
+            BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE).strength(-1.0F, 3_600_000.0F).noLootTable()
+                    .isValidSpawn(Blocks::never).pushReaction(PushReaction.BLOCK).sound(SoundType.DEEPSLATE_TILES));
+    /** Mountain plateau: towers on top of it reach further. */
+    public static final DeferredBlock<Block> ARENA_CLIFF = BLOCKS.registerSimpleBlock("arena_cliff",
+            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(-1.0F, 3_600_000.0F).noLootTable()
+                    .isValidSpawn(Blocks::never).pushReaction(PushReaction.BLOCK).sound(SoundType.TUFF));
+    public static final DeferredBlock<ArenaBlocks.Gate> ARENA_GATE = BLOCKS.registerBlock("arena_gate", ArenaBlocks.Gate::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(3.0F).lightLevel(state -> 11)
+                    .noOcclusion().sound(SoundType.AMETHYST));
+    public static final DeferredBlock<ArenaBlocks.Exit> ARENA_EXIT = BLOCKS.registerBlock("arena_exit", ArenaBlocks.Exit::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(-1.0F, 3_600_000.0F).lightLevel(state -> 11)
+                    .noLootTable().noOcclusion().pushReaction(PushReaction.BLOCK).sound(SoundType.AMETHYST));
+    public static final DeferredBlock<ArenaBlocks.Depot> TOWER_DEPOT = BLOCKS.registerBlock("tower_depot", ArenaBlocks.Depot::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(-1.0F, 3_600_000.0F).noLootTable()
+                    .pushReaction(PushReaction.BLOCK).sound(SoundType.WOOD));
+    public static final DeferredBlock<ArenaFeederBlock> ARENA_FEEDER = BLOCKS.registerBlock("arena_feeder", ArenaFeederBlock::new,
+            machineProperties());
 
     public static final DeferredBlock<TowerBlock> CROSSBOW_TOWER = tower("crossbow_tower", TowerType.CROSSBOW, SoundType.WOOD);
     public static final DeferredBlock<TowerBlock> GUN_TURRET = tower("gun_turret", TowerType.GUN, SoundType.METAL);

@@ -1,5 +1,7 @@
 package de.craftorio.registry;
 
+import de.craftorio.defense.arena.ArenaFeederBlockEntity;
+
 import de.craftorio.Craftorio;
 import de.craftorio.economy.block.TradingPostBlockEntity;
 import de.craftorio.defense.TowerBlockEntity;
@@ -76,6 +78,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ElevatorBlockEntity>> ELEVATOR = BLOCK_ENTITIES.register("elevator",
             () -> BlockEntityType.Builder.of(ElevatorBlockEntity::new, ModBlocks.ELEVATOR.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ArenaFeederBlockEntity>> ARENA_FEEDER = BLOCK_ENTITIES.register("arena_feeder",
+            () -> BlockEntityType.Builder.of(ArenaFeederBlockEntity::new, ModBlocks.ARENA_FEEDER.get()).build(null));
+
     private ModBlockEntities() {
     }
 
@@ -94,6 +100,8 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELEVATOR.get(), (elevator, side) -> elevator.input());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.materials());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.energy());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ARENA_FEEDER.get(), (feeder, side) -> feeder.ammoInput());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ARENA_FEEDER.get(), (feeder, side) -> feeder.energy());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? tower.energy() : null);
     }
 

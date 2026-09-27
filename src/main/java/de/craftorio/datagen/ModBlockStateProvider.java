@@ -87,6 +87,19 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockItem(ModBlocks.TERMINAL.get(), terminal);
 
         simpleBlockWithItem(ModBlocks.ZONE_CORE.get(), cubeAll(ModBlocks.ZONE_CORE.get()));
+        simpleBlockWithItem(ModBlocks.ARENA_BASE.get(), cubeAll(ModBlocks.ARENA_BASE.get()));
+        simpleBlockWithItem(ModBlocks.ARENA_CLIFF.get(), cubeAll(ModBlocks.ARENA_CLIFF.get()));
+        for (String name : new String[]{"arena_gate", "arena_exit", "tower_depot"}) {
+            Block block = switch (name) {
+                case "arena_gate" -> ModBlocks.ARENA_GATE.get();
+                case "arena_exit" -> ModBlocks.ARENA_EXIT.get();
+                default -> ModBlocks.TOWER_DEPOT.get();
+            };
+            simpleBlockWithItem(block, models().cubeBottomTop(name, modLoc("block/" + name + "_side"),
+                    modLoc("block/" + name + "_top"), modLoc("block/" + name + "_top")));
+        }
+        simpleBlockWithItem(ModBlocks.ARENA_FEEDER.get(), models().cubeBottomTop("arena_feeder", modLoc("block/arena_feeder_front"),
+                modLoc("block/machine_top"), modLoc("block/arena_feeder_top")));
         simpleBlockWithItem(ModBlocks.ENEMY_PORTAL.get(), models().cubeBottomTop("enemy_portal",
                 modLoc("block/enemy_portal_side"), modLoc("block/enemy_portal_top"), modLoc("block/enemy_portal_top")));
         for (String name : new String[]{"path_block", "crossbow_tower", "gun_turret", "tesla_tower", "laser_tower", "tower_ruin"}) {

@@ -73,4 +73,29 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
     public int enemyCount() {
         return waves.stream().mapToInt(List::size).sum();
     }
+
+    /** 3 stars for no lost life, 2 for at least half of the lives left, otherwise 1. */
+    public static int stars(int livesLeft) {
+        if (livesLeft >= LIVES) {
+            return 3;
+        }
+        return livesLeft * 2 >= LIVES ? 2 : 1;
+    }
+
+    /** Extra credits for stars: +25 % of the reward per star above the first. */
+    public static long starBonus(long reward, int stars) {
+        return reward * Math.max(0, stars - 1) / 4;
+    }
+
+    /** Credits for calling the next wave early: per second skipped, growing with the level. */
+    public static long earlyCallBonus(int level, int ticksSkipped) {
+        return (long) (ticksSkipped / 20) * (2 + level / 5);
+    }
+
+    /** How many enemies of each type a wave holds, in order of first appearance. */
+    public static java.util.Map<EnemyType, Integer> summary(List<EnemyType> wave) {
+        java.util.Map<EnemyType, Integer> counts = new java.util.LinkedHashMap<>();
+        wave.forEach(type -> counts.merge(type, 1, Integer::sum));
+        return counts;
+    }
 }

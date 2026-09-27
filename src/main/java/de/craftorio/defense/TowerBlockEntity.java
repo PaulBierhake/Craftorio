@@ -7,6 +7,9 @@ import de.craftorio.menu.TowerMenu;
 import de.craftorio.menu.SplitIntData;
 import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.registry.ModBlocks;
+import de.craftorio.registry.ModDataComponents;
+import de.craftorio.defense.arena.Arenas;
+import net.minecraft.core.component.DataComponentMap;
 import de.craftorio.registry.ModItems;
 import de.craftorio.team.Team;
 import de.craftorio.team.TeamData;
@@ -41,16 +44,16 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.List;
 
-/** Shoots enemies in range (furthest along the path first), takes damage from them and becomes a ruin at 0 HP. */
+/** Shoots enemies in range (by its target mode), takes damage from them and becomes a ruin at 0 HP. */
 public final class TowerBlockEntity extends BlockEntity implements MenuProvider {
 
     private final TowerType type;
     private int upgradeLevel = 1;
     private int health;
     private int cooldown;
+    private TargetMode targetMode = TargetMode.FIRST;
     private final EnergyBuffer energy;
     private final ItemStackHandler ammo = new ItemStackHandler(1) {
         @Override
@@ -73,6 +76,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
                 case 2 -> upgradeLevel;
                 case 3 -> SplitIntData.low(energy.getEnergyStored());
                 case 4 -> SplitIntData.high(energy.getEnergyStored());
+                case 5 -> targetMode.ordinal();
                 default -> 0;
             };
         }
@@ -130,12 +134,34 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         tower.cooldown = tower.fire((ServerLevel) level) ? tower.type.cooldown() : 5;
     }
 
-    private boolean fire(ServerLevel level) {
+    public TargetMode targetMode() {
+        return targetMode;
+    }
+
+    public void cycleTargetMode() {
+        targetMode = targetMode.next();
+        setChanged();
+    }
+
+    /** Base range, +30 % on a mountain plateau, reduced by the fog mutator. */
+    public double range() {
         double range = type.range();
+        if (level != null && level.getBlockState(worldPosition.below()).is(ModBlocks.ARENA_CLIFF.get())) {
+            range *= 1.3;
+        }
+        if (level instanceof ServerLevel serverLevel && Arenas.isArena(serverLevel)) {
+            range *= TowerDefense.get(serverLevel.getServer()).activeMutator(Arenas.slotAt(worldPosition)).rangeFactor();
+        }
+        return range;
+    }
+
+    private boolean fire(ServerLevel level) {
+        double range = range();
         Vec3 muzzle = worldPosition.getCenter().add(0, 0.8, 0);
+        // Camouflaged enemies (forest thicket) are only spotted within half the range.
         List<TdEnemy> targets = level.getEntitiesOfClass(TdEnemy.class, new AABB(worldPosition).inflate(range),
-                        enemy -> enemy.isAlive() && enemy.position().distanceTo(muzzle) <= range).stream()
-                .sorted(Comparator.comparingDouble(TdEnemy::progress).reversed())
+                        enemy -> enemy.isAlive() && enemy.position().distanceTo(muzzle) <= (enemy.camouflaged() ? range / 2 : range)).stream()
+                .sorted(targetMode.order())
                 .limit(type.targets())
                 .toList();
         if (targets.isEmpty() || !payForShot()) {
@@ -167,15 +193,20 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return true;
     }
 
+    /** Uses the tower's own ammunition or energy first, then the arena reserve filled by the arena feeder. */
     private boolean payForShot() {
         if (type.usesEnergy()) {
-            return energy.consume(type.energyPerShot());
+            return energy.consume(type.energyPerShot()) || drawFromArena(defense -> defense.drawEnergy(Arenas.slotAt(worldPosition), type.energyPerShot()));
         }
-        if (ammo.getStackInSlot(0).isEmpty()) {
-            return false;
+        if (!ammo.getStackInSlot(0).isEmpty()) {
+            ammo.extractItem(0, 1, false);
+            return true;
         }
-        ammo.extractItem(0, 1, false);
-        return true;
+        return drawFromArena(defense -> defense.drawAmmo(Arenas.slotAt(worldPosition), ammoItem()));
+    }
+
+    private boolean drawFromArena(java.util.function.Predicate<TowerDefense> draw) {
+        return level instanceof ServerLevel serverLevel && Arenas.isArena(serverLevel) && draw.test(TowerDefense.get(serverLevel.getServer()));
     }
 
     private static void trail(ServerLevel level, Vec3 from, Vec3 to, ParticleOptions particle) {
@@ -283,9 +314,28 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return new TowerMenu(containerId, inventory, this, data);
     }
 
+    /** Sets level and health from a tower item taken out of the depot. */
+    @Override
+    protected void applyImplicitComponents(DataComponentInput input) {
+        super.applyImplicitComponents(input);
+        ModDataComponents.TowerState state = input.get(ModDataComponents.TOWER_STATE.get());
+        if (state != null) {
+            upgradeLevel = Math.max(1, Math.min(TowerStats.MAX_LEVEL, state.level()));
+            health = Math.max(0, Math.min(maxHealth(), state.health()));
+        }
+    }
+
+    /** Broken towers drop an item that remembers level and health. */
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        components.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel, health));
+    }
+
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
+        tag.putString("target", targetMode.name());
         tag.putInt("level", upgradeLevel);
         tag.putInt("health", health);
         tag.putInt("energy", energy.getEnergyStored());
@@ -296,6 +346,11 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         upgradeLevel = Math.max(1, tag.getInt("level"));
+        try {
+            targetMode = TargetMode.valueOf(tag.getString("target"));
+        } catch (IllegalArgumentException missing) {
+            targetMode = TargetMode.FIRST;
+        }
         health = tag.contains("health") ? tag.getInt("health") : maxHealth();
         energy.setEnergy(tag.getInt("energy"));
         ammo.deserializeNBT(registries, tag.getCompound("ammo"));

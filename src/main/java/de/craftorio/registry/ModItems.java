@@ -1,5 +1,7 @@
 package de.craftorio.registry;
 
+import de.craftorio.defense.arena.PathWandItem;
+
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.KeyMaterialItem;
 import de.craftorio.blueprint.WorkbenchUpgradeItem;
@@ -41,6 +43,10 @@ public final class ModItems {
     public static final DeferredItem<WorkbenchUpgradeItem> WORKBENCH_UPGRADE_3 = ITEMS.registerItem("workbench_upgrade_3",
             properties -> new WorkbenchUpgradeItem(3, properties), new Item.Properties().stacksTo(16));
 
+    public static final DeferredItem<BlockItem> ARENA_GATE = ITEMS.registerSimpleBlockItem("arena_gate", ModBlocks.ARENA_GATE);
+    public static final DeferredItem<BlockItem> ARENA_FEEDER = ITEMS.registerSimpleBlockItem("arena_feeder", ModBlocks.ARENA_FEEDER);
+    public static final DeferredItem<PathWandItem> PATH_WAND = ITEMS.registerItem("path_wand", PathWandItem::new,
+            new Item.Properties().stacksTo(1));
     public static final DeferredItem<BlockItem> ZONE_CORE = ITEMS.registerSimpleBlockItem("zone_core", ModBlocks.ZONE_CORE);
     public static final DeferredItem<BlockItem> ENEMY_PORTAL = ITEMS.registerSimpleBlockItem("enemy_portal", ModBlocks.ENEMY_PORTAL);
     public static final DeferredItem<BlockItem> PATH_BLOCK = ITEMS.registerSimpleBlockItem("path_block", ModBlocks.PATH_BLOCK);

@@ -36,7 +36,8 @@ public final class ProtectionEvents {
             return;
         }
         Team team = teamOf(player);
-        if (BlockOwnership.enabled() && !bypasses(player)) {
+        // Each arena belongs to one team, so the neighbour rule is not needed there.
+        if (BlockOwnership.enabled() && !bypasses(player) && !de.craftorio.defense.arena.Arenas.isArena(level)) {
             Optional<Team> neighbour = foreignNeighbour(level, event.getPos(), team);
             if (neighbour.isPresent()) {
                 player.displayClientMessage(Component.translatable("craftorio.protection.too_close", neighbour.get().name())

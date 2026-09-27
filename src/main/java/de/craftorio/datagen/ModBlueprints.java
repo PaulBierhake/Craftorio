@@ -54,17 +54,16 @@ public final class ModBlueprints {
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 20), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 20),
                 SizedIngredient.of(Items.IRON_INGOT, 10));
 
-        // Tower defense – zone blocks are free, towers cost credits
-        add(context, "zone_core", stack(ModItems.ZONE_CORE.get(), 1), 1, 0, List.of(), List.of(),
+        // Tower defense – the arena gate is free, towers and the feeder cost credits
+        add(context, "arena_gate", stack(ModItems.ARENA_GATE.get(), 1), 1, 0, List.of(), List.of(),
                 SizedIngredient.of(Items.IRON_INGOT, 8), SizedIngredient.of(Items.GOLD_INGOT, 2), SizedIngredient.of(Items.REDSTONE, 4));
-        add(context, "enemy_portal", stack(ModItems.ENEMY_PORTAL.get(), 1), 1, 0, List.of(), List.of(),
-                SizedIngredient.of(Items.COBBLESTONE, 8), SizedIngredient.of(Items.IRON_INGOT, 2), SizedIngredient.of(Items.REDSTONE, 2));
-        add(context, "path_block", stack(ModItems.PATH_BLOCK.get(), 16), 1, 0, List.of(), List.of(),
-                SizedIngredient.of(Items.COBBLESTONE, 8));
         add(context, "crossbow_tower", stack(ModItems.CROSSBOW_TOWER.get(), 1), 1, 300, List.of(), List.of(),
                 SizedIngredient.of(ItemTags.PLANKS, 12), SizedIngredient.of(Items.IRON_INGOT, 6), SizedIngredient.of(Items.REDSTONE, 2));
         add(context, "bolt", stack(ModItems.BOLT.get(), 16), 1, 50, List.of(), List.of(id("crossbow_tower")),
                 SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.STICK, 2));
+        add(context, "arena_feeder", stack(ModItems.ARENA_FEEDER.get(), 1), 1, 400, List.of(), List.of(id("crossbow_tower")),
+                SizedIngredient.of(Items.IRON_INGOT, 8), SizedIngredient.of(Items.COPPER_INGOT, 8), SizedIngredient.of(Items.CHEST, 1),
+                SizedIngredient.of(Items.REDSTONE, 4));
         add(context, "gun_turret", stack(ModItems.GUN_TURRET.get(), 1), 1, 1_500, List.of(), List.of(id("crossbow_tower"), id("press")),
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 12), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 6),
                 SizedIngredient.of(Items.REDSTONE, 4));

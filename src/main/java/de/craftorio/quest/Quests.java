@@ -24,7 +24,7 @@ public final class Quests {
             sell("iron_plate", "craftorio:iron_plate", 100, 400),
             earn("earn_10k", 10_000, 1_000),
             // Tower defense for the first key material
-            build("zone_core", 1, 200),
+            build("arena_gate", 1, 200),
             build("crossbow_tower", 1, 200),
             tdLevel("td_1", 1, 300),
             tdLevel("td_10", 10, 2_000),

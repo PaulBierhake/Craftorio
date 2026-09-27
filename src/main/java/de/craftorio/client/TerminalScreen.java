@@ -4,7 +4,10 @@ import de.craftorio.blueprint.Blueprint;
 import de.craftorio.blueprint.Blueprints;
 import de.craftorio.blueprint.TerminalStats;
 import de.craftorio.blueprint.UnlockRules;
+import de.craftorio.defense.EnemyType;
 import de.craftorio.defense.LevelPlan;
+import de.craftorio.defense.arena.ArenaTheme;
+import de.craftorio.defense.arena.Mutator;
 import de.craftorio.economy.Credits;
 import de.craftorio.network.TdStatusPayload;
 import de.craftorio.menu.TerminalMenu;
@@ -30,6 +33,7 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     private Button startButton;
     private Button autoButton;
     private Button repairButton;
+    private Button callButton;
     private int questScroll;
 
     public TerminalScreen(TerminalMenu menu, Inventory inventory, Component title) {
@@ -52,7 +56,9 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         autoButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_TOGGLE_AUTO))
                 .bounds(leftPos + 128, topPos + 150, 116, 18).build());
         repairButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_REPAIR_ALL))
-                .bounds(leftPos + 12, topPos + 172, 232, 18).build());
+                .bounds(leftPos + 12, topPos + 172, 150, 18).build());
+        callButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.td.button.call"), button -> sendButton(TerminalMenu.TD_CALL_WAVE))
+                .bounds(leftPos + 166, topPos + 172, 78, 18).build());
     }
 
     @Override
@@ -65,7 +71,8 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         super.containerTick();
         TdStatusPayload td = ClientTdState.status();
         boolean defense = tab == Tab.DEFENSE;
-        startButton.visible = autoButton.visible = repairButton.visible = defense;
+        startButton.visible = autoButton.visible = repairButton.visible = callButton.visible = defense;
+        callButton.active = td.canCallWave();
         startButton.active = td.hasZone() && !td.running();
         startButton.setMessage(Component.translatable("craftorio.td.button.start", td.level()));
         autoButton.active = td.hasZone();
@@ -247,21 +254,42 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             graphics.drawWordWrap(font, Component.translatable("craftorio.td.help"), x, y, imageWidth - 24, 0xFFFFFF);
             return;
         }
+        String theme = ArenaTheme.values()[Math.floorMod(td.theme(), ArenaTheme.values().length)].name().toLowerCase();
         line(graphics, "craftorio.td.next_level", String.valueOf(td.level()), x, y);
-        if (td.running()) {
-            line(graphics, "craftorio.td.wave", td.wave() + " / " + td.waves(), x, y + 12);
-            line(graphics, "craftorio.td.lives", td.lives() + " / " + LevelPlan.LIVES, x, y + 24);
-            line(graphics, "craftorio.td.enemies", String.valueOf(td.enemiesLeft()), x, y + 36);
+        line(graphics, "craftorio.td.map", Component.translatable("craftorio.arena.theme." + theme).getString(), x, y + 11);
+        Mutator mutator = Mutator.values()[Math.floorMod(td.mutator(), Mutator.values().length)];
+        if (mutator != Mutator.NONE) {
+            graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.arena.mutator." + mutator.name().toLowerCase())
+                    .getString(), imageWidth - 24), x, y + 22, 0xD68CFF, false);
         } else {
-            line(graphics, "craftorio.td.reward", Credits.format(LevelPlan.of(td.level(), 1).reward()), x, y + 12);
-            LevelPlan.KeyReward key = LevelPlan.keyReward(td.level());
+            graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.arena.theme." + theme + ".rule").getString(),
+                    imageWidth - 24), x, y + 22, GRAY, false);
+        }
+        if (td.running()) {
+            line(graphics, "craftorio.td.wave", td.wave() + " / " + td.waves(), x, y + 34);
+            line(graphics, "craftorio.td.lives", td.lives() + " / " + LevelPlan.LIVES, x, y + 45);
+            line(graphics, "craftorio.td.enemies", String.valueOf(td.enemiesLeft()), x, y + 56);
+        } else {
+            line(graphics, "craftorio.td.reward", Credits.format(LevelPlan.of(td.level(), 1).reward()), x, y + 34);
             line(graphics, "craftorio.td.milestone", Component.translatable("craftorio.td.milestone.in",
-                    10 - (td.level() - 1) % 10).getString(), x, y + 24);
-            if (key != LevelPlan.KeyReward.NONE) {
-                graphics.drawString(font, Component.translatable("craftorio.td.key_next"), x, y + 36, 0xD68CFF, false);
+                    10 - (td.level() - 1) % 10).getString(), x, y + 45);
+            if (td.lastStars() > 0) {
+                line(graphics, "craftorio.td.last_stars", "★".repeat(td.lastStars()) + "☆".repeat(3 - td.lastStars()), x, y + 56);
             }
         }
-        graphics.drawWordWrap(font, Component.translatable("craftorio.td.rules", LevelPlan.LIVES), x, y + 56, imageWidth - 24, GRAY);
+        StringBuilder preview = new StringBuilder();
+        for (int i = 0; i + 1 < td.preview().size(); i += 2) {
+            EnemyType type = EnemyType.values()[Math.floorMod(td.preview().get(i), EnemyType.values().length)];
+            if (!preview.isEmpty()) {
+                preview.append(", ");
+            }
+            preview.append(td.preview().get(i + 1)).append("× ")
+                    .append(Component.translatable("entity.craftorio." + type.name().toLowerCase()).getString());
+        }
+        graphics.drawString(font, Component.translatable("craftorio.td.preview"), x, y + 69, GRAY, false);
+        graphics.drawString(font, font.plainSubstrByWidth(preview.toString(), imageWidth - 24), x, y + 80, 0xFFFFFF, false);
+        graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.td.reserves", Credits.formatNumber(td.energy()),
+                td.bolts(), td.cartridges()).getString(), imageWidth - 24), x, y + 94, GRAY, false);
     }
 
     private void renderStats(GuiGraphics graphics) {

@@ -57,6 +57,11 @@ public class TdEnemy extends PathfinderMob implements HoglinBase {
         moveTo(start.x, start.y, start.z, 0, 0);
     }
 
+    /** Hidden in the forest thicket: towers only see it from close by. */
+    public boolean camouflaged() {
+        return run != null && run.camouflaged(position());
+    }
+
     /** How far along the path; towers shoot the enemy closest to the core first. */
     public double progress() {
         return pathIndex + (path.isEmpty() || pathIndex + 1 >= path.size() ? 0 : 1 - position().distanceTo(path.get(pathIndex + 1)));
@@ -108,7 +113,7 @@ public class TdEnemy extends PathfinderMob implements HoglinBase {
     }
 
     private void walk() {
-        double remaining = enemyType.speed();
+        double remaining = enemyType.speed() * run.speedFactor(position());
         Vec3 position = position();
         while (remaining > 0 && pathIndex + 1 < path.size()) {
             Vec3 target = path.get(pathIndex + 1);

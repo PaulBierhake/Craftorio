@@ -51,6 +51,15 @@ public final class TowerRuin extends BaseEntityBlock {
         return new TowerRuinBlockEntity(pos, state);
     }
 
+    /** Picking up a ruin gives back the destroyed tower as an item; placing it again puts the ruin back. */
+    @Override
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!level.isClientSide && !player.isCreative() && level.getBlockEntity(pos) instanceof TowerRuinBlockEntity ruin) {
+            Block.popResource(level, pos, TowerDefense.towerItem(ruin.towerType(), ruin.upgradeLevel(), 0));
+        }
+        return super.playerWillDestroy(level, pos, state, player);
+    }
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof TowerRuinBlockEntity ruin) {

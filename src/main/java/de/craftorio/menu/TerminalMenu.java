@@ -21,6 +21,7 @@ public final class TerminalMenu extends AbstractContainerMenu {
     public static final int TD_START = 10_000;
     public static final int TD_TOGGLE_AUTO = 10_001;
     public static final int TD_REPAIR_ALL = 10_002;
+    public static final int TD_CALL_WAVE = 10_003;
     /** Plus the quest's index in {@link de.craftorio.quest.Quests#ALL}. */
     public static final int QUEST_CLAIM = 20_000;
 
@@ -57,6 +58,7 @@ public final class TerminalMenu extends AbstractContainerMenu {
         switch (id) {
             case TD_START -> serverPlayer.displayClientMessage(defense.start(serverPlayer.server, team), true);
             case TD_TOGGLE_AUTO -> defense.toggleAuto(team);
+            case TD_CALL_WAVE -> serverPlayer.displayClientMessage(defense.callWave(serverPlayer.server, team), true);
             case TD_REPAIR_ALL -> {
                 if (TeamData.maySpend(serverPlayer)) {
                     serverPlayer.displayClientMessage(defense.repairAll(serverPlayer.server, team), true);

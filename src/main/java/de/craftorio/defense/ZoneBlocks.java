@@ -3,6 +3,7 @@ package de.craftorio.defense;
 import com.mojang.serialization.MapCodec;
 import de.craftorio.team.Team;
 import de.craftorio.team.TeamData;
+import de.craftorio.defense.arena.Arenas;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-/** Blocks that define a team's defense zone. */
+/** Fixed parts of an arena (core, enemy gate) and the path the player lays. */
 public final class ZoneBlocks {
     private ZoneBlocks() {
     }
@@ -36,23 +37,7 @@ public final class ZoneBlocks {
         return Optional.empty();
     }
 
-    /** Server-side placement check: inside the placing team's zone. Clients always predict success. */
-    static boolean allowedInZone(BlockPlaceContext context) {
-        Level level = context.getLevel();
-        if (level.isClientSide) {
-            return true;
-        }
-        Optional<TowerDefense.Zone> zone = teamOf(context.getPlayer())
-                .flatMap(team -> TowerDefense.get(level.getServer()).zone(team.id()));
-        boolean ok = level.dimension() == Level.OVERWORLD && zone.isPresent() && TowerDefense.inZone(zone.get().core(), context.getClickedPos());
-        if (!ok && context.getPlayer() != null) {
-            context.getPlayer().displayClientMessage(Component.translatable("craftorio.td.error.outside_zone", TowerDefense.ZONE_RADIUS)
-                    .withStyle(ChatFormatting.RED), true);
-        }
-        return ok;
-    }
-
-    /** Centre of the zone and goal of the enemy path. Right-click checks the path. */
+    /** Goal of the enemy path in the east wall of an arena. Right-click checks the path. Built by the arena only. */
     public static final class Core extends Block {
         public static final MapCodec<Core> CODEC = simpleCodec(Core::new);
 
@@ -67,51 +52,25 @@ public final class ZoneBlocks {
 
         @Override
         public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-            Level level = context.getLevel();
-            if (!level.isClientSide) {
-                Optional<Team> team = teamOf(context.getPlayer());
-                String error = level.dimension() != Level.OVERWORLD ? "craftorio.td.error.overworld_only"
-                        : team.isEmpty() ? "craftorio.td.error.no_team"
-                        : TowerDefense.get(level.getServer()).zone(team.get().id()).isPresent() ? "craftorio.td.error.zone_exists" : null;
-                if (error != null) {
-                    if (context.getPlayer() != null) {
-                        context.getPlayer().displayClientMessage(Component.translatable(error).withStyle(ChatFormatting.RED), true);
-                    }
-                    return null;
-                }
-            }
-            return defaultBlockState();
-        }
-
-        @Override
-        public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-            if (placer instanceof Player player) {
-                teamOf(player).ifPresent(team -> TowerDefense.get(level.getServer()).placeCore(team.id(), pos));
-            }
-        }
-
-        @Override
-        protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-            if (!state.is(newState.getBlock()) && level instanceof ServerLevel serverLevel) {
-                TowerDefense.get(serverLevel.getServer()).removeCore(serverLevel, pos);
-            }
-            super.onRemove(state, level, pos, newState, movedByPiston);
+            return null;
         }
 
         @Override
         protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-            if (level instanceof ServerLevel serverLevel) {
+            if (level instanceof ServerLevel serverLevel && Arenas.isArena(level)) {
                 TowerDefense defense = TowerDefense.get(serverLevel.getServer());
                 teamOf(player).flatMap(team -> defense.zone(team.id()))
                         .filter(zone -> zone.core().equals(pos))
                         .ifPresentOrElse(zone -> player.displayClientMessage(defense.checkPath(serverLevel, zone).message(), false),
-                                () -> player.displayClientMessage(Component.translatable("craftorio.td.error.foreign_zone"), true));
+                                () -> player.displayClientMessage(Component.translatable("craftorio.arena.error.foreign"), true));
+            } else if (!level.isClientSide) {
+                player.displayClientMessage(Component.translatable("craftorio.arena.old_core").withStyle(ChatFormatting.GRAY), false);
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
     }
 
-    /** Where enemies come from; the path starts next to it. One per zone. */
+    /** The open enemy gate in the west wall of an arena. Built by the arena only. */
     public static final class Portal extends Block {
         public static final MapCodec<Portal> CODEC = simpleCodec(Portal::new);
 
@@ -126,26 +85,11 @@ public final class ZoneBlocks {
 
         @Override
         public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-            return allowedInZone(context) ? defaultBlockState() : null;
-        }
-
-        @Override
-        public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-            if (placer instanceof Player player) {
-                teamOf(player).ifPresent(team -> TowerDefense.get(level.getServer()).setPortal(team.id(), pos));
-            }
-        }
-
-        @Override
-        protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-            if (!state.is(newState.getBlock()) && level instanceof ServerLevel serverLevel) {
-                TowerDefense.get(serverLevel.getServer()).removePortal(pos);
-            }
-            super.onRemove(state, level, pos, newState, movedByPiston);
+            return null;
         }
     }
 
-    /** Flat path block; enemies walk on a single line of these from the portal to the core. */
+    /** Flat path block; enemies walk on a single line of these from the open gate to the core. Laid with the path wand. */
     public static final class Path extends Block {
         public static final MapCodec<Path> CODEC = simpleCodec(Path::new);
         private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 15, 16);

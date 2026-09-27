@@ -80,11 +80,30 @@ public final class CraftorioCommands {
                         .then(literal("spending")
                                 .then(literal("all").executes(ctx -> run(ctx, c -> teamSpending(c, true))))
                                 .then(literal("leader").executes(ctx -> run(ctx, c -> teamSpending(c, false))))))
+                // Admin shortcut for tests: lays the shortest possible path in the own arena.
+                .then(literal("arena").requires(source -> source.hasPermission(2))
+                        .then(literal("route").executes(ctx -> run(ctx, CraftorioCommands::arenaRoute))))
                 // Admin shortcut (tests, repairing old worlds): unlocks a layer area without building an entrance.
                 .then(literal("layer").requires(source -> source.hasPermission(2))
                         .then(literal("unlock")
                                 .then(literal("caves").executes(ctx -> unlockLayer(ctx, Layer.CAVES)))
                                 .then(literal("mines").executes(ctx -> unlockLayer(ctx, Layer.MINES))))));
+    }
+
+    private static int arenaRoute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        var defense = de.craftorio.defense.TowerDefense.get(player.server);
+        var zone = defense.ensureArena(player.server, teamOf(player).id());
+        var arena = de.craftorio.defense.TowerDefense.arena(player.server);
+        int placed = 0;
+        for (int[] tile : defense.layout(zone).route()) {
+            arena.setBlock(de.craftorio.defense.arena.Arenas.field(zone.slot(), tile[0], tile[1], de.craftorio.defense.arena.Arenas.BUILD_Y),
+                    de.craftorio.registry.ModBlocks.PATH_BLOCK.get().defaultBlockState(), 3);
+            placed++;
+        }
+        int count = placed;
+        ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.td.path_ok", count), false);
+        return placed;
     }
 
     private static int unlockLayer(CommandContext<CommandSourceStack> ctx, Layer layer) {

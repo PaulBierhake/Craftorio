@@ -17,10 +17,18 @@ public final class TowerRuinBlockEntity extends BlockEntity {
         super(ModBlockEntities.TOWER_RUIN.get(), pos, state);
     }
 
-    void remember(TowerType towerType, int upgradeLevel) {
+    public void remember(TowerType towerType, int upgradeLevel) {
         this.towerType = towerType;
         this.upgradeLevel = upgradeLevel;
         setChanged();
+    }
+
+    public TowerType towerType() {
+        return towerType;
+    }
+
+    public int upgradeLevel() {
+        return upgradeLevel;
     }
 
     public long rebuildCost() {
