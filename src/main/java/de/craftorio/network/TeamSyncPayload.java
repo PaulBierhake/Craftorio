@@ -8,14 +8,15 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import java.util.List;
 
-/** Server to client: the player's team name, balance (HUD) and unlocked blueprints (terminal, workbench). */
-public record TeamSyncPayload(String teamName, long balance, List<String> unlocked) implements CustomPacketPayload {
+/** Server to client: the player's team name, balance (HUD) unlocked blueprints (terminal, workbench) and collected quest rewards. */
+public record TeamSyncPayload(String teamName, long balance, List<String> unlocked, List<String> claimedQuests) implements CustomPacketPayload {
     public static final Type<TeamSyncPayload> TYPE = new Type<>(Craftorio.id("team_sync"));
 
     public static final StreamCodec<ByteBuf, TeamSyncPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, TeamSyncPayload::teamName,
             ByteBufCodecs.VAR_LONG, TeamSyncPayload::balance,
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), TeamSyncPayload::unlocked,
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), TeamSyncPayload::claimedQuests,
             TeamSyncPayload::new);
 
     @Override

@@ -250,6 +250,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             player.displayClientMessage(Component.translatable("craftorio.workbench.missing").withStyle(ChatFormatting.RED), true);
             return false;
         }
+        if (!TeamData.maySpend(player)) {
+            return false;
+        }
         if (!registry.withdraw(team.id(), credits)) {
             player.displayClientMessage(Component.translatable("craftorio.blueprint.status.not_enough_credits").withStyle(ChatFormatting.RED), true);
             return false;

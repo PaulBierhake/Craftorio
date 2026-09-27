@@ -27,6 +27,8 @@ public final class TeamRegistry {
 
     private final Map<UUID, Team> teams = new LinkedHashMap<>();
     private final Map<UUID, UUID> teamByPlayer = new HashMap<>();
+    /** Dissolved teams and the team that took them over, so things owned by the old team keep an owner. */
+    private final Map<UUID, UUID> mergedInto = new HashMap<>();
     private final LongSupplier startingCredits;
     private final LongSupplier gameTime;
     private Consumer<Team> changeListener = team -> { };
@@ -132,6 +134,58 @@ public final class TeamRegistry {
         return team;
     }
 
+    /** Leader only: removes a member, who continues in a fresh solo team with a copy of the blueprints and no credits. */
+    public Team kick(UUID leader, UUID target, String targetName) {
+        Team team = requireLeader(leader);
+        if (leader.equals(target)) {
+            throw new TeamException("craftorio.team.error.kick_self");
+        }
+        if (!team.members().contains(target)) {
+            throw new TeamException("craftorio.team.error.not_member");
+        }
+        return leave(target, targetName);
+    }
+
+    /** Leader only: hands leadership to another member. */
+    public void transferLeadership(UUID leader, UUID target) {
+        Team team = requireLeader(leader);
+        if (!team.members().contains(target)) {
+            throw new TeamException("craftorio.team.error.not_member");
+        }
+        team.makeLeader(target);
+        changeListener.accept(team);
+    }
+
+    /** Leader only: whether members other than the leader may spend the team's credits. */
+    public void setMembersCanSpend(UUID leader, boolean allowed) {
+        Team team = requireLeader(leader);
+        team.setMembersCanSpend(allowed);
+        changeListener.accept(team);
+    }
+
+    /**
+     * Takes {@code amount} credits on behalf of a player: fails with a {@link TeamException} if the player may not
+     * spend, returns false if the team cannot afford it.
+     */
+    public boolean spend(UUID player, long amount) {
+        Team team = teamOf(player).orElseThrow(() -> new TeamException("craftorio.team.error.no_team"));
+        if (!team.canSpend(player)) {
+            throw new TeamException("craftorio.team.error.no_spend_permission");
+        }
+        return withdraw(team.id(), amount);
+    }
+
+    /** Marks a quest reward as collected and pays it; false if it was already collected. */
+    public boolean claimQuest(UUID teamId, String quest, long reward) {
+        Team team = requireTeam(teamId);
+        if (!team.mutableClaimedQuests().add(quest)) {
+            return false;
+        }
+        team.setBalance(saturatedAdd(team.balance(), reward));
+        changeListener.accept(team);
+        return true;
+    }
+
     public void deposit(UUID teamId, long amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("amount must not be negative: " + amount);
@@ -202,8 +256,40 @@ public final class TeamRegistry {
         return team;
     }
 
-    private static void takeOver(Team team, Team dissolved) {
+    /** Restores the settings and quest progress of a team loaded from disk. */
+    public void restoreSettings(UUID id, boolean membersCanSpend, Collection<String> claimedQuests) {
+        Team team = requireTeam(id);
+        team.setMembersCanSpend(membersCanSpend);
+        team.mutableClaimedQuests().addAll(claimedQuests);
+    }
+
+    /**
+     * The team that now stands for {@code teamId}: itself while it exists, the team it was merged into after it was
+     * dissolved by joining or founding a team, or empty if it is gone for good.
+     */
+    public Optional<Team> resolve(UUID teamId) {
+        UUID current = teamId;
+        for (int hops = 0; current != null && hops <= mergedInto.size(); hops++) {
+            Team team = teams.get(current);
+            if (team != null) {
+                return Optional.of(team);
+            }
+            current = mergedInto.get(current);
+        }
+        return Optional.empty();
+    }
+
+    public Map<UUID, UUID> mergedTeams() {
+        return Collections.unmodifiableMap(mergedInto);
+    }
+
+    public void restoreMerge(UUID dissolved, UUID into) {
+        mergedInto.put(dissolved, into);
+    }
+
+    private void takeOver(Team team, Team dissolved) {
         if (dissolved != null) {
+            mergedInto.put(dissolved.id(), team.id());
             team.setBalance(saturatedAdd(team.balance(), dissolved.balance()));
             team.absorb(dissolved);
             dissolved.setBalance(0);
@@ -239,6 +325,14 @@ public final class TeamRegistry {
             return null;
         }
         teams.remove(teamId);
+        return team;
+    }
+
+    private Team requireLeader(UUID player) {
+        Team team = teamOf(player).orElseThrow(() -> new TeamException("craftorio.team.error.no_team"));
+        if (!team.isLeader(player)) {
+            throw new TeamException("craftorio.team.error.not_leader");
+        }
         return team;
     }
 

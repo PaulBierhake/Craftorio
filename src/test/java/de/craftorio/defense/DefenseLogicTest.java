@@ -94,4 +94,13 @@ class DefenseLogicTest {
         assertTrue(TowerType.LASER.energyWeapon());
         assertTrue(TowerType.LASER.range() > TowerType.GUN.range());
     }
+
+    @Test
+    void moreOnlinePlayersMeanMoreAndTougherEnemies() {
+        LevelPlan solo = LevelPlan.of(7, 1);
+        LevelPlan trio = LevelPlan.of(7, 3);
+        assertEquals(solo.enemyCount() + 2 * LevelPlan.CRAWLERS_PER_EXTRA_PLAYER * solo.waves().size(), trio.enemyCount());
+        assertTrue(trio.healthMultiplier() > solo.healthMultiplier());
+        assertEquals(solo.reward(), trio.reward(), "rewards do not scale – the team shares them");
+    }
 }

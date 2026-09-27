@@ -187,6 +187,27 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ![Minenschacht](docs/screenshots/m7-mine-shaft.png)
 ![Platzierungsregel](docs/screenshots/m7-shaft-rule.png)
 
+### M8 – Coop & Polish (Teil 1)
+
+- **Team-Rechte**: Das erste Mitglied ist die **Teamleitung**. Sie kann Mitglieder entfernen
+  (`/craftorio team kick <Spieler>`), die Leitung übergeben (`/craftorio team leader <Spieler>`) und festlegen,
+  wer Credits ausgeben darf (`/craftorio team spending all|leader`) – gilt für Baupläne, Turm-Upgrades,
+  Reparaturen und Wiederaufbau. `/craftorio team info` zeigt Leitung und Ausgaberecht.
+- **Blockschutz zwischen Teams** (Server-Config `protection.enabled`, Standard an): Maschinen, Türme und alle
+  Blöcke mit Inventar/Block-Entity gehören dem Team, das sie platziert hat. Andere Teams können sie weder abbauen
+  noch öffnen, Explosionen zerstören sie nicht, und Greifarme nehmen/legen nichts über Teamgrenzen hinweg.
+  Tritt ein Solo-Spieler einem Team bei, gehen seine Blöcke an das neue Team über. Operatoren im Kreativmodus
+  dürfen alles.
+- **Leitfaden** (neuer Terminal-Tab): 19 Ziele vom ersten Verkauf bis zur Minenschicht (Verkäufe, Baupläne,
+  TD-Level, Gesamtverdienst) mit Credit-Belohnungen zum Abholen – einmal pro Team.
+- **Skalierung**: Pro zusätzlichem Teammitglied online kommen je Welle 2 Krabbler mehr (zusätzlich zu +35 %
+  Gegner-HP); die Belohnung bleibt gleich.
+- **Balancing-Test**: Ein GameTest prüft, dass jede Presse-/Montagestufe mindestens 10 % Wert schafft und kein
+  Schmelzrezept Wert vernichtet.
+- *Noch offen: EMI- und Jade-Plugins (warten auf Netzwerkfreigabe der Maven-Hosts).*
+
+![Leitfaden](docs/screenshots/m8-leitfaden.png)
+
 ## Projektstruktur
 
 ```
@@ -194,7 +215,9 @@ src/main/java/de/craftorio/
 ├── Craftorio.java          Mod-Einstiegspunkt
 ├── CraftorioConfig.java    Server-Konfiguration
 ├── registry/               Blöcke, Items, Block-Entities, Creative-Tab
-├── team/                   Teams & Konto (TeamRegistry ist reine Logik mit Unit-Tests)
+├── team/                   Teams, Konto, Rechte (TeamRegistry ist reine Logik mit Unit-Tests)
+├── protection/             Blockschutz zwischen Teams
+├── quest/                  Leitfaden (Ziele als reine Logik mit Unit-Tests)
 ├── economy/                Preise (Data Map), Verkauf, Handelsposten
 ├── world/                  Erzfelder, Weltgenerierung, Start-Felder
 │   └── cave/               Höhlen-/Minenschicht, Form (reine Logik mit Unit-Tests), Eingänge/Schächte, Aushöhlen

@@ -9,6 +9,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import de.craftorio.protection.BlockOwnership;
+import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public final class InserterBlockEntity extends BlockEntity {
@@ -35,6 +37,11 @@ public final class InserterBlockEntity extends BlockEntity {
         IItemHandler source = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(facing.getOpposite()), facing);
         IItemHandler target = level.getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(facing), facing.getOpposite());
         if (source == null || target == null) {
+            return false;
+        }
+        // An inserter must not take items out of another team's blocks (or push into them).
+        if (level instanceof ServerLevel serverLevel && (!BlockOwnership.sameOwner(serverLevel, pos, pos.relative(facing.getOpposite()))
+                || !BlockOwnership.sameOwner(serverLevel, pos, pos.relative(facing)))) {
             return false;
         }
         for (int slot = 0; slot < source.getSlots(); slot++) {

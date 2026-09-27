@@ -17,6 +17,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -68,7 +70,16 @@ public final class CraftorioCommands {
                         .then(literal("join")
                                 .then(argument("name", StringArgumentType.greedyString())
                                         .executes(ctx -> run(ctx, CraftorioCommands::teamJoin))))
-                        .then(literal("leave").executes(ctx -> run(ctx, CraftorioCommands::teamLeave))))
+                        .then(literal("leave").executes(ctx -> run(ctx, CraftorioCommands::teamLeave)))
+                        .then(literal("kick")
+                                .then(argument("player", GameProfileArgument.gameProfile())
+                                        .executes(ctx -> run(ctx, CraftorioCommands::teamKick))))
+                        .then(literal("leader")
+                                .then(argument("player", GameProfileArgument.gameProfile())
+                                        .executes(ctx -> run(ctx, CraftorioCommands::teamLeader))))
+                        .then(literal("spending")
+                                .then(literal("all").executes(ctx -> run(ctx, c -> teamSpending(c, true))))
+                                .then(literal("leader").executes(ctx -> run(ctx, c -> teamSpending(c, false))))))
                 // Admin shortcut (tests, repairing old worlds): unlocks a layer area without building an entrance.
                 .then(literal("layer").requires(source -> source.hasPermission(2))
                         .then(literal("unlock")
@@ -112,7 +123,47 @@ public final class CraftorioCommands {
         String members = team.members().stream().map(id -> playerName(server, id)).collect(Collectors.joining(", "));
         ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.team.info",
                 team.name(), Credits.format(team.balance()), members), false);
+        ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.team.rights",
+                playerName(server, team.leader()), Component.translatable(team.membersCanSpend()
+                        ? "craftorio.command.team.spending.all" : "craftorio.command.team.spending.leader")), false);
         return 1;
+    }
+
+    private static int teamKick(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        GameProfile target = single(ctx);
+        registry(ctx).kick(player.getUUID(), target.getId(), target.getName());
+        ServerPlayer online = ctx.getSource().getServer().getPlayerList().getPlayer(target.getId());
+        if (online != null) {
+            online.sendSystemMessage(Component.translatable("craftorio.command.team.kicked_you", teamOf(player).name())
+                    .withStyle(ChatFormatting.RED));
+        }
+        ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.team.kicked", target.getName()), false);
+        return 1;
+    }
+
+    private static int teamLeader(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        GameProfile target = single(ctx);
+        registry(ctx).transferLeadership(player.getUUID(), target.getId());
+        ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.team.new_leader", target.getName()), false);
+        return 1;
+    }
+
+    private static int teamSpending(CommandContext<CommandSourceStack> ctx, boolean all) throws CommandSyntaxException {
+        ServerPlayer player = ctx.getSource().getPlayerOrException();
+        registry(ctx).setMembersCanSpend(player.getUUID(), all);
+        ctx.getSource().sendSuccess(() -> Component.translatable(all
+                ? "craftorio.command.team.spending.set_all" : "craftorio.command.team.spending.set_leader"), false);
+        return 1;
+    }
+
+    private static GameProfile single(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        var profiles = GameProfileArgument.getGameProfiles(ctx, "player");
+        if (profiles.size() != 1) {
+            throw new TeamException("craftorio.team.error.one_player");
+        }
+        return profiles.iterator().next();
     }
 
     private static int teamList(CommandContext<CommandSourceStack> ctx) {

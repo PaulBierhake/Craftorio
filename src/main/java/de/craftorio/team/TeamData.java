@@ -1,5 +1,8 @@
 package de.craftorio.team;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+
 import de.craftorio.CraftorioConfig;
 import de.craftorio.network.TeamSyncPayload;
 import net.minecraft.core.HolderLookup;
@@ -52,6 +55,16 @@ public final class TeamData extends SavedData {
         return registry;
     }
 
+    /** True if the player may spend their team's credits; otherwise tells them why not. */
+    public static boolean maySpend(ServerPlayer player) {
+        Team team = registry(player.server).ensureTeam(player.getUUID(), player.getGameProfile().getName());
+        if (team.canSpend(player.getUUID())) {
+            return true;
+        }
+        player.displayClientMessage(Component.translatable("craftorio.team.error.no_spend_permission").withStyle(ChatFormatting.RED), true);
+        return false;
+    }
+
     /** Sends the current team state to every online member of the teams changed since the last call. */
     public void flushSync(MinecraftServer server) {
         if (pendingSync.isEmpty()) {
@@ -70,7 +83,7 @@ public final class TeamData extends SavedData {
         if (!player.connection.hasChannel(TeamSyncPayload.TYPE)) {
             return;
         }
-        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance(), List.copyOf(team.unlocked())));
+        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance(), List.copyOf(team.unlocked()), List.copyOf(team.claimedQuests())));
     }
 
     @Override
@@ -97,9 +110,16 @@ public final class TeamData extends SavedData {
                 sales.put(item, saleTag);
             });
             entry.put("sales", sales);
+            entry.putBoolean("members_can_spend", team.membersCanSpend());
+            ListTag claimed = new ListTag();
+            team.claimedQuests().forEach(id -> claimed.add(StringTag.valueOf(id)));
+            entry.put("claimed_quests", claimed);
             teams.add(entry);
         }
         tag.put("teams", teams);
+        CompoundTag merged = new CompoundTag();
+        registry.mergedTeams().forEach((from, into) -> merged.putUUID(from.toString(), into));
+        tag.put("merged", merged);
         return tag;
     }
 
@@ -120,6 +140,13 @@ public final class TeamData extends SavedData {
             }
             data.registry.restore(entry.getUUID("id"), entry.getString("name"), entry.getLong("balance"), members,
                     unlocked, entry.getLong("total_earned"), entry.getLong("total_spent"), sales);
+            data.registry.restoreSettings(entry.getUUID("id"),
+                    !entry.contains("members_can_spend") || entry.getBoolean("members_can_spend"),
+                    entry.getList("claimed_quests", Tag.TAG_STRING).stream().map(Tag::getAsString).toList());
+        }
+        CompoundTag merged = tag.getCompound("merged");
+        for (String from : merged.getAllKeys()) {
+            data.registry.restoreMerge(UUID.fromString(from), merged.getUUID(from));
         }
         return data;
     }

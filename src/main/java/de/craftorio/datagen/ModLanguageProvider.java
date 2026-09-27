@@ -216,6 +216,46 @@ public final class ModLanguageProvider {
             add("craftorio.team.error.unknown_team", "There is no team named %s.");
             add("craftorio.team.error.not_invited", "You have not been invited to team %s.");
             add("craftorio.team.error.alone", "You are the only member of your team.");
+            add("craftorio.command.team.rights", "Leader: %s – spending: %s");
+            add("craftorio.command.team.spending.all", "all members");
+            add("craftorio.command.team.spending.leader", "leader only");
+            add("craftorio.command.team.spending.set_all", "All members may now spend the team's credits.");
+            add("craftorio.command.team.spending.set_leader", "Only the leader may spend the team's credits now.");
+            add("craftorio.command.team.kicked", "%s was removed from the team.");
+            add("craftorio.command.team.kicked_you", "You were removed from team %s and now play in your own team.");
+            add("craftorio.command.team.new_leader", "%s now leads the team.");
+            add("craftorio.team.error.not_leader", "Only the team leader can do that.");
+            add("craftorio.team.error.not_member", "That player is not in your team.");
+            add("craftorio.team.error.kick_self", "You cannot kick yourself – use /craftorio team leave.");
+            add("craftorio.team.error.no_spend_permission", "Only your team leader may spend credits.");
+            add("craftorio.team.error.one_player", "Name exactly one player.");
+            add("craftorio.protection.denied", "This belongs to team %s.");
+            add("craftorio.quest.first_sale", "Sell anything at a trading post");
+            add("craftorio.quest.sell_raw_iron", "Sell 64 raw iron");
+            add("craftorio.quest.unlock_coal_generator", "Buy the coal generator blueprint");
+            add("craftorio.quest.unlock_press", "Buy the press blueprint");
+            add("craftorio.quest.sell_iron_plate", "Sell 100 iron plates");
+            add("craftorio.quest.earn_10k", "Earn 10.000 ¢ in total");
+            add("craftorio.quest.td_5", "Complete tower defense level 5");
+            add("craftorio.quest.unlock_workbench_upgrade_2", "Upgrade to the assembly workbench");
+            add("craftorio.quest.unlock_assembler", "Buy the assembler blueprint");
+            add("craftorio.quest.sell_motor", "Sell 20 motors");
+            add("craftorio.quest.unlock_cave_entrance", "Buy the cave entrance blueprint");
+            add("craftorio.quest.sell_tin_ingot", "Sell 64 tin ingots from the caves");
+            add("craftorio.quest.sell_battery", "Sell 32 batteries");
+            add("craftorio.quest.td_20", "Complete tower defense level 20");
+            add("craftorio.quest.unlock_mine_shaft", "Buy the mine shaft blueprint");
+            add("craftorio.quest.sell_titanium_plate", "Sell 64 titanium plates");
+            add("craftorio.quest.sell_energy_crystal", "Sell 8 energy crystals");
+            add("craftorio.quest.earn_1m", "Earn 1.000.000 ¢ in total");
+            add("craftorio.quest.td_40", "Complete tower defense level 40");
+            add("craftorio.terminal.tab.quests", "Guide");
+            add("craftorio.quest.claim", "Collect");
+            add("craftorio.quest.done", "Done ✔");
+            add("craftorio.quest.ready", "Reached!");
+            add("craftorio.quest.open", "Not done yet");
+            add("craftorio.quest.not_done", "This goal is not reached yet.");
+            add("craftorio.quest.claimed", "Guide: %s – %s collected");
         }
     }
 
@@ -305,7 +345,7 @@ public final class ModLanguageProvider {
             add("entity.craftorio.spitter", "Spucker");
             add("entity.craftorio.brood_mother", "Brutmutter");
 
-            add("craftorio.terminal.tab.defense", "Verteidigung");
+            add("craftorio.terminal.tab.defense", "Abwehr");
             add("craftorio.hud.td", "Level %s · Welle %s/%s · Leben %s/%s · %s Gegner");
             add("craftorio.td.help", "Noch keine Verteidigungszone. Baue einen Zonenkern (Gratis-Bauplan) und stelle ihn auf. Im Umkreis von 32 Blöcken kommen ein Feindportal und eine durchgehende Linie aus Pfadblöcken vom Portal bis zum Kern dazu. Die Türme stellst du neben den Pfad.");
             add("craftorio.td.next_level", "Nächstes Level");
@@ -425,6 +465,46 @@ public final class ModLanguageProvider {
             add("craftorio.team.error.unknown_team", "Es gibt kein Team namens %s.");
             add("craftorio.team.error.not_invited", "Du wurdest nicht in Team %s eingeladen.");
             add("craftorio.team.error.alone", "Du bist das einzige Mitglied deines Teams.");
+            add("craftorio.command.team.rights", "Leitung: %s – Ausgaben: %s");
+            add("craftorio.command.team.spending.all", "alle Mitglieder");
+            add("craftorio.command.team.spending.leader", "nur Leitung");
+            add("craftorio.command.team.spending.set_all", "Alle Mitglieder dürfen jetzt Credits des Teams ausgeben.");
+            add("craftorio.command.team.spending.set_leader", "Nur noch die Teamleitung darf Credits ausgeben.");
+            add("craftorio.command.team.kicked", "%s wurde aus dem Team entfernt.");
+            add("craftorio.command.team.kicked_you", "Du wurdest aus Team %s entfernt und spielst jetzt in deinem eigenen Team.");
+            add("craftorio.command.team.new_leader", "%s leitet jetzt das Team.");
+            add("craftorio.team.error.not_leader", "Das darf nur die Teamleitung.");
+            add("craftorio.team.error.not_member", "Dieser Spieler ist nicht in deinem Team.");
+            add("craftorio.team.error.kick_self", "Du kannst dich nicht selbst entfernen – nutze /craftorio team leave.");
+            add("craftorio.team.error.no_spend_permission", "Nur deine Teamleitung darf Credits ausgeben.");
+            add("craftorio.team.error.one_player", "Gib genau einen Spieler an.");
+            add("craftorio.protection.denied", "Das gehört Team %s.");
+            add("craftorio.quest.first_sale", "Verkaufe etwas am Handelsposten");
+            add("craftorio.quest.sell_raw_iron", "Verkaufe 64 Roheisen");
+            add("craftorio.quest.unlock_coal_generator", "Kaufe den Bauplan Kohlegenerator");
+            add("craftorio.quest.unlock_press", "Kaufe den Bauplan Presse");
+            add("craftorio.quest.sell_iron_plate", "Verkaufe 100 Eisenplatten");
+            add("craftorio.quest.earn_10k", "Verdiene insgesamt 10.000 ¢");
+            add("craftorio.quest.td_5", "Schaffe Tower-Defense-Level 5");
+            add("craftorio.quest.unlock_workbench_upgrade_2", "Rüste auf die Montagewerkbank auf");
+            add("craftorio.quest.unlock_assembler", "Kaufe den Bauplan Montagemaschine");
+            add("craftorio.quest.sell_motor", "Verkaufe 20 Motoren");
+            add("craftorio.quest.unlock_cave_entrance", "Kaufe den Bauplan Höhleneingang");
+            add("craftorio.quest.sell_tin_ingot", "Verkaufe 64 Zinnbarren aus den Höhlen");
+            add("craftorio.quest.sell_battery", "Verkaufe 32 Batterien");
+            add("craftorio.quest.td_20", "Schaffe Tower-Defense-Level 20");
+            add("craftorio.quest.unlock_mine_shaft", "Kaufe den Bauplan Minenschacht");
+            add("craftorio.quest.sell_titanium_plate", "Verkaufe 64 Titanplatten");
+            add("craftorio.quest.sell_energy_crystal", "Verkaufe 8 Energiekristalle");
+            add("craftorio.quest.earn_1m", "Verdiene insgesamt 1.000.000 ¢");
+            add("craftorio.quest.td_40", "Schaffe Tower-Defense-Level 40");
+            add("craftorio.terminal.tab.quests", "Leitfaden");
+            add("craftorio.quest.claim", "Abholen");
+            add("craftorio.quest.done", "Erledigt ✔");
+            add("craftorio.quest.ready", "Erreicht!");
+            add("craftorio.quest.open", "Noch offen");
+            add("craftorio.quest.not_done", "Dieses Ziel ist noch nicht erreicht.");
+            add("craftorio.quest.claimed", "Leitfaden: %s – %s erhalten");
         }
     }
 }

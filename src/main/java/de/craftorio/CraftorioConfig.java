@@ -10,6 +10,10 @@ public final class CraftorioConfig {
             .comment("Credits a newly created team starts with.")
             .defineInRange("economy.startingCredits", 0L, 0L, Long.MAX_VALUE);
 
+    public static final ModConfigSpec.BooleanValue PROTECTION = BUILDER
+            .comment("Protect placed machines, containers and towers from players of other teams.")
+            .define("protection.enabled", true);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private CraftorioConfig() {

@@ -2,6 +2,7 @@ package de.craftorio.menu;
 
 import de.craftorio.blueprint.BlueprintActions;
 import de.craftorio.blueprint.TerminalStats;
+import de.craftorio.quest.QuestActions;
 import de.craftorio.defense.TowerDefense;
 import de.craftorio.registry.ModMenus;
 import de.craftorio.team.TeamData;
@@ -20,6 +21,8 @@ public final class TerminalMenu extends AbstractContainerMenu {
     public static final int TD_START = 10_000;
     public static final int TD_TOGGLE_AUTO = 10_001;
     public static final int TD_REPAIR_ALL = 10_002;
+    /** Plus the quest's index in {@link de.craftorio.quest.Quests#ALL}. */
+    public static final int QUEST_CLAIM = 20_000;
 
     private final BlockPos pos;
     private final TerminalStats stats;
@@ -46,12 +49,19 @@ public final class TerminalMenu extends AbstractContainerMenu {
         if (id < TD_START) {
             return BlueprintActions.unlock(serverPlayer, id);
         }
+        if (id >= QUEST_CLAIM) {
+            return QuestActions.claim(serverPlayer, id - QUEST_CLAIM);
+        }
         TowerDefense defense = TowerDefense.get(serverPlayer.server);
         UUID team = TeamData.registry(serverPlayer.server).ensureTeam(serverPlayer.getUUID(), serverPlayer.getGameProfile().getName()).id();
         switch (id) {
             case TD_START -> serverPlayer.displayClientMessage(defense.start(serverPlayer.server, team), true);
             case TD_TOGGLE_AUTO -> defense.toggleAuto(team);
-            case TD_REPAIR_ALL -> serverPlayer.displayClientMessage(defense.repairAll(serverPlayer.server, team), true);
+            case TD_REPAIR_ALL -> {
+                if (TeamData.maySpend(serverPlayer)) {
+                    serverPlayer.displayClientMessage(defense.repairAll(serverPlayer.server, team), true);
+                }
+            }
             default -> {
                 return false;
             }

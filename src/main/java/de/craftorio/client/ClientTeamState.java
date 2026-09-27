@@ -8,20 +8,27 @@ public final class ClientTeamState {
     private static volatile String teamName;
     private static volatile long balance;
     private static volatile Set<String> unlocked = Set.of();
+    private static volatile Set<String> claimedQuests = Set.of();
 
     private ClientTeamState() {
     }
 
-    public static void update(String teamName, long balance, List<String> unlocked) {
+    public static void update(String teamName, long balance, List<String> unlocked, List<String> claimedQuests) {
         ClientTeamState.teamName = teamName;
         ClientTeamState.balance = balance;
         ClientTeamState.unlocked = Set.copyOf(unlocked);
+        ClientTeamState.claimedQuests = Set.copyOf(claimedQuests);
     }
 
     public static void clear() {
         teamName = null;
         balance = 0;
         unlocked = Set.of();
+        claimedQuests = Set.of();
+    }
+
+    public static Set<String> claimedQuests() {
+        return claimedQuests;
     }
 
     public static Set<String> unlocked() {

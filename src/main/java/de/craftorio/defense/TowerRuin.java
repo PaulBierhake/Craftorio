@@ -56,6 +56,9 @@ public final class TowerRuin extends BaseEntityBlock {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof TowerRuinBlockEntity ruin) {
             Team team = TeamData.registry(serverPlayer.server).ensureTeam(serverPlayer.getUUID(), serverPlayer.getGameProfile().getName());
             long cost = ruin.rebuildCost();
+            if (!TeamData.maySpend(serverPlayer)) {
+                return InteractionResult.sidedSuccess(false);
+            }
             if (TeamData.registry(serverPlayer.server).withdraw(team.id(), cost)) {
                 ruin.rebuild();
                 player.displayClientMessage(Component.translatable("craftorio.tower.rebuilt", Credits.format(cost)).withStyle(ChatFormatting.GREEN), true);

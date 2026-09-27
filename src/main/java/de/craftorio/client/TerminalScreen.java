@@ -8,6 +8,9 @@ import de.craftorio.defense.LevelPlan;
 import de.craftorio.economy.Credits;
 import de.craftorio.network.TdStatusPayload;
 import de.craftorio.menu.TerminalMenu;
+import de.craftorio.quest.Quest;
+import de.craftorio.quest.Quests;
+import java.util.List;
 import de.craftorio.registry.ModRegistries;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -21,12 +24,13 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
-    private enum Tab { BLUEPRINTS, DEFENSE, STATS }
+    private enum Tab { BLUEPRINTS, DEFENSE, STATS, QUESTS }
 
     private Tab tab = Tab.BLUEPRINTS;
     private Button startButton;
     private Button autoButton;
     private Button repairButton;
+    private int questScroll;
 
     public TerminalScreen(TerminalMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -36,11 +40,13 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     protected void init() {
         super.init();
         addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.blueprints"), button -> tab = Tab.BLUEPRINTS)
-                .bounds(leftPos + 8, topPos + 17, 76, 14).build());
+                .bounds(leftPos + 8, topPos + 17, 58, 14).build());
         addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.defense"), button -> tab = Tab.DEFENSE)
-                .bounds(leftPos + 88, topPos + 17, 80, 14).build());
+                .bounds(leftPos + 68, topPos + 17, 60, 14).build());
         addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.stats"), button -> tab = Tab.STATS)
-                .bounds(leftPos + 172, topPos + 17, 76, 14).build());
+                .bounds(leftPos + 130, topPos + 17, 58, 14).build());
+        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.quests"), button -> tab = Tab.QUESTS)
+                .bounds(leftPos + 190, topPos + 17, 58, 14).build());
         startButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_START))
                 .bounds(leftPos + 12, topPos + 150, 110, 18).build());
         autoButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_TOGGLE_AUTO))
@@ -142,7 +148,75 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             renderStats(graphics);
         } else if (tab == Tab.DEFENSE) {
             renderDefense(graphics);
+        } else if (tab == Tab.QUESTS) {
+            renderQuests(graphics, mouseX, mouseY);
         }
+    }
+
+    private void renderQuests(GuiGraphics graphics, int mouseX, int mouseY) {
+        List<Quest> quests = Quests.ALL;
+        questScroll = Math.max(0, Math.min(questScroll, quests.size() - VISIBLE_ROWS));
+        for (int row = 0; row < VISIBLE_ROWS && questScroll + row < quests.size(); row++) {
+            int index = questScroll + row;
+            Quest quest = quests.get(index);
+            int x = leftPos + LIST_LEFT;
+            int y = topPos + LIST_TOP + row * ROW_HEIGHT;
+            long progress = questProgress(index);
+            boolean claimed = ClientTeamState.claimedQuests().contains(quest.id());
+            boolean done = progress >= quest.amount();
+            renderRowBackground(graphics, x, y, claimed ? 0xFF22382A : done ? 0xFF2E2E40 : 0xFF28282C);
+            String title = Component.translatable("craftorio.quest." + quest.id()).getString();
+            graphics.drawString(font, font.plainSubstrByWidth(title, BUTTON_X - 8), x + 4, y + 3, 0xFFFFFF, false);
+            String detail = claimed ? Component.translatable("craftorio.quest.done").getString()
+                    : quest.amount() == 1 ? Component.translatable(done ? "craftorio.quest.ready" : "craftorio.quest.open").getString()
+                    : Credits.formatNumber(progress) + " / " + Credits.formatNumber(quest.amount());
+            String reward = Credits.format(quest.reward());
+            int detailWidth = BUTTON_X - 16 - font.width(reward);
+            graphics.drawString(font, font.plainSubstrByWidth(detail, detailWidth), x + 4, y + 13, claimed ? GREEN : done ? 0xFFFFFF : GRAY, false);
+            graphics.drawString(font, reward, x + BUTTON_X - 4 - font.width(reward), y + 13, GOLD, false);
+            if (!claimed) {
+                renderButton(graphics, Component.translatable("craftorio.quest.claim"), x, y, done, mouseX, mouseY);
+            }
+        }
+        if (quests.size() > VISIBLE_ROWS) {
+            int trackTop = topPos + LIST_TOP;
+            int trackHeight = VISIBLE_ROWS * ROW_HEIGHT - 2;
+            int thumb = Math.max(10, trackHeight * VISIBLE_ROWS / quests.size());
+            int thumbY = trackTop + (trackHeight - thumb) * questScroll / (quests.size() - VISIBLE_ROWS);
+            graphics.fill(leftPos + imageWidth - 6, thumbY, leftPos + imageWidth - 3, thumbY + thumb, 0xFF8A8A9A);
+        }
+    }
+
+    private long questProgress(int index) {
+        List<Long> progress = menu.stats().questProgress();
+        return index < progress.size() ? progress.get(index) : 0;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (tab == Tab.QUESTS) {
+            questScroll -= (int) Math.signum(scrollY);
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (tab == Tab.QUESTS && button == 0) {
+            int row = (int) (mouseY - topPos - LIST_TOP) / ROW_HEIGHT;
+            double localX = mouseX - leftPos - LIST_LEFT;
+            double localY = mouseY - topPos - LIST_TOP - row * ROW_HEIGHT;
+            int index = questScroll + row;
+            if (mouseY >= topPos + LIST_TOP && row >= 0 && row < VISIBLE_ROWS && index < Quests.ALL.size()
+                    && localX >= BUTTON_X && localX < BUTTON_X + BUTTON_WIDTH && localY >= 3 && localY < 19
+                    && questProgress(index) >= Quests.ALL.get(index).amount()
+                    && !ClientTeamState.claimedQuests().contains(Quests.ALL.get(index).id())) {
+                sendButton(TerminalMenu.QUEST_CLAIM + index);
+                return true;
+            }
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void renderDefense(GuiGraphics graphics) {

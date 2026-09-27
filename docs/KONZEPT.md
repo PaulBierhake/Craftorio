@@ -228,8 +228,8 @@ Schlüsselmaterialien sind **nicht verkäuflich** und **nicht herstellbar** – 
 
 - **Teams** *(eigenes System, optionale FTB-Teams-Kompatibilität – entschieden)*: Das Team teilt **Konto, Technologien, erschlossene Bereiche, Verteidigungszone und Level-Fortschritt**.
 - **Solo** = Team mit einem Mitglied.
-- **Mehrere Teams auf einem Server** möglich; fremde Maschinen/Kisten/Türme sind geschützt.
-- **Skalierung:** Gegner-HP/-Anzahl skalieren moderat mit der Anzahl **online** befindlicher Teammitglieder beim Levelstart.
+- **Mehrere Teams auf einem Server** möglich; fremde Maschinen/Kisten/Türme sind geschützt *(umgesetzt in M8: Teamleitung mit Kick/Übergabe/Ausgaberecht, Blockschutz inkl. Explosionen und Greifarmen)*.
+- **Skalierung:** Gegner-HP/-Anzahl skalieren moderat mit der Anzahl **online** befindlicher Teammitglieder beim Levelstart *(umgesetzt: +35 % HP und +2 Krabbler pro Welle je weiterem Mitglied)*.
 - **Technik:** Server ist autoritativ; Client bekommt nur Sync-Pakete. Singleplayer, LAN und dedizierte Server.
 
 ## 8. Minecraft-Version & Mod-Loader
@@ -339,4 +339,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M7 abgeschlossen**, als Nächstes **M8 – Coop & Polish**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M7 abgeschlossen**, **M8** zum Großteil umgesetzt (Rechte, Blockschutz, Skalierung, Balancing-Test, eingebauter Leitfaden statt FTB Quests); offen sind die EMI-/Jade-Plugins.

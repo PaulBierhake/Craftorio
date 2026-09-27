@@ -20,12 +20,14 @@ public final class Team {
     // Pending invites are not persisted; they expire on server restart.
     private final Set<UUID> invites = new HashSet<>();
     private final Set<String> unlocked = new LinkedHashSet<>();
+    private final Set<String> claimedQuests = new LinkedHashSet<>();
     private final Map<String, Sales> sales = new HashMap<>();
     private final long[] bucketMinute = new long[EARNING_BUCKETS];
     private final long[] bucketEarned = new long[EARNING_BUCKETS];
     private long balance;
     private long totalEarned;
     private long totalSpent;
+    private boolean membersCanSpend = true;
 
     /** Items and credits sold of one item type. */
     public record Sales(long count, long credits) {
@@ -53,8 +55,32 @@ public final class Team {
         return balance;
     }
 
+    /** Members in join order; the first one is the leader. */
     public Set<UUID> members() {
         return Collections.unmodifiableSet(members);
+    }
+
+    /** The leader may kick members, hand over leadership and decide whether members may spend credits. */
+    public UUID leader() {
+        return members.iterator().next();
+    }
+
+    public boolean isLeader(UUID player) {
+        return !members.isEmpty() && leader().equals(player);
+    }
+
+    /** If false, only the leader can buy blueprints, upgrades and repairs. */
+    public boolean membersCanSpend() {
+        return membersCanSpend;
+    }
+
+    public boolean canSpend(UUID player) {
+        return members.contains(player) && (membersCanSpend || isLeader(player));
+    }
+
+    /** Ids of quests whose reward was already collected. */
+    public Set<String> claimedQuests() {
+        return Collections.unmodifiableSet(claimedQuests);
     }
 
     public boolean isInvited(UUID player) {
@@ -105,6 +131,23 @@ public final class Team {
         return unlocked;
     }
 
+    Set<String> mutableClaimedQuests() {
+        return claimedQuests;
+    }
+
+    void setMembersCanSpend(boolean membersCanSpend) {
+        this.membersCanSpend = membersCanSpend;
+    }
+
+    /** Moves {@code player} to the front of the member list, making them leader. */
+    void makeLeader(UUID player) {
+        Set<UUID> rest = new LinkedHashSet<>(members);
+        rest.remove(player);
+        members.clear();
+        members.add(player);
+        members.addAll(rest);
+    }
+
     void addSale(String item, long count, long credits, long minute) {
         sales.merge(item, new Sales(count, credits), (old, added) -> old.plus(added.count(), added.credits()));
         totalEarned = TeamRegistry.saturatedAdd(totalEarned, credits);
@@ -129,6 +172,7 @@ public final class Team {
     /** Takes over the knowledge and history of a team that was dissolved into this one. */
     void absorb(Team other) {
         unlocked.addAll(other.unlocked);
+        claimedQuests.addAll(other.claimedQuests);
         other.sales.forEach((item, stat) -> sales.merge(item, stat, (a, b) -> a.plus(b.count(), b.credits())));
         totalEarned = TeamRegistry.saturatedAdd(totalEarned, other.totalEarned);
         totalSpent = TeamRegistry.saturatedAdd(totalSpent, other.totalSpent);

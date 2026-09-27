@@ -13,6 +13,8 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
     public static final int WAVE_DELAY = 200;
     /** Extra enemy health per additional online team member. */
     public static final double HEALTH_PER_EXTRA_PLAYER = 0.35;
+    /** Extra crawlers per wave for every additional online team member. */
+    public static final int CRAWLERS_PER_EXTRA_PLAYER = 2;
 
     public enum KeyReward {
         NONE, DRILL_CORE, RESONANCE_CRYSTAL, DEEP_CORE, STAR_SHARD
@@ -26,7 +28,7 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
         List<List<EnemyType>> waves = new ArrayList<>();
         for (int wave = 1; wave <= waveCount; wave++) {
             List<EnemyType> enemies = new ArrayList<>();
-            int crawlers = 3 + level + wave;
+            int crawlers = 3 + level + wave + CRAWLERS_PER_EXTRA_PLAYER * Math.max(0, players - 1);
             int breakers = level >= 5 ? (level + wave) / 4 : 0;
             int spitters = level >= 10 ? (level + wave) / 5 : 0;
             int golems = level >= 20 ? (level + wave) / 8 : 0;

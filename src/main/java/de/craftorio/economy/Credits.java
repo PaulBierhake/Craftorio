@@ -9,6 +9,11 @@ public final class Credits {
 
     /** {@code 1234567} becomes {@code "1.234.567 ¢"}. */
     public static String format(long amount) {
+        return formatNumber(amount) + " " + SYMBOL;
+    }
+
+    /** {@code 1234567} becomes {@code "1.234.567"}. */
+    public static String formatNumber(long amount) {
         String digits = Long.toString(amount);
         boolean negative = digits.startsWith("-");
         if (negative) {
@@ -20,6 +25,6 @@ public final class Credits {
         for (int i = firstGroup; i < digits.length(); i += 3) {
             out.append('.').append(digits, i, i + 3);
         }
-        return (negative ? "-" : "") + out + " " + SYMBOL;
+        return (negative ? "-" : "") + out;
     }
 }

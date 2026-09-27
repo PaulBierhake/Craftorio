@@ -192,4 +192,57 @@ class TeamRegistryTest {
         assertTrue(timed.withdraw(team.id(), 15));
         assertEquals(15, team.totalSpent());
     }
+
+    @Test
+    void leaderKicksTransfersAndControlsSpending() {
+        registry.create(alice, "Factory");
+        registry.invite(alice, bob);
+        Team team = registry.join(bob, "Factory");
+        registry.deposit(team.id(), 1_000);
+        long start = team.balance();
+
+        assertEquals(alice, team.leader());
+        assertEquals("craftorio.team.error.not_leader",
+                assertThrows(TeamException.class, () -> registry.kick(bob, alice, "Alice")).translationKey());
+        assertTrue(registry.spend(bob, 100));
+
+        registry.setMembersCanSpend(alice, false);
+        assertEquals("craftorio.team.error.no_spend_permission",
+                assertThrows(TeamException.class, () -> registry.spend(bob, 100)).translationKey());
+        assertTrue(registry.spend(alice, 100));
+        assertEquals(start - 200, team.balance());
+
+        registry.transferLeadership(alice, bob);
+        assertEquals(bob, team.leader());
+        assertTrue(team.canSpend(bob));
+        assertFalse(team.canSpend(alice));
+
+        Team kicked = registry.kick(bob, alice, "Alice");
+        assertEquals(0, kicked.balance());
+        assertEquals(java.util.Set.of(bob), team.members());
+        assertEquals("craftorio.team.error.kick_self",
+                assertThrows(TeamException.class, () -> registry.kick(bob, bob, "Bob")).translationKey());
+    }
+
+    @Test
+    void questRewardsArePaidOnce() {
+        Team team = registry.ensureTeam(alice, "Alice");
+        long before = team.balance();
+        assertTrue(registry.claimQuest(team.id(), "first_sale", 500));
+        assertFalse(registry.claimQuest(team.id(), "first_sale", 500));
+        assertEquals(before + 500, team.balance());
+        assertTrue(team.claimedQuests().contains("first_sale"));
+    }
+
+    @Test
+    void dissolvedTeamsResolveToTheTeamThatTookThemOver() {
+        Team solo = registry.ensureTeam(bob, "Bob");
+        registry.create(alice, "Factory");
+        registry.invite(alice, bob);
+        Team factory = registry.join(bob, "Factory");
+
+        assertEquals(factory, registry.resolve(solo.id()).orElseThrow());
+        assertEquals(factory, registry.resolve(factory.id()).orElseThrow());
+        assertTrue(registry.resolve(UUID.randomUUID()).isEmpty());
+    }
 }

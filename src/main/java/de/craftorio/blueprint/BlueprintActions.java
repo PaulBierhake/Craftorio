@@ -32,7 +32,7 @@ public final class BlueprintActions {
                     .withStyle(ChatFormatting.RED), true);
             return false;
         }
-        if (!registry.withdraw(team.id(), blueprint.cost())) {
+        if (!TeamData.maySpend(player) || !registry.withdraw(team.id(), blueprint.cost())) {
             return false;
         }
         Blueprints.take(player.getInventory(), blueprint.unlockItems(), 1);
