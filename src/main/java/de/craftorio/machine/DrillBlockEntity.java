@@ -16,6 +16,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import de.craftorio.menu.DrillMenu;
+import de.craftorio.menu.SplitIntData;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public final class DrillBlockEntity extends BlockEntity {
+public final class DrillBlockEntity extends BlockEntity implements MenuProvider {
     public static final int FUEL_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
     private static final int RESCAN_INTERVAL = 40;
@@ -33,9 +41,38 @@ public final class DrillBlockEntity extends BlockEntity {
     private final DrillProduction production;
     private final EnergyBuffer energy;
     private final IItemHandler handler = new Handler();
+    private final IItemHandlerModifiable menuSlots = new MenuSlots();
     private ItemStack fuel = ItemStack.EMPTY;
     private ItemStack output = ItemStack.EMPTY;
     private int burnTicks;
+    /** Burn time of the fuel item currently burning, for the flame in the GUI. */
+    private int burnDuration;
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> burnTicks;
+                case 1 -> burnDuration;
+                case 2 -> fieldBlocks.size();
+                case 3 -> tier.area();
+                case 4 -> (int) Math.round(production.itemsPerSecond(fieldBlocks.size()) * 100);
+                case 5 -> SplitIntData.low(energy.getEnergyStored());
+                case 6 -> SplitIntData.high(energy.getEnergyStored());
+                case 7 -> SplitIntData.low(tier.usesFuel() ? 0 : energy.getMaxEnergyStored());
+                case 8 -> SplitIntData.high(tier.usesFuel() ? 0 : energy.getMaxEnergyStored());
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int getCount() {
+            return DrillMenu.DATA_COUNT;
+        }
+    };
     private List<BlockPos> fieldBlocks = List.of();
     private int nextField;
     private int rescanIn;
@@ -143,6 +180,7 @@ public final class DrillBlockEntity extends BlockEntity {
             return false;
         }
         burnTicks = fuel.getBurnTime(RecipeType.SMELTING);
+        burnDuration = burnTicks;
         ItemStack remainder = fuel.getCraftingRemainingItem();
         fuel.shrink(1);
         if (fuel.isEmpty()) {
@@ -176,6 +214,21 @@ public final class DrillBlockEntity extends BlockEntity {
         return Component.translatable("craftorio.drill.status", blocks, tier.area(), rate, fuelSeconds);
     }
 
+    /** Slots of the GUI: unlike the automation handler, players may also take fuel back out. */
+    public IItemHandlerModifiable menuSlots() {
+        return menuSlots;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+        return new DrillMenu(containerId, inventory, this, data);
+    }
+
     public void dropContents() {
         if (level != null) {
             Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), fuel);
@@ -191,6 +244,7 @@ public final class DrillBlockEntity extends BlockEntity {
         tag.put("fuel", fuel.saveOptional(registries));
         tag.put("output", output.saveOptional(registries));
         tag.putInt("burn_ticks", burnTicks);
+        tag.putInt("burn_duration", burnDuration);
         tag.putDouble("progress", production.progress());
         tag.putInt("next_field", nextField);
         tag.putInt("energy", energy.getEnergyStored());
@@ -202,6 +256,7 @@ public final class DrillBlockEntity extends BlockEntity {
         fuel = ItemStack.parseOptional(registries, tag.getCompound("fuel"));
         output = ItemStack.parseOptional(registries, tag.getCompound("output"));
         burnTicks = tag.getInt("burn_ticks");
+        burnDuration = tag.getInt("burn_duration");
         production.setProgress(tag.getDouble("progress"));
         nextField = tag.getInt("next_field");
         energy.setEnergy(tag.getInt("energy"));
@@ -265,6 +320,59 @@ public final class DrillBlockEntity extends BlockEntity {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             return slot == FUEL_SLOT && isFuel(stack) && tier.usesFuel();
+        }
+    }
+
+    private final class MenuSlots implements IItemHandlerModifiable {
+        @Override
+        public int getSlots() {
+            return 2;
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return slot == FUEL_SLOT ? fuel : output;
+        }
+
+        @Override
+        public void setStackInSlot(int slot, ItemStack stack) {
+            if (slot == FUEL_SLOT) {
+                fuel = stack;
+            } else {
+                output = stack;
+            }
+            setChanged();
+        }
+
+        @Override
+        public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+            return handler.insertItem(slot, stack, simulate);
+        }
+
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            if (slot != FUEL_SLOT) {
+                return handler.extractItem(slot, amount, simulate);
+            }
+            if (fuel.isEmpty() || amount <= 0) {
+                return ItemStack.EMPTY;
+            }
+            ItemStack extracted = fuel.copyWithCount(Math.min(amount, fuel.getCount()));
+            if (!simulate) {
+                fuel.shrink(extracted.getCount());
+                setChanged();
+            }
+            return extracted;
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return 64;
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return handler.isItemValid(slot, stack);
         }
     }
 }

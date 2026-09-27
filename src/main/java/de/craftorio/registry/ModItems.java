@@ -5,7 +5,11 @@ import de.craftorio.defense.arena.PathWandItem;
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.KeyMaterialItem;
 import de.craftorio.blueprint.WorkbenchUpgradeItem;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -47,6 +51,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ARENA_FEEDER = ITEMS.registerSimpleBlockItem("arena_feeder", ModBlocks.ARENA_FEEDER);
     public static final DeferredItem<de.craftorio.quest.GuideBookItem> GUIDE_BOOK = ITEMS.registerItem("guide_book",
             de.craftorio.quest.GuideBookItem::new, new Item.Properties().stacksTo(1));
+    /** Everyone spawns with it (starter kit): mines ore fields and stone by hand until the first drill runs. */
+    public static final DeferredItem<PickaxeItem> STARTER_PICKAXE = ITEMS.registerItem("starter_pickaxe",
+            properties -> new PickaxeItem(Tiers.IRON, properties), new Item.Properties()
+                    .attributes(PickaxeItem.createAttributes(Tiers.IRON, 1.0F, -2.8F))
+                    .component(DataComponents.UNBREAKABLE, new Unbreakable(false)));
     public static final DeferredItem<PathWandItem> PATH_WAND = ITEMS.registerItem("path_wand", PathWandItem::new,
             new Item.Properties().stacksTo(1));
     public static final DeferredItem<BlockItem> ZONE_CORE = ITEMS.registerSimpleBlockItem("zone_core", ModBlocks.ZONE_CORE);

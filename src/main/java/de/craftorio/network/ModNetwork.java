@@ -3,6 +3,8 @@ package de.craftorio.network;
 import de.craftorio.Craftorio;
 import de.craftorio.client.ClientTdState;
 import de.craftorio.client.ClientTeamState;
+import de.craftorio.quest.QuestActions;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -23,6 +25,11 @@ public final class ModNetwork {
                 (payload, context) -> ClientTeamState.update(payload.teamName(), payload.balance(), payload.unlocked(), payload.claimedQuests(),
                         payload.questProgress()));
         // ClientTdState is plain Java as well.
+        registrar.playToServer(ClaimQuestPayload.TYPE, ClaimQuestPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) {
+                QuestActions.claim(player, payload.index());
+            }
+        });
         registrar.playToClient(TdStatusPayload.TYPE, TdStatusPayload.STREAM_CODEC, (payload, context) -> ClientTdState.update(payload));
     }
 }

@@ -14,7 +14,7 @@ class QuestsTest {
     @Test
     void progressIsMeasuredPerKindAndCapped() {
         Quest.Progress progress = new Quest.Progress(12_345, Map.of("minecraft:raw_iron", 100L), Set.of("craftorio:press"),
-                Map.of("craftorio:burner_drill", 2L), 3);
+                Map.of("craftorio:burner_drill", 2L, Quest.MINED_PREFIX + "minecraft:raw_iron", 5L), 3);
 
         assertTrue(Quests.byId("first_sale").orElseThrow().done(progress));
         assertEquals(64, Quests.byId("sell_raw_iron").orElseThrow().progress(progress), "capped at the goal");
@@ -24,6 +24,7 @@ class QuestsTest {
         assertTrue(Quests.byId("build_burner_drill").orElseThrow().done(progress));
         assertFalse(Quests.byId("build_trading_post").orElseThrow().done(progress));
         assertTrue(Quests.byId("earn_10k").orElseThrow().done(progress));
+        assertEquals(5, Quests.byId("mine_raw_iron").orElseThrow().progress(progress), "hand-mined");
     }
 
     @Test

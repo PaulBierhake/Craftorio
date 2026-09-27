@@ -96,6 +96,8 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ModMenus.GENERATOR.get(), GeneratorScreen::new);
+            event.register(ModMenus.DRILL.get(), DrillScreen::new);
+            event.register(ModMenus.TRADING_POST.get(), TradingPostScreen::new);
             event.register(ModMenus.PROCESSING_MACHINE.get(), ProcessingMachineScreen::new);
             event.register(ModMenus.TERMINAL.get(), TerminalScreen::new);
             event.register(ModMenus.WORKBENCH.get(), WorkbenchScreen::new);

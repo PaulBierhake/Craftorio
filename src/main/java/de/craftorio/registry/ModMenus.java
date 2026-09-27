@@ -20,6 +20,10 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<ProcessingMachineMenu>> PROCESSING_MACHINE =
             MENUS.register("processing_machine", () -> IMenuTypeExtension.create(ProcessingMachineMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.DrillMenu>> DRILL =
+            MENUS.register("drill", () -> IMenuTypeExtension.create(de.craftorio.menu.DrillMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.TradingPostMenu>> TRADING_POST =
+            MENUS.register("trading_post", () -> IMenuTypeExtension.create(de.craftorio.menu.TradingPostMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<TerminalMenu>> TERMINAL =
             MENUS.register("terminal", () -> IMenuTypeExtension.create(TerminalMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<WorkbenchMenu>> WORKBENCH =

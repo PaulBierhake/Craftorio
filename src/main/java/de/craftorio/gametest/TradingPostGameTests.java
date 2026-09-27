@@ -51,6 +51,21 @@ public final class TradingPostGameTests {
     }
 
     @GameTest(template = EMPTY)
+    public static void counterSellsOnlyOnButton(GameTestHelper helper) {
+        Team team = newTeam(helper);
+        BlockPos pos = placeTradingPost(helper, new BlockPos(1, 1, 1), team);
+        TradingPostBlockEntity post = helper.getBlockEntity(pos);
+        helper.assertTrue(post.counter().insertItem(0, new ItemStack(Items.DIRT), true).getCount() == 1, "dirt is not sellable");
+        post.counter().insertItem(0, new ItemStack(Items.IRON_INGOT, 5), false);
+        helper.assertValueEqual(team.balance(), 0L, "nothing sold before the button");
+
+        helper.assertValueEqual(post.sellCounter(), 5 * IRON_INGOT_PRICE, "counter value");
+        helper.assertValueEqual(team.balance(), 5 * IRON_INGOT_PRICE, "balance after the button");
+        helper.assertTrue(post.counter().getStackInSlot(0).isEmpty(), "counter emptied");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
     public static void refusesItemsWhenOwnerTeamIsGone(GameTestHelper helper) {
         BlockPos pos = new BlockPos(1, 1, 1);
         helper.setBlock(pos, ModBlocks.TRADING_POST.get());

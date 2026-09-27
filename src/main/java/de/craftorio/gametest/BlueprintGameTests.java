@@ -65,7 +65,7 @@ public final class BlueprintGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         helper.assertValueEqual(count(player, ModItems.GUIDE_BOOK.get()), 1, "guide book");
         helper.assertValueEqual(count(player, ModItems.WORKBENCH.get()), 1, "starter workbench");
-        helper.assertValueEqual(count(player, Items.IRON_INGOT), 4, "starter iron");
+        helper.assertValueEqual(count(player, ModItems.STARTER_PICKAXE.get()), 1, "starter pickaxe");
         helper.succeed();
     }
 

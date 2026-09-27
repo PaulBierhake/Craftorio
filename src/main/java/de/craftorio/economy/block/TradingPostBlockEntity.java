@@ -11,6 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.Containers;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +21,19 @@ public final class TradingPostBlockEntity extends BlockEntity {
     private UUID owner;
     private long totalEarned;
     private final IItemHandler input = new SellingHandler();
+    /** Items put in by hand through the GUI; they are only sold when a player presses "Sell". */
+    private final ItemStackHandler counter = new ItemStackHandler(COUNTER_SLOTS) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return Economy.isSellable(stack);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+        }
+    };
+    public static final int COUNTER_SLOTS = 9;
 
     public TradingPostBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.TRADING_POST.get(), pos, state);
@@ -40,6 +55,35 @@ public final class TradingPostBlockEntity extends BlockEntity {
     /** Exposed as the item handler capability on every side. */
     public IItemHandler input() {
         return input;
+    }
+
+    public ItemStackHandler counter() {
+        return counter;
+    }
+
+    /** Sells everything on the counter; returns the credits earned. */
+    public long sellCounter() {
+        long total = 0;
+        for (int slot = 0; slot < counter.getSlots(); slot++) {
+            ItemStack stack = counter.getStackInSlot(slot);
+            if (!stack.isEmpty()) {
+                long earned = sell(stack);
+                if (earned > 0) {
+                    total += earned;
+                    counter.setStackInSlot(slot, ItemStack.EMPTY);
+                }
+            }
+        }
+        return total;
+    }
+
+    public void dropContents() {
+        if (level != null) {
+            for (int slot = 0; slot < counter.getSlots(); slot++) {
+                Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), counter.getStackInSlot(slot));
+                counter.setStackInSlot(slot, ItemStack.EMPTY);
+            }
+        }
     }
 
     /** Sells the stack for the owning team; returns the credits earned (0 if nothing was sold). */
@@ -72,6 +116,7 @@ public final class TradingPostBlockEntity extends BlockEntity {
             tag.putUUID("owner", owner);
         }
         tag.putLong("total_earned", totalEarned);
+        tag.put("counter", counter.serializeNBT(registries));
     }
 
     @Override
@@ -79,6 +124,9 @@ public final class TradingPostBlockEntity extends BlockEntity {
         super.loadAdditional(tag, registries);
         owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
         totalEarned = tag.getLong("total_earned");
+        if (tag.contains("counter")) {
+            counter.deserializeNBT(registries, tag.getCompound("counter"));
+        }
     }
 
     /** A bottomless single slot: accepted items are sold on insertion, unsellable items are refused. */

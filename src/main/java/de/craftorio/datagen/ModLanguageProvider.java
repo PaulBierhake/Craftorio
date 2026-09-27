@@ -164,6 +164,9 @@ public final class ModLanguageProvider {
             add("craftorio.cave.error.no_layer", "There is no cave layer below this spot (area generated before the cave update).");
 
             add("craftorio.drill.status", "Drill: %s/%s field blocks · %s items/s · fuel for %s s");
+            add("craftorio.drill.gui_fields", "Field blocks: %s/%s");
+            add("craftorio.drill.gui_rate", "%s items/s");
+            add("craftorio.drill.gui_no_field", "Place it on an ore field!");
             add("craftorio.drill.overlap", "Too close to another drill – mining areas must not overlap.");
             add(ModBlocks.MINE_RUBBLE.get(), "Mine Rubble");
             add(ModBlocks.MINE_SHAFT.get(), "Mine Shaft");
@@ -196,6 +199,10 @@ public final class ModLanguageProvider {
             add("craftorio.tooltip.sell_price_stack", "Sell value: %s (stack: %s)");
             add("craftorio.trading_post.sold", "Sold for %s");
             add("craftorio.trading_post.info", "Trading post of team %s – earned so far: %s");
+            add("craftorio.trading_post.value", "Value: %s");
+            add("craftorio.trading_post.sell", "Sell");
+            add("craftorio.trading_post.owner", "Team: %s");
+            add("craftorio.trading_post.earned", "Total: %s");
 
             add("craftorio.command.credits", "Team %s has %s");
             add("craftorio.command.team.info", "Team %s – balance: %s – members: %s");
@@ -245,12 +252,14 @@ public final class ModLanguageProvider {
             add("craftorio.workbench.missing_button", "Missing?");
             add("craftorio.workbench.missing_list", "Missing for %s:");
             add("craftorio.workbench.have", " (you have %s)");
-            add("craftorio.toast.goal", "Guide goal reached!");
-            add("craftorio.starter_kit", "Welcome to Craftorio! In your inventory: the handbook (press G) and a starter kit with a construction workbench. Place it and build your first trading post.");
+            add("craftorio.toast.goal", "Reached! Press G");
+            add("craftorio.starter_kit", "Welcome to Craftorio! Your starter kit: the handbook (press G), a starter pickaxe for ore fields and stone, a construction workbench, gold and coal. Start by mining iron by hand – the handbook shows every step.");
             add(ModItems.GUIDE_BOOK.get(), "Craftorio Handbook");
+            add(ModItems.STARTER_PICKAXE.get(), "Starter Pickaxe");
             add("key.craftorio.guide", "Open handbook");
             add("key.categories.craftorio", "Craftorio");
             add("craftorio.guide.current", "Current");
+            add("craftorio.guide.claim", "Collect reward");
             add("craftorio.guide.step", "Guide · step %s of %s");
             add("craftorio.guide.progress", "Progress: %s");
             add("craftorio.guide.reward", "Reward: %s");
@@ -322,11 +331,13 @@ public final class ModLanguageProvider {
             add(ModBlocks.ARENA_FEEDER.get(), "Arena Feeder");
             add(ModItems.PATH_WAND.get(), "Path Wand");
             add("craftorio.quest.build_trading_post", "Build a trading post");
-            add("craftorio.quest.build_trading_post.hint", "Place the construction workbench from your starter kit (or craft one: 3 iron ingots, a crafting table, 5 planks) and open it. Build the trading post from its free blueprint – the planks come from any tree.");
+            add("craftorio.quest.build_trading_post.hint", "Build the trading post at the construction workbench: planks from any tree, a chest, 2 iron ingots from your drill and the gold ingot from your starter kit.");
+            add("craftorio.quest.mine_raw_iron", "Mine iron ore by hand");
+            add("craftorio.quest.mine_raw_iron.hint", "Hit an iron ore field with your starter pickaxe: every block mined gives raw iron and the field stays. Mine some stone as well, craft a furnace (8 cobblestone) and smelt the raw iron with coal from your starter kit or a coal field.");
             add("craftorio.quest.first_sale", "Sell something");
-            add("craftorio.quest.first_sale.hint", "Right-click the trading post with items, or feed it with hoppers and belts. Every item's value is shown in its tooltip.");
+            add("craftorio.quest.first_sale.hint", "Right-click the trading post, put items in, check the value and press Sell. Hoppers and belts sell directly. Every item's value is shown in its tooltip.");
             add("craftorio.quest.build_burner_drill", "Build a burner drill");
-            add("craftorio.quest.build_burner_drill.hint", "Build it at the workbench and place it on an ore field (iron, copper or coal): it mines the 3×3 blocks below it. Fuel it with coal.");
+            add("craftorio.quest.build_burner_drill.hint", "Place the construction workbench from your starter kit and build the drill (8 iron ingots, a furnace, 8 cobblestone). Put it on an ore field – it mines the 3×3 blocks below. Right-click it: coal goes into the fuel slot, the ore comes out of the output slot.");
             add("craftorio.quest.build_conveyor_belt", "Build conveyor belts");
             add("craftorio.quest.build_conveyor_belt.hint", "The drill pushes its output out of its front. Lay belts from there to the trading post and your money comes in by itself.");
             add("craftorio.quest.sell_raw_iron", "Sell 64 raw iron");
@@ -385,7 +396,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.td_40.hint", "The final challenge so far: laser towers and upgraded tesla towers against armoured waves.");
             add("craftorio.quest.next", "Next");
             add("craftorio.hud.guide", "Guide: %s");
-            add("craftorio.hud.guide_done", "Guide: %s ✔ – collect in the terminal");
+            add("craftorio.hud.guide_done", "Guide: %s ✔ – press G to collect");
             add("craftorio.quest.claim", "Collect");
             add("craftorio.quest.done", "Done ✔");
             add("craftorio.quest.ready", "Reached!");
@@ -549,6 +560,9 @@ public final class ModLanguageProvider {
             add("craftorio.cave.error.no_layer", "Unter dieser Stelle gibt es keine Höhlenschicht (Gebiet vor dem Höhlen-Update erzeugt).");
 
             add("craftorio.drill.status", "Bohrer: %s/%s Feldblöcke · %s Items/s · Brennstoff für %s s");
+            add("craftorio.drill.gui_fields", "Feldblöcke: %s/%s");
+            add("craftorio.drill.gui_rate", "%s Items/s");
+            add("craftorio.drill.gui_no_field", "Auf ein Erzfeld setzen!");
             add("craftorio.drill.overlap", "Zu nah an einem anderen Bohrer – Abbauflächen dürfen sich nicht überlappen.");
             add(ModBlocks.MINE_RUBBLE.get(), "Minengeröll");
             add(ModBlocks.MINE_SHAFT.get(), "Minenschacht");
@@ -581,6 +595,10 @@ public final class ModLanguageProvider {
             add("craftorio.tooltip.sell_price_stack", "Verkaufswert: %s (Stapel: %s)");
             add("craftorio.trading_post.sold", "Verkauft für %s");
             add("craftorio.trading_post.info", "Handelsposten von Team %s – bisher eingenommen: %s");
+            add("craftorio.trading_post.value", "Wert: %s");
+            add("craftorio.trading_post.sell", "Verkaufen");
+            add("craftorio.trading_post.owner", "Team: %s");
+            add("craftorio.trading_post.earned", "Gesamt: %s");
 
             add("craftorio.command.credits", "Team %s hat %s");
             add("craftorio.command.team.info", "Team %s – Kontostand: %s – Mitglieder: %s");
@@ -630,12 +648,14 @@ public final class ModLanguageProvider {
             add("craftorio.workbench.missing_button", "Fehlt?");
             add("craftorio.workbench.missing_list", "Für %s fehlt noch:");
             add("craftorio.workbench.have", " (du hast %s)");
-            add("craftorio.toast.goal", "Leitfaden-Ziel erreicht!");
-            add("craftorio.starter_kit", "Willkommen bei Craftorio! In deinem Inventar: das Handbuch (Taste G) und ein Starter-Kit mit Konstruktionswerkbank. Stell sie auf und baue deinen ersten Handelsposten.");
+            add("craftorio.toast.goal", "Erreicht! Mit G abholen");
+            add("craftorio.starter_kit", "Willkommen bei Craftorio! Dein Starter-Kit: das Handbuch (Taste G), eine Starter-Spitzhacke für Erzfelder und Stein, eine Konstruktionswerkbank, Gold und Kohle. Fang damit an, Eisenerz per Hand abzubauen – das Handbuch zeigt jeden Schritt.");
             add(ModItems.GUIDE_BOOK.get(), "Craftorio-Handbuch");
+            add(ModItems.STARTER_PICKAXE.get(), "Starter-Spitzhacke");
             add("key.craftorio.guide", "Handbuch öffnen");
             add("key.categories.craftorio", "Craftorio");
             add("craftorio.guide.current", "Aktuell");
+            add("craftorio.guide.claim", "Belohnung abholen");
             add("craftorio.guide.step", "Leitfaden · Schritt %s von %s");
             add("craftorio.guide.progress", "Fortschritt: %s");
             add("craftorio.guide.reward", "Belohnung: %s");
@@ -707,11 +727,13 @@ public final class ModLanguageProvider {
             add(ModBlocks.ARENA_FEEDER.get(), "Arena-Einspeiser");
             add(ModItems.PATH_WAND.get(), "Pfadstab");
             add("craftorio.quest.build_trading_post", "Baue einen Handelsposten");
-            add("craftorio.quest.build_trading_post.hint", "Stell die Konstruktionswerkbank aus deinem Starter-Kit auf (oder baue eine: 3 Eisenbarren, Werkbank, 5 Bretter) und öffne sie. Baue dort den Handelsposten aus seinem kostenlosen Bauplan – die Bretter bekommst du aus jedem Baum.");
+            add("craftorio.quest.build_trading_post.hint", "Baue den Handelsposten an der Konstruktionswerkbank: Bretter aus jedem Baum, eine Truhe, 2 Eisenbarren aus deinem Bohrer und den Goldbarren aus dem Starter-Kit.");
+            add("craftorio.quest.mine_raw_iron", "Baue Eisenerz per Hand ab");
+            add("craftorio.quest.mine_raw_iron.hint", "Bau ein Eisenerzfeld mit deiner Starter-Spitzhacke ab: jeder abgebaute Block gibt Roheisen, das Feld bleibt bestehen. Bau auch etwas Stein ab, stelle einen Ofen her (8 Bruchstein) und schmelze das Roheisen mit Kohle aus dem Starter-Kit oder von einem Kohlefeld.");
             add("craftorio.quest.first_sale", "Verkaufe etwas");
-            add("craftorio.quest.first_sale.hint", "Rechtsklicke den Handelsposten mit Items oder beliefere ihn per Trichter oder Band. Den Wert jedes Items zeigt sein Tooltip.");
+            add("craftorio.quest.first_sale.hint", "Rechtsklicke den Handelsposten, lege Items hinein, prüfe den Wert und drücke Verkaufen. Trichter und Bänder verkaufen direkt. Den Wert jedes Items zeigt sein Tooltip.");
             add("craftorio.quest.build_burner_drill", "Baue einen Brenner-Bohrer");
-            add("craftorio.quest.build_burner_drill.hint", "Baue ihn an der Werkbank und setze ihn auf ein Erzfeld (Eisen, Kupfer oder Kohle): er baut die 3×3 Blöcke darunter ab. Befeuere ihn mit Kohle.");
+            add("craftorio.quest.build_burner_drill.hint", "Stell die Konstruktionswerkbank aus dem Starter-Kit auf und baue den Bohrer (8 Eisenbarren, Ofen, 8 Bruchstein). Setz ihn auf ein Erzfeld – er baut die 3×3 Blöcke darunter ab. Rechtsklick öffnet ihn: Kohle in den Brennstoff-Slot, das Erz holst du aus dem Ausgabe-Slot.");
             add("craftorio.quest.build_conveyor_belt", "Baue Förderbänder");
             add("craftorio.quest.build_conveyor_belt.hint", "Der Bohrer gibt nach vorne aus. Lege Bänder von dort zum Handelsposten – dann verdienst du automatisch.");
             add("craftorio.quest.sell_raw_iron", "Verkaufe 64 Roheisen");
@@ -770,7 +792,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.td_40.hint", "Die bisher letzte Herausforderung: Lasertürme und aufgerüstete Tesla-Türme gegen gepanzerte Wellen.");
             add("craftorio.quest.next", "Als Nächstes");
             add("craftorio.hud.guide", "Leitfaden: %s");
-            add("craftorio.hud.guide_done", "Leitfaden: %s ✔ – im Terminal abholen");
+            add("craftorio.hud.guide_done", "Leitfaden: %s ✔ – mit G abholen");
             add("craftorio.quest.claim", "Abholen");
             add("craftorio.quest.done", "Erledigt ✔");
             add("craftorio.quest.ready", "Erreicht!");

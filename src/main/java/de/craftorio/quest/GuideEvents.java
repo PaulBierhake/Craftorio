@@ -32,8 +32,8 @@ public final class GuideEvents {
                 player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
                 player.getInventory().placeItemBackInInventory(new ItemStack(ModItems.GUIDE_BOOK.get()));
                 if (CraftorioConfig.STARTER_KIT.get()) {
-                    // Enough for the first trading post (plus planks from any tree) and fuel for the first drill.
-                    for (ItemStack stack : List.of(new ItemStack(ModItems.WORKBENCH.get()), new ItemStack(Items.IRON_INGOT, 4),
+                    // Iron and stone come from the starter pickaxe; gold is scarce early on, coal fuels furnace and first drill.
+                    for (ItemStack stack : List.of(new ItemStack(ModItems.STARTER_PICKAXE.get()), new ItemStack(ModItems.WORKBENCH.get()),
                             new ItemStack(Items.GOLD_INGOT, 1), new ItemStack(Items.CHEST, 1), new ItemStack(Items.COAL, 16))) {
                         player.getInventory().placeItemBackInInventory(stack);
                     }

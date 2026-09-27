@@ -4,6 +4,7 @@ import de.craftorio.Craftorio;
 import de.craftorio.blueprint.Blueprint;
 import de.craftorio.economy.Credits;
 import de.craftorio.economy.Economy;
+import de.craftorio.network.ClaimQuestPayload;
 import de.craftorio.quest.Quest;
 import de.craftorio.quest.Quests;
 import de.craftorio.recipe.MachineRecipe;
@@ -29,6 +30,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -50,6 +52,9 @@ public final class GuideScreen extends Screen {
     private int left;
     private int top;
     private final List<Icon> icons = new ArrayList<>();
+    private Button middle;
+    /** Page whose reward was just collected: once the server confirms, the book turns to the next step. */
+    private int claimedPage = -1;
 
     private record Icon(ItemStack stack, int x, int y) {
     }
@@ -69,9 +74,15 @@ public final class GuideScreen extends Screen {
         top = (height - HEIGHT) / 2;
         addRenderableWidget(Button.builder(Component.literal("◀"), button -> page = Math.max(0, page - 1))
                 .bounds(left + 8, top + HEIGHT - 24, 30, 16).build());
-        addRenderableWidget(Button.builder(Component.translatable("craftorio.guide.current"),
-                        button -> page = Quests.current(ClientTeamState.claimedQuests()).orElse(page))
-                .bounds(left + WIDTH / 2 - 40, top + HEIGHT - 24, 80, 16).build());
+        middle = addRenderableWidget(Button.builder(Component.translatable("craftorio.guide.current"), button -> {
+                    if (claimable()) {
+                        PacketDistributor.sendToServer(new ClaimQuestPayload(page));
+                        claimedPage = page;
+                    } else {
+                        page = Quests.current(ClientTeamState.claimedQuests()).orElse(page);
+                    }
+                })
+                .bounds(left + WIDTH / 2 - 50, top + HEIGHT - 24, 100, 16).build());
         addRenderableWidget(Button.builder(Component.literal("▶"), button -> page = Math.min(Quests.ALL.size() - 1, page + 1))
                 .bounds(left + WIDTH - 38, top + HEIGHT - 24, 30, 16).build());
     }
@@ -81,8 +92,26 @@ public final class GuideScreen extends Screen {
         return false;
     }
 
+    /** The page's goal is reached and its reward not collected yet. */
+    private boolean claimable() {
+        Quest quest = Quests.ALL.get(page);
+        long progress = page < ClientTeamState.questProgress().size() ? ClientTeamState.questProgress().get(page) : 0;
+        return progress >= quest.amount() && !ClientTeamState.claimedQuests().contains(quest.id());
+    }
+
+    @Override
+    public void tick() {
+        if (claimedPage >= 0 && ClientTeamState.claimedQuests().contains(Quests.ALL.get(claimedPage).id())) {
+            claimedPage = -1;
+            page = Quests.current(ClientTeamState.claimedQuests()).orElse(page);
+        }
+    }
+
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        middle.setMessage(claimable()
+                ? Component.translatable("craftorio.guide.claim").withStyle(ChatFormatting.GREEN)
+                : Component.translatable("craftorio.guide.current"));
         super.render(graphics, mouseX, mouseY, partialTick);
         icons.clear();
         Quest quest = Quests.ALL.get(page);
@@ -141,7 +170,7 @@ public final class GuideScreen extends Screen {
                 }
                 renderBlueprint(graphics, blueprint, quest.kind() == Quest.Kind.UNLOCK, x, y);
             }
-            case SELL -> renderSource(graphics, BuiltInRegistries.ITEM.get(ResourceLocation.parse(quest.target())), x, y);
+            case MINE, SELL -> renderSource(graphics, BuiltInRegistries.ITEM.get(ResourceLocation.parse(quest.target())), x, y);
             default -> {
                 Component note = quest.kind() == Quest.Kind.EARN ? Component.translatable("craftorio.guide.earn")
                         : Component.translatable("craftorio.guide.defense");

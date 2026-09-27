@@ -42,6 +42,7 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.ENERGY_CRYSTAL.get());
         basicItem(ModItems.FUEL_ROD.get());
         handheldItem(ModItems.PATH_WAND.get());
+        handheldItem(ModItems.STARTER_PICKAXE.get());
         basicItem(ModItems.GUIDE_BOOK.get());
     }
 }

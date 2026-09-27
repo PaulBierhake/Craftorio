@@ -9,10 +9,11 @@ import java.util.Optional;
  */
 public final class Quests {
     public static final List<Quest> ALL = List.of(
-            // Surface: first money, first automation
+            // Surface: by hand to the first drill, then first money and automation
+            mine("raw_iron", "minecraft:raw_iron", 16, 50),
+            build("burner_drill", 1, 100),
             build("trading_post", 1, 50),
             earn("first_sale", 1, 100),
-            build("burner_drill", 1, 100),
             build("conveyor_belt", 1, 100),
             sell("raw_iron", "minecraft:raw_iron", 64, 150),
             build("inserter", 1, 100),
@@ -66,6 +67,10 @@ public final class Quests {
 
     private static Quest earn(String id, long amount, long reward) {
         return new Quest(id, Quest.Kind.EARN, "", amount, reward);
+    }
+
+    private static Quest mine(String id, String item, long amount, long reward) {
+        return new Quest("mine_" + id, Quest.Kind.MINE, item, amount, reward);
     }
 
     private static Quest sell(String id, String item, long amount, long reward) {

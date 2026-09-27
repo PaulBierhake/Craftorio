@@ -29,8 +29,9 @@ IntelliJ IDEA: Projekt als Gradle-Projekt öffnen; die Run-Konfigurationen werde
 
 - Jeder Spieler gehört zu genau einem **Team**; beim ersten Betreten entsteht ein Solo-Team.
   Das Team teilt ein **Credits-Konto** (¢), das oben links im HUD angezeigt wird.
-- **Handelsposten**: nimmt Items per Rechtsklick, Trichter oder (später) Förderband an und
-  schreibt ihren Verkaufswert dem Team gut. Items ohne Preis werden abgelehnt.
+- **Handelsposten**: Rechtsklick öffnet die **Theke** (9 Slots): Items hineinlegen, der Wert wird angezeigt, erst
+  der Button **Verkaufen** verkauft sie – so geht nichts aus Versehen weg. Trichter und Förderbänder verkaufen
+  direkt. Der Erlös geht aufs Team-Konto; Items ohne Preis werden abgelehnt.
 - **Preise** kommen aus der Data Map `data/craftorio/data_maps/item/sell_prices.json`
   (per Datapack änderbar, `/reload`) und stehen im Item-Tooltip.
 - Befehle:
@@ -58,7 +59,12 @@ Verlässt das letzte Mitglied ein Team, wird es aufgelöst und sein Guthaben wan
 - **Brenner-Bohrer**: auf ein Feld setzen, mit Brennstoff (Kohle, Holz …) füttern. Er baut die 3×3 Blöcke darunter
   ab (0,03 Items/s pro Feldblock, voll belegt 0,27/s) und gibt die Ausbeute nach vorne ab. Abbauflächen zweier Bohrer
   dürfen sich **nicht überlappen** – ein voll bebautes Feld liefert also einen festen Maximaldurchsatz.
-  Rechtsklick mit leerer Hand zeigt den Status und nimmt gepufferte Ausbeute heraus.
+  Rechtsklick öffnet ihn wie einen Ofen: Brennstoff-Slot (eine Kohle brennt, dann die nächste), Flamme,
+  Feldblöcke und Rate sowie ein Ausgabe-Slot (ein Stapel), aus dem man die Ausbeute nimmt. Automatisch (Greifarm)
+  kann nur Brennstoff hinein und Ausbeute heraus.
+
+![Brenner-Bohrer](docs/screenshots/brenner-bohrer-gui.png)
+![Handelsposten](docs/screenshots/handelsposten-gui.png)
 - **Förderband** mit zwei Spuren (1,875 Blöcke/s, 4 Items pro Spur und Block). Bänder laufen durch Kurven,
   laden seitlich auf die nahe Spur, nehmen fallengelassene Items auf, tragen Spieler mit und liefern am Ende in
   alles mit Inventar (Kisten, Handelsposten, Bohrer-Brennstoff …).
@@ -201,24 +207,27 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
   `/craftorio guide`); öffnen per Rechtsklick oder jederzeit mit **G**. Es schlägt den aktuellen Leitfaden-Schritt
   auf und zeigt, **wie man ihn schafft**: Bauplan-Material mit Symbolen und Werkbank-Stufe, das Crafting-Raster
   von Konstruktionswerkbank bzw. Terminal, Kaufpreis, oder bei Verkaufszielen die Quelle (Erzfeld, Ofen, Presse,
-  Montage). Mit den Pfeilen blättert man durch alle Schritte.
+  Montage). Mit den Pfeilen blättert man durch alle Schritte. Ist ein Ziel erreicht, wird der mittlere Button zu
+  **„Belohnung abholen"** – ein Terminal braucht man dafür nicht.
 
-- **Starter-Kit** (Server-Config `economy.starterKit`, Standard an): Beim ersten Betreten gibt es zusätzlich eine
-  Konstruktionswerkbank, 4 Eisenbarren, 1 Goldbarren, 1 Truhe und 16 Kohle – mit Brettern aus dem nächsten Baum
-  reicht das direkt für den ersten Handelsposten.
+- **Starter-Kit** (Server-Config `economy.starterKit`, Standard an): Beim ersten Betreten gibt es zusätzlich die
+  unzerstörbare **Starter-Spitzhacke**, eine Konstruktionswerkbank, 1 Goldbarren, 1 Truhe und 16 Kohle.
+- **Einstieg wie in Factorio – ohne Werkzeuge bauen zu müssen**: Mit der Starter-Spitzhacke baut man Erzfelder
+  (das Feld bleibt stehen) und Stein von Hand ab, stellt einen Ofen her und schmilzt das erste Eisen. Der Leitfaden
+  beginnt mit *16 Eisenerz per Hand abbauen* → *Brenner-Bohrer* → *Handelsposten* → *erster Verkauf*.
 - **„Fehlt?"** an der Werkbank: Fehlendes Material ist rot markiert, der Tooltip zeigt „du hast X". Ein Klick auf
   *Fehlt?* listet im Chat genau, was noch fehlt.
-- **Hinweis-Popups**: Sobald ein Leitfaden-Ziel erreicht ist, erscheint oben rechts „Leitfaden-Ziel erreicht!" –
-  die Belohnung holt man im Terminal ab.
+- **Hinweis-Popups**: Sobald ein Leitfaden-Ziel erreicht ist, erscheint oben rechts „Erreicht! Mit G abholen" –
+  die Belohnung holt man im Handbuch (oder im Terminal) ab.
 
 ![Handbuch](docs/screenshots/handbuch.png)
 ![Fehlt?](docs/screenshots/werkbank-fehlt.png)
 
-- **Leitfaden** – die Questline führt Schritt für Schritt durchs Spiel: 33 Ziele vom ersten Handelsposten über
+- **Leitfaden** – die Questline führt Schritt für Schritt durchs Spiel: 33 Ziele vom ersten Handabbau über
   Strom, Tower Defense, Höhlen bis zu Minen und 1 Mio. ¢. Jedes Ziel hat eine **Anleitung** (Tooltip im
   Terminal-Tab *Leitfaden*), der **nächste Schritt** ist markiert und steht mit Fortschritt dauerhaft im **HUD**
-  unter dem Kontostand. Gemessen werden Verkäufe, gekaufte und an der Werkbank gebaute Baupläne, Gesamtverdienst
-  und TD-Level; Belohnungen (Credits) holt man einmal pro Team im Terminal ab.
+  unter dem Kontostand. Gemessen werden von Hand abgebaute Erze, Verkäufe, gekaufte und an der Werkbank gebaute
+  Baupläne, Gesamtverdienst und TD-Level; Belohnungen (Credits) holt man einmal pro Team im Handbuch oder Terminal ab.
 - **Team-Rechte**: Das erste Mitglied ist die **Teamleitung**. Sie kann Mitglieder entfernen
   (`/craftorio team kick <Spieler>`), die Leitung übergeben (`/craftorio team leader <Spieler>`) und festlegen,
   wer Credits ausgeben darf (`/craftorio team spending all|leader`) – gilt für Baupläne, Turm-Upgrades,

@@ -10,6 +10,15 @@ import de.craftorio.machine.DrillTier;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModItems;
 import de.craftorio.team.Team;
+import de.craftorio.machine.DrillBlockEntity;
+import de.craftorio.menu.DrillMenu;
+import de.craftorio.quest.Quest;
+import de.craftorio.registry.ModItems;
+import de.craftorio.team.Team;
+import de.craftorio.team.TeamData;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -50,6 +59,38 @@ public final class AutomationGameTests {
             helper.assertTrue(count(helper, chest, Items.RAW_IRON) >= 2, "drill output did not reach the chest");
             helper.assertBlockPresent(ModBlocks.IRON_ORE_FIELD.get(), new BlockPos(2, 1, 2));
         });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void drillMenuTakesFuelAndGivesOutput(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 2, 2);
+        helper.setBlock(pos, ModBlocks.BURNER_DRILL.get());
+        DrillBlockEntity drill = helper.getBlockEntity(pos);
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        DrillMenu menu = (DrillMenu) drill.createMenu(1, player.getInventory(), player);
+        helper.assertTrue(menu.getSlot(0).mayPlace(new ItemStack(Items.COAL)), "coal goes into the fuel slot");
+        helper.assertFalse(menu.getSlot(0).mayPlace(new ItemStack(Items.DIRT)), "only fuel");
+        helper.assertFalse(menu.getSlot(1).mayPlace(new ItemStack(Items.COAL)), "output slot is take-only");
+        menu.getSlot(0).set(new ItemStack(Items.COAL, 5));
+        helper.assertTrue(menu.getSlot(0).mayPickup(player), "players may take fuel back");
+        helper.assertTrue(drill.handler().extractItem(DrillBlockEntity.FUEL_SLOT, 1, true).isEmpty(), "automation may not");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void handMiningOreFieldCountsForGuide(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(1, 1, 1);
+        helper.setBlock(pos, ModBlocks.IRON_ORE_FIELD.get());
+        // Mock players always count as creative; a fake player is a plain survival player.
+        ServerPlayer player = FakePlayerFactory.getMinecraft(helper.getLevel());
+        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.STARTER_PICKAXE.get()));
+        Team team = TeamData.registry(player.server).ensureTeam(player.getUUID(), player.getGameProfile().getName());
+        long before = team.built().getOrDefault(Quest.MINED_PREFIX + "minecraft:raw_iron", 0L);
+        player.gameMode.destroyBlock(helper.absolutePos(pos));
+        helper.assertBlockPresent(ModBlocks.IRON_ORE_FIELD.get(), pos);
+        long mined = team.built().getOrDefault(Quest.MINED_PREFIX + "minecraft:raw_iron", 0L) - before;
+        helper.assertValueEqual(mined, 1L, "hand-mined raw iron");
+        helper.succeed();
     }
 
     @GameTest(template = EMPTY, timeoutTicks = 200)
