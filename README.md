@@ -66,6 +66,31 @@ Verlässt das letzte Mitglied ein Team, wird es aufgelöst und sein Guthaben wan
 
 ![Anlage](docs/screenshots/m2-anlage.png)
 
+### M3 – Verarbeitung & Energie
+
+- **Kohle-Generator**: verbrennt Brennstoff zu Strom (60 FE/t, Puffer 20.000 FE) – nur solange Platz im Puffer ist.
+- **Strommast**: verbindet sich automatisch mit Masten im Umkreis von 8 Blöcken (sichtbare Kupferkabel) und
+  versorgt alle Maschinen und Generatoren im Umkreis von 2 Blöcken. Rechtsklick zeigt die Netzauslastung.
+  Bei Strommangel wird die Energie anteilig verteilt – alle Maschinen werden gleich langsamer.
+  Das Netz arbeitet mit Forge Energy (FE) und versorgt auch FE-Maschinen anderer Mods.
+- **Elektro-Schmelzofen** (Vanilla-Schmelzrezepte, 80 Ticks, 20 FE/t), **Presse** (15 FE/t) und
+  **Montagemaschine** (25 FE/t, Rezept per Pfeiltasten in der GUI wählen; jeder Eingangsslot nimmt genau
+  seine Zutat an). Alle Maschinen haben eine GUI und arbeiten mit Bändern und Greifarmen zusammen.
+- **Zwischenprodukte** mit Wertschöpfung (Preise ×10 skaliert):
+
+| Kette | Preis |
+|---|---|
+| Rohes Eisen → Eisenbarren → Eisenplatte | 10 → 16 → 22 ¢ |
+| Kupferbarren → 2 Kupferkabel | 16 → 2 × 12 ¢ |
+| 2 Eisenplatten → Zahnrad | 44 → 60 ¢ |
+| 3 Kabel + 1 Platte → Schaltkreis | 58 → 85 ¢ |
+| 2 Zahnräder + 1 Platte + 2 Kabel → Motor | 166 → 240 ¢ |
+
+- Maschinenrezepte sind Datapack-JSON (`craftorio:pressing`, `craftorio:assembling`).
+
+![Stromnetz](docs/screenshots/m3-stromnetz.png)
+![Montagemaschine](docs/screenshots/m3-montagemaschine.png)
+
 ## Projektstruktur
 
 ```
@@ -78,6 +103,9 @@ src/main/java/de/craftorio/
 ├── world/                  Erzfelder, Weltgenerierung, Start-Felder
 ├── machine/                Bohrer (Abbaufläche, Produktionsrate)
 ├── logistics/              Förderband (BeltLane = reine Spur-Logik mit Unit-Tests), Greifarm
+├── energy/                 Generator, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
+├── recipe/                 Maschinenrezepte (Presse, Montage)
+├── menu/                   Container-Menüs der Maschinen
 ├── command/                /craftorio-Befehle
 ├── network/                Server→Client-Sync
 ├── client/                 HUD, Tooltips

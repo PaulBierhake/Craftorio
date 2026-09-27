@@ -3,6 +3,7 @@ package de.craftorio.datagen;
 import de.craftorio.Craftorio;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.machine.BurnerDrillBlock;
+import de.craftorio.machine.MachineBaseBlock;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -38,6 +39,22 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         ModelFile inserter = models().getExistingFile(modLoc("block/inserter"));
         horizontalBlock(ModBlocks.INSERTER.get(), inserter);
         simpleBlockItem(ModBlocks.INSERTER.get(), inserter);
+
+        machine(ModBlocks.COAL_GENERATOR.get(), "coal_generator");
+        machine(ModBlocks.ELECTRIC_FURNACE.get(), "electric_furnace");
+        machine(ModBlocks.PRESS.get(), "press");
+        machine(ModBlocks.ASSEMBLER.get(), "assembler");
+        ModelFile pole = models().getExistingFile(modLoc("block/power_pole"));
+        simpleBlock(ModBlocks.POWER_POLE.get(), pole);
+        simpleBlockItem(ModBlocks.POWER_POLE.get(), pole);
+    }
+
+    /** Shared machine casing with a front that lights up while the machine works. */
+    private void machine(Block block, String name) {
+        ModelFile off = models().orientable(name, modLoc("block/machine_side"), modLoc("block/" + name + "_front"), modLoc("block/machine_top"));
+        ModelFile on = models().orientable(name + "_on", modLoc("block/machine_side"), modLoc("block/" + name + "_front_on"), modLoc("block/machine_top"));
+        horizontalBlock(block, state -> state.getValue(MachineBaseBlock.ACTIVE) ? on : off);
+        simpleBlockItem(block, off);
     }
 
     private void oreField(Block block) {

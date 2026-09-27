@@ -5,6 +5,8 @@ import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModCreativeTabs;
 import de.craftorio.registry.ModFeatures;
+import de.craftorio.registry.ModMenus;
+import de.craftorio.registry.ModRecipes;
 import de.craftorio.registry.ModItems;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -24,6 +26,9 @@ public final class Craftorio {
         ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
         ModFeatures.FEATURES.register(modBus);
+        ModMenus.MENUS.register(modBus);
+        ModRecipes.TYPES.register(modBus);
+        ModRecipes.SERIALIZERS.register(modBus);
 
         container.registerConfig(ModConfig.Type.SERVER, CraftorioConfig.SPEC);
     }

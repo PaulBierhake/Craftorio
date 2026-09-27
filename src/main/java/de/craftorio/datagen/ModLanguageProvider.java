@@ -2,6 +2,7 @@ package de.craftorio.datagen;
 
 import de.craftorio.Craftorio;
 import de.craftorio.registry.ModBlocks;
+import de.craftorio.registry.ModItems;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
@@ -25,6 +26,22 @@ public final class ModLanguageProvider {
             add(ModBlocks.BURNER_DRILL.get(), "Burner Drill");
             add(ModBlocks.CONVEYOR_BELT.get(), "Conveyor Belt");
             add(ModBlocks.INSERTER.get(), "Inserter");
+
+            add(ModBlocks.COAL_GENERATOR.get(), "Coal Generator");
+            add(ModBlocks.POWER_POLE.get(), "Power Pole");
+            add(ModBlocks.ELECTRIC_FURNACE.get(), "Electric Furnace");
+            add(ModBlocks.PRESS.get(), "Press");
+            add(ModBlocks.ASSEMBLER.get(), "Assembler");
+            add(ModItems.IRON_PLATE.get(), "Iron Plate");
+            add(ModItems.COPPER_CABLE.get(), "Copper Cable");
+            add(ModItems.IRON_GEAR.get(), "Iron Gear");
+            add(ModItems.CIRCUIT.get(), "Circuit");
+            add(ModItems.MOTOR.get(), "Motor");
+
+            add("craftorio.gui.energy", "Energy: %s / %s FE");
+            add("craftorio.gui.no_recipe", "Choose a recipe");
+            add("craftorio.power.no_network", "Not connected");
+            add("craftorio.power.network", "Grid: %s poles · %s generators · %s consumers · %s/%s FE/t · %s%% supplied");
 
             add("craftorio.drill.status", "Drill: %s/%s field blocks · %s items/s · fuel for %s s");
             add("craftorio.drill.overlap", "Too close to another drill – mining areas must not overlap.");
@@ -69,6 +86,22 @@ public final class ModLanguageProvider {
             add(ModBlocks.BURNER_DRILL.get(), "Brenner-Bohrer");
             add(ModBlocks.CONVEYOR_BELT.get(), "Förderband");
             add(ModBlocks.INSERTER.get(), "Greifarm");
+
+            add(ModBlocks.COAL_GENERATOR.get(), "Kohle-Generator");
+            add(ModBlocks.POWER_POLE.get(), "Strommast");
+            add(ModBlocks.ELECTRIC_FURNACE.get(), "Elektro-Schmelzofen");
+            add(ModBlocks.PRESS.get(), "Presse");
+            add(ModBlocks.ASSEMBLER.get(), "Montagemaschine");
+            add(ModItems.IRON_PLATE.get(), "Eisenplatte");
+            add(ModItems.COPPER_CABLE.get(), "Kupferkabel");
+            add(ModItems.IRON_GEAR.get(), "Zahnrad");
+            add(ModItems.CIRCUIT.get(), "Schaltkreis");
+            add(ModItems.MOTOR.get(), "Motor");
+
+            add("craftorio.gui.energy", "Energie: %s / %s FE");
+            add("craftorio.gui.no_recipe", "Rezept wählen");
+            add("craftorio.power.no_network", "Nicht verbunden");
+            add("craftorio.power.network", "Netz: %s Masten · %s Generatoren · %s Verbraucher · %s/%s FE/t · %s%% versorgt");
 
             add("craftorio.drill.status", "Bohrer: %s/%s Feldblöcke · %s Items/s · Brennstoff für %s s");
             add("craftorio.drill.overlap", "Zu nah an einem anderen Bohrer – Abbauflächen dürfen sich nicht überlappen.");

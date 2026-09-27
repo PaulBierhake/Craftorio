@@ -2,6 +2,11 @@ package de.craftorio.registry;
 
 import de.craftorio.Craftorio;
 import de.craftorio.economy.block.TradingPostBlock;
+import de.craftorio.energy.CoalGeneratorBlock;
+import de.craftorio.energy.PowerPoleBlock;
+import de.craftorio.machine.MachineBaseBlock;
+import de.craftorio.machine.MachineType;
+import de.craftorio.machine.ProcessingMachineBlock;
 import de.craftorio.logistics.ConveyorBeltBlock;
 import de.craftorio.logistics.InserterBlock;
 import de.craftorio.machine.BurnerDrillBlock;
@@ -63,6 +68,33 @@ public final class ModBlocks {
                     .strength(1.5F)
                     .noOcclusion()
                     .sound(SoundType.METAL));
+
+    public static final DeferredBlock<CoalGeneratorBlock> COAL_GENERATOR = BLOCKS.registerBlock("coal_generator", CoalGeneratorBlock::new,
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 12 : 0));
+
+    public static final DeferredBlock<PowerPoleBlock> POWER_POLE = BLOCKS.registerBlock("power_pole", PowerPoleBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(1.0F)
+                    .noOcclusion()
+                    .sound(SoundType.WOOD));
+
+    public static final DeferredBlock<ProcessingMachineBlock> ELECTRIC_FURNACE = machine("electric_furnace", MachineType.ELECTRIC_FURNACE);
+    public static final DeferredBlock<ProcessingMachineBlock> PRESS = machine("press", MachineType.PRESS);
+    public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
+
+    private static BlockBehaviour.Properties machineProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
+                .strength(3.5F)
+                .requiresCorrectToolForDrops()
+                .sound(SoundType.METAL);
+    }
+
+    private static DeferredBlock<ProcessingMachineBlock> machine(String name, MachineType type) {
+        return BLOCKS.registerBlock(name, properties -> new ProcessingMachineBlock(type, properties),
+                machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 8 : 0));
+    }
 
     private static DeferredBlock<OreFieldBlock> oreField(String name, Supplier<? extends ItemLike> resource, MapColor color) {
         return BLOCKS.registerBlock(name, properties -> new OreFieldBlock(resource, properties),

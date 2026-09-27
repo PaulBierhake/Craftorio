@@ -20,6 +20,11 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.BURNER_DRILL.get());
         dropSelf(ModBlocks.CONVEYOR_BELT.get());
         dropSelf(ModBlocks.INSERTER.get());
+        dropSelf(ModBlocks.COAL_GENERATOR.get());
+        dropSelf(ModBlocks.POWER_POLE.get());
+        dropSelf(ModBlocks.ELECTRIC_FURNACE.get());
+        dropSelf(ModBlocks.PRESS.get());
+        dropSelf(ModBlocks.ASSEMBLER.get());
     }
 
     @Override

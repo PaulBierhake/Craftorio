@@ -28,7 +28,7 @@ import java.util.UUID;
 @PrefixGameTestTemplate(false)
 public final class TradingPostGameTests {
     private static final String EMPTY = "empty";
-    private static final long IRON_INGOT_PRICE = 2;
+    private static final long IRON_INGOT_PRICE = 16;
 
     private TradingPostGameTests() {
     }

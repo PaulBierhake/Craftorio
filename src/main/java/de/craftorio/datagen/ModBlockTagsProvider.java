@@ -22,10 +22,11 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAP_ROCK.get());
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAP_ROCK.get());
 
-        tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get());
+        tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get(), ModBlocks.POWER_POLE.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
                 ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get(), ModBlocks.COAL_FIELD.get(),
-                ModBlocks.BURNER_DRILL.get(), ModBlocks.CONVEYOR_BELT.get(), ModBlocks.INSERTER.get());
+                ModBlocks.BURNER_DRILL.get(), ModBlocks.CONVEYOR_BELT.get(), ModBlocks.INSERTER.get(),
+                ModBlocks.COAL_GENERATOR.get(), ModBlocks.ELECTRIC_FURNACE.get(), ModBlocks.PRESS.get(), ModBlocks.ASSEMBLER.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get());
     }
 }

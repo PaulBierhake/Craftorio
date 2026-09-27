@@ -10,6 +10,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import de.craftorio.registry.ModBlockEntities;
+import de.craftorio.registry.ModMenus;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -56,6 +58,13 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
+            event.registerBlockEntityRenderer(ModBlockEntities.POWER_POLE.get(), PowerPoleRenderer::new);
+        }
+
+        @SubscribeEvent
+        public static void registerScreens(RegisterMenuScreensEvent event) {
+            event.register(ModMenus.GENERATOR.get(), GeneratorScreen::new);
+            event.register(ModMenus.PROCESSING_MACHINE.get(), ProcessingMachineScreen::new);
         }
     }
 }

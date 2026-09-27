@@ -2,6 +2,7 @@ package de.craftorio.datagen;
 
 import de.craftorio.economy.ModDataMaps;
 import de.craftorio.economy.SellPrice;
+import de.craftorio.registry.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
@@ -24,38 +25,48 @@ public final class ModSellPriceProvider extends DataMapProvider {
     protected void gather(HolderLookup.Provider registries) {
         var prices = builder(ModDataMaps.SELL_PRICE);
 
-        prices.add(ItemTags.LOGS, new SellPrice(1), false);
-        prices.add(ItemTags.SAND, new SellPrice(1), false);
+        // Raw resources
+        prices.add(ItemTags.LOGS, new SellPrice(10), false);
+        prices.add(ItemTags.SAND, new SellPrice(10), false);
+        price(prices, Items.COAL, 10);
+        price(prices, Items.CHARCOAL, 10);
+        price(prices, Items.RAW_IRON, 10);
+        price(prices, Items.RAW_COPPER, 10);
+        price(prices, Items.RAW_GOLD, 30);
+        price(prices, Items.REDSTONE, 10);
+        price(prices, Items.LAPIS_LAZULI, 20);
+        price(prices, Items.QUARTZ, 20);
+        price(prices, Items.CLAY_BALL, 10);
+        price(prices, Items.DIAMOND, 400);
+        price(prices, Items.EMERALD, 300);
 
-        price(prices, Items.COAL, 1);
-        price(prices, Items.CHARCOAL, 1);
-        price(prices, Items.RAW_IRON, 1);
-        price(prices, Items.RAW_COPPER, 1);
-        price(prices, Items.RAW_GOLD, 3);
-        price(prices, Items.REDSTONE, 1);
-        price(prices, Items.LAPIS_LAZULI, 2);
-        price(prices, Items.QUARTZ, 2);
-        price(prices, Items.CLAY_BALL, 1);
+        // Step 1: smelted
+        price(prices, Items.GLASS, 16);
+        price(prices, Items.BRICK, 16);
+        price(prices, Items.IRON_INGOT, 16);
+        price(prices, Items.COPPER_INGOT, 16);
+        price(prices, Items.GOLD_INGOT, 45);
+        price(prices, Items.IRON_NUGGET, 2);
+        price(prices, Items.GOLD_NUGGET, 5);
 
-        price(prices, Items.GLASS, 2);
-        price(prices, Items.BRICK, 2);
-        price(prices, Items.IRON_INGOT, 2);
-        price(prices, Items.COPPER_INGOT, 2);
-        price(prices, Items.GOLD_INGOT, 5);
-        price(prices, Items.IRON_NUGGET, 1);
-        price(prices, Items.GOLD_NUGGET, 1);
+        // Step 2: pressed
+        price(prices, ModItems.IRON_PLATE.get(), 22);
+        price(prices, ModItems.COPPER_CABLE.get(), 12);
 
-        price(prices, Items.COAL_BLOCK, 12);
-        price(prices, Items.IRON_BLOCK, 25);
-        price(prices, Items.COPPER_BLOCK, 25);
-        price(prices, Items.GOLD_BLOCK, 60);
-        price(prices, Items.REDSTONE_BLOCK, 12);
-        price(prices, Items.LAPIS_BLOCK, 24);
+        // Step 3+: assembled
+        price(prices, ModItems.IRON_GEAR.get(), 60);
+        price(prices, ModItems.CIRCUIT.get(), 85);
+        price(prices, ModItems.MOTOR.get(), 240);
 
-        price(prices, Items.DIAMOND, 40);
-        price(prices, Items.EMERALD, 30);
-        price(prices, Items.DIAMOND_BLOCK, 480);
-        price(prices, Items.EMERALD_BLOCK, 360);
+        // Storage blocks: a small bonus over their contents
+        price(prices, Items.COAL_BLOCK, 100);
+        price(prices, Items.IRON_BLOCK, 160);
+        price(prices, Items.COPPER_BLOCK, 160);
+        price(prices, Items.GOLD_BLOCK, 450);
+        price(prices, Items.REDSTONE_BLOCK, 100);
+        price(prices, Items.LAPIS_BLOCK, 200);
+        price(prices, Items.DIAMOND_BLOCK, 4000);
+        price(prices, Items.EMERALD_BLOCK, 3000);
     }
 
     private static void price(Builder<SellPrice, Item> prices, Item item, long credits) {

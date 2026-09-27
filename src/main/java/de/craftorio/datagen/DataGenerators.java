@@ -29,6 +29,7 @@ public final class DataGenerators {
         CompletableFuture<HolderLookup.Provider> lookup = event.getLookupProvider();
 
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(output, fileHelper));
+        generator.addProvider(event.includeClient(), new ModItemModelProvider(output, fileHelper));
         generator.addProvider(event.includeClient(), new ModLanguageProvider.English(output));
         generator.addProvider(event.includeClient(), new ModLanguageProvider.German(output));
 

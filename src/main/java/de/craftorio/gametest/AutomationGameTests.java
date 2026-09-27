@@ -89,7 +89,7 @@ public final class AutomationGameTests {
         start.insertItem(0, new ItemStack(Items.IRON_INGOT), false);
         start.insertItem(0, new ItemStack(Items.IRON_INGOT), false);
 
-        helper.succeedWhen(() -> helper.assertValueEqual(team.balance(), 4L, "balance after two ingots"));
+        helper.succeedWhen(() -> helper.assertValueEqual(team.balance(), 32L, "balance after two ingots"));
     }
 
     @GameTest(template = EMPTY)

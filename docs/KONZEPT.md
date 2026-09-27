@@ -110,14 +110,15 @@ Bleibt vorerst **unverändert**. Später denkbar: ein eigenes Crafting-System, i
 - **Feste Preise, keine Marktsättigung** *(entschieden)*. Ein Item hat immer denselben Preis, egal wie viel verkauft wird.
 - **Wertschöpfung pro Stufe:** Verkaufspreis ≈ Summe der Inputpreise × **1,3–1,6** + Energieanteil. Jede Verarbeitungsstufe lohnt sich; tiefe Ketten sind am profitabelsten.
 
-| Ware | Stufe | Preis (Beispiel) |
+| Ware | Stufe | Preis (umgesetzt, ×10 skaliert) |
 |---|---|---|
-| Eisenerz | 0 | 1 ¢ |
-| Eisenbarren | 1 | 2 ¢ |
-| Eisenplatte | 2 | 3 ¢ |
-| Zahnrad (2 Platten) | 3 | 9 ¢ |
-| Motor | 4 | 60 ¢ |
-| Stahlträger | 4 | 45 ¢ |
+| Rohes Eisen | 0 | 10 ¢ |
+| Eisenbarren | 1 | 16 ¢ |
+| Eisenplatte | 2 | 22 ¢ |
+| Kupferkabel (2 pro Barren) | 2 | 12 ¢ |
+| Zahnrad (2 Platten) | 3 | 60 ¢ |
+| Schaltkreis (3 Kabel + 1 Platte) | 3 | 85 ¢ |
+| Motor (2 Zahnräder + 1 Platte + 2 Kabel) | 4 | 240 ¢ |
 
 - **Aufträge/Kontrakte** (optional, später): zeitlich begrenzte Bestellungen mit Bonus als zusätzliche Ziele – ohne Einfluss auf die Grundpreise.
 
@@ -313,4 +314,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M2 abgeschlossen**, als Nächstes **M3 – Verarbeitung & Energie**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M3 abgeschlossen**, als Nächstes **M4 – Terminal & Tech-Baum**.
