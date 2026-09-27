@@ -3,6 +3,7 @@ package de.craftorio.datagen;
 import de.craftorio.Craftorio;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.machine.BurnerDrillBlock;
+import de.craftorio.logistics.ElevatorBlock;
 import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.world.cave.CaveEntranceBlock;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
@@ -11,6 +12,9 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 public final class ModBlockStateProvider extends BlockStateProvider {
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper fileHelper) {
@@ -32,6 +36,14 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         oreField(ModBlocks.GOLD_ORE_FIELD.get());
         oreField(ModBlocks.QUARTZ_FIELD.get());
         simpleBlockWithItem(ModBlocks.CAVE_RUBBLE.get(), cubeAll(ModBlocks.CAVE_RUBBLE.get()));
+
+        Map<ElevatorBlock.Mode, ModelFile> elevatorModels = new EnumMap<>(ElevatorBlock.Mode.class);
+        for (ElevatorBlock.Mode mode : ElevatorBlock.Mode.values()) {
+            elevatorModels.put(mode, models().orientable("elevator_" + mode.getSerializedName(), modLoc("block/elevator_" + mode.getSerializedName()),
+                    modLoc("block/elevator_front"), modLoc("block/elevator_top")));
+        }
+        horizontalBlock(ModBlocks.ELEVATOR.get(), state -> elevatorModels.get(state.getValue(ElevatorBlock.MODE)));
+        simpleBlockItem(ModBlocks.ELEVATOR.get(), elevatorModels.get(ElevatorBlock.Mode.RECEIVE));
 
         ModelFile site = models().cubeBottomTop("cave_entrance_site", modLoc("block/cave_entrance_side"),
                 modLoc("block/cave_entrance_bottom"), modLoc("block/cave_entrance_top"));

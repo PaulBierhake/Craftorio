@@ -14,6 +14,7 @@ import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.machine.MachineType;
 import de.craftorio.machine.ProcessingMachineBlock;
 import de.craftorio.logistics.ConveyorBeltBlock;
+import de.craftorio.logistics.ElevatorBlock;
 import de.craftorio.logistics.InserterBlock;
 import de.craftorio.machine.BurnerDrillBlock;
 import de.craftorio.world.OreFieldBlock;
@@ -53,6 +54,9 @@ public final class ModBlocks {
     public static final DeferredBlock<OreFieldBlock> IRON_ORE_FIELD = oreField("iron_ore_field", () -> Items.RAW_IRON, MapColor.RAW_IRON);
     public static final DeferredBlock<OreFieldBlock> COPPER_ORE_FIELD = oreField("copper_ore_field", () -> Items.RAW_COPPER, MapColor.COLOR_ORANGE);
     public static final DeferredBlock<OreFieldBlock> COAL_FIELD = oreField("coal_field", () -> Items.COAL, MapColor.COLOR_BLACK);
+
+    public static final DeferredBlock<ElevatorBlock> ELEVATOR = BLOCKS.registerBlock("elevator", ElevatorBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
 
     // Cave layer (M6)
     /** Seals the cave layer until an entrance unlocks the area; unbreakable like cap rock. */

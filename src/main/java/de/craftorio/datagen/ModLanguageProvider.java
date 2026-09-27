@@ -152,6 +152,12 @@ public final class ModLanguageProvider {
             add(ModItems.SULFUR.get(), "Sulfur");
             add(ModItems.BATTERY.get(), "Battery");
             add(ModItems.ADVANCED_CIRCUIT.get(), "Advanced Circuit");
+            add(ModBlocks.ELEVATOR.get(), "Item Elevator");
+            add("craftorio.elevator.mode.receive", "Mode: receive (outputs through the front)");
+            add("craftorio.elevator.mode.send_up", "Mode: send up");
+            add("craftorio.elevator.mode.send_down", "Mode: send down");
+            add("craftorio.elevator.target", "→ partner %s blocks away");
+            add("craftorio.elevator.no_target", "→ no elevator in this column!");
             add("craftorio.cave.needs", "Construction site needs:");
             add("craftorio.cave.drilling", "Drilling: %s%% (needs %s FE/t from a power pole)");
             add("craftorio.cave.open", "Cave entrance open – take the scaffolding down (sneak to descend).");
@@ -329,6 +335,12 @@ public final class ModLanguageProvider {
             add(ModItems.SULFUR.get(), "Schwefel");
             add(ModItems.BATTERY.get(), "Batterie");
             add(ModItems.ADVANCED_CIRCUIT.get(), "Fortgeschrittener Schaltkreis");
+            add(ModBlocks.ELEVATOR.get(), "Warenaufzug");
+            add("craftorio.elevator.mode.receive", "Modus: empfangen (Ausgabe nach vorne)");
+            add("craftorio.elevator.mode.send_up", "Modus: nach oben senden");
+            add("craftorio.elevator.mode.send_down", "Modus: nach unten senden");
+            add("craftorio.elevator.target", "→ Gegenstück %s Blöcke entfernt");
+            add("craftorio.elevator.no_target", "→ kein Aufzug in dieser Spalte!");
             add("craftorio.cave.needs", "Baustelle braucht noch:");
             add("craftorio.cave.drilling", "Bohrung: %s%% (braucht %s FE/t über einen Strommast)");
             add("craftorio.cave.open", "Höhleneingang offen – über das Gerüst hinab (Schleichen zum Absteigen).");

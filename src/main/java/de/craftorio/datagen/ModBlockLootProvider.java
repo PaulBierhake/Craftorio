@@ -36,6 +36,7 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.GUN_TURRET.get());
         dropSelf(ModBlocks.TESLA_TOWER.get());
         dropSelf(ModBlocks.CAVE_ENTRANCE.get());
+        dropSelf(ModBlocks.ELEVATOR.get());
     }
 
     @Override

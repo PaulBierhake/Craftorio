@@ -81,6 +81,9 @@ public final class ModBlueprints {
         add(context, "cave_entrance", stack(ModItems.CAVE_ENTRANCE.get(), 1), 2, 5_000, List.of(), List.of(id("assembler")),
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 16), SizedIngredient.of(ModItems.IRON_GEAR.get(), 8),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 8));
+        add(context, "elevator", stack(ModItems.ELEVATOR.get(), 2), 2, 1_000, List.of(), List.of(id("cave_entrance")),
+                SizedIngredient.of(ModItems.IRON_PLATE.get(), 8), SizedIngredient.of(ModItems.MOTOR.get(), 2),
+                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 4));
         add(context, "workbench_upgrade_3", stack(ModItems.WORKBENCH_UPGRADE_3.get(), 1), 2, 10_000,
                 List.of(SizedIngredient.of(ModItems.DEEP_CORE.get(), 1)), List.of(id("assembler")),
                 SizedIngredient.of(ModItems.MOTOR.get(), 10), SizedIngredient.of(ModItems.CIRCUIT.get(), 20),

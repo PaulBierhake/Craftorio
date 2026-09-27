@@ -51,6 +51,7 @@ public final class ModItems {
     public static final DeferredItem<KeyMaterialItem> DEEP_CORE = keyMaterial("deep_core", 30);
     public static final DeferredItem<KeyMaterialItem> STAR_SHARD = keyMaterial("star_shard", 40);
 
+    public static final DeferredItem<BlockItem> ELEVATOR = ITEMS.registerSimpleBlockItem("elevator", ModBlocks.ELEVATOR);
     public static final DeferredItem<BlockItem> CAVE_RUBBLE = ITEMS.registerSimpleBlockItem("cave_rubble", ModBlocks.CAVE_RUBBLE);
     public static final DeferredItem<BlockItem> CAVE_ENTRANCE = ITEMS.registerSimpleBlockItem("cave_entrance", ModBlocks.CAVE_ENTRANCE);
     public static final DeferredItem<BlockItem> TIN_ORE_FIELD = ITEMS.registerSimpleBlockItem("tin_ore_field", ModBlocks.TIN_ORE_FIELD);

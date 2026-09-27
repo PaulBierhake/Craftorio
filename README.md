@@ -151,6 +151,11 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 - **Höhlen-Rohstoffe** als unerschöpfliche Felder auf dem Hallenboden: **Zinn, Blei, Schwefel, Gold, Quarz**.
   Neue Produkte: Zinn-/Bleibarren (Schmelzofen), **Batterie** und **Fortgeschrittener Schaltkreis** (Montage).
 
+- **Warenaufzug** (Bauplan nach dem Höhleneingang, 2 Stück pro Bau): Zwei Aufzüge in derselben Spalte
+  (gleiches X/Z) verbinden sich automatisch – auch durch Deckgestein und massiven Fels, bis 256 Blöcke weit.
+  Rechtsklick wechselt den Modus: *nach oben senden*, *nach unten senden* oder *empfangen*. Sender nehmen
+  Items per Band/Greifarm/Trichter an (bis 40 Items/s), Empfänger geben sie nach vorne aus.
+
 ![Höhle](docs/screenshots/m6-hoehle.png)
 ![Schacht](docs/screenshots/m6-schacht.png)
 

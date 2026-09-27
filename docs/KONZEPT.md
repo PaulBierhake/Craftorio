@@ -54,7 +54,7 @@ Designprinzipien:
 
 - Ein **Höhleneingang** ist eine Multiblock-Baustelle. Voraussetzung: Technologie freigeschaltet (Geld) **und** das passende **Schlüsselmaterial aus der Tower-Defense** (siehe 6.4). Dann Materialien anliefern (z. B. 200 Stein, 100 Eisenplatten, 20 Stützbalken); die Baustelle bohrt über Zeit den Schacht durch Deckgestein I.
 - Jeder Eingang **erschließt einen Bereich** von 7×7 Chunks in der Höhlenschicht *(umgesetzt in M6)*. Die gesamte Höhlenschicht ist anfangs unzerstörbares **Höhlengeröll**; beim Freischalten wird der Bereich Chunk für Chunk zu einer Säulenhalle ausgehöhlt, außerhalb bleibt eine Geröllwand. Weitere Eingänge bzw. „Stollenerweiterungen“ vergrößern den Bereich.
-- Der Schacht (3×3, oberhalb der Höhlen mit Stein verkleidet) enthält ein **Gerüst** zum Auf- und Absteigen. Vertikaler Warentransport (Förderschacht/Aufzug) folgt noch.
+- Der Schacht (3×3, oberhalb der Höhlen mit Stein verkleidet) enthält ein **Gerüst** zum Auf- und Absteigen. Vertikaler Warentransport über **Warenaufzüge**: zwei Aufzüge in derselben Spalte verbinden sich automatisch (auch durch Gestein), einer sendet, einer empfängt.
 - Der **Minenschacht** funktioniert identisch, eine Stufe tiefer, teurer, mit Bauteilen aus der Höhlenstufe und einem höheren Schlüsselmaterial.
 
 ### 3.3 Erzfelder – unendlich, aber mit festem Maximaldurchsatz *(entschieden)*
