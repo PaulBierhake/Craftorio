@@ -21,5 +21,7 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.CAP_ROCK.get());
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAP_ROCK.get());
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAP_ROCK.get());
+
+        tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get());
     }
 }

@@ -22,8 +22,12 @@ jobs:
       - name: Run data generators
         run: ./gradlew runData
 
-      - name: Build and test
+      - name: Build and unit tests
         run: ./gradlew build
+
+      # Headless server running the in-game tests in de.craftorio.gametest.
+      - name: Game tests
+        run: ./gradlew runGameTestServer
 
       - uses: actions/upload-artifact@v4
         with:

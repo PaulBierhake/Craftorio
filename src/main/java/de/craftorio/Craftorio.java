@@ -1,6 +1,7 @@
 package de.craftorio;
 
 import com.mojang.logging.LogUtils;
+import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModCreativeTabs;
 import de.craftorio.registry.ModItems;
@@ -19,6 +20,7 @@ public final class Craftorio {
     public Craftorio(IEventBus modBus, ModContainer container) {
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
+        ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
 
         container.registerConfig(ModConfig.Type.SERVER, CraftorioConfig.SPEC);

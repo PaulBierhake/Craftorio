@@ -1,0 +1,146 @@
+package de.craftorio.team;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class TeamRegistryTest {
+    private static final long STARTING_CREDITS = 100;
+
+    private final UUID alice = UUID.randomUUID();
+    private final UUID bob = UUID.randomUUID();
+    private final List<Team> changes = new ArrayList<>();
+    private TeamRegistry registry;
+
+    @BeforeEach
+    void setUp() {
+        registry = new TeamRegistry(() -> STARTING_CREDITS);
+        registry.setChangeListener(changes::add);
+    }
+
+    @Test
+    void firstJoinCreatesSoloTeamWithStartingCredits() {
+        Team team = registry.ensureTeam(alice, "Alice");
+
+        assertEquals("Alice", team.name());
+        assertEquals(STARTING_CREDITS, team.balance());
+        assertEquals(team, registry.ensureTeam(alice, "Alice"));
+        assertEquals(1, registry.teams().size());
+    }
+
+    @Test
+    void soloTeamNamesAreMadeUnique() {
+        registry.create(bob, "alice");
+
+        assertEquals("Alice 2", registry.ensureTeam(alice, "Alice").name());
+    }
+
+    @Test
+    void creatingTeamCarriesBalanceOfDissolvedSoloTeam() {
+        registry.ensureTeam(alice, "Alice");
+
+        Team team = registry.create(alice, "  Iron Works ");
+
+        assertEquals("Iron Works", team.name());
+        assertEquals(STARTING_CREDITS, team.balance());
+        assertEquals(1, registry.teams().size());
+    }
+
+    @Test
+    void teamNamesAreValidatedAndUniqueIgnoringCase() {
+        registry.create(alice, "Iron Works");
+
+        assertEquals("craftorio.team.error.name_taken",
+                assertThrows(TeamException.class, () -> registry.create(bob, "iron works")).translationKey());
+        assertThrows(TeamException.class, () -> registry.create(bob, ""));
+        assertThrows(TeamException.class, () -> registry.create(bob, "bad/name"));
+        assertThrows(TeamException.class, () -> registry.create(bob, "x".repeat(TeamRegistry.MAX_NAME_LENGTH + 1)));
+    }
+
+    @Test
+    void joiningRequiresInvite() {
+        Team factory = registry.create(alice, "Factory");
+        registry.ensureTeam(bob, "Bob");
+
+        assertEquals("craftorio.team.error.not_invited",
+                assertThrows(TeamException.class, () -> registry.join(bob, "Factory")).translationKey());
+
+        registry.invite(alice, bob);
+        Team joined = registry.join(bob, "factory");
+
+        assertEquals(factory, joined);
+        assertTrue(joined.members().contains(bob));
+        assertFalse(joined.isInvited(bob));
+        assertEquals(joined, registry.teamOf(bob).orElseThrow());
+    }
+
+    @Test
+    void joiningMovesCreditsOfDissolvedSoloTeam() {
+        Team factory = registry.create(alice, "Factory");
+        registry.deposit(factory.id(), 50);
+        registry.ensureTeam(bob, "Bob");
+
+        registry.invite(alice, bob);
+        registry.join(bob, "Factory");
+
+        assertEquals(50 + STARTING_CREDITS, factory.balance());
+        assertEquals(1, registry.teams().size());
+    }
+
+    @Test
+    void leavingGivesEmptySoloTeamAndKeepsOldTeamBalance() {
+        Team factory = registry.create(alice, "Factory");
+        registry.deposit(factory.id(), 500);
+        registry.invite(alice, bob);
+        registry.join(bob, "Factory");
+
+        Team solo = registry.leave(bob, "Bob");
+
+        assertEquals(0, solo.balance());
+        assertEquals(500, factory.balance());
+        assertFalse(factory.members().contains(bob));
+        assertNotEquals(factory, registry.teamOf(bob).orElseThrow());
+    }
+
+    @Test
+    void cannotLeaveWhenAlone() {
+        registry.ensureTeam(alice, "Alice");
+
+        assertEquals("craftorio.team.error.alone",
+                assertThrows(TeamException.class, () -> registry.leave(alice, "Alice")).translationKey());
+    }
+
+    @Test
+    void depositSaturatesAndWithdrawChecksFunds() {
+        Team team = registry.ensureTeam(alice, "Alice");
+
+        assertFalse(registry.withdraw(team.id(), STARTING_CREDITS + 1));
+        assertTrue(registry.withdraw(team.id(), 40));
+        assertEquals(STARTING_CREDITS - 40, team.balance());
+
+        registry.deposit(team.id(), Long.MAX_VALUE);
+        assertEquals(Long.MAX_VALUE, team.balance());
+        assertThrows(IllegalArgumentException.class, () -> registry.deposit(team.id(), -1));
+    }
+
+    @Test
+    void changesNotifyListenerButRestoreDoesNot() {
+        registry.restore(UUID.randomUUID(), "Loaded", 10, List.of(bob));
+        assertTrue(changes.isEmpty());
+        assertEquals("Loaded", registry.teamOf(bob).orElseThrow().name());
+
+        Team team = registry.ensureTeam(alice, "Alice");
+        registry.deposit(team.id(), 1);
+
+        assertEquals(List.of(team, team), changes);
+    }
+}

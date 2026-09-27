@@ -1,6 +1,7 @@
 package de.craftorio.registry;
 
 import de.craftorio.Craftorio;
+import de.craftorio.economy.block.TradingPostBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -22,6 +23,12 @@ public final class ModBlocks {
                     .isValidSpawn(Blocks::never)
                     .pushReaction(PushReaction.BLOCK)
                     .sound(SoundType.DEEPSLATE));
+
+    public static final DeferredBlock<TradingPostBlock> TRADING_POST = BLOCKS.registerBlock("trading_post", TradingPostBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(2.5F)
+                    .sound(SoundType.WOOD));
 
     private ModBlocks() {
     }

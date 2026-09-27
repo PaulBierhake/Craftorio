@@ -12,7 +12,7 @@ public final class ModCreativeTabs {
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = TABS.register("main", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup." + Craftorio.MOD_ID))
-            .icon(() -> ModItems.CAP_ROCK.get().getDefaultInstance())
+            .icon(() -> ModItems.TRADING_POST.get().getDefaultInstance())
             .displayItems((params, output) -> ModItems.ITEMS.getEntries().forEach(item -> output.accept(item.get())))
             .build());
 

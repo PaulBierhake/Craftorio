@@ -9,6 +9,7 @@ public final class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Craftorio.MOD_ID);
 
     public static final DeferredItem<BlockItem> CAP_ROCK = ITEMS.registerSimpleBlockItem("cap_rock", ModBlocks.CAP_ROCK);
+    public static final DeferredItem<BlockItem> TRADING_POST = ITEMS.registerSimpleBlockItem("trading_post", ModBlocks.TRADING_POST);
 
     private ModItems() {
     }

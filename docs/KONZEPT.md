@@ -260,7 +260,7 @@ de.craftorio
 
 Per `/reload` änderbar:
 
-- `data/craftorio/prices/*.json` – Verkaufspreise
+- `data/<namespace>/data_maps/item/sell_prices.json` – Verkaufspreise (NeoForge Data Map, auch Item-Tags möglich)
 - `data/craftorio/tech/*.json` – Technologie-Knoten (Geld, Schlüsselmaterialien, Voraussetzungen)
 - `data/craftorio/td_levels/*.json` – Level-Definitionen (Wellen, Gegner, Belohnungen)
 - `data/craftorio/ore_fields/*.json` – Erzfeld-Definitionen (Schicht, Größe, Entfernungsskalierung)
@@ -313,4 +313,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0 abgeschlossen**, als Nächstes **M1 – Wirtschaftskern**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0 und M1 abgeschlossen**, als Nächstes **M2 – Oberfläche**.
