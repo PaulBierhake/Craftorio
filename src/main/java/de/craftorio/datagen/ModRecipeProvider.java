@@ -15,6 +15,8 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 
@@ -28,6 +30,10 @@ public final class ModRecipeProvider extends RecipeProvider {
     @Override
     protected void buildRecipes(RecipeOutput output) {
         machineRecipes(output);
+
+        // Cave metals smelt in any furnace, including the electric furnace.
+        smelt(output, ModItems.RAW_TIN.get(), ModItems.TIN_INGOT.get(), "tin_ingot");
+        smelt(output, ModItems.RAW_LEAD.get(), ModItems.LEAD_INGOT.get(), "lead_ingot");
 
         // The only vanilla recipes: everything else is unlocked as a blueprint and built at the workbench.
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.WORKBENCH.get())
@@ -51,6 +57,12 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .save(output);
     }
 
+    private static void smelt(RecipeOutput output, ItemLike raw, ItemLike ingot, String name) {
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(raw), RecipeCategory.MISC, ingot, 0.7F, 200)
+                .unlockedBy("has_" + name, has(raw))
+                .save(output, Craftorio.id("smelting/" + name));
+    }
+
     private static void machineRecipes(RecipeOutput output) {
         press(output, "iron_plate", Items.IRON_INGOT, new ItemStack(ModItems.IRON_PLATE.get()));
         press(output, "copper_cable", Items.COPPER_INGOT, new ItemStack(ModItems.COPPER_CABLE.get(), 2));
@@ -61,6 +73,13 @@ public final class ModRecipeProvider extends RecipeProvider {
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 3), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1));
         assemble(output, "motor", new ItemStack(ModItems.MOTOR.get()), 80,
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 2), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1),
+                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
+        // Cave products
+        assemble(output, "battery", new ItemStack(ModItems.BATTERY.get()), 60,
+                SizedIngredient.of(ModItems.LEAD_INGOT.get(), 2), SizedIngredient.of(ModItems.SULFUR.get(), 1),
+                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
+        assemble(output, "advanced_circuit", new ItemStack(ModItems.ADVANCED_CIRCUIT.get()), 80,
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 2), SizedIngredient.of(ModItems.TIN_INGOT.get(), 2),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
         // Ammunition for automated tower supply
         assemble(output, "bolt", new ItemStack(ModItems.BOLT.get(), 16), 20,

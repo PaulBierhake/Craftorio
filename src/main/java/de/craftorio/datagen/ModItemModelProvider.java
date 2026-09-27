@@ -26,5 +26,12 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.STAR_SHARD.get());
         basicItem(ModItems.BOLT.get());
         basicItem(ModItems.CARTRIDGE.get());
+        basicItem(ModItems.RAW_TIN.get());
+        basicItem(ModItems.TIN_INGOT.get());
+        basicItem(ModItems.RAW_LEAD.get());
+        basicItem(ModItems.LEAD_INGOT.get());
+        basicItem(ModItems.SULFUR.get());
+        basicItem(ModItems.BATTERY.get());
+        basicItem(ModItems.ADVANCED_CIRCUIT.get());
     }
 }

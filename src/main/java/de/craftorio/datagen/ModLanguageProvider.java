@@ -138,6 +138,28 @@ public final class ModLanguageProvider {
             add("craftorio.tower.upgraded", "Tower upgraded to level %s for %s");
             add("craftorio.tower.rebuilt", "Tower rebuilt for %s");
 
+            add(ModBlocks.CAVE_RUBBLE.get(), "Cave Rubble");
+            add(ModBlocks.CAVE_ENTRANCE.get(), "Cave Entrance");
+            add(ModBlocks.TIN_ORE_FIELD.get(), "Tin Ore Field");
+            add(ModBlocks.LEAD_ORE_FIELD.get(), "Lead Ore Field");
+            add(ModBlocks.SULFUR_FIELD.get(), "Sulfur Field");
+            add(ModBlocks.GOLD_ORE_FIELD.get(), "Gold Ore Field");
+            add(ModBlocks.QUARTZ_FIELD.get(), "Quartz Field");
+            add(ModItems.RAW_TIN.get(), "Raw Tin");
+            add(ModItems.TIN_INGOT.get(), "Tin Ingot");
+            add(ModItems.RAW_LEAD.get(), "Raw Lead");
+            add(ModItems.LEAD_INGOT.get(), "Lead Ingot");
+            add(ModItems.SULFUR.get(), "Sulfur");
+            add(ModItems.BATTERY.get(), "Battery");
+            add(ModItems.ADVANCED_CIRCUIT.get(), "Advanced Circuit");
+            add("craftorio.cave.needs", "Construction site needs:");
+            add("craftorio.cave.drilling", "Drilling: %s%% (needs %s FE/t from a power pole)");
+            add("craftorio.cave.open", "Cave entrance open – take the scaffolding down (sneak to descend).");
+            add("craftorio.cave.opened", "A cave entrance has opened! The cave area around chunk %s, %s is being dug out.");
+            add("craftorio.cave.error.overworld_only", "Cave entrances only work in the overworld.");
+            add("craftorio.cave.error.too_deep", "Build cave entrances on the surface (Y 50 or higher).");
+            add("craftorio.cave.error.no_layer", "There is no cave layer below this spot (area generated before the cave update).");
+
             add("craftorio.drill.status", "Drill: %s/%s field blocks · %s items/s · fuel for %s s");
             add("craftorio.drill.overlap", "Too close to another drill – mining areas must not overlap.");
 
@@ -292,6 +314,28 @@ public final class ModLanguageProvider {
             add("craftorio.tower.level", "Stufe %s");
             add("craftorio.tower.upgraded", "Turm auf Stufe %s aufgerüstet für %s");
             add("craftorio.tower.rebuilt", "Turm für %s wieder aufgebaut");
+
+            add(ModBlocks.CAVE_RUBBLE.get(), "Höhlengeröll");
+            add(ModBlocks.CAVE_ENTRANCE.get(), "Höhleneingang");
+            add(ModBlocks.TIN_ORE_FIELD.get(), "Zinnerzfeld");
+            add(ModBlocks.LEAD_ORE_FIELD.get(), "Bleierzfeld");
+            add(ModBlocks.SULFUR_FIELD.get(), "Schwefelfeld");
+            add(ModBlocks.GOLD_ORE_FIELD.get(), "Golderzfeld");
+            add(ModBlocks.QUARTZ_FIELD.get(), "Quarzfeld");
+            add(ModItems.RAW_TIN.get(), "Rohzinn");
+            add(ModItems.TIN_INGOT.get(), "Zinnbarren");
+            add(ModItems.RAW_LEAD.get(), "Rohblei");
+            add(ModItems.LEAD_INGOT.get(), "Bleibarren");
+            add(ModItems.SULFUR.get(), "Schwefel");
+            add(ModItems.BATTERY.get(), "Batterie");
+            add(ModItems.ADVANCED_CIRCUIT.get(), "Fortgeschrittener Schaltkreis");
+            add("craftorio.cave.needs", "Baustelle braucht noch:");
+            add("craftorio.cave.drilling", "Bohrung: %s%% (braucht %s FE/t über einen Strommast)");
+            add("craftorio.cave.open", "Höhleneingang offen – über das Gerüst hinab (Schleichen zum Absteigen).");
+            add("craftorio.cave.opened", "Ein Höhleneingang wurde geöffnet! Der Höhlenbereich um Chunk %s, %s wird ausgehöhlt.");
+            add("craftorio.cave.error.overworld_only", "Höhleneingänge gibt es nur in der Oberwelt.");
+            add("craftorio.cave.error.too_deep", "Höhleneingänge an der Oberfläche bauen (ab Y 50).");
+            add("craftorio.cave.error.no_layer", "Unter dieser Stelle gibt es keine Höhlenschicht (Gebiet vor dem Höhlen-Update erzeugt).");
 
             add("craftorio.drill.status", "Bohrer: %s/%s Feldblöcke · %s Items/s · Brennstoff für %s s");
             add("craftorio.drill.overlap", "Zu nah an einem anderen Bohrer – Abbauflächen dürfen sich nicht überlappen.");

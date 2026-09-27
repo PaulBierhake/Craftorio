@@ -4,6 +4,8 @@ import de.craftorio.Craftorio;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.machine.BurnerDrillBlock;
 import de.craftorio.machine.MachineBaseBlock;
+import de.craftorio.world.cave.CaveEntranceBlock;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -24,6 +26,25 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         oreField(ModBlocks.IRON_ORE_FIELD.get());
         oreField(ModBlocks.COPPER_ORE_FIELD.get());
         oreField(ModBlocks.COAL_FIELD.get());
+        oreField(ModBlocks.TIN_ORE_FIELD.get());
+        oreField(ModBlocks.LEAD_ORE_FIELD.get());
+        oreField(ModBlocks.SULFUR_FIELD.get());
+        oreField(ModBlocks.GOLD_ORE_FIELD.get());
+        oreField(ModBlocks.QUARTZ_FIELD.get());
+        simpleBlockWithItem(ModBlocks.CAVE_RUBBLE.get(), cubeAll(ModBlocks.CAVE_RUBBLE.get()));
+
+        ModelFile site = models().cubeBottomTop("cave_entrance_site", modLoc("block/cave_entrance_side"),
+                modLoc("block/cave_entrance_bottom"), modLoc("block/cave_entrance_top"));
+        ModelFile drilling = models().cubeBottomTop("cave_entrance_drilling", modLoc("block/cave_entrance_side"),
+                modLoc("block/cave_entrance_bottom"), modLoc("block/cave_entrance_drilling"));
+        ModelFile open = models().getExistingFile(modLoc("block/cave_entrance_open"));
+        getVariantBuilder(ModBlocks.CAVE_ENTRANCE.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(switch (state.getValue(CaveEntranceBlock.STAGE)) {
+                    case CaveEntranceBlock.STAGE_MATERIALS -> site;
+                    case CaveEntranceBlock.STAGE_DRILLING -> drilling;
+                    default -> open;
+                }).build());
+        simpleBlockItem(ModBlocks.CAVE_ENTRANCE.get(), site);
 
         ModelFile drillOff = models().orientable("burner_drill",
                 modLoc("block/burner_drill_side"), modLoc("block/burner_drill_front"), modLoc("block/burner_drill_top"));

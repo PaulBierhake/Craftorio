@@ -23,7 +23,7 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAP_ROCK.get());
 
         tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get(), ModBlocks.POWER_POLE.get(), ModBlocks.WORKBENCH.get(),
-                ModBlocks.CROSSBOW_TOWER.get());
+                ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.CAVE_ENTRANCE.get());
         tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.PATH_BLOCK.get(), ModBlocks.TOWER_RUIN.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
                 ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get(), ModBlocks.COAL_FIELD.get(),
@@ -32,5 +32,11 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.TERMINAL.get(), ModBlocks.ASSEMBLY_WORKBENCH.get(), ModBlocks.PRECISION_WORKBENCH.get(),
                 ModBlocks.ENEMY_PORTAL.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get());
+        tag(BlockTags.NEEDS_IRON_TOOL).add(ModBlocks.TIN_ORE_FIELD.get(), ModBlocks.LEAD_ORE_FIELD.get(), ModBlocks.GOLD_ORE_FIELD.get());
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.TIN_ORE_FIELD.get(), ModBlocks.LEAD_ORE_FIELD.get(), ModBlocks.SULFUR_FIELD.get(),
+                ModBlocks.GOLD_ORE_FIELD.get(), ModBlocks.QUARTZ_FIELD.get());
+        tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());
+        tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());
+        tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAVE_RUBBLE.get());
     }
 }

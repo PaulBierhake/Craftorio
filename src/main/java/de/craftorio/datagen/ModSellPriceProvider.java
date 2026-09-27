@@ -58,6 +58,15 @@ public final class ModSellPriceProvider extends DataMapProvider {
         price(prices, ModItems.CIRCUIT.get(), 85);
         price(prices, ModItems.MOTOR.get(), 240);
 
+        // Cave layer
+        price(prices, ModItems.RAW_TIN.get(), 15);
+        price(prices, ModItems.RAW_LEAD.get(), 15);
+        price(prices, ModItems.SULFUR.get(), 20);
+        price(prices, ModItems.TIN_INGOT.get(), 24);
+        price(prices, ModItems.LEAD_INGOT.get(), 24);
+        price(prices, ModItems.BATTERY.get(), 140);
+        price(prices, ModItems.ADVANCED_CIRCUIT.get(), 360);
+
         // Storage blocks: a small bonus over their contents
         price(prices, Items.COAL_BLOCK, 100);
         price(prices, Items.IRON_BLOCK, 160);

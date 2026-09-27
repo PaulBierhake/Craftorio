@@ -7,6 +7,7 @@ import de.craftorio.defense.TowerRuinBlockEntity;
 import de.craftorio.energy.CoalGeneratorBlockEntity;
 import de.craftorio.energy.PowerPoleBlockEntity;
 import de.craftorio.machine.ProcessingMachineBlockEntity;
+import de.craftorio.world.cave.CaveEntranceBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import de.craftorio.logistics.ConveyorBeltBlockEntity;
@@ -63,6 +64,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerRuinBlockEntity>> TOWER_RUIN = BLOCK_ENTITIES.register("tower_ruin",
             () -> BlockEntityType.Builder.of(TowerRuinBlockEntity::new, ModBlocks.TOWER_RUIN.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CaveEntranceBlockEntity>> CAVE_ENTRANCE = BLOCK_ENTITIES.register("cave_entrance",
+            () -> BlockEntityType.Builder.of(CaveEntranceBlockEntity::new, ModBlocks.CAVE_ENTRANCE.get()).build(null));
+
     private ModBlockEntities() {
     }
 
@@ -77,6 +82,8 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? null : insertOnly(tower.ammo()));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.materials());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.energy());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? tower.energy() : null);
     }
 

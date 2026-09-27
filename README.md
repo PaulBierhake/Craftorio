@@ -136,6 +136,24 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ![Gegner](docs/screenshots/m5-gegner.png)
 ![Verteidigung](docs/screenshots/m5-terminal-verteidigung.png)
 
+### M6 – Höhlenschicht
+
+- **Schichten** (nur in neu erzeugten Chunks): Oberfläche ab Y 50, darunter **Deckgestein** (Y 40–49),
+  die **Höhlenschicht** (Y 0–39) und eine zweite Deckgesteinsschicht (Y −10 bis −1). Die Höhlenschicht besteht
+  zunächst komplett aus unzerstörbarem **Höhlengeröll** – man kann nicht hineingraben.
+- **Höhleneingang** (Bauplan Stufe 2, braucht die Montagemaschine): an der Oberfläche aufstellen, dann Material
+  anliefern (128 Bruchstein, 32 Eisenplatten, 16 Zahnräder, 8 Motoren – per Hand, Band oder Greifarm) und mit
+  Strom (40 FE/t über einen Strommast) eine Minute bohren lassen.
+- Danach öffnet sich ein **Schacht mit Gerüst** (Schleichen zum Absteigen; oberhalb der Höhlen mit Stein
+  verkleidet) und der Höhlenbereich von **7×7 Chunks** um den Eingang wird ausgehöhlt: eine große Halle mit
+  Säulen, Tuffboden und Platz zum Bauen. Außerhalb bleibt eine Wand aus Höhlengeröll – weitere Eingänge
+  erweitern das Gebiet nahtlos.
+- **Höhlen-Rohstoffe** als unerschöpfliche Felder auf dem Hallenboden: **Zinn, Blei, Schwefel, Gold, Quarz**.
+  Neue Produkte: Zinn-/Bleibarren (Schmelzofen), **Batterie** und **Fortgeschrittener Schaltkreis** (Montage).
+
+![Höhle](docs/screenshots/m6-hoehle.png)
+![Schacht](docs/screenshots/m6-schacht.png)
+
 ## Projektstruktur
 
 ```
@@ -146,6 +164,7 @@ src/main/java/de/craftorio/
 ├── team/                   Teams & Konto (TeamRegistry ist reine Logik mit Unit-Tests)
 ├── economy/                Preise (Data Map), Verkauf, Handelsposten
 ├── world/                  Erzfelder, Weltgenerierung, Start-Felder
+│   └── cave/               Schichten, Höhlenform (reine Logik mit Unit-Tests), Eingänge, Aushöhlen
 ├── machine/                Bohrer (Abbaufläche, Produktionsrate)
 ├── logistics/              Förderband (BeltLane = reine Spur-Logik mit Unit-Tests), Greifarm
 ├── energy/                 Generator, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)

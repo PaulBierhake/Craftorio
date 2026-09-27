@@ -3,6 +3,7 @@ package de.craftorio.registry;
 import de.craftorio.Craftorio;
 import de.craftorio.world.OreFieldConfiguration;
 import de.craftorio.world.OreFieldFeature;
+import de.craftorio.world.cave.CaveLayerFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -12,6 +13,8 @@ public final class ModFeatures {
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, Craftorio.MOD_ID);
 
     public static final DeferredHolder<Feature<?>, Feature<OreFieldConfiguration>> ORE_FIELD = FEATURES.register("ore_field", OreFieldFeature::new);
+
+    public static final DeferredHolder<Feature<?>, CaveLayerFeature> CAVE_LAYERS = FEATURES.register("cave_layers", CaveLayerFeature::new);
 
     private ModFeatures() {
     }

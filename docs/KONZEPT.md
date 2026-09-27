@@ -43,7 +43,7 @@ Designprinzipien:
 |---|---|---|---|
 | **Oberfläche** | 50 … 320 | von Beginn an | Holz, Stein, Kohle, Eisen, Kupfer, Sand, Lehm |
 | *Deckgestein I* | 40 … 50 | unzerstörbar | – |
-| **Höhlen** | 0 … 40 | über gebauten **Höhleneingang** | Zinn, Gold, Blei, Schwefel, Quarz, Öl |
+| **Höhlen** | 0 … 40 | über gebauten **Höhleneingang** | Zinn, Gold, Blei, Schwefel, Quarz (Öl folgt mit Fluiden) |
 | *Deckgestein II* | −10 … 0 | unzerstörbar | – |
 | **Minen** | −64 … −10 | über gebauten **Minenschacht** (in den Höhlen) | Diamant, Titan, Uran, seltene Erden, Kristalle |
 
@@ -53,8 +53,8 @@ Designprinzipien:
 ### 3.2 Höhleneingänge & Minenschächte
 
 - Ein **Höhleneingang** ist eine Multiblock-Baustelle. Voraussetzung: Technologie freigeschaltet (Geld) **und** das passende **Schlüsselmaterial aus der Tower-Defense** (siehe 6.4). Dann Materialien anliefern (z. B. 200 Stein, 100 Eisenplatten, 20 Stützbalken); die Baustelle bohrt über Zeit den Schacht durch Deckgestein I.
-- Jeder Eingang **erschließt einen Bereich** (Vorschlag: 7×7 Chunks) in der Höhlenschicht. Außerhalb bleibt die Höhle durch **Geröll-Barrieren** unpassierbar. Weitere Eingänge bzw. „Stollenerweiterungen“ vergrößern den Bereich.
-- Der Schacht enthält eine **Leiter/Aufzug** und **zwei Förderschacht-Slots** für Bänder nach oben/unten.
+- Jeder Eingang **erschließt einen Bereich** von 7×7 Chunks in der Höhlenschicht *(umgesetzt in M6)*. Die gesamte Höhlenschicht ist anfangs unzerstörbares **Höhlengeröll**; beim Freischalten wird der Bereich Chunk für Chunk zu einer Säulenhalle ausgehöhlt, außerhalb bleibt eine Geröllwand. Weitere Eingänge bzw. „Stollenerweiterungen“ vergrößern den Bereich.
+- Der Schacht (3×3, oberhalb der Höhlen mit Stein verkleidet) enthält ein **Gerüst** zum Auf- und Absteigen. Vertikaler Warentransport (Förderschacht/Aufzug) folgt noch.
 - Der **Minenschacht** funktioniert identisch, eine Stufe tiefer, teurer, mit Bauteilen aus der Höhlenstufe und einem höheren Schlüsselmaterial.
 
 ### 3.3 Erzfelder – unendlich, aber mit festem Maximaldurchsatz *(entschieden)*
@@ -339,4 +339,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M5 abgeschlossen**, als Nächstes **M6 – Höhlenschicht**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M6 abgeschlossen**, als Nächstes **M7 – Minenschicht**.

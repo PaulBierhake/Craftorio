@@ -51,6 +51,23 @@ public final class ModItems {
     public static final DeferredItem<KeyMaterialItem> DEEP_CORE = keyMaterial("deep_core", 30);
     public static final DeferredItem<KeyMaterialItem> STAR_SHARD = keyMaterial("star_shard", 40);
 
+    public static final DeferredItem<BlockItem> CAVE_RUBBLE = ITEMS.registerSimpleBlockItem("cave_rubble", ModBlocks.CAVE_RUBBLE);
+    public static final DeferredItem<BlockItem> CAVE_ENTRANCE = ITEMS.registerSimpleBlockItem("cave_entrance", ModBlocks.CAVE_ENTRANCE);
+    public static final DeferredItem<BlockItem> TIN_ORE_FIELD = ITEMS.registerSimpleBlockItem("tin_ore_field", ModBlocks.TIN_ORE_FIELD);
+    public static final DeferredItem<BlockItem> LEAD_ORE_FIELD = ITEMS.registerSimpleBlockItem("lead_ore_field", ModBlocks.LEAD_ORE_FIELD);
+    public static final DeferredItem<BlockItem> SULFUR_FIELD = ITEMS.registerSimpleBlockItem("sulfur_field", ModBlocks.SULFUR_FIELD);
+    public static final DeferredItem<BlockItem> GOLD_ORE_FIELD = ITEMS.registerSimpleBlockItem("gold_ore_field", ModBlocks.GOLD_ORE_FIELD);
+    public static final DeferredItem<BlockItem> QUARTZ_FIELD = ITEMS.registerSimpleBlockItem("quartz_field", ModBlocks.QUARTZ_FIELD);
+
+    // Cave resources and their products
+    public static final DeferredItem<Item> RAW_TIN = ITEMS.registerSimpleItem("raw_tin");
+    public static final DeferredItem<Item> TIN_INGOT = ITEMS.registerSimpleItem("tin_ingot");
+    public static final DeferredItem<Item> RAW_LEAD = ITEMS.registerSimpleItem("raw_lead");
+    public static final DeferredItem<Item> LEAD_INGOT = ITEMS.registerSimpleItem("lead_ingot");
+    public static final DeferredItem<Item> SULFUR = ITEMS.registerSimpleItem("sulfur");
+    public static final DeferredItem<Item> BATTERY = ITEMS.registerSimpleItem("battery");
+    public static final DeferredItem<Item> ADVANCED_CIRCUIT = ITEMS.registerSimpleItem("advanced_circuit");
+
     // Intermediate products; each processing step is worth more than its inputs.
     public static final DeferredItem<Item> IRON_PLATE = ITEMS.registerSimpleItem("iron_plate");
     public static final DeferredItem<Item> COPPER_CABLE = ITEMS.registerSimpleItem("copper_cable");

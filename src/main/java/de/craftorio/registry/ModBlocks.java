@@ -17,6 +17,7 @@ import de.craftorio.logistics.ConveyorBeltBlock;
 import de.craftorio.logistics.InserterBlock;
 import de.craftorio.machine.BurnerDrillBlock;
 import de.craftorio.world.OreFieldBlock;
+import de.craftorio.world.cave.CaveEntranceBlock;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -52,6 +53,24 @@ public final class ModBlocks {
     public static final DeferredBlock<OreFieldBlock> IRON_ORE_FIELD = oreField("iron_ore_field", () -> Items.RAW_IRON, MapColor.RAW_IRON);
     public static final DeferredBlock<OreFieldBlock> COPPER_ORE_FIELD = oreField("copper_ore_field", () -> Items.RAW_COPPER, MapColor.COLOR_ORANGE);
     public static final DeferredBlock<OreFieldBlock> COAL_FIELD = oreField("coal_field", () -> Items.COAL, MapColor.COLOR_BLACK);
+
+    // Cave layer (M6)
+    /** Seals the cave layer until an entrance unlocks the area; unbreakable like cap rock. */
+    public static final DeferredBlock<Block> CAVE_RUBBLE = BLOCKS.registerSimpleBlock("cave_rubble",
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_GRAY)
+                    .strength(-1.0F, 3_600_000.0F)
+                    .noLootTable()
+                    .isValidSpawn(Blocks::never)
+                    .pushReaction(PushReaction.BLOCK)
+                    .sound(SoundType.GRAVEL));
+    public static final DeferredBlock<CaveEntranceBlock> CAVE_ENTRANCE = BLOCKS.registerBlock("cave_entrance", CaveEntranceBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(3.0F, 1200.0F).noOcclusion().sound(SoundType.WOOD));
+    public static final DeferredBlock<OreFieldBlock> TIN_ORE_FIELD = oreField("tin_ore_field", () -> ModItems.RAW_TIN.get(), MapColor.COLOR_LIGHT_GRAY);
+    public static final DeferredBlock<OreFieldBlock> LEAD_ORE_FIELD = oreField("lead_ore_field", () -> ModItems.RAW_LEAD.get(), MapColor.COLOR_BLUE);
+    public static final DeferredBlock<OreFieldBlock> SULFUR_FIELD = oreField("sulfur_field", () -> ModItems.SULFUR.get(), MapColor.COLOR_YELLOW);
+    public static final DeferredBlock<OreFieldBlock> GOLD_ORE_FIELD = oreField("gold_ore_field", () -> Items.RAW_GOLD, MapColor.GOLD);
+    public static final DeferredBlock<OreFieldBlock> QUARTZ_FIELD = oreField("quartz_field", () -> Items.QUARTZ, MapColor.QUARTZ);
 
     public static final DeferredBlock<BurnerDrillBlock> BURNER_DRILL = BLOCKS.registerBlock("burner_drill", BurnerDrillBlock::new,
             BlockBehaviour.Properties.of()
