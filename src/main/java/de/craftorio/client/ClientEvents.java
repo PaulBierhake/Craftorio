@@ -9,7 +9,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import de.craftorio.registry.ModBlockEntities;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
@@ -49,6 +51,11 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerGuiLayers(RegisterGuiLayersEvent event) {
             event.registerAboveAll(Craftorio.id("credits"), CreditsHud::render);
+        }
+
+        @SubscribeEvent
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerBlockEntityRenderer(ModBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
         }
     }
 }

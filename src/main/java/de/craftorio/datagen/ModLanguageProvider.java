@@ -19,6 +19,15 @@ public final class ModLanguageProvider {
             add("itemGroup." + Craftorio.MOD_ID, "Craftorio");
             add(ModBlocks.CAP_ROCK.get(), "Cap Rock");
             add(ModBlocks.TRADING_POST.get(), "Trading Post");
+            add(ModBlocks.IRON_ORE_FIELD.get(), "Iron Ore Field");
+            add(ModBlocks.COPPER_ORE_FIELD.get(), "Copper Ore Field");
+            add(ModBlocks.COAL_FIELD.get(), "Coal Field");
+            add(ModBlocks.BURNER_DRILL.get(), "Burner Drill");
+            add(ModBlocks.CONVEYOR_BELT.get(), "Conveyor Belt");
+            add(ModBlocks.INSERTER.get(), "Inserter");
+
+            add("craftorio.drill.status", "Drill: %s/%s field blocks · %s items/s · fuel for %s s");
+            add("craftorio.drill.overlap", "Too close to another drill – mining areas must not overlap.");
 
             add("craftorio.tooltip.sell_price", "Sell value: %s");
             add("craftorio.tooltip.sell_price_stack", "Sell value: %s (stack: %s)");
@@ -54,6 +63,15 @@ public final class ModLanguageProvider {
             add("itemGroup." + Craftorio.MOD_ID, "Craftorio");
             add(ModBlocks.CAP_ROCK.get(), "Deckgestein");
             add(ModBlocks.TRADING_POST.get(), "Handelsposten");
+            add(ModBlocks.IRON_ORE_FIELD.get(), "Eisenerzfeld");
+            add(ModBlocks.COPPER_ORE_FIELD.get(), "Kupfererzfeld");
+            add(ModBlocks.COAL_FIELD.get(), "Kohlefeld");
+            add(ModBlocks.BURNER_DRILL.get(), "Brenner-Bohrer");
+            add(ModBlocks.CONVEYOR_BELT.get(), "Förderband");
+            add(ModBlocks.INSERTER.get(), "Greifarm");
+
+            add("craftorio.drill.status", "Bohrer: %s/%s Feldblöcke · %s Items/s · Brennstoff für %s s");
+            add("craftorio.drill.overlap", "Zu nah an einem anderen Bohrer – Abbauflächen dürfen sich nicht überlappen.");
 
             add("craftorio.tooltip.sell_price", "Verkaufswert: %s");
             add("craftorio.tooltip.sell_price_stack", "Verkaufswert: %s (Stapel: %s)");

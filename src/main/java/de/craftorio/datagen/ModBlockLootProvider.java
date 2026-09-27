@@ -17,6 +17,9 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         dropSelf(ModBlocks.TRADING_POST.get());
+        dropSelf(ModBlocks.BURNER_DRILL.get());
+        dropSelf(ModBlocks.CONVEYOR_BELT.get());
+        dropSelf(ModBlocks.INSERTER.get());
     }
 
     @Override

@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "craftorio:iron_ore_field",
+    "craftorio:copper_ore_field",
+    "craftorio:coal_field"
+  ],
+  "step": "top_layer_modification"
+}

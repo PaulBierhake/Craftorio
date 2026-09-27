@@ -63,7 +63,7 @@ Designprinzipien:
 - **Unendlich:** Erzfeld-Blöcke erschöpfen nie.
 - **Begrenzt durch Größe:** Ein Bohrer baut eine feste Fläche ab (z. B. 3×3 Blöcke, Stufe-3-Bohrer 5×5) und **Abbauflächen dürfen sich nicht überlappen**. Ein Erzfeld-Block kann also nur von genau einem Bohrer genutzt werden.
   → Jedes Feld hat einen **harten Maximaldurchsatz** = (Anzahl Blöcke) × (Abbaurate pro Block der besten Bohrer-Stufe). Ist ein Feld voll bebaut, hilft nur ein **neues Feld**.
-- Bohrer-Upgrades erhöhen die Rate pro Block (Stufe 1: 0,25/s, Stufe 2: 0,5/s, Stufe 3: 1/s – Richtwerte), aber nie über die Feldgröße hinaus.
+- Bohrer-Upgrades erhöhen die Rate pro Block (Stufe 1 Brenner-Bohrer: 0,03/s pro Block = 0,27/s bei 3×3; Stufe 2: ≈0,06/s; Stufe 3: ≈0,12/s – Richtwerte), aber nie über die Feldgröße hinaus.
 - **Feldgrößen:** klein nahe Spawn (≈ 20–40 Blöcke), größer mit Entfernung (≈ 60–150 Blöcke). Tiefere Schichten: seltener, aber wertvoller.
 - **Fluide** (Öl, Wasser) als Quellen mit fester Förderrate pro Pumpe und begrenzter Anzahl Pumpenplätze – gleiche Logik.
 - Anzeige per Jade/Scanner: Feldgröße, belegte Blöcke, aktueller und maximaler Durchsatz.
@@ -313,4 +313,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0 und M1 abgeschlossen**, als Nächstes **M2 – Oberfläche**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M2 abgeschlossen**, als Nächstes **M3 – Verarbeitung & Energie**.

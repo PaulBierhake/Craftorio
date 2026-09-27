@@ -86,14 +86,14 @@ public final class TradingPostGameTests {
         helper.succeed();
     }
 
-    private static Team newTeam(GameTestHelper helper) {
+    static Team newTeam(GameTestHelper helper) {
         TeamRegistry registry = TeamData.registry(helper.getLevel().getServer());
         Team team = registry.ensureTeam(UUID.randomUUID(), "GameTest");
         registry.setBalance(team.id(), 0);
         return team;
     }
 
-    private static BlockPos placeTradingPost(GameTestHelper helper, BlockPos pos, Team owner) {
+    static BlockPos placeTradingPost(GameTestHelper helper, BlockPos pos, Team owner) {
         helper.setBlock(pos, ModBlocks.TRADING_POST.get());
         TradingPostBlockEntity post = helper.getBlockEntity(pos);
         post.setOwner(owner.id());
