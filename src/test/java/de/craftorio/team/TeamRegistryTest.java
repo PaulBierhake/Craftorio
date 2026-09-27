@@ -143,4 +143,53 @@ class TeamRegistryTest {
 
         assertEquals(List.of(team, team), changes);
     }
+
+    @Test
+    void blueprintsAndStatisticsMoveWithDissolvedTeam() {
+        Team factory = registry.create(alice, "Factory");
+        Team solo = registry.ensureTeam(bob, "Bob");
+        registry.unlock(solo.id(), "craftorio:press");
+        registry.recordSale(solo.id(), "minecraft:iron_ingot", 5, 80);
+
+        registry.invite(alice, bob);
+        registry.join(bob, "Factory");
+
+        assertTrue(factory.unlocked().contains("craftorio:press"));
+        assertEquals(80, factory.totalEarned());
+        assertEquals(new Team.Sales(5, 80), factory.sales().get("minecraft:iron_ingot"));
+    }
+
+    @Test
+    void leavingKeepsACopyOfBlueprintsButNoCredits() {
+        Team factory = registry.create(alice, "Factory");
+        registry.unlock(factory.id(), "craftorio:press");
+        registry.deposit(factory.id(), 100);
+        registry.invite(alice, bob);
+        registry.join(bob, "Factory");
+
+        Team solo = registry.leave(bob, "Bob");
+
+        assertTrue(solo.unlocked().contains("craftorio:press"));
+        assertTrue(factory.unlocked().contains("craftorio:press"));
+        assertEquals(0, solo.balance());
+    }
+
+    @Test
+    void salesAreCountedPerMinuteAndSpendingIsTracked() {
+        long[] now = {0};
+        TeamRegistry timed = new TeamRegistry(() -> 0, () -> now[0]);
+        Team team = timed.ensureTeam(alice, "Alice");
+
+        timed.recordSale(team.id(), "a", 1, 10);
+        now[0] = 1200 * 3;
+        timed.recordSale(team.id(), "a", 2, 20);
+        now[0] = 1200 * 20;
+        timed.recordSale(team.id(), "b", 1, 5);
+
+        assertEquals(35, team.totalEarned());
+        assertEquals(5, team.earnedInLastMinutes(TeamRegistry.minuteOf(now[0]), 10), "older minutes fall out of the window");
+        assertEquals(new Team.Sales(3, 30), team.sales().get("a"));
+        assertTrue(timed.withdraw(team.id(), 15));
+        assertEquals(15, team.totalSpent());
+    }
 }

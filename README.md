@@ -91,6 +91,27 @@ Verlässt das letzte Mitglied ein Team, wird es aufgelöst und sein Guthaben wan
 ![Stromnetz](docs/screenshots/m3-stromnetz.png)
 ![Montagemaschine](docs/screenshots/m3-montagemaschine.png)
 
+### M4 – Terminal, Baupläne & Werkbänke
+
+Craftorio-Maschinen entstehen in zwei Schritten: **Bauplan im Terminal freischalten** (Credits, ab Stufe 2 plus
+Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezepte gibt es nur noch für
+**Konstruktionswerkbank** und **Terminal**.
+
+- **Terminal**: Bauplan-Baum mit Voraussetzungen, Preisen und Materiallisten (Tooltip); Tab **Statistik** mit
+  Einnahmen, Ausgaben, Einnahmen der letzten 10 Minuten und den meistverkauften Waren.
+- **Werkbänke**: Konstruktionswerkbank (Stufe 1) → Montagewerkbank (2) → Präzisionswerkbank (3). Aufgerüstet wird
+  am Platz per Rechtsklick mit dem **Aufrüstsatz**. Jede Werkbank baut alle Baupläne ihrer Stufe und darunter aus dem
+  Spielerinventar (Klick = 1, Shift-Klick = 10); fehlendes Material ist rot markiert.
+- **Baupläne sind Team-Wissen**: Beim Beitritt zu einem Team wandern sie mit, beim Austritt behält man eine Kopie.
+- **Start-Baupläne** (gratis): Handelsposten, Brenner-Bohrer, Förderband, Greifarm.
+- **Schlüsselmaterialien** (Bohrkern, Resonanzkristall, Tiefenkern, Sternenerz-Splitter) kommen ab M5 aus der
+  Tower Defense; bis dahin per `/give`.
+- Baupläne sind Datapack-JSON: `data/<namespace>/craftorio/blueprint/*.json`
+  (`result`, `ingredients`, `tier`, `cost`, `unlock_items`, `requires`, `order`).
+
+![Terminal](docs/screenshots/m4-terminal.png)
+![Werkbank](docs/screenshots/m4-werkbank.png)
+
 ## Projektstruktur
 
 ```
@@ -105,6 +126,7 @@ src/main/java/de/craftorio/
 ├── logistics/              Förderband (BeltLane = reine Spur-Logik mit Unit-Tests), Greifarm
 ├── energy/                 Generator, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
 ├── recipe/                 Maschinenrezepte (Presse, Montage)
+├── blueprint/              Baupläne, Freischalt-Regeln, Terminal, Werkbänke
 ├── menu/                   Container-Menüs der Maschinen
 ├── command/                /craftorio-Befehle
 ├── network/                Server→Client-Sync

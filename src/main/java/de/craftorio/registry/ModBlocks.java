@@ -1,6 +1,8 @@
 package de.craftorio.registry;
 
 import de.craftorio.Craftorio;
+import de.craftorio.blueprint.TerminalBlock;
+import de.craftorio.blueprint.WorkbenchBlock;
 import de.craftorio.economy.block.TradingPostBlock;
 import de.craftorio.energy.CoalGeneratorBlock;
 import de.craftorio.energy.PowerPoleBlock;
@@ -82,6 +84,27 @@ public final class ModBlocks {
     public static final DeferredBlock<ProcessingMachineBlock> ELECTRIC_FURNACE = machine("electric_furnace", MachineType.ELECTRIC_FURNACE);
     public static final DeferredBlock<ProcessingMachineBlock> PRESS = machine("press", MachineType.PRESS);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
+
+    public static final DeferredBlock<TerminalBlock> TERMINAL = BLOCKS.registerBlock("terminal", TerminalBlock::new,
+            machineProperties().lightLevel(state -> 7));
+
+    public static final DeferredBlock<WorkbenchBlock> WORKBENCH = workbench("workbench", 1);
+    public static final DeferredBlock<WorkbenchBlock> ASSEMBLY_WORKBENCH = workbench("assembly_workbench", 2);
+    public static final DeferredBlock<WorkbenchBlock> PRECISION_WORKBENCH = workbench("precision_workbench", 3);
+
+    /** The workbench block of a tier (1–3). */
+    public static DeferredBlock<WorkbenchBlock> workbench(int tier) {
+        return switch (tier) {
+            case 1 -> WORKBENCH;
+            case 2 -> ASSEMBLY_WORKBENCH;
+            default -> PRECISION_WORKBENCH;
+        };
+    }
+
+    private static DeferredBlock<WorkbenchBlock> workbench(String name, int tier) {
+        return BLOCKS.registerBlock(name, properties -> new WorkbenchBlock(tier, properties),
+                BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(tier == 1 ? SoundType.WOOD : SoundType.METAL));
+    }
 
     private static BlockBehaviour.Properties machineProperties() {
         return BlockBehaviour.Properties.of()

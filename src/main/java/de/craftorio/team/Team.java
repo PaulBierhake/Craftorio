@@ -1,24 +1,44 @@
 package de.craftorio.team;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/** A group of players sharing one credit account. Every player belongs to exactly one team. */
+/** A group of players sharing one credit account and one set of unlocked blueprints. Every player belongs to exactly one team. */
 public final class Team {
+    /** Earnings are bucketed per in-game minute for the "last minutes" statistic. */
+    static final int EARNING_BUCKETS = 10;
+
     private final UUID id;
     private final String name;
     private final Set<UUID> members = new LinkedHashSet<>();
     // Pending invites are not persisted; they expire on server restart.
     private final Set<UUID> invites = new HashSet<>();
+    private final Set<String> unlocked = new LinkedHashSet<>();
+    private final Map<String, Sales> sales = new HashMap<>();
+    private final long[] bucketMinute = new long[EARNING_BUCKETS];
+    private final long[] bucketEarned = new long[EARNING_BUCKETS];
     private long balance;
+    private long totalEarned;
+    private long totalSpent;
+
+    /** Items and credits sold of one item type. */
+    public record Sales(long count, long credits) {
+        Sales plus(long moreCount, long moreCredits) {
+            return new Sales(TeamRegistry.saturatedAdd(count, moreCount), TeamRegistry.saturatedAdd(credits, moreCredits));
+        }
+    }
 
     Team(UUID id, String name, long balance) {
         this.id = id;
         this.name = name;
         this.balance = balance;
+        Arrays.fill(bucketMinute, -1);
     }
 
     public UUID id() {
@@ -41,6 +61,34 @@ public final class Team {
         return invites.contains(player);
     }
 
+    /** Ids of blueprints bought by this team (free starter blueprints are not listed). */
+    public Set<String> unlocked() {
+        return Collections.unmodifiableSet(unlocked);
+    }
+
+    public long totalEarned() {
+        return totalEarned;
+    }
+
+    public long totalSpent() {
+        return totalSpent;
+    }
+
+    public Map<String, Sales> sales() {
+        return Collections.unmodifiableMap(sales);
+    }
+
+    /** Credits earned in the given number of minutes up to and including {@code currentMinute}. */
+    public long earnedInLastMinutes(long currentMinute, int minutes) {
+        long total = 0;
+        for (int i = 0; i < EARNING_BUCKETS; i++) {
+            if (bucketMinute[i] >= 0 && bucketMinute[i] > currentMinute - minutes && bucketMinute[i] <= currentMinute) {
+                total += bucketEarned[i];
+            }
+        }
+        return total;
+    }
+
     void setBalance(long balance) {
         this.balance = balance;
     }
@@ -51,5 +99,38 @@ public final class Team {
 
     Set<UUID> mutableInvites() {
         return invites;
+    }
+
+    Set<String> mutableUnlocked() {
+        return unlocked;
+    }
+
+    void addSale(String item, long count, long credits, long minute) {
+        sales.merge(item, new Sales(count, credits), (old, added) -> old.plus(added.count(), added.credits()));
+        totalEarned = TeamRegistry.saturatedAdd(totalEarned, credits);
+        int bucket = (int) Math.floorMod(minute, EARNING_BUCKETS);
+        if (bucketMinute[bucket] != minute) {
+            bucketMinute[bucket] = minute;
+            bucketEarned[bucket] = 0;
+        }
+        bucketEarned[bucket] = TeamRegistry.saturatedAdd(bucketEarned[bucket], credits);
+    }
+
+    void addSpent(long amount) {
+        totalSpent = TeamRegistry.saturatedAdd(totalSpent, amount);
+    }
+
+    void restoreStats(long totalEarned, long totalSpent, Map<String, Sales> sales) {
+        this.totalEarned = totalEarned;
+        this.totalSpent = totalSpent;
+        this.sales.putAll(sales);
+    }
+
+    /** Takes over the knowledge and history of a team that was dissolved into this one. */
+    void absorb(Team other) {
+        unlocked.addAll(other.unlocked);
+        other.sales.forEach((item, stat) -> sales.merge(item, stat, (a, b) -> a.plus(b.count(), b.credits())));
+        totalEarned = TeamRegistry.saturatedAdd(totalEarned, other.totalEarned);
+        totalSpent = TeamRegistry.saturatedAdd(totalSpent, other.totalSpent);
     }
 }

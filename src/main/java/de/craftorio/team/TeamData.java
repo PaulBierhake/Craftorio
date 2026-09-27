@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,6 +16,8 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,11 +27,12 @@ import java.util.UUID;
 public final class TeamData extends SavedData {
     private static final String FILE_NAME = "craftorio_teams";
 
-    private final TeamRegistry registry = new TeamRegistry(CraftorioConfig.STARTING_CREDITS::get);
+    private final TeamRegistry registry;
     // Teams changed since the last sync; flushed once per server tick so belts selling every tick don't flood the network.
     private final Set<UUID> pendingSync = new HashSet<>();
 
-    private TeamData() {
+    private TeamData(MinecraftServer server) {
+        registry = new TeamRegistry(CraftorioConfig.STARTING_CREDITS::get, () -> server.overworld().getGameTime());
         registry.setChangeListener(team -> {
             setDirty();
             pendingSync.add(team.id());
@@ -37,7 +41,7 @@ public final class TeamData extends SavedData {
 
     public static TeamData get(MinecraftServer server) {
         return server.overworld().getDataStorage()
-                .computeIfAbsent(new SavedData.Factory<>(TeamData::new, TeamData::load, null), FILE_NAME);
+                .computeIfAbsent(new SavedData.Factory<>(() -> new TeamData(server), (tag, registries) -> load(server, tag)), FILE_NAME);
     }
 
     public static TeamRegistry registry(MinecraftServer server) {
@@ -62,7 +66,11 @@ public final class TeamData extends SavedData {
     }
 
     public static void sync(ServerPlayer player, Team team) {
-        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance()));
+        // Players without the mod's channel (e.g. test or fake players) must not receive it – that would crash the tick.
+        if (!player.connection.hasChannel(TeamSyncPayload.TYPE)) {
+            return;
+        }
+        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance(), List.copyOf(team.unlocked())));
     }
 
     @Override
@@ -76,21 +84,42 @@ public final class TeamData extends SavedData {
             ListTag members = new ListTag();
             team.members().forEach(member -> members.add(NbtUtils.createUUID(member)));
             entry.put("members", members);
+            ListTag unlocked = new ListTag();
+            team.unlocked().forEach(id -> unlocked.add(StringTag.valueOf(id)));
+            entry.put("unlocked", unlocked);
+            entry.putLong("total_earned", team.totalEarned());
+            entry.putLong("total_spent", team.totalSpent());
+            CompoundTag sales = new CompoundTag();
+            team.sales().forEach((item, stat) -> {
+                CompoundTag saleTag = new CompoundTag();
+                saleTag.putLong("count", stat.count());
+                saleTag.putLong("credits", stat.credits());
+                sales.put(item, saleTag);
+            });
+            entry.put("sales", sales);
             teams.add(entry);
         }
         tag.put("teams", teams);
         return tag;
     }
 
-    private static TeamData load(CompoundTag tag, HolderLookup.Provider registries) {
-        TeamData data = new TeamData();
+    private static TeamData load(MinecraftServer server, CompoundTag tag) {
+        TeamData data = new TeamData(server);
         for (Tag element : tag.getList("teams", Tag.TAG_COMPOUND)) {
             CompoundTag entry = (CompoundTag) element;
             List<UUID> members = new ArrayList<>();
             for (Tag member : entry.getList("members", Tag.TAG_INT_ARRAY)) {
                 members.add(UUIDUtil.uuidFromIntArray(((IntArrayTag) member).getAsIntArray()));
             }
-            data.registry.restore(entry.getUUID("id"), entry.getString("name"), entry.getLong("balance"), members);
+            List<String> unlocked = entry.getList("unlocked", Tag.TAG_STRING).stream().map(Tag::getAsString).toList();
+            Map<String, Team.Sales> sales = new HashMap<>();
+            CompoundTag salesTag = entry.getCompound("sales");
+            for (String item : salesTag.getAllKeys()) {
+                CompoundTag saleTag = salesTag.getCompound(item);
+                sales.put(item, new Team.Sales(saleTag.getLong("count"), saleTag.getLong("credits")));
+            }
+            data.registry.restore(entry.getUUID("id"), entry.getString("name"), entry.getLong("balance"), members,
+                    unlocked, entry.getLong("total_earned"), entry.getLong("total_spent"), sales);
         }
         return data;
     }

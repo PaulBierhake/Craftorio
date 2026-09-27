@@ -1,7 +1,10 @@
 package de.craftorio.registry;
 
 import de.craftorio.Craftorio;
+import de.craftorio.blueprint.KeyMaterialItem;
+import de.craftorio.blueprint.WorkbenchUpgradeItem;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -23,12 +26,33 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> PRESS = ITEMS.registerSimpleBlockItem("press", ModBlocks.PRESS);
     public static final DeferredItem<BlockItem> ASSEMBLER = ITEMS.registerSimpleBlockItem("assembler", ModBlocks.ASSEMBLER);
 
+    public static final DeferredItem<BlockItem> TERMINAL = ITEMS.registerSimpleBlockItem("terminal", ModBlocks.TERMINAL);
+    public static final DeferredItem<BlockItem> WORKBENCH = ITEMS.registerSimpleBlockItem("workbench", ModBlocks.WORKBENCH);
+    public static final DeferredItem<BlockItem> ASSEMBLY_WORKBENCH = ITEMS.registerSimpleBlockItem("assembly_workbench", ModBlocks.ASSEMBLY_WORKBENCH);
+    public static final DeferredItem<BlockItem> PRECISION_WORKBENCH = ITEMS.registerSimpleBlockItem("precision_workbench", ModBlocks.PRECISION_WORKBENCH);
+
+    public static final DeferredItem<WorkbenchUpgradeItem> WORKBENCH_UPGRADE_2 = ITEMS.registerItem("workbench_upgrade_2",
+            properties -> new WorkbenchUpgradeItem(2, properties), new Item.Properties().stacksTo(16));
+    public static final DeferredItem<WorkbenchUpgradeItem> WORKBENCH_UPGRADE_3 = ITEMS.registerItem("workbench_upgrade_3",
+            properties -> new WorkbenchUpgradeItem(3, properties), new Item.Properties().stacksTo(16));
+
+    // Key materials from tower defense milestones (every 10 levels).
+    public static final DeferredItem<KeyMaterialItem> DRILL_CORE = keyMaterial("drill_core", 10);
+    public static final DeferredItem<KeyMaterialItem> RESONANCE_CRYSTAL = keyMaterial("resonance_crystal", 20);
+    public static final DeferredItem<KeyMaterialItem> DEEP_CORE = keyMaterial("deep_core", 30);
+    public static final DeferredItem<KeyMaterialItem> STAR_SHARD = keyMaterial("star_shard", 40);
+
     // Intermediate products; each processing step is worth more than its inputs.
     public static final DeferredItem<Item> IRON_PLATE = ITEMS.registerSimpleItem("iron_plate");
     public static final DeferredItem<Item> COPPER_CABLE = ITEMS.registerSimpleItem("copper_cable");
     public static final DeferredItem<Item> IRON_GEAR = ITEMS.registerSimpleItem("iron_gear");
     public static final DeferredItem<Item> CIRCUIT = ITEMS.registerSimpleItem("circuit");
     public static final DeferredItem<Item> MOTOR = ITEMS.registerSimpleItem("motor");
+
+    private static DeferredItem<KeyMaterialItem> keyMaterial(String name, int level) {
+        return ITEMS.registerItem(name, properties -> new KeyMaterialItem(level, properties),
+                new Item.Properties().rarity(Rarity.EPIC).stacksTo(16));
+    }
 
     private ModItems() {
     }

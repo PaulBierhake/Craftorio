@@ -1,6 +1,7 @@
 package de.craftorio.economy;
 
 import de.craftorio.team.TeamData;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 
@@ -35,7 +36,7 @@ public final class Economy {
         } catch (ArithmeticException overflow) {
             earned = Long.MAX_VALUE;
         }
-        TeamData.registry(server).deposit(teamId, earned);
+        TeamData.registry(server).recordSale(teamId, BuiltInRegistries.ITEM.getKey(stack.getItem()).toString(), stack.getCount(), earned);
         return earned;
     }
 }

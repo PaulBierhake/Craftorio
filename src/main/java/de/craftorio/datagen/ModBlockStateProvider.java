@@ -44,9 +44,23 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.ELECTRIC_FURNACE.get(), "electric_furnace");
         machine(ModBlocks.PRESS.get(), "press");
         machine(ModBlocks.ASSEMBLER.get(), "assembler");
+        workbench(ModBlocks.WORKBENCH.get(), "workbench");
+        workbench(ModBlocks.ASSEMBLY_WORKBENCH.get(), "assembly_workbench");
+        workbench(ModBlocks.PRECISION_WORKBENCH.get(), "precision_workbench");
+        ModelFile terminal = models().orientable("terminal", modLoc("block/machine_side"), modLoc("block/terminal_front"), modLoc("block/machine_top"));
+        horizontalBlock(ModBlocks.TERMINAL.get(), terminal);
+        simpleBlockItem(ModBlocks.TERMINAL.get(), terminal);
+
         ModelFile pole = models().getExistingFile(modLoc("block/power_pole"));
         simpleBlock(ModBlocks.POWER_POLE.get(), pole);
         simpleBlockItem(ModBlocks.POWER_POLE.get(), pole);
+    }
+
+    private void workbench(Block block, String name) {
+        ModelFile model = models().orientableWithBottom(name, modLoc("block/" + name + "_side"), modLoc("block/" + name + "_front"),
+                modLoc("block/" + name + "_bottom"), modLoc("block/" + name + "_top"));
+        horizontalBlock(block, model);
+        simpleBlockItem(block, model);
     }
 
     /** Shared machine casing with a front that lights up while the machine works. */

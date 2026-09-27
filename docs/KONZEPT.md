@@ -95,7 +95,7 @@ Höherwertige Produkte brauchen **mehrere Rohstoffarten gleichzeitig** und in st
 
 ### 4.3 Vanilla-Crafting *(entschieden)*
 
-Bleibt vorerst **unverändert**. Später denkbar: ein eigenes Crafting-System, in dem die Fabrik spezielle Rezepte (Ausrüstung für Raids) freischaltet – wird separat konzipiert.
+Bleibt für Vanilla-Gegenstände **unverändert**; Craftorio-Maschinen werden ausschließlich über Baupläne an Werkbänken gebaut (siehe 5.3). Später denkbar: ein eigenes Crafting-System, in dem die Fabrik spezielle Rezepte (Ausrüstung für Raids) freischaltet – wird separat konzipiert.
 
 ## 5. Wirtschaft
 
@@ -122,7 +122,7 @@ Bleibt vorerst **unverändert**. Später denkbar: ein eigenes Crafting-System, i
 
 - **Aufträge/Kontrakte** (optional, später): zeitlich begrenzte Bestellungen mit Bonus als zusätzliche Ziele – ohne Einfluss auf die Grundpreise.
 
-### 5.3 Freischalten: Baupläne + Werkbänke *(Vorschlag, zur Bestätigung)*
+### 5.3 Freischalten: Baupläne + Werkbänke *(entschieden, umgesetzt in M4)*
 
 Maschinen, Logistik und Türme entstehen in **zwei Schritten**:
 
@@ -137,14 +137,14 @@ Vanilla-Crafting-Rezepte für Craftorio-Maschinen entfallen dann komplett.
 
 | Stufe | Werkbank | Aufrüstung | Typische Baupläne |
 |---|---|---|---|
-| 1 | **Werkbank** | Vanilla-Rezept (Startpunkt) | Handelsposten, Brenner-Bohrer, Förderband, Greifarm, Kohle-Generator, Strommast, Elektro-Schmelzofen, Presse, erste Türme |
+| 1 | **Konstruktionswerkbank** | Vanilla-Rezept (Startpunkt) | Handelsposten, Brenner-Bohrer, Förderband, Greifarm, Kohle-Generator, Strommast, Elektro-Schmelzofen, Presse, erste Türme |
 | 2 | **Montagewerkbank** | Geld + Bohrkern (TD-Level 10) | Montagemaschine, Schnellband, Splitter, Unterflurband, Elektro-Bohrer, Höhleneingang-Bausatz, Türme Stufe 2 |
 | 3 | **Präzisionswerkbank** | Geld + Tiefenkern (TD-Level 30) | Stufe-3-Maschinen, Expressband, Minenschacht-Bausatz, Endgame-Türme |
 | (4) | **Automatische Fertigung** *(später)* | – | Werkbank, die per Band/Greifarm beliefert wird und Baupläne selbst fertigt |
 
 Aufgerüstet wird **am Platz** (Rechtsklick mit dem Aufrüst-Bausatz), damit die Basis nicht umgebaut werden muss.
 
-**Start:** Die Werkbank Stufe 1 hat ein normales Vanilla-Rezept. Handelsposten, Brenner-Bohrer, Förderband und
+**Start:** Die Konstruktionswerkbank (Stufe 1) und das Terminal haben normale Vanilla-Rezepte. Handelsposten, Brenner-Bohrer, Förderband und
 Greifarm sind als **Start-Baupläne** gratis freigeschaltet – alles andere kostet Credits.
 
 Das **Terminal** (Block + GUI) hat die Tabs:
@@ -323,6 +323,7 @@ Per `/reload` änderbar:
 | 11 | Levelstart | Manuell, optionaler Auto-Modus nach Sieg |
 | 12 | Anzahl Zonen | Zunächst eine Zone pro Team, später erweiterbar (Höhlen/Minen) |
 | 13 | Spieler im Kampf | Reine Tower Defense (Spieler kämpft nicht mit) |
+| 14 | Kaufen vs. Bauen | Baupläne mit Geld freischalten (Team-Wissen), an gestuften Werkbänken aus Material bauen; kein Shop für fertige Maschinen |
 
 ## 13. Umsetzungs-Roadmap
 
@@ -338,4 +339,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M3 abgeschlossen**, als Nächstes **M4 – Terminal & Tech-Baum**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M4 abgeschlossen**, als Nächstes **M5 – Tower Defense I**.

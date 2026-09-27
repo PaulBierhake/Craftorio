@@ -1,13 +1,16 @@
 package de.craftorio.datagen;
 
 import de.craftorio.Craftorio;
+import de.craftorio.registry.ModRegistries;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -34,6 +37,8 @@ public final class DataGenerators {
         generator.addProvider(event.includeClient(), new ModLanguageProvider.German(output));
 
         generator.addProvider(event.includeServer(), new ModBlockTagsProvider(output, lookup, fileHelper));
+        generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(output, lookup,
+                new RegistrySetBuilder().add(ModRegistries.BLUEPRINTS, ModBlueprints::bootstrap), Set.of(Craftorio.MOD_ID)));
         generator.addProvider(event.includeServer(), new ModSellPriceProvider(output, lookup));
         generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
         generator.addProvider(event.includeServer(), new LootTableProvider(output, Set.of(),

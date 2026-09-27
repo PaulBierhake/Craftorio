@@ -65,6 +65,8 @@ public final class ClientEvents {
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ModMenus.GENERATOR.get(), GeneratorScreen::new);
             event.register(ModMenus.PROCESSING_MACHINE.get(), ProcessingMachineScreen::new);
+            event.register(ModMenus.TERMINAL.get(), TerminalScreen::new);
+            event.register(ModMenus.WORKBENCH.get(), WorkbenchScreen::new);
         }
     }
 }

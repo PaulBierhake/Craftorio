@@ -3,6 +3,8 @@ package de.craftorio.registry;
 import de.craftorio.Craftorio;
 import de.craftorio.menu.GeneratorMenu;
 import de.craftorio.menu.ProcessingMachineMenu;
+import de.craftorio.menu.TerminalMenu;
+import de.craftorio.menu.WorkbenchMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -16,6 +18,11 @@ public final class ModMenus {
             MENUS.register("generator", () -> IMenuTypeExtension.create(GeneratorMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<ProcessingMachineMenu>> PROCESSING_MACHINE =
             MENUS.register("processing_machine", () -> IMenuTypeExtension.create(ProcessingMachineMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<TerminalMenu>> TERMINAL =
+            MENUS.register("terminal", () -> IMenuTypeExtension.create(TerminalMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<WorkbenchMenu>> WORKBENCH =
+            MENUS.register("workbench", () -> IMenuTypeExtension.create(WorkbenchMenu::new));
 
     private ModMenus() {
     }

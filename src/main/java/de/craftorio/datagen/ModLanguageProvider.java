@@ -43,6 +43,45 @@ public final class ModLanguageProvider {
             add("craftorio.power.no_network", "Not connected");
             add("craftorio.power.network", "Grid: %s poles · %s generators · %s consumers · %s/%s FE/t · %s%% supplied");
 
+            add(ModBlocks.TERMINAL.get(), "Terminal");
+            add(ModBlocks.WORKBENCH.get(), "Construction Workbench");
+            add(ModBlocks.ASSEMBLY_WORKBENCH.get(), "Assembly Workbench");
+            add(ModBlocks.PRECISION_WORKBENCH.get(), "Precision Workbench");
+            add(ModItems.WORKBENCH_UPGRADE_2.get(), "Workbench Upgrade Kit (Tier 2)");
+            add(ModItems.WORKBENCH_UPGRADE_3.get(), "Workbench Upgrade Kit (Tier 3)");
+            add(ModItems.DRILL_CORE.get(), "Drill Core");
+            add(ModItems.RESONANCE_CRYSTAL.get(), "Resonance Crystal");
+            add(ModItems.DEEP_CORE.get(), "Deep Core");
+            add(ModItems.STAR_SHARD.get(), "Star Shard");
+
+            add("craftorio.key_material.hint", "Key material – reward for tower defense level %s");
+            add("craftorio.workbench.upgrade_hint", "Right-click a tier %s workbench to upgrade it");
+            add("craftorio.workbench.upgrade_target", "Only works on a tier %s workbench");
+            add("craftorio.workbench.hint", "Click: build 1 · Shift-click: build 10");
+            add("craftorio.workbench.build", "Build");
+            add("craftorio.workbench.locked", "Locked");
+            add("craftorio.workbench.needs_tier", "Needs workbench tier %s");
+            add("craftorio.workbench.tier_too_low", "This blueprint needs a tier %s workbench");
+            add("craftorio.workbench.missing", "Missing materials");
+            add("craftorio.terminal.tab.blueprints", "Blueprints");
+            add("craftorio.terminal.tab.stats", "Statistics");
+            add("craftorio.terminal.unlock", "Unlock");
+            add("craftorio.terminal.stats.earned", "Total earned");
+            add("craftorio.terminal.stats.spent", "Total spent");
+            add("craftorio.terminal.stats.recent", "Earned in the last 10 minutes");
+            add("craftorio.terminal.stats.top", "Best sellers");
+            add("craftorio.blueprint.tier", "Tier %s");
+            add("craftorio.blueprint.requires", "needs %s");
+            add("craftorio.blueprint.materials", "Materials:");
+            add("craftorio.blueprint.unlock_items", "Unlock also needs:");
+            add("craftorio.blueprint.unlocked", "Blueprint %s unlocked for %s");
+            add("craftorio.blueprint.locked", "This blueprint is not unlocked yet");
+            add("craftorio.blueprint.status.unlocked", "unlocked");
+            add("craftorio.blueprint.status.available", "available");
+            add("craftorio.blueprint.status.missing_prerequisite", "Unlock the prerequisite first");
+            add("craftorio.blueprint.status.missing_key_items", "needs key material");
+            add("craftorio.blueprint.status.not_enough_credits", "not enough credits");
+
             add("craftorio.drill.status", "Drill: %s/%s field blocks · %s items/s · fuel for %s s");
             add("craftorio.drill.overlap", "Too close to another drill – mining areas must not overlap.");
 
@@ -102,6 +141,45 @@ public final class ModLanguageProvider {
             add("craftorio.gui.no_recipe", "Rezept wählen");
             add("craftorio.power.no_network", "Nicht verbunden");
             add("craftorio.power.network", "Netz: %s Masten · %s Generatoren · %s Verbraucher · %s/%s FE/t · %s%% versorgt");
+
+            add(ModBlocks.TERMINAL.get(), "Terminal");
+            add(ModBlocks.WORKBENCH.get(), "Konstruktionswerkbank");
+            add(ModBlocks.ASSEMBLY_WORKBENCH.get(), "Montagewerkbank");
+            add(ModBlocks.PRECISION_WORKBENCH.get(), "Präzisionswerkbank");
+            add(ModItems.WORKBENCH_UPGRADE_2.get(), "Werkbank-Aufrüstsatz (Stufe 2)");
+            add(ModItems.WORKBENCH_UPGRADE_3.get(), "Werkbank-Aufrüstsatz (Stufe 3)");
+            add(ModItems.DRILL_CORE.get(), "Bohrkern");
+            add(ModItems.RESONANCE_CRYSTAL.get(), "Resonanzkristall");
+            add(ModItems.DEEP_CORE.get(), "Tiefenkern");
+            add(ModItems.STAR_SHARD.get(), "Sternenerz-Splitter");
+
+            add("craftorio.key_material.hint", "Schlüsselmaterial – Belohnung für Tower-Defense-Level %s");
+            add("craftorio.workbench.upgrade_hint", "Rechtsklick auf eine Werkbank der Stufe %s rüstet sie auf");
+            add("craftorio.workbench.upgrade_target", "Funktioniert nur an einer Werkbank der Stufe %s");
+            add("craftorio.workbench.hint", "Klick: 1 bauen · Shift-Klick: 10 bauen");
+            add("craftorio.workbench.build", "Bauen");
+            add("craftorio.workbench.locked", "Gesperrt");
+            add("craftorio.workbench.needs_tier", "Braucht Werkbank Stufe %s");
+            add("craftorio.workbench.tier_too_low", "Dieser Bauplan braucht eine Werkbank der Stufe %s");
+            add("craftorio.workbench.missing", "Material fehlt");
+            add("craftorio.terminal.tab.blueprints", "Baupläne");
+            add("craftorio.terminal.tab.stats", "Statistik");
+            add("craftorio.terminal.unlock", "Kaufen");
+            add("craftorio.terminal.stats.earned", "Gesamt eingenommen");
+            add("craftorio.terminal.stats.spent", "Gesamt ausgegeben");
+            add("craftorio.terminal.stats.recent", "Eingenommen in den letzten 10 Minuten");
+            add("craftorio.terminal.stats.top", "Meistverkauft");
+            add("craftorio.blueprint.tier", "Stufe %s");
+            add("craftorio.blueprint.requires", "braucht %s");
+            add("craftorio.blueprint.materials", "Material:");
+            add("craftorio.blueprint.unlock_items", "Freischalten braucht zusätzlich:");
+            add("craftorio.blueprint.unlocked", "Bauplan %s für %s freigeschaltet");
+            add("craftorio.blueprint.locked", "Dieser Bauplan ist noch nicht freigeschaltet");
+            add("craftorio.blueprint.status.unlocked", "freigeschaltet");
+            add("craftorio.blueprint.status.available", "verfügbar");
+            add("craftorio.blueprint.status.missing_prerequisite", "Erst die Voraussetzung freischalten");
+            add("craftorio.blueprint.status.missing_key_items", "braucht Schlüsselmaterial");
+            add("craftorio.blueprint.status.not_enough_credits", "zu wenig Credits");
 
             add("craftorio.drill.status", "Bohrer: %s/%s Feldblöcke · %s Items/s · Brennstoff für %s s");
             add("craftorio.drill.overlap", "Zu nah an einem anderen Bohrer – Abbauflächen dürfen sich nicht überlappen.");

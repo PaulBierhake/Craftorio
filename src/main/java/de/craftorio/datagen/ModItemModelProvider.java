@@ -18,5 +18,11 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.IRON_GEAR.get());
         basicItem(ModItems.CIRCUIT.get());
         basicItem(ModItems.MOTOR.get());
+        basicItem(ModItems.WORKBENCH_UPGRADE_2.get());
+        basicItem(ModItems.WORKBENCH_UPGRADE_3.get());
+        basicItem(ModItems.DRILL_CORE.get());
+        basicItem(ModItems.RESONANCE_CRYSTAL.get());
+        basicItem(ModItems.DEEP_CORE.get());
+        basicItem(ModItems.STAR_SHARD.get());
     }
 }

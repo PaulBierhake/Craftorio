@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +18,8 @@ import java.util.regex.Pattern;
  * {@link TeamData} persists it and syncs changes to clients.
  *
  * <p>Rules: every player is in exactly one team. A team that loses its last member is dissolved and its
- * balance moves with that player, so leaving a solo team to join friends never loses credits.
+ * balance, blueprints and statistics move with that player, so leaving a solo team to join friends never loses
+ * anything. A player leaving a shared team keeps a copy of its blueprints but starts with no credits.
  */
 public final class TeamRegistry {
     public static final int MAX_NAME_LENGTH = 24;
@@ -26,10 +28,25 @@ public final class TeamRegistry {
     private final Map<UUID, Team> teams = new LinkedHashMap<>();
     private final Map<UUID, UUID> teamByPlayer = new HashMap<>();
     private final LongSupplier startingCredits;
+    private final LongSupplier gameTime;
     private Consumer<Team> changeListener = team -> { };
 
     public TeamRegistry(LongSupplier startingCredits) {
+        this(startingCredits, () -> 0L);
+    }
+
+    /** @param gameTime current game time in ticks, used to bucket earnings per minute */
+    public TeamRegistry(LongSupplier startingCredits, LongSupplier gameTime) {
         this.startingCredits = startingCredits;
+        this.gameTime = gameTime;
+    }
+
+    public static long minuteOf(long gameTime) {
+        return gameTime / 1200;
+    }
+
+    public long currentMinute() {
+        return minuteOf(gameTime.getAsLong());
     }
 
     /** Called after every change to a team (balance, members, invites) and after a team is dissolved. */
@@ -71,8 +88,9 @@ public final class TeamRegistry {
         if (teamByName(trimmed).isPresent()) {
             throw new TeamException("craftorio.team.error.name_taken", trimmed);
         }
-        long carried = removeMember(player);
-        Team team = newTeam(trimmed, carried);
+        Team dissolved = removeMember(player);
+        Team team = newTeam(trimmed, 0);
+        takeOver(team, dissolved);
         addMember(team, player);
         return team;
     }
@@ -94,9 +112,9 @@ public final class TeamRegistry {
         if (!team.isInvited(player)) {
             throw new TeamException("craftorio.team.error.not_invited", team.name());
         }
-        long carried = removeMember(player);
+        Team dissolved = removeMember(player);
         team.mutableInvites().remove(player);
-        team.setBalance(saturatedAdd(team.balance(), carried));
+        takeOver(team, dissolved);
         addMember(team, player);
         return team;
     }
@@ -109,6 +127,7 @@ public final class TeamRegistry {
         }
         removeMember(player);
         Team team = newTeam(uniqueName(playerName), 0);
+        team.mutableUnlocked().addAll(current.unlocked());
         addMember(team, player);
         return team;
     }
@@ -132,8 +151,31 @@ public final class TeamRegistry {
             return false;
         }
         team.setBalance(team.balance() - amount);
+        team.addSpent(amount);
         changeListener.accept(team);
         return true;
+    }
+
+    /** Credits a sale to the team and records it in the statistics. */
+    public void recordSale(UUID teamId, String item, long count, long credits) {
+        if (credits < 0 || count < 0) {
+            throw new IllegalArgumentException("negative sale: " + count + " x " + item + " for " + credits);
+        }
+        Team team = requireTeam(teamId);
+        team.setBalance(saturatedAdd(team.balance(), credits));
+        team.addSale(item, count, credits, currentMinute());
+        changeListener.accept(team);
+    }
+
+    public boolean isUnlocked(UUID teamId, String blueprint) {
+        return team(teamId).map(team -> team.unlocked().contains(blueprint)).orElse(false);
+    }
+
+    public void unlock(UUID teamId, String blueprint) {
+        Team team = requireTeam(teamId);
+        if (team.mutableUnlocked().add(blueprint)) {
+            changeListener.accept(team);
+        }
     }
 
     public void setBalance(UUID teamId, long balance) {
@@ -144,13 +186,28 @@ public final class TeamRegistry {
 
     /** Re-adds a team loaded from disk without notifying the change listener. */
     public Team restore(UUID id, String name, long balance, Collection<UUID> members) {
+        return restore(id, name, balance, members, List.of(), 0, 0, Map.of());
+    }
+
+    public Team restore(UUID id, String name, long balance, Collection<UUID> members, Collection<String> unlocked,
+                        long totalEarned, long totalSpent, Map<String, Team.Sales> sales) {
         Team team = new Team(id, name, balance);
         teams.put(id, team);
         for (UUID member : members) {
             team.mutableMembers().add(member);
             teamByPlayer.put(member, id);
         }
+        team.mutableUnlocked().addAll(unlocked);
+        team.restoreStats(totalEarned, totalSpent, sales);
         return team;
+    }
+
+    private static void takeOver(Team team, Team dissolved) {
+        if (dissolved != null) {
+            team.setBalance(saturatedAdd(team.balance(), dissolved.balance()));
+            team.absorb(dissolved);
+            dissolved.setBalance(0);
+        }
     }
 
     private Team newTeam(String name, long balance) {
@@ -169,23 +226,20 @@ public final class TeamRegistry {
         changeListener.accept(team);
     }
 
-    /** Removes the player from their team; returns the balance they carry if the team was dissolved. */
-    private long removeMember(UUID player) {
+    /** Removes the player from their team; returns the team if that dissolved it, otherwise null. */
+    private Team removeMember(UUID player) {
         UUID teamId = teamByPlayer.remove(player);
         if (teamId == null) {
-            return 0;
+            return null;
         }
         Team team = teams.get(teamId);
         team.mutableMembers().remove(player);
+        changeListener.accept(team);
         if (!team.members().isEmpty()) {
-            changeListener.accept(team);
-            return 0;
+            return null;
         }
         teams.remove(teamId);
-        long carried = team.balance();
-        team.setBalance(0);
-        changeListener.accept(team);
-        return carried;
+        return team;
     }
 
     private Team requireTeam(UUID teamId) {
