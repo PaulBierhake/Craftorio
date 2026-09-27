@@ -45,7 +45,7 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
                 .bounds(leftPos + 68, topPos + 17, 60, 14).build());
         addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.stats"), button -> tab = Tab.STATS)
                 .bounds(leftPos + 130, topPos + 17, 58, 14).build());
-        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.quests"), button -> tab = Tab.QUESTS)
+        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.quests"), button -> showQuests())
                 .bounds(leftPos + 190, topPos + 17, 58, 14).build());
         startButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_START))
                 .bounds(leftPos + 12, topPos + 150, 110, 18).build());
@@ -153,9 +153,17 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         }
     }
 
+    /** Opens the guide scrolled to the step the team should do next. */
+    private void showQuests() {
+        tab = Tab.QUESTS;
+        questScroll = Quests.current(ClientTeamState.claimedQuests()).map(index -> index - 1).orElse(Quests.ALL.size());
+    }
+
     private void renderQuests(GuiGraphics graphics, int mouseX, int mouseY) {
         List<Quest> quests = Quests.ALL;
         questScroll = Math.max(0, Math.min(questScroll, quests.size() - VISIBLE_ROWS));
+        int current = Quests.current(ClientTeamState.claimedQuests()).orElse(-1);
+        Quest hovered = null;
         for (int row = 0; row < VISIBLE_ROWS && questScroll + row < quests.size(); row++) {
             int index = questScroll + row;
             Quest quest = quests.get(index);
@@ -165,8 +173,14 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             boolean claimed = ClientTeamState.claimedQuests().contains(quest.id());
             boolean done = progress >= quest.amount();
             renderRowBackground(graphics, x, y, claimed ? 0xFF22382A : done ? 0xFF2E2E40 : 0xFF28282C);
-            String title = Component.translatable("craftorio.quest." + quest.id()).getString();
-            graphics.drawString(font, font.plainSubstrByWidth(title, BUTTON_X - 8), x + 4, y + 3, 0xFFFFFF, false);
+            if (index == current) {
+                graphics.renderOutline(x, y, LIST_WIDTH - 6, ROW_HEIGHT - 2, 0xFFFFD54F);
+            }
+            String title = (index == current ? "▶ " : "") + Component.translatable("craftorio.quest." + quest.id()).getString();
+            graphics.drawString(font, font.plainSubstrByWidth(title, BUTTON_X - 8), x + 4, y + 3, index == current ? GOLD : 0xFFFFFF, false);
+            if (mouseX >= x && mouseX < x + BUTTON_X - 4 && mouseY >= y && mouseY < y + ROW_HEIGHT - 2) {
+                hovered = quest;
+            }
             String detail = claimed ? Component.translatable("craftorio.quest.done").getString()
                     : quest.amount() == 1 ? Component.translatable(done ? "craftorio.quest.ready" : "craftorio.quest.open").getString()
                     : Credits.formatNumber(progress) + " / " + Credits.formatNumber(quest.amount());
@@ -185,10 +199,16 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             int thumbY = trackTop + (trackHeight - thumb) * questScroll / (quests.size() - VISIBLE_ROWS);
             graphics.fill(leftPos + imageWidth - 6, thumbY, leftPos + imageWidth - 3, thumbY + thumb, 0xFF8A8A9A);
         }
+        if (hovered != null) {
+            List<net.minecraft.util.FormattedCharSequence> lines = new java.util.ArrayList<>();
+            lines.add(Component.translatable("craftorio.quest." + hovered.id()).withStyle(net.minecraft.ChatFormatting.GOLD).getVisualOrderText());
+            lines.addAll(font.split(Component.translatable("craftorio.quest." + hovered.id() + ".hint"), 200));
+            graphics.renderTooltip(font, lines, mouseX, mouseY);
+        }
     }
 
     private long questProgress(int index) {
-        List<Long> progress = menu.stats().questProgress();
+        List<Long> progress = ClientTeamState.questProgress();
         return index < progress.size() ? progress.get(index) : 0;
     }
 

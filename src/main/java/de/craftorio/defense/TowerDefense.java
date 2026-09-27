@@ -94,6 +94,22 @@ public final class TowerDefense extends SavedData {
         return Math.abs(core.getX() - pos.getX()) <= ZONE_RADIUS && Math.abs(core.getZ() - pos.getZ()) <= ZONE_RADIUS;
     }
 
+    /**
+     * A dissolved team's zone passes to the team that took it over. If both have one, the zone with the higher level
+     * stays; the other zone core remains as an inactive block that can be broken.
+     */
+    public void mergeTeams(UUID dissolved, UUID into) {
+        Zone zone = zones.remove(dissolved);
+        if (zone == null) {
+            return;
+        }
+        Zone existing = zones.get(into);
+        if (existing == null || zone.level > existing.level) {
+            zones.put(into, zone);
+        }
+        setDirty();
+    }
+
     // --- zone blocks
 
     boolean placeCore(UUID team, BlockPos pos) {

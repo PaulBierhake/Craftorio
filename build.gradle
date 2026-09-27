@@ -15,6 +15,16 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 repositories {
     mavenLocal()
+    // Optional integrations (EMI, Jade) from Modrinth's Maven.
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter { includeGroup 'maven.modrinth' }
+    }
 }
 
 neoForge {
@@ -74,6 +84,15 @@ configurations {
 }
 
 dependencies {
+    // Compile against the optional integrations. `./gradlew runClient -Pcompat` also loads them; they stay out of
+    // the GameTest server, where Jade's handshake would trip over the mock players.
+    compileOnly "maven.modrinth:emi:${emi_version}"
+    compileOnly "maven.modrinth:jade:${jade_version}"
+    if (project.hasProperty('compat')) {
+        localRuntime "maven.modrinth:emi:${emi_version}"
+        localRuntime "maven.modrinth:jade:${jade_version}"
+    }
+
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

@@ -20,7 +20,8 @@ public final class ModNetwork {
         PayloadRegistrar registrar = event.registrar(PROTOCOL_VERSION);
         // ClientTeamState holds plain fields only, so referencing it is safe on a dedicated server.
         registrar.playToClient(TeamSyncPayload.TYPE, TeamSyncPayload.STREAM_CODEC,
-                (payload, context) -> ClientTeamState.update(payload.teamName(), payload.balance(), payload.unlocked(), payload.claimedQuests()));
+                (payload, context) -> ClientTeamState.update(payload.teamName(), payload.balance(), payload.unlocked(), payload.claimedQuests(),
+                        payload.questProgress()));
         // ClientTdState is plain Java as well.
         registrar.playToClient(TdStatusPayload.TYPE, TdStatusPayload.STREAM_CODEC, (payload, context) -> ClientTdState.update(payload));
     }

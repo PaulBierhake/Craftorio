@@ -68,6 +68,7 @@ public final class BlueprintActions {
         Blueprints.take(player.getInventory(), blueprint.ingredients(), possible);
         ItemStack result = blueprint.result().copyWithCount(blueprint.result().getCount() * possible);
         player.getInventory().placeItemBackInInventory(result);
+        TeamData.registry(player.server).recordBuild(team.id(), Blueprints.id(holder), possible);
         return true;
     }
 }

@@ -9,11 +9,13 @@ public final class ClientTeamState {
     private static volatile long balance;
     private static volatile Set<String> unlocked = Set.of();
     private static volatile Set<String> claimedQuests = Set.of();
+    private static volatile List<Long> questProgress = List.of();
 
     private ClientTeamState() {
     }
 
-    public static void update(String teamName, long balance, List<String> unlocked, List<String> claimedQuests) {
+    public static void update(String teamName, long balance, List<String> unlocked, List<String> claimedQuests, List<Long> questProgress) {
+        ClientTeamState.questProgress = List.copyOf(questProgress);
         ClientTeamState.teamName = teamName;
         ClientTeamState.balance = balance;
         ClientTeamState.unlocked = Set.copyOf(unlocked);
@@ -25,6 +27,12 @@ public final class ClientTeamState {
         balance = 0;
         unlocked = Set.of();
         claimedQuests = Set.of();
+        questProgress = List.of();
+    }
+
+    /** Progress of every quest in guide order. */
+    public static List<Long> questProgress() {
+        return questProgress;
     }
 
     public static Set<String> claimedQuests() {

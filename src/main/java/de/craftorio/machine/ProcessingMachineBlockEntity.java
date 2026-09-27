@@ -95,6 +95,11 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         return items;
     }
 
+    /** Progress of the current job in percent, or -1 if the machine is idle. */
+    public int progressPercent() {
+        return recipeTime <= 0 || progress == 0 ? -1 : 100 * progress / recipeTime;
+    }
+
     /** Inputs can be inserted, the output extracted; nothing else. */
     public IItemHandler automation() {
         return automation;

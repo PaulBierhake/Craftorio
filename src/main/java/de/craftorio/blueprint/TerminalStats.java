@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /** Snapshot of a team's statistics, sent when the terminal opens. */
-public record TerminalStats(long totalEarned, long totalSpent, long earnedLastTenMinutes, List<Row> topSales, List<Long> questProgress) {
+public record TerminalStats(long totalEarned, long totalSpent, long earnedLastTenMinutes, List<Row> topSales) {
     public static final int TOP_ROWS = 7;
 
     public record Row(String item, long count, long credits) {
@@ -25,16 +25,15 @@ public record TerminalStats(long totalEarned, long totalSpent, long earnedLastTe
             ByteBufCodecs.VAR_LONG, TerminalStats::totalSpent,
             ByteBufCodecs.VAR_LONG, TerminalStats::earnedLastTenMinutes,
             Row.STREAM_CODEC.apply(ByteBufCodecs.list()), TerminalStats::topSales,
-            ByteBufCodecs.VAR_LONG.apply(ByteBufCodecs.list()), TerminalStats::questProgress,
             TerminalStats::new);
 
     /** @param questProgress progress of every quest in guide order */
-    public static TerminalStats of(Team team, long currentMinute, List<Long> questProgress) {
+    public static TerminalStats of(Team team, long currentMinute) {
         List<Row> rows = team.sales().entrySet().stream()
                 .map(entry -> new Row(entry.getKey(), entry.getValue().count(), entry.getValue().credits()))
                 .sorted(Comparator.comparingLong(Row::credits).reversed())
                 .limit(TOP_ROWS)
                 .toList();
-        return new TerminalStats(team.totalEarned(), team.totalSpent(), team.earnedInLastMinutes(currentMinute, 10), rows, questProgress);
+        return new TerminalStats(team.totalEarned(), team.totalSpent(), team.earnedInLastMinutes(currentMinute, 10), rows);
     }
 }

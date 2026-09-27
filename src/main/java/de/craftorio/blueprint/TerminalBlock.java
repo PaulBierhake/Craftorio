@@ -50,8 +50,7 @@ public final class TerminalBlock extends Block {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
             TeamRegistry registry = TeamData.registry(serverPlayer.server);
             Team team = registry.ensureTeam(serverPlayer.getUUID(), serverPlayer.getGameProfile().getName());
-            TerminalStats stats = TerminalStats.of(team, registry.currentMinute(),
-                    de.craftorio.quest.QuestActions.progressList(serverPlayer.server, team));
+            TerminalStats stats = TerminalStats.of(team, registry.currentMinute());
             serverPlayer.openMenu(new SimpleMenuProvider((id, inventory, p) -> new TerminalMenu(id, inventory, pos, stats), getName()),
                     buf -> {
                         buf.writeBlockPos(pos);

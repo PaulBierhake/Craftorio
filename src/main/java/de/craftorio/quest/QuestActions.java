@@ -22,7 +22,7 @@ public final class QuestActions {
         Map<String, Long> sold = new HashMap<>();
         team.sales().forEach((item, sales) -> sold.put(item, sales.count()));
         int tdLevels = TowerDefense.get(server).zone(team.id()).map(zone -> zone.level() - 1).orElse(0);
-        return new Quest.Progress(team.totalEarned(), sold, team.unlocked(), tdLevels);
+        return new Quest.Progress(team.totalEarned(), sold, team.unlocked(), team.built(), tdLevels);
     }
 
     /** Progress of every quest in {@link Quests#ALL} order. */

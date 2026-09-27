@@ -12,6 +12,7 @@ Das vollständige Spielkonzept steht in [docs/KONZEPT.md](docs/KONZEPT.md).
 ./gradlew runData      # Datengeneratoren: Modelle, Blockstates, Tags, Übersetzungen -> src/generated/resources
 ./gradlew runClient    # Minecraft-Client mit der Mod starten
 ./gradlew runClient -PquickPlay=<Welt>   # direkt in eine Einzelspielerwelt springen
+./gradlew runClient -Pcompat           # zusätzlich mit EMI und Jade
 ./gradlew runServer    # Dedizierten Server starten
 ./gradlew build        # Mod-JAR bauen und Unit-Tests ausführen -> build/libs/
 ./gradlew runGameTestServer   # GameTests (Tests im laufenden Spiel) auf einem Server ohne Grafik
@@ -187,26 +188,36 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ![Minenschacht](docs/screenshots/m7-mine-shaft.png)
 ![Platzierungsregel](docs/screenshots/m7-shaft-rule.png)
 
-### M8 – Coop & Polish (Teil 1)
+### M8 – Coop & Polish
 
+- **Leitfaden** – die Questline führt Schritt für Schritt durchs Spiel: 33 Ziele vom ersten Handelsposten über
+  Strom, Tower Defense, Höhlen bis zu Minen und 1 Mio. ¢. Jedes Ziel hat eine **Anleitung** (Tooltip im
+  Terminal-Tab *Leitfaden*), der **nächste Schritt** ist markiert und steht mit Fortschritt dauerhaft im **HUD**
+  unter dem Kontostand. Gemessen werden Verkäufe, gekaufte und an der Werkbank gebaute Baupläne, Gesamtverdienst
+  und TD-Level; Belohnungen (Credits) holt man einmal pro Team im Terminal ab.
 - **Team-Rechte**: Das erste Mitglied ist die **Teamleitung**. Sie kann Mitglieder entfernen
   (`/craftorio team kick <Spieler>`), die Leitung übergeben (`/craftorio team leader <Spieler>`) und festlegen,
   wer Credits ausgeben darf (`/craftorio team spending all|leader`) – gilt für Baupläne, Turm-Upgrades,
   Reparaturen und Wiederaufbau. `/craftorio team info` zeigt Leitung und Ausgaberecht.
 - **Blockschutz zwischen Teams** (Server-Config `protection.enabled`, Standard an): Maschinen, Türme und alle
-  Blöcke mit Inventar/Block-Entity gehören dem Team, das sie platziert hat. Andere Teams können sie weder abbauen
-  noch öffnen, Explosionen zerstören sie nicht, und Greifarme nehmen/legen nichts über Teamgrenzen hinweg.
-  Tritt ein Solo-Spieler einem Team bei, gehen seine Blöcke an das neue Team über. Operatoren im Kreativmodus
-  dürfen alles.
-- **Leitfaden** (neuer Terminal-Tab): 19 Ziele vom ersten Verkauf bis zur Minenschicht (Verkäufe, Baupläne,
-  TD-Level, Gesamtverdienst) mit Credit-Belohnungen zum Abholen – einmal pro Team.
+  Blöcke mit Inventar gehören dem Team, das sie platziert hat. Andere Teams können sie nicht abbauen oder
+  öffnen, Explosionen zerstören sie nicht. Geschützte Blöcke verschiedener Teams dürfen sich **nicht berühren**
+  (ein Block Abstand) – so kann kein Trichter, Band, Bohrer, Aufzug oder Greifarm Items in eine fremde Basis
+  hinein- oder herausbewegen; Greifarme prüfen das zusätzlich selbst. Tritt ein Solo-Spieler einem Team bei,
+  gehen seine Blöcke **und seine TD-Zone** an das neue Team über. Operatoren im Kreativmodus dürfen alles.
 - **Skalierung**: Pro zusätzlichem Teammitglied online kommen je Welle 2 Krabbler mehr (zusätzlich zu +35 %
   Gegner-HP); die Belohnung bleibt gleich.
 - **Balancing-Test**: Ein GameTest prüft, dass jede Presse-/Montagestufe mindestens 10 % Wert schafft und kein
   Schmelzrezept Wert vernichtet.
-- *Noch offen: EMI- und Jade-Plugins (warten auf Netzwerkfreigabe der Maven-Hosts).*
+- **EMI** (optional): Kategorien *Pressen*, *Montage* und *Bauplan (Werkbank)* mit Stufe, Preis und
+  Schlüsselmaterialien. **Jade** (optional): Besitzer-Team, Bohrer-Rate, Maschinenfortschritt, Turm-HP/Munition,
+  Ruinen-Kosten, Baustellen- und Aufzugsstatus sowie Ertrag und Wert von Erzfeldern.
+  Im Dev-Client mit `./gradlew runClient -Pcompat` laden.
 
 ![Leitfaden](docs/screenshots/m8-leitfaden.png)
+![HUD und Jade](docs/screenshots/m8-jade-hud.png)
+![EMI Bauplan](docs/screenshots/m8-emi-bauplan.png)
+![EMI Montage](docs/screenshots/m8-emi-montage.png)
 
 ## Projektstruktur
 
@@ -218,6 +229,7 @@ src/main/java/de/craftorio/
 ├── team/                   Teams, Konto, Rechte (TeamRegistry ist reine Logik mit Unit-Tests)
 ├── protection/             Blockschutz zwischen Teams
 ├── quest/                  Leitfaden (Ziele als reine Logik mit Unit-Tests)
+├── compat/                 Optionale EMI- und Jade-Plugins
 ├── economy/                Preise (Data Map), Verkauf, Handelsposten
 ├── world/                  Erzfelder, Weltgenerierung, Start-Felder
 │   └── cave/               Höhlen-/Minenschicht, Form (reine Logik mit Unit-Tests), Eingänge/Schächte, Aushöhlen

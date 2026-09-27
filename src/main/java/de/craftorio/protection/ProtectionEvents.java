@@ -5,6 +5,7 @@ import de.craftorio.team.Team;
 import de.craftorio.team.TeamData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,12 +25,38 @@ public final class ProtectionEvents {
     private ProtectionEvents() {
     }
 
+    /**
+     * Claims protected blocks for the placing team. They may not touch another team's protected blocks, so no hopper,
+     * belt, drill, elevator or inserter can move items into or out of a foreign base.
+     */
     @SubscribeEvent
     public static void onPlace(BlockEvent.EntityPlaceEvent event) {
-        if (event.getLevel() instanceof ServerLevel level && event.getEntity() instanceof ServerPlayer player
-                && BlockOwnership.isProtectable(event.getPlacedBlock())) {
-            BlockOwnership.get(level).claim(event.getPos(), teamOf(player).id());
+        if (!(event.getLevel() instanceof ServerLevel level) || !(event.getEntity() instanceof ServerPlayer player)
+                || !BlockOwnership.isProtectable(event.getPlacedBlock())) {
+            return;
         }
+        Team team = teamOf(player);
+        if (BlockOwnership.enabled() && !bypasses(player)) {
+            Optional<Team> neighbour = foreignNeighbour(level, event.getPos(), team);
+            if (neighbour.isPresent()) {
+                player.displayClientMessage(Component.translatable("craftorio.protection.too_close", neighbour.get().name())
+                        .withStyle(ChatFormatting.RED), true);
+                event.setCanceled(true);
+                return;
+            }
+        }
+        BlockOwnership.get(level).claim(event.getPos(), team.id());
+    }
+
+    static Optional<Team> foreignNeighbour(ServerLevel level, BlockPos pos, Team team) {
+        BlockOwnership ownership = BlockOwnership.get(level);
+        for (Direction direction : Direction.values()) {
+            Optional<Team> owner = ownership.owner(level, pos.relative(direction));
+            if (owner.isPresent() && !owner.get().id().equals(team.id())) {
+                return owner;
+            }
+        }
+        return Optional.empty();
     }
 
     @SubscribeEvent

@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import de.craftorio.quest.QuestActions;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +39,8 @@ public final class TeamData extends SavedData {
 
     private TeamData(MinecraftServer server) {
         registry = new TeamRegistry(CraftorioConfig.STARTING_CREDITS::get, () -> server.overworld().getGameTime());
+        // A solo player's defense zone moves with them into the team they join.
+        registry.setMergeListener((dissolved, into) -> de.craftorio.defense.TowerDefense.get(server).mergeTeams(dissolved, into));
         registry.setChangeListener(team -> {
             setDirty();
             pendingSync.add(team.id());
@@ -83,7 +88,14 @@ public final class TeamData extends SavedData {
         if (!player.connection.hasChannel(TeamSyncPayload.TYPE)) {
             return;
         }
-        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance(), List.copyOf(team.unlocked()), List.copyOf(team.claimedQuests())));
+        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance(), List.copyOf(team.unlocked()), List.copyOf(team.claimedQuests()),
+                QuestActions.progressList(player.server, team)));
+    }
+
+    private static Map<String, Long> readLongs(CompoundTag tag) {
+        Map<String, Long> values = new HashMap<>();
+        tag.getAllKeys().forEach(key -> values.put(key, tag.getLong(key)));
+        return values;
     }
 
     @Override
@@ -114,6 +126,9 @@ public final class TeamData extends SavedData {
             ListTag claimed = new ListTag();
             team.claimedQuests().forEach(id -> claimed.add(StringTag.valueOf(id)));
             entry.put("claimed_quests", claimed);
+            CompoundTag built = new CompoundTag();
+            team.built().forEach(built::putLong);
+            entry.put("built", built);
             teams.add(entry);
         }
         tag.put("teams", teams);
@@ -142,7 +157,8 @@ public final class TeamData extends SavedData {
                     unlocked, entry.getLong("total_earned"), entry.getLong("total_spent"), sales);
             data.registry.restoreSettings(entry.getUUID("id"),
                     !entry.contains("members_can_spend") || entry.getBoolean("members_can_spend"),
-                    entry.getList("claimed_quests", Tag.TAG_STRING).stream().map(Tag::getAsString).toList());
+                    entry.getList("claimed_quests", Tag.TAG_STRING).stream().map(Tag::getAsString).toList(),
+                    readLongs(entry.getCompound("built")));
         }
         CompoundTag merged = tag.getCompound("merged");
         for (String from : merged.getAllKeys()) {

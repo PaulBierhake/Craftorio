@@ -18,6 +18,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /** Towers against enemies and whole levels. Lives in this package to reach the level internals. */
 @GameTestHolder(Craftorio.MOD_ID)
@@ -192,5 +193,25 @@ public final class DefenseGameTests {
         TowerDefense.PathCheck check = defense.checkPath(helper.getLevel(), defense.zone(team.id()).orElseThrow());
         helper.assertTrue(check.path() != null, "path invalid: " + check.message().getString());
         return new Setup(player, team, defense);
+    }
+
+    @GameTest(template = EMPTY)
+    public static void zoneMovesWithPlayerIntoNewTeam(GameTestHelper helper) {
+        TeamRegistry registry = TeamData.registry(helper.getLevel().getServer());
+        UUID alice = UUID.randomUUID();
+        UUID bob = UUID.randomUUID();
+        Team solo = registry.ensureTeam(bob, "ZoneBob");
+        TowerDefense defense = TowerDefense.get(helper.getLevel().getServer());
+        defense.placeCore(solo.id(), helper.absolutePos(new BlockPos(2, 1, 2)));
+        // The GameTest world persists between runs, so the team name must be unique.
+        String name = "Zone " + Integer.toHexString(alice.hashCode());
+        registry.create(alice, name);
+        registry.invite(alice, bob);
+        Team team = registry.join(bob, name);
+
+        helper.assertTrue(defense.zone(team.id()).isPresent(), "zone moved to the joined team");
+        helper.assertTrue(defense.zone(solo.id()).isEmpty(), "old team has no zone left");
+        defense.removeCore(helper.getLevel(), helper.absolutePos(new BlockPos(2, 1, 2)));
+        helper.succeed();
     }
 }

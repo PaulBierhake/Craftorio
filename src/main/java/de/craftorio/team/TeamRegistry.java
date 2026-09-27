@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 import java.util.regex.Pattern;
@@ -32,6 +33,7 @@ public final class TeamRegistry {
     private final LongSupplier startingCredits;
     private final LongSupplier gameTime;
     private Consumer<Team> changeListener = team -> { };
+    private BiConsumer<UUID, UUID> mergeListener = (dissolved, into) -> { };
 
     public TeamRegistry(LongSupplier startingCredits) {
         this(startingCredits, () -> 0L);
@@ -54,6 +56,11 @@ public final class TeamRegistry {
     /** Called after every change to a team (balance, members, invites) and after a team is dissolved. */
     public void setChangeListener(Consumer<Team> changeListener) {
         this.changeListener = changeListener;
+    }
+
+    /** Called with (dissolved team, team that took it over) when a player's solo team merges into another. */
+    public void setMergeListener(BiConsumer<UUID, UUID> mergeListener) {
+        this.mergeListener = mergeListener;
     }
 
     public Collection<Team> teams() {
@@ -175,6 +182,13 @@ public final class TeamRegistry {
         return withdraw(team.id(), amount);
     }
 
+    /** Counts blueprints built at a workbench. */
+    public void recordBuild(UUID teamId, String blueprint, long times) {
+        Team team = requireTeam(teamId);
+        team.mutableBuilt().merge(blueprint, times, TeamRegistry::saturatedAdd);
+        changeListener.accept(team);
+    }
+
     /** Marks a quest reward as collected and pays it; false if it was already collected. */
     public boolean claimQuest(UUID teamId, String quest, long reward) {
         Team team = requireTeam(teamId);
@@ -257,8 +271,9 @@ public final class TeamRegistry {
     }
 
     /** Restores the settings and quest progress of a team loaded from disk. */
-    public void restoreSettings(UUID id, boolean membersCanSpend, Collection<String> claimedQuests) {
+    public void restoreSettings(UUID id, boolean membersCanSpend, Collection<String> claimedQuests, Map<String, Long> built) {
         Team team = requireTeam(id);
+        team.mutableBuilt().putAll(built);
         team.setMembersCanSpend(membersCanSpend);
         team.mutableClaimedQuests().addAll(claimedQuests);
     }
@@ -290,6 +305,7 @@ public final class TeamRegistry {
     private void takeOver(Team team, Team dissolved) {
         if (dissolved != null) {
             mergedInto.put(dissolved.id(), team.id());
+            mergeListener.accept(dissolved.id(), team.id());
             team.setBalance(saturatedAdd(team.balance(), dissolved.balance()));
             team.absorb(dissolved);
             dissolved.setBalance(0);

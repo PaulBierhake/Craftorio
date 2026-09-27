@@ -21,6 +21,7 @@ public final class Team {
     private final Set<UUID> invites = new HashSet<>();
     private final Set<String> unlocked = new LinkedHashSet<>();
     private final Set<String> claimedQuests = new LinkedHashSet<>();
+    private final Map<String, Long> built = new HashMap<>();
     private final Map<String, Sales> sales = new HashMap<>();
     private final long[] bucketMinute = new long[EARNING_BUCKETS];
     private final long[] bucketEarned = new long[EARNING_BUCKETS];
@@ -78,6 +79,11 @@ public final class Team {
         return members.contains(player) && (membersCanSpend || isLeader(player));
     }
 
+    /** How often each blueprint was built at a workbench (for the guide). */
+    public Map<String, Long> built() {
+        return Collections.unmodifiableMap(built);
+    }
+
     /** Ids of quests whose reward was already collected. */
     public Set<String> claimedQuests() {
         return Collections.unmodifiableSet(claimedQuests);
@@ -131,6 +137,10 @@ public final class Team {
         return unlocked;
     }
 
+    Map<String, Long> mutableBuilt() {
+        return built;
+    }
+
     Set<String> mutableClaimedQuests() {
         return claimedQuests;
     }
@@ -173,6 +183,7 @@ public final class Team {
     void absorb(Team other) {
         unlocked.addAll(other.unlocked);
         claimedQuests.addAll(other.claimedQuests);
+        other.built.forEach((id, count) -> built.merge(id, count, TeamRegistry::saturatedAdd));
         other.sales.forEach((item, stat) -> sales.merge(item, stat, (a, b) -> a.plus(b.count(), b.credits())));
         totalEarned = TeamRegistry.saturatedAdd(totalEarned, other.totalEarned);
         totalSpent = TeamRegistry.saturatedAdd(totalSpent, other.totalSpent);

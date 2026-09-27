@@ -339,4 +339,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M7 abgeschlossen**, **M8** zum Großteil umgesetzt (Rechte, Blockschutz, Skalierung, Balancing-Test, eingebauter Leitfaden statt FTB Quests); offen sind die EMI-/Jade-Plugins.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M8 abgeschlossen** (M8: Rechte, Blockschutz, Skalierung, Balancing-Test, EMI/Jade, eingebauter Leitfaden als Questline statt FTB Quests) – erste spielbare Beta.

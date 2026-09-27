@@ -74,4 +74,22 @@ public final class ProtectionGameTests {
             helper.succeed();
         });
     }
+
+    @GameTest(template = EMPTY)
+    public static void foreignBlocksMayNotTouch(GameTestHelper helper) {
+        TeamRegistry registry = TeamData.registry(helper.getLevel().getServer());
+        UUID owner = registry.ensureTeam(UUID.randomUUID(), "Neighbour").id();
+        var other = registry.ensureTeam(UUID.randomUUID(), "Newcomer");
+        BlockPos chest = new BlockPos(2, 1, 2);
+        helper.setBlock(chest, Blocks.CHEST);
+        BlockOwnership.get(helper.getLevel()).claim(helper.absolutePos(chest), owner);
+
+        helper.assertTrue(ProtectionEvents.foreignNeighbour(helper.getLevel(), helper.absolutePos(chest.east()), other).isPresent(),
+                "a hopper right next to the chest is refused");
+        helper.assertTrue(ProtectionEvents.foreignNeighbour(helper.getLevel(), helper.absolutePos(chest.east(2)), other).isEmpty(),
+                "one block of space is fine");
+        helper.assertTrue(ProtectionEvents.foreignNeighbour(helper.getLevel(), helper.absolutePos(chest.east()),
+                registry.team(owner).orElseThrow()).isEmpty(), "own blocks may touch");
+        helper.succeed();
+    }
 }
