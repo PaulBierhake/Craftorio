@@ -16,9 +16,19 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 public final class ClientEvents {
+    /** Opens the handbook at the current guide step. */
+    public static final KeyMapping OPEN_GUIDE = new KeyMapping("key.craftorio.guide", InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_G, "key.categories.craftorio");
+
     private ClientEvents() {
     }
 
@@ -41,6 +51,16 @@ public final class ClientEvents {
         }
 
         @SubscribeEvent
+        public static void onClientTick(ClientTickEvent.Post event) {
+            Minecraft minecraft = Minecraft.getInstance();
+            while (OPEN_GUIDE.consumeClick()) {
+                if (minecraft.screen == null && minecraft.player != null) {
+                    GuideScreen.open();
+                }
+            }
+        }
+
+        @SubscribeEvent
         public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             ClientTeamState.clear();
             ClientTdState.clear();
@@ -50,6 +70,11 @@ public final class ClientEvents {
     @EventBusSubscriber(modid = Craftorio.MOD_ID, value = Dist.CLIENT)
     public static final class Mod {
         private Mod() {
+        }
+
+        @SubscribeEvent
+        public static void registerKeys(RegisterKeyMappingsEvent event) {
+            event.register(OPEN_GUIDE);
         }
 
         @SubscribeEvent

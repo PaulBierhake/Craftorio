@@ -80,6 +80,11 @@ public final class CraftorioCommands {
                         .then(literal("spending")
                                 .then(literal("all").executes(ctx -> run(ctx, c -> teamSpending(c, true))))
                                 .then(literal("leader").executes(ctx -> run(ctx, c -> teamSpending(c, false))))))
+                .then(literal("guide").executes(ctx -> {
+                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                    player.getInventory().placeItemBackInInventory(new net.minecraft.world.item.ItemStack(de.craftorio.registry.ModItems.GUIDE_BOOK.get()));
+                    return 1;
+                }))
                 // Admin shortcut for tests: lays the shortest possible path in the own arena.
                 .then(literal("arena").requires(source -> source.hasPermission(2))
                         .then(literal("route").executes(ctx -> run(ctx, CraftorioCommands::arenaRoute))))

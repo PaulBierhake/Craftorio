@@ -45,6 +45,8 @@ public final class ModItems {
 
     public static final DeferredItem<BlockItem> ARENA_GATE = ITEMS.registerSimpleBlockItem("arena_gate", ModBlocks.ARENA_GATE);
     public static final DeferredItem<BlockItem> ARENA_FEEDER = ITEMS.registerSimpleBlockItem("arena_feeder", ModBlocks.ARENA_FEEDER);
+    public static final DeferredItem<de.craftorio.quest.GuideBookItem> GUIDE_BOOK = ITEMS.registerItem("guide_book",
+            de.craftorio.quest.GuideBookItem::new, new Item.Properties().stacksTo(1));
     public static final DeferredItem<PathWandItem> PATH_WAND = ITEMS.registerItem("path_wand", PathWandItem::new,
             new Item.Properties().stacksTo(1));
     public static final DeferredItem<BlockItem> ZONE_CORE = ITEMS.registerSimpleBlockItem("zone_core", ModBlocks.ZONE_CORE);

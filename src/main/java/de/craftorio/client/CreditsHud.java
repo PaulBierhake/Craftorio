@@ -60,6 +60,8 @@ public final class CreditsHud {
                 graphics.drawString(minecraft.font, part, 6, lineY, done ? GUIDE_DONE_COLOR : GUIDE_COLOR, true);
                 lineY += 10;
             }
+            graphics.drawString(minecraft.font, Component.translatable("craftorio.hud.guide_key",
+                    ClientEvents.OPEN_GUIDE.getTranslatedKeyMessage()), 6, lineY, TEAM_COLOR, true);
         });
     }
 }

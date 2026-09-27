@@ -197,6 +197,14 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 
 ### M8 – Coop & Polish
 
+- **Craftorio-Handbuch**: Jeder Spieler bekommt es beim ersten Betreten (Ersatz: Buch + Eisenbarren, oder
+  `/craftorio guide`); öffnen per Rechtsklick oder jederzeit mit **G**. Es schlägt den aktuellen Leitfaden-Schritt
+  auf und zeigt, **wie man ihn schafft**: Bauplan-Material mit Symbolen und Werkbank-Stufe, das Crafting-Raster
+  von Konstruktionswerkbank bzw. Terminal, Kaufpreis, oder bei Verkaufszielen die Quelle (Erzfeld, Ofen, Presse,
+  Montage). Mit den Pfeilen blättert man durch alle Schritte.
+
+![Handbuch](docs/screenshots/handbuch.png)
+
 - **Leitfaden** – die Questline führt Schritt für Schritt durchs Spiel: 33 Ziele vom ersten Handelsposten über
   Strom, Tower Defense, Höhlen bis zu Minen und 1 Mio. ¢. Jedes Ziel hat eine **Anleitung** (Tooltip im
   Terminal-Tab *Leitfaden*), der **nächste Schritt** ist markiert und steht mit Fortschritt dauerhaft im **HUD**

@@ -15,6 +15,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.tags.ItemTags;
@@ -45,6 +46,13 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .define('T', Items.CRAFTING_TABLE)
                 .define('P', ItemTags.PLANKS)
                 .unlockedBy("has_iron", has(Items.IRON_INGOT))
+                .save(output);
+
+        // A replacement handbook (every player gets one on the first login).
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GUIDE_BOOK.get())
+                .requires(Items.BOOK)
+                .requires(Items.IRON_INGOT)
+                .unlockedBy("has_book", has(Items.BOOK))
                 .save(output);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TERMINAL.get())
