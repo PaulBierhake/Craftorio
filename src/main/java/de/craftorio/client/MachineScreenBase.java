@@ -40,6 +40,9 @@ public abstract class MachineScreenBase<M extends MachineMenuBase> extends Abstr
     }
 
     private void renderEnergyBar(GuiGraphics graphics) {
+        if (capacity() <= 0) {
+            return; // e.g. towers that use ammunition
+        }
         int x = leftPos + ENERGY_X;
         int y = topPos + ENERGY_Y;
         graphics.fill(x, y, x + ENERGY_WIDTH, y + ENERGY_HEIGHT, 0xFF373737);
@@ -51,7 +54,7 @@ public abstract class MachineScreenBase<M extends MachineMenuBase> extends Abstr
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (isHovering(ENERGY_X, ENERGY_Y, ENERGY_WIDTH, ENERGY_HEIGHT, mouseX, mouseY)) {
+        if (capacity() > 0 && isHovering(ENERGY_X, ENERGY_Y, ENERGY_WIDTH, ENERGY_HEIGHT, mouseX, mouseY)) {
             graphics.renderTooltip(font, Component.translatable("craftorio.gui.energy",
                     String.format(Locale.ROOT, "%,d", energy()), String.format(Locale.ROOT, "%,d", capacity())), mouseX, mouseY);
         }

@@ -54,6 +54,26 @@ public final class ModBlueprints {
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 20), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 20),
                 SizedIngredient.of(Items.IRON_INGOT, 10));
 
+        // Tower defense – zone blocks are free, towers cost credits
+        add(context, "zone_core", stack(ModItems.ZONE_CORE.get(), 1), 1, 0, List.of(), List.of(),
+                SizedIngredient.of(Items.IRON_INGOT, 8), SizedIngredient.of(Items.GOLD_INGOT, 2), SizedIngredient.of(Items.REDSTONE, 4));
+        add(context, "enemy_portal", stack(ModItems.ENEMY_PORTAL.get(), 1), 1, 0, List.of(), List.of(),
+                SizedIngredient.of(Items.COBBLESTONE, 8), SizedIngredient.of(Items.IRON_INGOT, 2), SizedIngredient.of(Items.REDSTONE, 2));
+        add(context, "path_block", stack(ModItems.PATH_BLOCK.get(), 16), 1, 0, List.of(), List.of(),
+                SizedIngredient.of(Items.COBBLESTONE, 8));
+        add(context, "crossbow_tower", stack(ModItems.CROSSBOW_TOWER.get(), 1), 1, 300, List.of(), List.of(),
+                SizedIngredient.of(ItemTags.PLANKS, 12), SizedIngredient.of(Items.IRON_INGOT, 6), SizedIngredient.of(Items.REDSTONE, 2));
+        add(context, "bolt", stack(ModItems.BOLT.get(), 16), 1, 50, List.of(), List.of(id("crossbow_tower")),
+                SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.STICK, 2));
+        add(context, "gun_turret", stack(ModItems.GUN_TURRET.get(), 1), 1, 1_500, List.of(), List.of(id("crossbow_tower"), id("press")),
+                SizedIngredient.of(ModItems.IRON_PLATE.get(), 12), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 6),
+                SizedIngredient.of(Items.REDSTONE, 4));
+        add(context, "cartridge", stack(ModItems.CARTRIDGE.get(), 16), 1, 150, List.of(), List.of(id("gun_turret")),
+                SizedIngredient.of(Items.COPPER_INGOT, 1), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1), SizedIngredient.of(Items.COAL, 1));
+        add(context, "tesla_tower", stack(ModItems.TESLA_TOWER.get(), 1), 1, 3_000, List.of(), List.of(id("gun_turret"), id("coal_generator")),
+                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 24), SizedIngredient.of(ModItems.IRON_PLATE.get(), 8),
+                SizedIngredient.of(Items.GOLD_INGOT, 4));
+
         // Tier 2
         add(context, "assembler", stack(ModItems.ASSEMBLER.get(), 1), 2, 800, List.of(), List.of(id("workbench_upgrade_2")),
                 SizedIngredient.of(ModItems.IRON_PLATE.get(), 12), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 8),

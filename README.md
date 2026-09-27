@@ -112,6 +112,30 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ![Terminal](docs/screenshots/m4-terminal.png)
 ![Werkbank](docs/screenshots/m4-werkbank.png)
 
+### M5 – Tower Defense I
+
+- **Verteidigungszone**: Zonenkern aufstellen (ein Kern pro Team, nur Oberwelt). Im Umkreis von 32 Blöcken
+  kommen ein **Feindportal** und eine **durchgehende Linie aus Pfadblöcken** (≥ 20 Blöcke, ohne Abzweigungen,
+  Stufen von ±1 Block erlaubt) vom Portal bis zum Kern. Rechtsklick auf den Kern prüft den Pfad.
+- **Level** startet im Terminal (Tab *Verteidigung*), optional automatisch weiter nach einem Sieg. Jedes Level
+  hat 3–8 Wellen; Gegnerzahl und -leben steigen pro Level und pro weiterem Teammitglied online.
+  **10 Leben** – jeder durchgekommene Gegner kostet Leben (Brecher 2, Brutmutter 10).
+- **Gegner**: Krabbler (schnell, schwach), Brecher (ab Level 5, bleibt stehen und zertrümmert Türme),
+  Spucker (ab Level 10, greift aus 7 Blöcken an), **Brutmutter** als Boss jedes 10. Levels.
+  Gegner greifen **nur Türme** an – nie die Fabrik, Blöcke oder Spieler; Spieler können sie nicht verletzen.
+- **Türme** (Baupläne im Terminal): **Armbrustturm** (Bolzen), **Geschützturm** (Patronen), **Tesla-Turm**
+  (Strom aus dem Netz, trifft bis zu 3 Gegner). Munition per Hand, Trichter, Band oder Greifarm.
+  GUI mit Lebenspunkten und **Aufrüstung Stufe I–V** (Credits + Eisenplatten/Kupferkabel/Zahnräder/Motoren).
+- Bei 0 HP wird ein Turm zur **Ruine** (behält seine Stufe); Rechtsklick baut sie für Credits wieder auf.
+  *Alle Türme reparieren* im Terminal repariert Schäden und Ruinen auf einen Schlag.
+- **Belohnung**: Credits pro Level; alle 10 Level ein **Schlüsselmaterial** am Zonenkern (Level 10: Bohrkern →
+  Montagewerkbank, Level 20: Resonanzkristall, Level 30: Tiefenkern → Präzisionswerkbank, danach Sternenerz-Splitter).
+- Das HUD zeigt während eines Levels Welle, Leben und verbleibende Gegner.
+
+![Level](docs/screenshots/m5-level.png)
+![Gegner](docs/screenshots/m5-gegner.png)
+![Verteidigung](docs/screenshots/m5-terminal-verteidigung.png)
+
 ## Projektstruktur
 
 ```
@@ -127,6 +151,7 @@ src/main/java/de/craftorio/
 ├── energy/                 Generator, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
 ├── recipe/                 Maschinenrezepte (Presse, Montage)
 ├── blueprint/              Baupläne, Freischalt-Regeln, Terminal, Werkbänke
+├── defense/                Tower Defense: Zone, Level-Ablauf, Gegner, Türme (LevelPlan/PathTracer/TowerStats = reine Logik)
 ├── menu/                   Container-Menüs der Maschinen
 ├── command/                /craftorio-Befehle
 ├── network/                Server→Client-Sync

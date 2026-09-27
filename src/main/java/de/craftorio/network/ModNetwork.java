@@ -1,6 +1,7 @@
 package de.craftorio.network;
 
 import de.craftorio.Craftorio;
+import de.craftorio.client.ClientTdState;
 import de.craftorio.client.ClientTeamState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -20,5 +21,7 @@ public final class ModNetwork {
         // ClientTeamState holds plain fields only, so referencing it is safe on a dedicated server.
         registrar.playToClient(TeamSyncPayload.TYPE, TeamSyncPayload.STREAM_CODEC,
                 (payload, context) -> ClientTeamState.update(payload.teamName(), payload.balance(), payload.unlocked()));
+        // ClientTdState is plain Java as well.
+        registrar.playToClient(TdStatusPayload.TYPE, TdStatusPayload.STREAM_CODEC, (payload, context) -> ClientTdState.update(payload));
     }
 }

@@ -62,6 +62,11 @@ public final class ModRecipeProvider extends RecipeProvider {
         assemble(output, "motor", new ItemStack(ModItems.MOTOR.get()), 80,
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 2), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
+        // Ammunition for automated tower supply
+        assemble(output, "bolt", new ItemStack(ModItems.BOLT.get(), 16), 20,
+                SizedIngredient.of(ModItems.IRON_PLATE.get(), 1), SizedIngredient.of(Items.STICK, 2));
+        assemble(output, "cartridge", new ItemStack(ModItems.CARTRIDGE.get(), 16), 30,
+                SizedIngredient.of(Items.COPPER_INGOT, 1), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1), SizedIngredient.of(Items.COAL, 1));
     }
 
     private static void press(RecipeOutput output, String name, ItemLike input, ItemStack result) {

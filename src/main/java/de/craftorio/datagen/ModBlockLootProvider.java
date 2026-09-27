@@ -29,6 +29,12 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.WORKBENCH.get());
         dropSelf(ModBlocks.ASSEMBLY_WORKBENCH.get());
         dropSelf(ModBlocks.PRECISION_WORKBENCH.get());
+        dropSelf(ModBlocks.ZONE_CORE.get());
+        dropSelf(ModBlocks.ENEMY_PORTAL.get());
+        dropSelf(ModBlocks.PATH_BLOCK.get());
+        dropSelf(ModBlocks.CROSSBOW_TOWER.get());
+        dropSelf(ModBlocks.GUN_TURRET.get());
+        dropSelf(ModBlocks.TESLA_TOWER.get());
     }
 
     @Override

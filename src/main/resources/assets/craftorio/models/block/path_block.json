@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/dirt_path",
+  "textures": {
+    "particle": "craftorio:block/path_block_side",
+    "top": "craftorio:block/path_block_top",
+    "side": "craftorio:block/path_block_side",
+    "bottom": "minecraft:block/cobblestone"
+  }
+}

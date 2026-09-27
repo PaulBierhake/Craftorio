@@ -165,7 +165,7 @@ Ein Shop für fertige Maschinen entfällt – Geld kauft **Wissen**, die Fabrik 
 
 ### 6.2 Die Verteidigungszone
 
-- Jedes Team errichtet eine Zone durch Platzieren eines **Zonenkerns** (gekauft). Die Zone hat eine feste Größe (Vorschlag: 5×5 Chunks, später erweiterbar).
+- Jedes Team errichtet eine Zone durch Platzieren eines **Zonenkerns** (Gratis-Bauplan). Die Zone reicht **32 Blöcke** in jede Richtung um den Kern (≈ 5×5 Chunks, später erweiterbar).
 - Am Rand liegt ein **Feindportal**, am anderen Ende der **Kern**. Gegner laufen einen **Pfad** vom Portal zum Kern (Pfad wird vom Spieler mit „Pfadblöcken“ gelegt oder ist vorgegeben – siehe offene Punkte).
 - Türme dürfen **nur innerhalb der Zone** gebaut werden; Förderbänder dürfen in die Zone hinein, um Munition zu liefern.
 
@@ -173,7 +173,7 @@ Ein Shop für fertige Maschinen entfällt – Geld kauft **Wissen**, die Fabrik 
 
 - Gegner laufen zum Kern und **greifen Türme in Reichweite an**.
 - **Turm-HP = 0 → Turm wird zerstört** und hinterlässt eine **Turmruine** (Upgrades und Module bleiben in der Ruine gespeichert).
-- **Level verloren**, wenn zu viele Gegner den Kern erreichen (Lebenspunkte des Levels, z. B. 20). Der Kern selbst bleibt unbeschädigt – er ist nur der Zähler.
+- **Level verloren**, wenn zu viele Gegner den Kern erreichen (**10 Leben** pro Level; Brecher kosten 2, die Brutmutter 10). Der Kern selbst bleibt unbeschädigt – er ist nur der Zähler.
 - **Nach einer Niederlage:** Beschädigte Türme reparieren (Geld + Reparaturmaterial), Ruinen wiederaufbauen (Geld + Bauteile, günstiger als Neukauf), Türme aufrüsten oder neue bauen – dann Level erneut versuchen. Es gibt keine weitere Strafe.
 - **Nach einem Sieg:** Türme behalten ihren Schaden; Reparatur ist Teil der Vorbereitung auf das nächste Level.
 - Ziel: Niederlagen sollen den Spieler dazu bringen, die **Fabrik auszubauen**, weil bessere Türme, Upgrades, Reparaturen und Munition Produktionsleistung kosten.
@@ -339,4 +339,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M4 abgeschlossen**, als Nächstes **M5 – Tower Defense I**.
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0–M5 abgeschlossen**, als Nächstes **M6 – Höhlenschicht**.

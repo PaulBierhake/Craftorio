@@ -2,6 +2,10 @@ package de.craftorio.registry;
 
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.TerminalBlock;
+import de.craftorio.defense.TowerBlock;
+import de.craftorio.defense.TowerRuin;
+import de.craftorio.defense.TowerType;
+import de.craftorio.defense.ZoneBlocks;
 import de.craftorio.blueprint.WorkbenchBlock;
 import de.craftorio.economy.block.TradingPostBlock;
 import de.craftorio.energy.CoalGeneratorBlock;
@@ -91,6 +95,35 @@ public final class ModBlocks {
     public static final DeferredBlock<WorkbenchBlock> WORKBENCH = workbench("workbench", 1);
     public static final DeferredBlock<WorkbenchBlock> ASSEMBLY_WORKBENCH = workbench("assembly_workbench", 2);
     public static final DeferredBlock<WorkbenchBlock> PRECISION_WORKBENCH = workbench("precision_workbench", 3);
+
+    public static final DeferredBlock<ZoneBlocks.Core> ZONE_CORE = BLOCKS.registerBlock("zone_core", ZoneBlocks.Core::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(-1.0F, 3_600_000.0F).lightLevel(state -> 12)
+                    .pushReaction(PushReaction.BLOCK).sound(SoundType.AMETHYST));
+    public static final DeferredBlock<ZoneBlocks.Portal> ENEMY_PORTAL = BLOCKS.registerBlock("enemy_portal", ZoneBlocks.Portal::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(3.0F).lightLevel(state -> 10)
+                    .pushReaction(PushReaction.BLOCK).sound(SoundType.AMETHYST));
+    public static final DeferredBlock<ZoneBlocks.Path> PATH_BLOCK = BLOCKS.registerBlock("path_block", ZoneBlocks.Path::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(0.8F).sound(SoundType.GRAVEL));
+
+    public static final DeferredBlock<TowerBlock> CROSSBOW_TOWER = tower("crossbow_tower", TowerType.CROSSBOW, SoundType.WOOD);
+    public static final DeferredBlock<TowerBlock> GUN_TURRET = tower("gun_turret", TowerType.GUN, SoundType.METAL);
+    public static final DeferredBlock<TowerBlock> TESLA_TOWER = tower("tesla_tower", TowerType.TESLA, SoundType.COPPER);
+    public static final DeferredBlock<TowerRuin> TOWER_RUIN = BLOCKS.registerBlock("tower_ruin", TowerRuin::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.0F).noLootTable().noOcclusion().sound(SoundType.GRAVEL));
+
+    public static DeferredBlock<TowerBlock> tower(TowerType type) {
+        return switch (type) {
+            case CROSSBOW -> CROSSBOW_TOWER;
+            case GUN -> GUN_TURRET;
+            case TESLA -> TESLA_TOWER;
+        };
+    }
+
+    private static DeferredBlock<TowerBlock> tower(String name, TowerType type, SoundType sound) {
+        // Towers are only broken deliberately; enemies damage their hit points, never the block.
+        return BLOCKS.registerBlock(name, properties -> new TowerBlock(type, properties),
+                BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2.5F, 1200.0F).noOcclusion().sound(sound));
+    }
 
     /** The workbench block of a tier (1–3). */
     public static DeferredBlock<WorkbenchBlock> workbench(int tier) {

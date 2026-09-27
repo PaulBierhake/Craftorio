@@ -2,6 +2,8 @@ package de.craftorio.registry;
 
 import de.craftorio.Craftorio;
 import de.craftorio.economy.block.TradingPostBlockEntity;
+import de.craftorio.defense.TowerBlockEntity;
+import de.craftorio.defense.TowerRuinBlockEntity;
 import de.craftorio.energy.CoalGeneratorBlockEntity;
 import de.craftorio.energy.PowerPoleBlockEntity;
 import de.craftorio.machine.ProcessingMachineBlockEntity;
@@ -52,6 +54,15 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(ProcessingMachineBlockEntity::new,
                     ModBlocks.ELECTRIC_FURNACE.get(), ModBlocks.PRESS.get(), ModBlocks.ASSEMBLER.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerBlockEntity>> TOWER = BLOCK_ENTITIES.register("tower",
+            () -> BlockEntityType.Builder.of(TowerBlockEntity::new,
+                    ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerRuinBlockEntity>> TOWER_RUIN = BLOCK_ENTITIES.register("tower_ruin",
+            () -> BlockEntityType.Builder.of(TowerRuinBlockEntity::new, ModBlocks.TOWER_RUIN.get()).build(null));
+
     private ModBlockEntities() {
     }
 
@@ -65,6 +76,8 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, COAL_GENERATOR.get(), (generator, side) -> generator.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.energy());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? null : insertOnly(tower.ammo()));
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? tower.energy() : null);
     }
 
     /** Lets automation fill a fuel slot without being able to take the fuel back out. */

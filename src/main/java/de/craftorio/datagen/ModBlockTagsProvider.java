@@ -22,12 +22,15 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAP_ROCK.get());
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAP_ROCK.get());
 
-        tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get(), ModBlocks.POWER_POLE.get(), ModBlocks.WORKBENCH.get());
+        tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get(), ModBlocks.POWER_POLE.get(), ModBlocks.WORKBENCH.get(),
+                ModBlocks.CROSSBOW_TOWER.get());
+        tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.PATH_BLOCK.get(), ModBlocks.TOWER_RUIN.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
                 ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get(), ModBlocks.COAL_FIELD.get(),
                 ModBlocks.BURNER_DRILL.get(), ModBlocks.CONVEYOR_BELT.get(), ModBlocks.INSERTER.get(),
                 ModBlocks.COAL_GENERATOR.get(), ModBlocks.ELECTRIC_FURNACE.get(), ModBlocks.PRESS.get(), ModBlocks.ASSEMBLER.get(),
-                ModBlocks.TERMINAL.get(), ModBlocks.ASSEMBLY_WORKBENCH.get(), ModBlocks.PRECISION_WORKBENCH.get());
+                ModBlocks.TERMINAL.get(), ModBlocks.ASSEMBLY_WORKBENCH.get(), ModBlocks.PRECISION_WORKBENCH.get(),
+                ModBlocks.ENEMY_PORTAL.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get());
     }
 }

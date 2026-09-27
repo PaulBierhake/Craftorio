@@ -24,5 +24,7 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.RESONANCE_CRYSTAL.get());
         basicItem(ModItems.DEEP_CORE.get());
         basicItem(ModItems.STAR_SHARD.get());
+        basicItem(ModItems.BOLT.get());
+        basicItem(ModItems.CARTRIDGE.get());
     }
 }

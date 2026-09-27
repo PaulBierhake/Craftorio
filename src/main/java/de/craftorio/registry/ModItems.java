@@ -36,6 +36,15 @@ public final class ModItems {
     public static final DeferredItem<WorkbenchUpgradeItem> WORKBENCH_UPGRADE_3 = ITEMS.registerItem("workbench_upgrade_3",
             properties -> new WorkbenchUpgradeItem(3, properties), new Item.Properties().stacksTo(16));
 
+    public static final DeferredItem<BlockItem> ZONE_CORE = ITEMS.registerSimpleBlockItem("zone_core", ModBlocks.ZONE_CORE);
+    public static final DeferredItem<BlockItem> ENEMY_PORTAL = ITEMS.registerSimpleBlockItem("enemy_portal", ModBlocks.ENEMY_PORTAL);
+    public static final DeferredItem<BlockItem> PATH_BLOCK = ITEMS.registerSimpleBlockItem("path_block", ModBlocks.PATH_BLOCK);
+    public static final DeferredItem<BlockItem> CROSSBOW_TOWER = ITEMS.registerSimpleBlockItem("crossbow_tower", ModBlocks.CROSSBOW_TOWER);
+    public static final DeferredItem<BlockItem> GUN_TURRET = ITEMS.registerSimpleBlockItem("gun_turret", ModBlocks.GUN_TURRET);
+    public static final DeferredItem<BlockItem> TESLA_TOWER = ITEMS.registerSimpleBlockItem("tesla_tower", ModBlocks.TESLA_TOWER);
+    public static final DeferredItem<Item> BOLT = ITEMS.registerSimpleItem("bolt");
+    public static final DeferredItem<Item> CARTRIDGE = ITEMS.registerSimpleItem("cartridge");
+
     // Key materials from tower defense milestones (every 10 levels).
     public static final DeferredItem<KeyMaterialItem> DRILL_CORE = keyMaterial("drill_core", 10);
     public static final DeferredItem<KeyMaterialItem> RESONANCE_CRYSTAL = keyMaterial("resonance_crystal", 20);

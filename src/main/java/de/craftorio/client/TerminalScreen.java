@@ -4,7 +4,9 @@ import de.craftorio.blueprint.Blueprint;
 import de.craftorio.blueprint.Blueprints;
 import de.craftorio.blueprint.TerminalStats;
 import de.craftorio.blueprint.UnlockRules;
+import de.craftorio.defense.LevelPlan;
 import de.craftorio.economy.Credits;
+import de.craftorio.network.TdStatusPayload;
 import de.craftorio.menu.TerminalMenu;
 import de.craftorio.registry.ModRegistries;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,7 +21,12 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
-    private boolean statsTab;
+    private enum Tab { BLUEPRINTS, DEFENSE, STATS }
+
+    private Tab tab = Tab.BLUEPRINTS;
+    private Button startButton;
+    private Button autoButton;
+    private Button repairButton;
 
     public TerminalScreen(TerminalMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -28,15 +35,37 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.blueprints"), button -> statsTab = false)
-                .bounds(leftPos + 8, topPos + 17, 80, 14).build());
-        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.stats"), button -> statsTab = true)
-                .bounds(leftPos + 92, topPos + 17, 80, 14).build());
+        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.blueprints"), button -> tab = Tab.BLUEPRINTS)
+                .bounds(leftPos + 8, topPos + 17, 76, 14).build());
+        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.defense"), button -> tab = Tab.DEFENSE)
+                .bounds(leftPos + 88, topPos + 17, 80, 14).build());
+        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.stats"), button -> tab = Tab.STATS)
+                .bounds(leftPos + 172, topPos + 17, 76, 14).build());
+        startButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_START))
+                .bounds(leftPos + 12, topPos + 150, 110, 18).build());
+        autoButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_TOGGLE_AUTO))
+                .bounds(leftPos + 128, topPos + 150, 116, 18).build());
+        repairButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_REPAIR_ALL))
+                .bounds(leftPos + 12, topPos + 172, 232, 18).build());
     }
 
     @Override
     protected boolean showList() {
-        return !statsTab;
+        return tab == Tab.BLUEPRINTS;
+    }
+
+    @Override
+    public void containerTick() {
+        super.containerTick();
+        TdStatusPayload td = ClientTdState.status();
+        boolean defense = tab == Tab.DEFENSE;
+        startButton.visible = autoButton.visible = repairButton.visible = defense;
+        startButton.active = td.hasZone() && !td.running();
+        startButton.setMessage(Component.translatable("craftorio.td.button.start", td.level()));
+        autoButton.active = td.hasZone();
+        autoButton.setMessage(Component.translatable(td.auto() ? "craftorio.td.button.auto_on" : "craftorio.td.button.auto_off"));
+        repairButton.active = td.hasZone() && td.repairCost() > 0 && !td.running();
+        repairButton.setMessage(Component.translatable("craftorio.td.button.repair", Credits.format(td.repairCost())));
     }
 
     @Override
@@ -109,9 +138,36 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (statsTab) {
+        if (tab == Tab.STATS) {
             renderStats(graphics);
+        } else if (tab == Tab.DEFENSE) {
+            renderDefense(graphics);
         }
+    }
+
+    private void renderDefense(GuiGraphics graphics) {
+        TdStatusPayload td = ClientTdState.status();
+        int x = leftPos + 12;
+        int y = topPos + LIST_TOP + 2;
+        if (!td.hasZone()) {
+            graphics.drawWordWrap(font, Component.translatable("craftorio.td.help"), x, y, imageWidth - 24, 0xFFFFFF);
+            return;
+        }
+        line(graphics, "craftorio.td.next_level", String.valueOf(td.level()), x, y);
+        if (td.running()) {
+            line(graphics, "craftorio.td.wave", td.wave() + " / " + td.waves(), x, y + 12);
+            line(graphics, "craftorio.td.lives", td.lives() + " / " + LevelPlan.LIVES, x, y + 24);
+            line(graphics, "craftorio.td.enemies", String.valueOf(td.enemiesLeft()), x, y + 36);
+        } else {
+            line(graphics, "craftorio.td.reward", Credits.format(LevelPlan.of(td.level(), 1).reward()), x, y + 12);
+            LevelPlan.KeyReward key = LevelPlan.keyReward(td.level());
+            line(graphics, "craftorio.td.milestone", Component.translatable("craftorio.td.milestone.in",
+                    10 - (td.level() - 1) % 10).getString(), x, y + 24);
+            if (key != LevelPlan.KeyReward.NONE) {
+                graphics.drawString(font, Component.translatable("craftorio.td.key_next"), x, y + 36, 0xD68CFF, false);
+            }
+        }
+        graphics.drawWordWrap(font, Component.translatable("craftorio.td.rules", LevelPlan.LIVES), x, y + 56, imageWidth - 24, GRAY);
     }
 
     private void renderStats(GuiGraphics graphics) {

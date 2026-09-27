@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModCreativeTabs;
+import de.craftorio.registry.ModEntities;
 import de.craftorio.registry.ModFeatures;
 import de.craftorio.registry.ModMenus;
 import de.craftorio.registry.ModRecipes;
@@ -25,6 +26,7 @@ public final class Craftorio {
         ModItems.ITEMS.register(modBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
+        ModEntities.ENTITIES.register(modBus);
         ModFeatures.FEATURES.register(modBus);
         ModMenus.MENUS.register(modBus);
         ModRecipes.TYPES.register(modBus);

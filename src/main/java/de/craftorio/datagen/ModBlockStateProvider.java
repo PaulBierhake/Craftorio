@@ -51,6 +51,22 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.TERMINAL.get(), terminal);
         simpleBlockItem(ModBlocks.TERMINAL.get(), terminal);
 
+        simpleBlockWithItem(ModBlocks.ZONE_CORE.get(), cubeAll(ModBlocks.ZONE_CORE.get()));
+        simpleBlockWithItem(ModBlocks.ENEMY_PORTAL.get(), models().cubeBottomTop("enemy_portal",
+                modLoc("block/enemy_portal_side"), modLoc("block/enemy_portal_top"), modLoc("block/enemy_portal_top")));
+        for (String name : new String[]{"path_block", "crossbow_tower", "gun_turret", "tesla_tower", "tower_ruin"}) {
+            ModelFile model = models().getExistingFile(modLoc("block/" + name));
+            Block block = switch (name) {
+                case "path_block" -> ModBlocks.PATH_BLOCK.get();
+                case "crossbow_tower" -> ModBlocks.CROSSBOW_TOWER.get();
+                case "gun_turret" -> ModBlocks.GUN_TURRET.get();
+                case "tesla_tower" -> ModBlocks.TESLA_TOWER.get();
+                default -> ModBlocks.TOWER_RUIN.get();
+            };
+            simpleBlock(block, model);
+            simpleBlockItem(block, model);
+        }
+
         ModelFile pole = models().getExistingFile(modLoc("block/power_pole"));
         simpleBlock(ModBlocks.POWER_POLE.get(), pole);
         simpleBlockItem(ModBlocks.POWER_POLE.get(), pole);

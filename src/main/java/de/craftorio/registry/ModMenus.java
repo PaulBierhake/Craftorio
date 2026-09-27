@@ -4,6 +4,7 @@ import de.craftorio.Craftorio;
 import de.craftorio.menu.GeneratorMenu;
 import de.craftorio.menu.ProcessingMachineMenu;
 import de.craftorio.menu.TerminalMenu;
+import de.craftorio.menu.TowerMenu;
 import de.craftorio.menu.WorkbenchMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
@@ -23,6 +24,9 @@ public final class ModMenus {
             MENUS.register("terminal", () -> IMenuTypeExtension.create(TerminalMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<WorkbenchMenu>> WORKBENCH =
             MENUS.register("workbench", () -> IMenuTypeExtension.create(WorkbenchMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<TowerMenu>> TOWER =
+            MENUS.register("tower", () -> IMenuTypeExtension.create(TowerMenu::new));
 
     private ModMenus() {
     }

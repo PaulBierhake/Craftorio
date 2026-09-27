@@ -1,0 +1,139 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "craftorio:block/tower_steel",
+    "steel": "craftorio:block/tower_steel",
+    "coil": "craftorio:block/tesla_coil",
+    "orb": "craftorio:block/tesla_orb"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        4,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel"
+        },
+        "south": {
+          "texture": "#steel"
+        },
+        "east": {
+          "texture": "#steel"
+        },
+        "west": {
+          "texture": "#steel"
+        },
+        "up": {
+          "texture": "#steel"
+        },
+        "down": {
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        4,
+        5
+      ],
+      "to": [
+        11,
+        16,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#coil"
+        },
+        "south": {
+          "texture": "#coil"
+        },
+        "east": {
+          "texture": "#coil"
+        },
+        "west": {
+          "texture": "#coil"
+        },
+        "up": {
+          "texture": "#coil"
+        },
+        "down": {
+          "texture": "#coil"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        16,
+        4
+      ],
+      "to": [
+        12,
+        18,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel"
+        },
+        "south": {
+          "texture": "#steel"
+        },
+        "east": {
+          "texture": "#steel"
+        },
+        "west": {
+          "texture": "#steel"
+        },
+        "up": {
+          "texture": "#steel"
+        },
+        "down": {
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        18,
+        4.5
+      ],
+      "to": [
+        11.5,
+        24,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#orb"
+        },
+        "south": {
+          "texture": "#orb"
+        },
+        "east": {
+          "texture": "#orb"
+        },
+        "west": {
+          "texture": "#orb"
+        },
+        "up": {
+          "texture": "#orb"
+        },
+        "down": {
+          "texture": "#orb"
+        }
+      }
+    }
+  ]
+}

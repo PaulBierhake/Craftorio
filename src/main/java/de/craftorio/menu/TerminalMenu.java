@@ -2,7 +2,9 @@ package de.craftorio.menu;
 
 import de.craftorio.blueprint.BlueprintActions;
 import de.craftorio.blueprint.TerminalStats;
+import de.craftorio.defense.TowerDefense;
 import de.craftorio.registry.ModMenus;
+import de.craftorio.team.TeamData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,8 +13,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
-/** No slots; button ids are indexes into {@link de.craftorio.blueprint.Blueprints#sorted}. */
+import java.util.UUID;
+
+/** No slots; button ids below {@link #TD_START} are indexes into {@link de.craftorio.blueprint.Blueprints#sorted}. */
 public final class TerminalMenu extends AbstractContainerMenu {
+    public static final int TD_START = 10_000;
+    public static final int TD_TOGGLE_AUTO = 10_001;
+    public static final int TD_REPAIR_ALL = 10_002;
+
     private final BlockPos pos;
     private final TerminalStats stats;
 
@@ -32,7 +40,23 @@ public final class TerminalMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        return player instanceof ServerPlayer serverPlayer && BlueprintActions.unlock(serverPlayer, id);
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return false;
+        }
+        if (id < TD_START) {
+            return BlueprintActions.unlock(serverPlayer, id);
+        }
+        TowerDefense defense = TowerDefense.get(serverPlayer.server);
+        UUID team = TeamData.registry(serverPlayer.server).ensureTeam(serverPlayer.getUUID(), serverPlayer.getGameProfile().getName()).id();
+        switch (id) {
+            case TD_START -> serverPlayer.displayClientMessage(defense.start(serverPlayer.server, team), true);
+            case TD_TOGGLE_AUTO -> defense.toggleAuto(team);
+            case TD_REPAIR_ALL -> serverPlayer.displayClientMessage(defense.repairAll(serverPlayer.server, team), true);
+            default -> {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
