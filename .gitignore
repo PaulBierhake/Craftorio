@@ -1,0 +1,27 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# Minecraft run directories
+run/
+runs/
+run-data/
+
+# Data generator output (created by ./gradlew runData)
+src/generated/
+
+# OS
+.DS_Store
+Thumbs.db

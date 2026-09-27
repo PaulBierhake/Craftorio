@@ -1,6 +1,6 @@
 # Craftorio – Spielkonzept & Umsetzungsplan
 
-> Status: Entwurf v0.2 – Entscheidungen aus Runde 1 eingearbeitet (siehe Abschnitt 11). Neue offene Punkte in Abschnitt 12.
+> Status: v0.3 – alle Grundsatzentscheidungen getroffen (Abschnitte 11 und 12). Umsetzung läuft.
 
 ## 1. Vision in einem Satz
 
@@ -289,13 +289,15 @@ Per `/reload` änderbar:
 | 7 | Angriffe | Nur auf Türme (HP) in der Verteidigungszone; Fabrik bleibt unberührt; levelbasiert; Geld pro Level, Schlüsselmaterial alle 10 Level |
 | 8 | Währung | Credits (¢) |
 
-## 12. Neue offene Punkte (Runde 2)
+## 12. Entscheidungen Runde 2
 
-1. **Ort der Verteidigungszone:** In der normalen Welt (Munition per Band aus der Fabrik direkt anlieferbar) oder in einer separaten Arena-Dimension pro Team (saubere Trennung, Munition über ein „Nachschub-Terminal“)? *(Empfehlung: normale Welt)*
-2. **Gegnerpfad:** Vom Spieler gebaut (Mazing, mehr Taktik) oder fest vorgegeben durch den Zonenkern? *(Empfehlung: vom Spieler gelegt, mit Mindestlänge)*
-3. **Levelstart:** Nur manuell oder zusätzlich ein Auto-Modus, der das nächste Level nach Sieg startet? *(Empfehlung: manuell + optionaler Auto-Modus)*
-4. **Eine Zone oder mehrere:** Später zusätzliche Zonen in Höhlen/Minen mit eigenen Levelreihen? *(Empfehlung: zunächst eine Zone, später erweiterbar)*
-5. **Kämpft der Spieler mit?** Darf der Spieler selbst in der Zone kämpfen, oder ist es reine Tower-Defense? *(Empfehlung: reine TD zunächst – passt zum späteren „Raid-Ausrüstungs“-Crafting)*
+| # | Frage | Entscheidung |
+|---|---|---|
+| 9 | Ort der Verteidigungszone | Normale Welt; Munition per Band aus der Fabrik |
+| 10 | Gegnerpfad | Vom Spieler mit Pfadblöcken gelegt, mit Mindestlänge |
+| 11 | Levelstart | Manuell, optionaler Auto-Modus nach Sieg |
+| 12 | Anzahl Zonen | Zunächst eine Zone pro Team, später erweiterbar (Höhlen/Minen) |
+| 13 | Spieler im Kampf | Reine Tower Defense (Spieler kämpft nicht mit) |
 
 ## 13. Umsetzungs-Roadmap
 
@@ -311,4 +313,4 @@ Per `/reload` änderbar:
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
 | **M8 – Coop & Polish** | Mehrere Teams, Rechte, Skalierung, Balancing, EMI/Jade-Kompat, Quests | Erste spielbare Beta |
 
-Jeder Meilenstein endet mit einem spielbaren Stand. Nächster Schritt: **M0 – Projekt-Setup** (kann parallel zur Klärung von Abschnitt 12 starten, da diese Punkte erst ab M5 relevant sind).
+Jeder Meilenstein endet mit einem spielbaren Stand. Aktueller Stand: **M0 – Projekt-Setup** in Arbeit.
