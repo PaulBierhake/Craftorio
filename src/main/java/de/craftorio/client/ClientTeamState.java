@@ -15,7 +15,12 @@ public final class ClientTeamState {
     }
 
     public static void update(String teamName, long balance, List<String> unlocked, List<String> claimedQuests, List<Long> questProgress) {
+        List<Long> previous = ClientTeamState.questProgress;
         ClientTeamState.questProgress = List.copyOf(questProgress);
+        // Only goals reached while playing are announced, not the ones already done at login.
+        if (ClientTeamState.teamName != null && previous.size() == questProgress.size()) {
+            GuideNotifications.announce(previous, questProgress, Set.copyOf(claimedQuests));
+        }
         ClientTeamState.teamName = teamName;
         ClientTeamState.balance = balance;
         ClientTeamState.unlocked = Set.copyOf(unlocked);

@@ -203,7 +203,16 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
   von Konstruktionswerkbank bzw. Terminal, Kaufpreis, oder bei Verkaufszielen die Quelle (Erzfeld, Ofen, Presse,
   Montage). Mit den Pfeilen blättert man durch alle Schritte.
 
+- **Starter-Kit** (Server-Config `economy.starterKit`, Standard an): Beim ersten Betreten gibt es zusätzlich eine
+  Konstruktionswerkbank, 4 Eisenbarren, 1 Goldbarren, 1 Truhe und 16 Kohle – mit Brettern aus dem nächsten Baum
+  reicht das direkt für den ersten Handelsposten.
+- **„Fehlt?"** an der Werkbank: Fehlendes Material ist rot markiert, der Tooltip zeigt „du hast X". Ein Klick auf
+  *Fehlt?* listet im Chat genau, was noch fehlt.
+- **Hinweis-Popups**: Sobald ein Leitfaden-Ziel erreicht ist, erscheint oben rechts „Leitfaden-Ziel erreicht!" –
+  die Belohnung holt man im Terminal ab.
+
 ![Handbuch](docs/screenshots/handbuch.png)
+![Fehlt?](docs/screenshots/werkbank-fehlt.png)
 
 - **Leitfaden** – die Questline führt Schritt für Schritt durchs Spiel: 33 Ziele vom ersten Handelsposten über
   Strom, Tower Defense, Höhlen bis zu Minen und 1 Mio. ¢. Jedes Ziel hat eine **Anleitung** (Tooltip im
@@ -228,6 +237,9 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
   Schlüsselmaterialien. **Jade** (optional): Besitzer-Team, Bohrer-Rate, Maschinenfortschritt, Turm-HP/Munition,
   Ruinen-Kosten, Baustellen- und Aufzugsstatus sowie Ertrag und Wert von Erzfeldern.
   Im Dev-Client mit `./gradlew runClient -Pcompat` laden.
+  **Empfehlung für Spieler:** EMI (für 1.21.1/NeoForge, z. B. von Modrinth) einfach zusätzlich in den
+  `mods`-Ordner des **Clients** legen – dann zeigt ein Klick auf ein Item (R = Rezept, U = Verwendung), wie man
+  es herstellt. Auf dem Server ist EMI nicht nötig.
 
 ![Leitfaden](docs/screenshots/m8-leitfaden.png)
 ![HUD und Jade](docs/screenshots/m8-jade-hud.png)

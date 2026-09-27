@@ -61,9 +61,19 @@ public final class BlueprintGameTests {
     }
 
     @GameTest(template = EMPTY)
+    public static void firstLoginGivesGuideAndStarterKit(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        helper.assertValueEqual(count(player, ModItems.GUIDE_BOOK.get()), 1, "guide book");
+        helper.assertValueEqual(count(player, ModItems.WORKBENCH.get()), 1, "starter workbench");
+        helper.assertValueEqual(count(player, Items.IRON_INGOT), 4, "starter iron");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
     public static void workbenchBuildsUnlockedBlueprintsFromInventory(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Team team = team(player, 0);
+        player.getInventory().clearContent(); // drop the login starter kit
         player.getInventory().add(new ItemStack(Items.IRON_INGOT, 20));
         player.getInventory().add(new ItemStack(Items.OAK_PLANKS, 4));
 

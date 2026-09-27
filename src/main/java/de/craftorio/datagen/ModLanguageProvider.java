@@ -242,6 +242,11 @@ public final class ModLanguageProvider {
             add("craftorio.jade.ruin", "Destroyed – rebuild for %s");
             add("craftorio.jade.ore_field", "Yields %s (%s each) – endless");
             add("craftorio.terminal.tab.quests", "Guide");
+            add("craftorio.workbench.missing_button", "Missing?");
+            add("craftorio.workbench.missing_list", "Missing for %s:");
+            add("craftorio.workbench.have", " (you have %s)");
+            add("craftorio.toast.goal", "Guide goal reached!");
+            add("craftorio.starter_kit", "Welcome to Craftorio! In your inventory: the handbook (press G) and a starter kit with a construction workbench. Place it and build your first trading post.");
             add(ModItems.GUIDE_BOOK.get(), "Craftorio Handbook");
             add("key.craftorio.guide", "Open handbook");
             add("key.categories.craftorio", "Craftorio");
@@ -317,7 +322,7 @@ public final class ModLanguageProvider {
             add(ModBlocks.ARENA_FEEDER.get(), "Arena Feeder");
             add(ModItems.PATH_WAND.get(), "Path Wand");
             add("craftorio.quest.build_trading_post", "Build a trading post");
-            add("craftorio.quest.build_trading_post.hint", "Craft a Construction Workbench (3 iron ingots, a crafting table, 5 planks) and open it. Build the trading post from its free blueprint.");
+            add("craftorio.quest.build_trading_post.hint", "Place the construction workbench from your starter kit (or craft one: 3 iron ingots, a crafting table, 5 planks) and open it. Build the trading post from its free blueprint – the planks come from any tree.");
             add("craftorio.quest.first_sale", "Sell something");
             add("craftorio.quest.first_sale.hint", "Right-click the trading post with items, or feed it with hoppers and belts. Every item's value is shown in its tooltip.");
             add("craftorio.quest.build_burner_drill", "Build a burner drill");
@@ -622,6 +627,11 @@ public final class ModLanguageProvider {
             add("craftorio.jade.ruin", "Zerstört – Wiederaufbau für %s");
             add("craftorio.jade.ore_field", "Liefert %s (je %s) – unerschöpflich");
             add("craftorio.terminal.tab.quests", "Leitfaden");
+            add("craftorio.workbench.missing_button", "Fehlt?");
+            add("craftorio.workbench.missing_list", "Für %s fehlt noch:");
+            add("craftorio.workbench.have", " (du hast %s)");
+            add("craftorio.toast.goal", "Leitfaden-Ziel erreicht!");
+            add("craftorio.starter_kit", "Willkommen bei Craftorio! In deinem Inventar: das Handbuch (Taste G) und ein Starter-Kit mit Konstruktionswerkbank. Stell sie auf und baue deinen ersten Handelsposten.");
             add(ModItems.GUIDE_BOOK.get(), "Craftorio-Handbuch");
             add("key.craftorio.guide", "Handbuch öffnen");
             add("key.categories.craftorio", "Craftorio");
@@ -697,7 +707,7 @@ public final class ModLanguageProvider {
             add(ModBlocks.ARENA_FEEDER.get(), "Arena-Einspeiser");
             add(ModItems.PATH_WAND.get(), "Pfadstab");
             add("craftorio.quest.build_trading_post", "Baue einen Handelsposten");
-            add("craftorio.quest.build_trading_post.hint", "Stelle eine Konstruktionswerkbank her (3 Eisenbarren, Werkbank, 5 Bretter) und öffne sie. Baue dort den Handelsposten aus seinem kostenlosen Bauplan.");
+            add("craftorio.quest.build_trading_post.hint", "Stell die Konstruktionswerkbank aus deinem Starter-Kit auf (oder baue eine: 3 Eisenbarren, Werkbank, 5 Bretter) und öffne sie. Baue dort den Handelsposten aus seinem kostenlosen Bauplan – die Bretter bekommst du aus jedem Baum.");
             add("craftorio.quest.first_sale", "Verkaufe etwas");
             add("craftorio.quest.first_sale.hint", "Rechtsklicke den Handelsposten mit Items oder beliefere ihn per Trichter oder Band. Den Wert jedes Items zeigt sein Tooltip.");
             add("craftorio.quest.build_burner_drill", "Baue einen Brenner-Bohrer");

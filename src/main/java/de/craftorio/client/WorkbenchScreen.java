@@ -3,7 +3,11 @@ package de.craftorio.client;
 import de.craftorio.blueprint.Blueprint;
 import de.craftorio.blueprint.Blueprints;
 import de.craftorio.menu.WorkbenchMenu;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.MutableComponent;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -62,12 +66,46 @@ public final class WorkbenchScreen extends BlueprintListScreen<WorkbenchMenu> {
             iconX += 20;
         }
         if (unlocked && tierOk) {
-            renderButton(graphics, Component.translatable("craftorio.workbench.build"), x, y, canBuild, mouseX, mouseY);
+            // Without enough material the button tells what is missing instead of doing nothing.
+            renderButton(graphics, Component.translatable(canBuild ? "craftorio.workbench.build" : "craftorio.workbench.missing_button"),
+                    x, y, true, mouseX, mouseY);
         }
     }
 
     @Override
-    protected void clickRow(int index, Holder.Reference<Blueprint> blueprint, boolean shift) {
-        sendButton(WorkbenchMenu.buttonId(index, shift));
+    protected void clickRow(int index, Holder.Reference<Blueprint> holder, boolean shift) {
+        Blueprint blueprint = holder.value();
+        Inventory inventory = minecraft.player.getInventory();
+        boolean unlocked = blueprint.isFree() || ClientTeamState.unlocked().contains(Blueprints.id(holder));
+        if (!unlocked || blueprint.tier() > menu.tier() || Blueprints.craftableTimes(inventory, blueprint, 1) > 0) {
+            sendButton(WorkbenchMenu.buttonId(index, shift));
+            return;
+        }
+        MutableComponent message = Component.translatable("craftorio.workbench.missing_list", blueprint.result().getHoverName())
+                .withStyle(ChatFormatting.GOLD);
+        for (SizedIngredient ingredient : blueprint.ingredients()) {
+            int missing = ingredient.count() - Blueprints.count(inventory, ingredient);
+            if (missing > 0) {
+                message.append(Component.literal("\n  " + missing + "× ").withStyle(ChatFormatting.RED))
+                        .append(firstItem(ingredient).getHoverName().copy().withStyle(ChatFormatting.WHITE));
+            }
+        }
+        minecraft.gui.getChat().addMessage(message);
+    }
+
+    /** Materials with what the player already carries, missing ones in red. */
+    @Override
+    protected List<Component> ingredientTooltip(Blueprint blueprint) {
+        Inventory inventory = minecraft.player.getInventory();
+        List<Component> lines = new ArrayList<>();
+        lines.add(blueprint.result().getHoverName());
+        lines.add(Component.translatable("craftorio.blueprint.materials").withColor(GRAY));
+        for (SizedIngredient ingredient : blueprint.ingredients()) {
+            int have = Blueprints.count(inventory, ingredient);
+            lines.add(Component.literal(ingredient.count() + "× ").append(firstItem(ingredient).getHoverName())
+                    .append(Component.translatable("craftorio.workbench.have", have))
+                    .withStyle(have >= ingredient.count() ? ChatFormatting.GREEN : ChatFormatting.RED));
+        }
+        return lines;
     }
 }
