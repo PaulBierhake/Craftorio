@@ -122,14 +122,38 @@ Bleibt vorerst **unverändert**. Später denkbar: ein eigenes Crafting-System, i
 
 - **Aufträge/Kontrakte** (optional, später): zeitlich begrenzte Bestellungen mit Bonus als zusätzliche Ziele – ohne Einfluss auf die Grundpreise.
 
-### 5.3 Kaufen & Freischalten
+### 5.3 Freischalten: Baupläne + Werkbänke *(Vorschlag, zur Bestätigung)*
 
-Zentrales **Terminal** (Block + GUI) mit Tabs:
+Maschinen, Logistik und Türme entstehen in **zwei Schritten**:
 
-1. **Technologie-Baum** – Freischaltungen kosten Geld; Stufenwechsel (Höhlen, Minen) zusätzlich **Schlüsselmaterialien** aus der Tower-Defense.
-2. **Shop** – freigeschaltete Maschinen, Bänder, Türme kaufen. Selbst herstellen ist günstiger, aber aufwendig.
-3. **Tower Defense** – Level-Übersicht, nächstes Level starten, Reparaturen.
-4. **Statistik** – Einnahmen/Ausgaben, Produktionsraten, Auslastung der Erzfelder.
+1. **Bauplan freischalten** (Geld, ab Stufe 2 zusätzlich Schlüsselmaterial) im **Terminal**. Baupläne sind
+   **Team-Wissen**: einmal gekauft, kann jedes Teammitglied sie nutzen; sie gehen nicht verloren.
+2. **An der Werkbank bauen** – aus Rohstoffen und Zwischenprodukten aus dem eigenen Inventar. Die Werkbank zeigt
+   alle Baupläne ihrer Stufe: freigeschaltete mit Materialliste (fehlende rot), gesperrte ausgegraut mit Preis.
+
+Vanilla-Crafting-Rezepte für Craftorio-Maschinen entfallen dann komplett.
+
+**Werkbank-Stufen** – jede Stufe baut auch alles der Stufen darunter:
+
+| Stufe | Werkbank | Aufrüstung | Typische Baupläne |
+|---|---|---|---|
+| 1 | **Werkbank** | Vanilla-Rezept (Startpunkt) | Handelsposten, Brenner-Bohrer, Förderband, Greifarm, Kohle-Generator, Strommast, Elektro-Schmelzofen, Presse, erste Türme |
+| 2 | **Montagewerkbank** | Geld + Bohrkern (TD-Level 10) | Montagemaschine, Schnellband, Splitter, Unterflurband, Elektro-Bohrer, Höhleneingang-Bausatz, Türme Stufe 2 |
+| 3 | **Präzisionswerkbank** | Geld + Tiefenkern (TD-Level 30) | Stufe-3-Maschinen, Expressband, Minenschacht-Bausatz, Endgame-Türme |
+| (4) | **Automatische Fertigung** *(später)* | – | Werkbank, die per Band/Greifarm beliefert wird und Baupläne selbst fertigt |
+
+Aufgerüstet wird **am Platz** (Rechtsklick mit dem Aufrüst-Bausatz), damit die Basis nicht umgebaut werden muss.
+
+**Start:** Die Werkbank Stufe 1 hat ein normales Vanilla-Rezept. Handelsposten, Brenner-Bohrer, Förderband und
+Greifarm sind als **Start-Baupläne** gratis freigeschaltet – alles andere kostet Credits.
+
+Das **Terminal** (Block + GUI) hat die Tabs:
+
+1. **Baupläne / Tech-Baum** – Freischaltungen gegen Credits (+ Schlüsselmaterial); Voraussetzungen als Baum.
+2. **Tower Defense** – Level-Übersicht, nächstes Level starten, Reparaturen (ab M5).
+3. **Statistik** – Einnahmen/Ausgaben, Verkäufe pro Ware, Produktionsraten.
+
+Ein Shop für fertige Maschinen entfällt – Geld kauft **Wissen**, die Fabrik liefert **Material**.
 
 ## 6. Tower Defense *(überarbeitet)*
 
@@ -308,7 +332,7 @@ Per `/reload` änderbar:
 | **M1 – Wirtschaftskern** | Teams, Teamkonto, Preistabelle, Handelsposten, HUD, Befehle | Items verkaufen → Geld |
 | **M2 – Oberfläche** | Erzfelder (unendlich, Flächenreservierung), Brenner-Bohrer, Förderband, Greifarm, Kiste | Erste Automatisierungsschleife |
 | **M3 – Verarbeitung & Energie** | Schmelzofen, Presse, Montagemaschine, Stromnetz | Produktionsketten mit Wertschöpfung |
-| **M4 – Terminal & Tech-Baum** | Terminal-GUI, Shop, Technologien | Vollständiger Wirtschafts-Loop |
+| **M4 – Terminal, Baupläne & Werkbänke** | Terminal-GUI, Bauplan-Baum (Datapack), Werkbank Stufe 1–3, Vanilla-Rezepte entfernen, Statistik | Vollständiger Wirtschafts-Loop |
 | **M5 – Tower Defense I** | Zonenkern, Level-Director, 3 Gegner, 3 Türme, HP/Ruinen/Reparatur, Belohnungen Level 1–10 | Erstes Schlüsselmaterial erspielbar |
 | **M6 – Höhlenschicht** | Schichten-Worldgen, Deckgestein, Höhleneingang, Bereichs-Freischaltung, Höhlen-Ressourcen | Zweite Stufe spielbar |
 | **M7 – Minenschicht** | Minenschacht, Endgame-Ressourcen, Stufe-3-Maschinen/-Türme, Level 20–40 | Vollständige Progression |
