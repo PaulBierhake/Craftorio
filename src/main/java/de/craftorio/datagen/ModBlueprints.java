@@ -91,6 +91,22 @@ public final class ModBlueprints {
         add(context, "solar_panel", stack(ModItems.SOLAR_PANEL.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.CIRCUIT.get(), 15), copper(5));
 
+        // Oil and chemistry (after the researches of the oil age)
+        add(context, "pumpjack", stack(ModItems.PUMPJACK.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.IRON_GEAR.get(), 10),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 5), SizedIngredient.of(ModItems.PIPE.get(), 10));
+        add(context, "oil_refinery", stack(ModItems.OIL_REFINERY.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 15), SizedIngredient.of(ModItems.IRON_GEAR.get(), 10),
+                SizedIngredient.of(ModItems.STONE_BRICK.get(), 10), SizedIngredient.of(ModItems.CIRCUIT.get(), 10),
+                SizedIngredient.of(ModItems.PIPE.get(), 10));
+        add(context, "chemical_plant", stack(ModItems.CHEMICAL_PLANT.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.IRON_GEAR.get(), 5),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 5), SizedIngredient.of(ModItems.PIPE.get(), 5));
+        add(context, "accumulator", stack(ModItems.ACCUMULATOR.get(), 1), iron(2), SizedIngredient.of(ModItems.BATTERY.get(), 5));
+        add(context, "chemical_science", stack(ModItems.BLUE_SCIENCE.get(), 2),
+                SizedIngredient.of(ModItems.MOTOR.get(), 2), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 3),
+                SizedIngredient.of(ModItems.SULFUR.get(), 1));
+
         // Logistics
         add(context, "long_inserter", stack(ModItems.LONG_INSERTER.get(), 1),
                 SizedIngredient.of(ModItems.INSERTER.get(), 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 1), iron(1));
@@ -120,26 +136,26 @@ public final class ModBlueprints {
 
         // Caves and mines (reworked with the oil packages)
         add(context, "cave_entrance", stack(ModItems.CAVE_ENTRANCE.get(), 1),
-                iron(16), SizedIngredient.of(ModItems.IRON_GEAR.get(), 8), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 8));
+                iron(16), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 4), SizedIngredient.of(ModItems.IRON_GEAR.get(), 8));
         add(context, "elevator", stack(ModItems.ELEVATOR.get(), 2),
                 iron(8), SizedIngredient.of(ModItems.MOTOR.get(), 2), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 4));
         add(context, "fast_belt", stack(ModItems.FAST_BELT.get(), 1),
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 1));
         add(context, "mine_shaft", stack(ModItems.MINE_SHAFT.get(), 1),
-                SizedIngredient.of(ModItems.LEAD_INGOT.get(), 16), SizedIngredient.of(ModItems.MOTOR.get(), 8),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 32), SizedIngredient.of(ModItems.MOTOR.get(), 8),
                 SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 4), SizedIngredient.of(ModItems.BATTERY.get(), 4));
         add(context, "deep_drill", stack(ModItems.DEEP_DRILL.get(), 1),
-                SizedIngredient.of(ModItems.ELECTRIC_DRILL.get(), 1), SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 12),
+                SizedIngredient.of(ModItems.ELECTRIC_DRILL.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 12),
                 SizedIngredient.of(ModItems.MOTOR.get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 2));
         add(context, "express_belt", stack(ModItems.EXPRESS_BELT.get(), 4),
-                SizedIngredient.of(ModItems.FAST_BELT.get(), 4), SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 2),
+                SizedIngredient.of(ModItems.FAST_BELT.get(), 4), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2),
                 SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 1));
         add(context, "reactor", stack(ModItems.REACTOR.get(), 1),
-                SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 20), SizedIngredient.of(ModItems.LEAD_INGOT.get(), 32),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 20), SizedIngredient.of(ModItems.STONE_BRICK.get(), 32),
                 SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 8), SizedIngredient.of(ModItems.BATTERY.get(), 8));
         add(context, "laser_tower", stack(ModItems.LASER_TOWER.get(), 1),
-                SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 12), SizedIngredient.of(ModItems.ENERGY_CRYSTAL.get(), 2),
-                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 4), SizedIngredient.of(ModItems.BATTERY.get(), 4));
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 20), SizedIngredient.of(ModItems.CIRCUIT.get(), 20),
+                SizedIngredient.of(ModItems.BATTERY.get(), 12));
     }
 
     /** Iron plates are iron ingots. */

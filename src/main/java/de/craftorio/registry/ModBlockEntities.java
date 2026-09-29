@@ -112,6 +112,19 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(de.craftorio.energy.OffshorePumpBlockEntity::new, ModBlocks.OFFSHORE_PUMP.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.oil.PumpjackBlockEntity>> PUMPJACK = BLOCK_ENTITIES.register("pumpjack",
+            () -> BlockEntityType.Builder.of(de.craftorio.oil.PumpjackBlockEntity::new, ModBlocks.PUMPJACK.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.fluid.FluidMachineBlockEntity>> FLUID_MACHINE = BLOCK_ENTITIES.register("fluid_machine",
+            () -> BlockEntityType.Builder.of(de.craftorio.fluid.FluidMachineBlockEntity::new, ModBlocks.CHEMICAL_PLANT.get(),
+                    ModBlocks.OIL_REFINERY.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.AccumulatorBlockEntity>> ACCUMULATOR = BLOCK_ENTITIES.register("accumulator",
+            () -> BlockEntityType.Builder.of(de.craftorio.energy.AccumulatorBlockEntity::new, ModBlocks.ACCUMULATOR.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.SteamEngineBlockEntity>> STEAM_ENGINE = BLOCK_ENTITIES.register("steam_engine",
             () -> BlockEntityType.Builder.of(de.craftorio.energy.SteamEngineBlockEntity::new, ModBlocks.STEAM_ENGINE.get()).build(null));
 
@@ -132,6 +145,12 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BOILER.get(), (boiler, side) -> insertOnly(boiler.fuel()));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, STEAM_ENGINE.get(), (engine, side) -> engine.energy());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, SOLAR_PANEL.get(), (panel, side) -> panel.energy());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FLUID_MACHINE.get(), (machine, side) -> machine.itemAutomation());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FLUID_MACHINE.get(), (machine, side) -> machine.energy());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FLUID_MACHINE.get(), (machine, side) -> machine.fluids());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, PUMPJACK.get(), (pumpjack, side) -> pumpjack.energy());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, PUMPJACK.get(), (pumpjack, side) -> pumpjack.handler(side));
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ACCUMULATOR.get(), (accumulator, side) -> accumulator.energy());
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FLUID_PIPE.get(), (pipe, side) -> pipe.handler(side));
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FLUID_PUMP.get(), (pump, side) -> pump.handler(side));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FLUID_PUMP.get(), (pump, side) -> pump.energy());

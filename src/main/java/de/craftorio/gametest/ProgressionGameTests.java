@@ -3,8 +3,11 @@ package de.craftorio.gametest;
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.Blueprint;
 import de.craftorio.blueprint.KeyMaterialItem;
+import de.craftorio.fluid.FluidMachineType;
+import de.craftorio.fluid.FluidRecipes;
 import de.craftorio.recipe.MachineRecipe;
 import de.craftorio.registry.ModBlocks;
+import de.craftorio.registry.ModFluids;
 import de.craftorio.registry.ModItems;
 import de.craftorio.registry.ModRecipes;
 import de.craftorio.registry.ModRegistries;
@@ -22,6 +25,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -81,6 +85,26 @@ public final class ProgressionGameTests {
             }
         }
 
+        // Fluid recipes: items in, items out; the fluids are stand-in items (water is always there).
+        for (FluidRecipes.Recipe recipe : FluidRecipes.all()) {
+            List<List<Item>> ingredients = new ArrayList<>();
+            ingredients.add(List.of(recipe.machine() == FluidMachineType.OIL_REFINERY ? ModItems.OIL_REFINERY.get() : ModItems.CHEMICAL_PLANT.get()));
+            recipe.itemsIn().forEach(stack -> ingredients.add(List.of(stack.getItem())));
+            recipe.fluidsIn().forEach(fluid -> {
+                if (fluid.getFluid() != Fluids.WATER) {
+                    ingredients.add(List.of(fluidStandIn(fluid.getFluid())));
+                }
+            });
+            List<Item> results = new ArrayList<>();
+            if (!recipe.itemOut().isEmpty()) {
+                results.add(recipe.itemOut().getItem());
+            }
+            if (!recipe.fluidOut().isEmpty()) {
+                results.add(fluidStandIn(recipe.fluidOut().getFluid()));
+            }
+            steps.add(new Step("fluid recipe " + recipe.id(), ingredients, results));
+        }
+
         // Hand-mined and surface materials, and the key materials of the arena (tower defense).
         Set<Item> have = new HashSet<>(List.of(Items.RAW_IRON, Items.RAW_COPPER, Items.COAL, Items.COBBLESTONE, Items.SAND, Items.CLAY_BALL));
         BuiltInRegistries.ITEM.stream().filter(item -> item.getDefaultInstance().is(ItemTags.LOGS)).forEach(have::add);
@@ -100,13 +124,14 @@ public final class ProgressionGameTests {
             }
             if (!cavesOpen && have.contains(ModItems.CAVE_ENTRANCE.get())) {
                 cavesOpen = true;
-                changed |= addResources(have, ModBlocks.TIN_ORE_FIELD.get(), ModBlocks.LEAD_ORE_FIELD.get(), ModBlocks.SULFUR_FIELD.get(),
-                        ModBlocks.GOLD_ORE_FIELD.get(), ModBlocks.QUARTZ_FIELD.get());
+                // The caves hold oil wells: crude oil is there once a pumpjack stands on one.
+                if (have.contains(ModItems.PUMPJACK.get())) {
+                    changed |= have.add(CRUDE_OIL);
+                }
             }
             if (!minesOpen && have.contains(ModItems.MINE_SHAFT.get())) {
                 minesOpen = true;
-                changed |= addResources(have, ModBlocks.DIAMOND_FIELD.get(), ModBlocks.TITANIUM_ORE_FIELD.get(),
-                        ModBlocks.URANIUM_ORE_FIELD.get(), ModBlocks.CRYSTAL_FIELD.get());
+                changed |= addResources(have, ModBlocks.URANIUM_ORE_FIELD.get());
             }
         }
 
@@ -126,6 +151,16 @@ public final class ProgressionGameTests {
         helper.assertTrue(minesOpen, "the mine shaft can not be built");
         helper.assertTrue(problems.isEmpty(), "not obtainable: " + String.join("; ", problems));
         helper.succeed();
+    }
+
+    private static final Item CRUDE_OIL = Items.BLACK_DYE;
+
+    /** Items that stand for fluids while checking what can be made. */
+    private static Item fluidStandIn(net.minecraft.world.level.material.Fluid fluid) {
+        if (fluid == ModFluids.CRUDE_OIL.get()) {
+            return CRUDE_OIL;
+        }
+        return fluid == ModFluids.PETROLEUM_GAS.get() ? Items.GREEN_DYE : Items.YELLOW_DYE;
     }
 
     private static boolean addResources(Set<Item> have, Block... fields) {

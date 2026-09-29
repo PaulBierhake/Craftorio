@@ -115,7 +115,7 @@ public final class AutomationGameTests {
     public static void electricDrillRunsOnGridPower(GameTestHelper helper) {
         for (int x = 1; x <= 3; x++) {
             for (int z = 1; z <= 3; z++) {
-                helper.setBlock(new BlockPos(x, 1, z), ModBlocks.TITANIUM_ORE_FIELD.get());
+                helper.setBlock(new BlockPos(x, 1, z), ModBlocks.URANIUM_ORE_FIELD.get());
             }
         }
         BlockPos drill = new BlockPos(2, 2, 2);
@@ -127,7 +127,7 @@ public final class AutomationGameTests {
         SteamPower.place(helper, new BlockPos(0, 2, 4), Direction.WEST, 8);
         helper.setBlock(new BlockPos(1, 2, 3), ModBlocks.POWER_POLE.get());
 
-        helper.succeedWhen(() -> helper.assertTrue(count(helper, chest, ModItems.RAW_TITANIUM.get()) >= 3,
+        helper.succeedWhen(() -> helper.assertTrue(count(helper, chest, ModItems.RAW_URANIUM.get()) >= 3,
                 "electric drill output did not reach the chest"));
     }
 

@@ -75,6 +75,12 @@ public final class RecipeTableGameTests {
             new Object[]{"underground_pipe", 2, List.of(of(ModItems.PIPE.get(), 10), of(Items.IRON_INGOT, 5))},
             new Object[]{"fluid_pump", 1, List.of(of(ModItems.MOTOR.get(), 1), of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.PIPE.get(), 1))},
             new Object[]{"storage_tank", 1, List.of(of(Items.IRON_INGOT, 20), of(ModItems.STEEL_PLATE.get(), 5))},
+            new Object[]{"pumpjack", 1, List.of(of(ModItems.STEEL_PLATE.get(), 5), of(ModItems.IRON_GEAR.get(), 10), of(ModItems.CIRCUIT.get(), 5), of(ModItems.PIPE.get(), 10))},
+            new Object[]{"oil_refinery", 1, List.of(of(ModItems.STEEL_PLATE.get(), 15), of(ModItems.IRON_GEAR.get(), 10), of(ModItems.STONE_BRICK.get(), 10), of(ModItems.CIRCUIT.get(), 10), of(ModItems.PIPE.get(), 10))},
+            new Object[]{"chemical_plant", 1, List.of(of(ModItems.STEEL_PLATE.get(), 5), of(ModItems.IRON_GEAR.get(), 5), of(ModItems.CIRCUIT.get(), 5), of(ModItems.PIPE.get(), 5))},
+            new Object[]{"accumulator", 1, List.of(of(Items.IRON_INGOT, 2), of(ModItems.BATTERY.get(), 5))},
+            new Object[]{"chemical_science", 2, List.of(of(ModItems.MOTOR.get(), 2), of(ModItems.ADVANCED_CIRCUIT.get(), 3), of(ModItems.SULFUR.get(), 1))},
+            new Object[]{"laser_tower", 1, List.of(of(ModItems.STEEL_PLATE.get(), 20), of(ModItems.CIRCUIT.get(), 20), of(ModItems.BATTERY.get(), 12))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );
 
@@ -88,6 +94,8 @@ public final class RecipeTableGameTests {
             new Object[]{"assembling", "iron_stick", 2, 10, List.of(of(Items.IRON_INGOT, 1))},
             new Object[]{"assembling", "green_science", 1, 120, List.of(of(ModItems.INSERTER.get(), 1), of(ModItems.CONVEYOR_BELT.get(), 1))},
             new Object[]{"assembling", "motor", 1, 200, List.of(of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.IRON_GEAR.get(), 1), of(ModItems.PIPE.get(), 2))},
+            new Object[]{"assembling", "advanced_circuit", 1, 120, List.of(of(ModItems.CIRCUIT.get(), 2), of(ModItems.PLASTIC_BAR.get(), 2), of(ModItems.COPPER_CABLE.get(), 4))},
+            new Object[]{"assembling", "blue_science", 2, 480, List.of(of(ModItems.MOTOR.get(), 2), of(ModItems.ADVANCED_CIRCUIT.get(), 3), of(ModItems.SULFUR.get(), 1))},
             new Object[]{"smelting", "steel_plate", 1, 320, List.of(of(Items.IRON_INGOT, 5))},
             new Object[]{"smelting", "stone_brick", 1, 64, List.of(of(Items.COBBLESTONE, 2))}
     );

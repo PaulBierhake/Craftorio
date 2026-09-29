@@ -18,17 +18,31 @@ public final class FluidHelper {
         return level.getCapability(Capabilities.FluidHandler.BLOCK, pos.relative(side), side.getOpposite());
     }
 
-    /** Lets fluid flow from {@code self} to {@code other} until both are equally full (see {@link FluidFlow}). */
+    /**
+     * Lets fluid flow from {@code self} to {@code other} until both are equally full (see {@link FluidFlow}). The
+     * receiving tank is the one of {@code other} that already holds this fluid, else an empty one that takes it.
+     */
     public static void balance(FluidBuffer self, IFluidHandler other) {
         FluidStack mine = self.getFluid();
-        if (mine.isEmpty() || other.getTanks() == 0) {
+        if (mine.isEmpty()) {
             return;
         }
-        FluidStack theirs = other.getFluidInTank(0);
-        if (!theirs.isEmpty() && !FluidStack.isSameFluid(mine, theirs)) {
+        int tank = -1;
+        for (int i = 0; i < other.getTanks(); i++) {
+            FluidStack theirs = other.getFluidInTank(i);
+            if (!theirs.isEmpty() && FluidStack.isSameFluid(mine, theirs)) {
+                tank = i;
+                break;
+            }
+            if (theirs.isEmpty() && tank < 0 && other.isFluidValid(i, mine)) {
+                tank = i;
+            }
+        }
+        if (tank < 0) {
             return;
         }
-        int moved = FluidFlow.move(mine.getAmount(), self.getCapacity(), theirs.getAmount(), other.getTankCapacity(0), FluidFlow.MAX_FLOW);
+        int moved = FluidFlow.move(mine.getAmount(), self.getCapacity(), other.getFluidInTank(tank).getAmount(),
+                other.getTankCapacity(tank), FluidFlow.MAX_FLOW);
         if (moved > 0) {
             int accepted = other.fill(mine.copyWithAmount(moved), IFluidHandler.FluidAction.EXECUTE);
             if (accepted > 0) {

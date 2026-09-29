@@ -314,7 +314,7 @@ Jedes Paket ist ein eigener Commit und für sich spielbar. Tests und README wie 
 | **U4 – Logistik** ✅ | Unterflurband, Splitter mit Priorität und Filter, langer, schneller und Filter-Greifarm, Bandstufen nach §4.3, steigende Bänder (Backlog B2) | B1, B2 |
 | **U5 – Grün und Stahl** ✅ | Grünes Paket, Stahl, Stahlofen, mittlerer Strommast, Montagemaschine 2, Motor, Solarpanel (Tag/Nacht) | A1 |
 | **U6 – Flüssigkeiten** ✅ | Flüssigkeitsnetz (Rohre, Unterführung, Pumpe, Tank; NeoForge `IFluidHandler`, eigene Fluids Rohöl, Schweröl, Leichtöl, Petroleum, Schwefelsäure, Schmiermittel, Dampf), Kessel/Dampfmaschine auf Dampf umstellen | – |
-| **U7 – Öl und Höhlen** | Ölquellen in den Höhlen, Pumpjack, Raffinerie, Chemiefabrik, Kunststoff, Schwefel, Batterie, Akku (Backlog C1), fortschrittlicher Schaltkreis, Blaues Paket, Höhleneingang über Forschung; Zinn/Blei/Titan usw. entfernen | C1 |
+| **U7 – Öl und Höhlen** ✅ | Ölquellen in den Höhlen, Pumpjack, Raffinerie, Chemiefabrik, Kunststoff, Schwefel, Batterie, Akku (Backlog C1), fortschrittlicher Schaltkreis, Blaues Paket, Höhleneingang über Forschung; Zinn/Blei/Titan usw. entfernen | C1 |
 | **U8 – Militär und TD** | Magazine, Granate, Mauer, Graues Paket, Geschütz-, Laser- und Flammenwerfer-Turm in der Arena, Einspeiser mit Flüssigkeit, Arena-Siegel als Forschungsschlüssel | – |
 | **U9 – Leitfaden und Balancing** | Leitfaden aus Meilensteinen (§10), kleine Belohnungen, Progressionstest (jede Forschung mit dem bis dahin Freigeschalteten erfüllbar), Zeitmessung im Terminal, Handbuch-Seiten | A2 |
 | **U10 – Pflanzen** | Gewächshaus, Pflanzenrezepte, Bio-Brennstoff | – |

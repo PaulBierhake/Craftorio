@@ -1,12 +1,18 @@
 package de.craftorio.gametest;
 
 import de.craftorio.Craftorio;
+import de.craftorio.energy.AccumulatorBlockEntity;
 import de.craftorio.energy.BoilerBlockEntity;
 import de.craftorio.energy.SteamEngineBlockEntity;
+import de.craftorio.fluid.FluidMachineBlockEntity;
+import de.craftorio.fluid.FluidMachineType;
 import de.craftorio.fluid.FluidPipeBlockEntity;
+import de.craftorio.fluid.FluidRecipes;
 import de.craftorio.fluid.FluidPumpBlock;
 import de.craftorio.fluid.FluidPumpBlockEntity;
 import de.craftorio.fluid.UndergroundPipeBlock;
+import de.craftorio.oil.OilWellBlock;
+import de.craftorio.oil.PumpjackBlockEntity;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModFluids;
 import net.minecraft.core.BlockPos;
@@ -149,5 +155,115 @@ public final class FluidGameTests {
         helper.assertValueEqual(entity.buffer().fill(new FluidStack(ModFluids.STEAM.get(), 50), IFluidHandler.FluidAction.SIMULATE), 0, "steam into a water pipe");
         helper.assertValueEqual(entity.buffer().fill(new FluidStack(Fluids.WATER, 80), IFluidHandler.FluidAction.SIMULATE), 50, "the pipe holds 100");
         helper.succeed();
+    }
+
+    private static FluidMachineBlockEntity machine(GameTestHelper helper, BlockPos pos, net.minecraft.world.level.block.Block block, String recipe) {
+        helper.setBlock(pos, block);
+        FluidMachineBlockEntity machine = helper.getBlockEntity(pos);
+        machine.select(Craftorio.id(recipe));
+        machine.energy().setEnergy(20_000);
+        return machine;
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void aChemicalPlantMakesPlasticFromCoalAndPetroleum(GameTestHelper helper) {
+        FluidMachineBlockEntity plant = machine(helper, new BlockPos(2, 1, 3), ModBlocks.CHEMICAL_PLANT.get(), "chem/plastic_bar");
+        helper.assertFalse(plant.items().isItemValid(0, new ItemStack(Items.IRON_INGOT)), "only the recipe's ingredient goes in");
+        plant.items().insertItem(0, new ItemStack(Items.COAL, 3), false);
+        helper.assertValueEqual(plant.fluids().fill(new FluidStack(Fluids.WATER, 100), IFluidHandler.FluidAction.SIMULATE), 0, "water is no ingredient");
+        plant.fluids().fill(new FluidStack(ModFluids.PETROLEUM_GAS.get(), 60), IFluidHandler.FluidAction.EXECUTE);
+
+        helper.succeedWhen(() -> helper.assertValueEqual(plant.items().getStackInSlot(FluidMachineType.OUTPUT_SLOT).getCount(), 6, "two plastic bars per coal"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void aChemicalPlantNeedsBothFluidsForSulfur(GameTestHelper helper) {
+        FluidMachineBlockEntity plant = machine(helper, new BlockPos(2, 1, 3), ModBlocks.CHEMICAL_PLANT.get(), "chem/sulfur");
+        plant.fluids().fill(new FluidStack(Fluids.WATER, 30), IFluidHandler.FluidAction.EXECUTE);
+        helper.runAtTickTime(30, () -> {
+            helper.assertTrue(plant.items().getStackInSlot(FluidMachineType.OUTPUT_SLOT).isEmpty(), "no sulfur without petroleum");
+            plant.fluids().fill(new FluidStack(ModFluids.PETROLEUM_GAS.get(), 30), IFluidHandler.FluidAction.EXECUTE);
+        });
+        helper.succeedWhen(() -> helper.assertValueEqual(plant.items().getStackInSlot(FluidMachineType.OUTPUT_SLOT).getCount(), 2, "two sulfur"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 300)
+    public static void aRefineryTurnsCrudeOilIntoPetroleumForThePipesAroundIt(GameTestHelper helper) {
+        FluidMachineBlockEntity refinery = machine(helper, new BlockPos(2, 1, 3), ModBlocks.OIL_REFINERY.get(), "oil/basic_oil_processing");
+        refinery.fluids().fill(new FluidStack(ModFluids.CRUDE_OIL.get(), 200), IFluidHandler.FluidAction.EXECUTE);
+        helper.onEachTick(() -> refinery.energy().setEnergy(20_000)); // 420 kW for 5 s is more than the buffer holds
+        BlockPos pipe = new BlockPos(3, 1, 3);
+        pipe(helper, pipe);
+
+        helper.succeedWhen(() -> helper.assertTrue(amount(helper, pipe) > 0 && ((FluidPipeBlockEntity) helper.getBlockEntity(pipe)).buffer()
+                .getFluid().getFluid() == ModFluids.PETROLEUM_GAS.get(), "petroleum gas in the pipe next to the refinery"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void aPumpjackOnAnOilWellFillsTheRefinery(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(2, 1, 3), ModBlocks.OIL_WELL.get());
+        BlockPos pumpjack = new BlockPos(2, 2, 3);
+        helper.setBlock(pumpjack, ModBlocks.PUMPJACK.get());
+        ((PumpjackBlockEntity) helper.getBlockEntity(pumpjack)).energy().setEnergy(1_800);
+        BlockPos refinery = new BlockPos(3, 2, 3);
+        FluidMachineBlockEntity machine = machine(helper, refinery, ModBlocks.OIL_REFINERY.get(), "oil/basic_oil_processing");
+        int yield = OilWellBlock.yieldPercent(helper.absolutePos(new BlockPos(2, 1, 3)));
+        helper.assertTrue(yield >= 100 && yield <= 300 && yield % 25 == 0, "yield " + yield);
+
+        helper.succeedWhen(() -> helper.assertTrue(machine.tank(0).getFluidAmount() > 0, "crude oil arrived in the refinery"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void aPumpjackWithoutAWellPumpsNothing(GameTestHelper helper) {
+        BlockPos pumpjack = new BlockPos(2, 1, 3);
+        helper.setBlock(pumpjack, ModBlocks.PUMPJACK.get());
+        PumpjackBlockEntity entity = helper.getBlockEntity(pumpjack);
+        entity.energy().setEnergy(1_800);
+        helper.runAtTickTime(60, () -> {
+            helper.assertValueEqual(entity.tank().getFluidAmount(), 0, "oil without a well");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void fluidRecipesFollowTheFactorioTable(GameTestHelper helper) {
+        var battery = FluidRecipes.byId(Craftorio.id("chem/battery")).orElseThrow();
+        helper.assertValueEqual(battery.ticks(), 80, "battery 4 s");
+        helper.assertValueEqual(battery.fluidsIn().get(0).getAmount(), 20, "20 sulfuric acid per battery");
+        var acid = FluidRecipes.byId(Craftorio.id("chem/sulfuric_acid")).orElseThrow();
+        helper.assertValueEqual(acid.fluidOut().getAmount(), 50, "50 sulfuric acid");
+        helper.assertValueEqual(acid.itemsIn().get(0).getCount(), 5, "5 sulfur");
+        var oil = FluidRecipes.byId(Craftorio.id("oil/basic_oil_processing")).orElseThrow();
+        helper.assertValueEqual(oil.fluidsIn().get(0).getAmount() + ":" + oil.fluidOut().getAmount(), "100:45", "basic oil processing");
+        helper.assertValueEqual(oil.ticks(), 100, "5 s");
+        helper.succeed();
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void anAccumulatorChargesFromSurplusAndGivesItBack(GameTestHelper helper) {
+        // Engine → pole → accumulator, nobody uses the power: it charges.
+        SteamPower.place(helper, new BlockPos(1, 1, 1), Direction.WEST, 4);
+        helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.POWER_POLE.get());
+        BlockPos accumulator = new BlockPos(3, 1, 2);
+        helper.setBlock(accumulator, ModBlocks.ACCUMULATOR.get());
+        AccumulatorBlockEntity entity = helper.getBlockEntity(accumulator);
+        helper.succeedWhen(() -> helper.assertTrue(entity.energy().getEnergyStored() > 500, "the accumulator charged from the surplus"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void anAccumulatorPowersMachinesWithoutAGenerator(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.POWER_POLE.get());
+        BlockPos accumulator = new BlockPos(3, 1, 2);
+        helper.setBlock(accumulator, ModBlocks.ACCUMULATOR.get());
+        ((AccumulatorBlockEntity) helper.getBlockEntity(accumulator)).energy().setEnergy(50_000);
+        BlockPos furnace = new BlockPos(4, 1, 2);
+        helper.setBlock(furnace, ModBlocks.ELECTRIC_FURNACE.get());
+
+        helper.succeedWhen(() -> helper.assertTrue(energy(helper, furnace) > 0, "the furnace draws from the accumulator"));
+    }
+
+    private static int energy(GameTestHelper helper, BlockPos pos) {
+        var storage = helper.getLevel().getCapability(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK, helper.absolutePos(pos), null);
+        return storage == null ? 0 : storage.getEnergyStored();
     }
 }

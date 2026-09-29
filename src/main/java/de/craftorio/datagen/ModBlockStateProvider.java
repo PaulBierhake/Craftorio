@@ -32,16 +32,8 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         oreField(ModBlocks.COAL_FIELD.get());
         oreField(ModBlocks.STONE_FIELD.get());
         oreField(ModBlocks.WOOD_FIELD.get());
-        oreField(ModBlocks.TIN_ORE_FIELD.get());
-        oreField(ModBlocks.LEAD_ORE_FIELD.get());
-        oreField(ModBlocks.SULFUR_FIELD.get());
-        oreField(ModBlocks.GOLD_ORE_FIELD.get());
-        oreField(ModBlocks.QUARTZ_FIELD.get());
         simpleBlockWithItem(ModBlocks.CAVE_RUBBLE.get(), cubeAll(ModBlocks.CAVE_RUBBLE.get()));
-        oreField(ModBlocks.DIAMOND_FIELD.get());
-        oreField(ModBlocks.TITANIUM_ORE_FIELD.get());
         oreField(ModBlocks.URANIUM_ORE_FIELD.get());
-        oreField(ModBlocks.CRYSTAL_FIELD.get());
         simpleBlockWithItem(ModBlocks.MINE_RUBBLE.get(), cubeAll(ModBlocks.MINE_RUBBLE.get()));
 
         Map<ElevatorBlock.Mode, ModelFile> elevatorModels = new EnumMap<>(ElevatorBlock.Mode.class);
@@ -152,6 +144,12 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         ModelFile pump = models().orientable("fluid_pump", modLoc("block/machine_side"), modLoc("block/fluid_pump_front"), modLoc("block/machine_top"));
         horizontalBlock(ModBlocks.FLUID_PUMP.get(), pump);
         simpleBlockItem(ModBlocks.FLUID_PUMP.get(), pump);
+        simpleBlockWithItem(ModBlocks.OIL_WELL.get(), cubeAll(ModBlocks.OIL_WELL.get()));
+        machine(ModBlocks.PUMPJACK.get(), "pumpjack");
+        machine(ModBlocks.CHEMICAL_PLANT.get(), "chemical_plant");
+        machine(ModBlocks.OIL_REFINERY.get(), "oil_refinery");
+        simpleBlockWithItem(ModBlocks.ACCUMULATOR.get(), models().cubeBottomTop("accumulator", modLoc("block/accumulator_side"),
+                modLoc("block/accumulator_top"), modLoc("block/accumulator_top")));
         ModelFile solar = models().getExistingFile(modLoc("block/solar_panel"));
         simpleBlock(ModBlocks.SOLAR_PANEL.get(), solar);
         simpleBlockItem(ModBlocks.SOLAR_PANEL.get(), solar);

@@ -38,7 +38,8 @@ public final class ResearchTreeGameTests {
                 }
             }
             for (ResourceLocation target : research.unlocks()) {
-                if (!blueprints.containsKey(target) && helper.getLevel().getRecipeManager().byKey(target).isEmpty()) {
+                if (!blueprints.containsKey(target) && helper.getLevel().getRecipeManager().byKey(target).isEmpty()
+                        && de.craftorio.fluid.FluidRecipes.byId(target).isEmpty()) {
                     problems.add(id + " unlocks unknown blueprint or recipe " + target);
                 }
                 if (!unlocked.add(target)) {

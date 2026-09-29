@@ -49,7 +49,7 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
             required.put(ModItems.IRON_GEAR.get(), 16);
             required.put(ModItems.MOTOR.get(), 8);
         } else {
-            required.put(ModItems.LEAD_INGOT.get(), 64);
+            required.put(ModItems.STEEL_PLATE.get(), 64);
             required.put(ModItems.MOTOR.get(), 16);
             required.put(ModItems.BATTERY.get(), 8);
             required.put(ModItems.ADVANCED_CIRCUIT.get(), 8);

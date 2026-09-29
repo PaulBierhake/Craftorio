@@ -159,15 +159,24 @@ und das Handbuch-Ersatzbuch.
 - **Schichten** (nur in neu erzeugten Chunks): Oberfläche ab Y 50, darunter **Deckgestein** (Y 40–49),
   die **Höhlenschicht** (Y 0–39) und eine zweite Deckgesteinsschicht (Y −10 bis −1). Die Höhlenschicht besteht
   zunächst komplett aus unzerstörbarem **Höhlengeröll** – man kann nicht hineingraben.
-- **Höhleneingang** (Forschung *Höhlenzugang*, braucht Motoren und den Bohrkern): an der Oberfläche aufstellen, dann Material
+- **Höhleneingang** (Forschung *Ölverarbeitung*, braucht den Bohrkern; Material siehe unten): an der Oberfläche aufstellen, dann Material
   anliefern (128 Bruchstein, 32 Eisenplatten, 16 Zahnräder, 8 Motoren – per Hand, Band oder Greifarm) und mit
   Strom (40 FE/t über einen Strommast) eine Minute bohren lassen.
 - Danach öffnet sich ein **Schacht mit Gerüst** (Schleichen zum Absteigen; oberhalb der Höhlen mit Stein
   verkleidet) und der Höhlenbereich von **7×7 Chunks** um den Eingang wird ausgehöhlt: eine große Halle mit
   Säulen, Tuffboden und Platz zum Bauen. Außerhalb bleibt eine Wand aus Höhlengeröll – weitere Eingänge
   erweitern das Gebiet nahtlos.
-- **Höhlen-Rohstoffe** als unerschöpfliche Felder auf dem Hallenboden: **Zinn, Blei, Schwefel, Gold, Quarz**.
-  Neue Produkte: Zinn-/Bleibarren (Schmelzofen), **Batterie** und **Fortgeschrittener Schaltkreis** (Montage).
+- **Höhlen-Rohstoff**: **Rohölquellen** (unzerstörbar, in Gruppen von zwei bis fünf auf dem Hallenboden). Ein **Pumpjack**
+  (90 kW) auf der Quelle fördert 10 Rohöl/s je 100 % Ertrag; der Ertrag der Quelle liegt zwischen 100 und 300 %. Das Öl
+  geht in Rohre und Tanks neben dem Pumpjack. In der **Ölraffinerie** (420 kW) wird es zu Petroleum (einfache Ölverarbeitung:
+  100 Rohöl → 45 Petroleum in 5 s); die **Chemiefabrik** (210 kW) macht daraus *Kunststoff* (1 Kohle + 20 Petroleum → 2),
+  *Schwefel* (30 Wasser + 30 Petroleum → 2), *Schwefelsäure* (5 Schwefel + 1 Eisenplatte + 100 Wasser → 50) und *Batterien*
+  (1 Eisenplatte + 1 Kupferplatte + 20 Säure). Beide Maschinen haben ein Menü mit Rezeptwahl, Zutaten-Vorschau und Flüssigkeitsbalken;
+  Zutaten kommen per Greifarm und Rohr, das Produkt geht nach vorn oder in die Rohre. Der **fortgeschrittene Schaltkreis** (2 Schaltkreise +
+  2 Kunststoff + 4 Kabel) und das **blaue Paket** (2 Motoren + 3 fortgeschrittene Schaltkreise + 1 Schwefel → 2) werden in der
+  Montagemaschine bzw. an der Werkbank gebaut. Der **Akku** (2 Eisenplatten + 5 Batterien; 5 MJ, 300 kW) lädt aus dem Überschuss
+  der Generatoren und springt ein, wenn sie nicht reichen. Zinn, Blei, Titan, Gold, Quarz, Diamant, Kristalle und Energiekristalle
+  gibt es nicht mehr; Zinn-/Blei-/Titan-Rezepte wurden auf Stahl, Kunststoff und Batterien umgestellt.
 
 - **Warenaufzug** (Bauplan nach dem Höhleneingang, 2 Stück pro Bau): Zwei Aufzüge in derselben Spalte
   (gleiches X/Z) verbinden sich automatisch – auch durch Deckgestein und massiven Fels, bis 256 Blöcke weit.
@@ -182,10 +191,9 @@ und das Handbuch-Ersatzbuch.
 - **Minenschicht** (Y −59 bis −11, nur in neu erzeugten Chunks): unter dem zweiten Deckgestein, zunächst
   komplett aus unzerstörbarem **Minengeröll**. Niedrigere Gänge mit vielen Säulen, Basaltboden und Tiefenschiefer.
 - **Minenschacht** (Forschung *Minenschacht*, braucht den Tiefenkern und den Warenaufzug): wird in einem
-  freigeschalteten Bereich der **Höhlenschicht** gebaut (sonst Fehlermeldung), braucht 64 Bleibarren,
+  freigeschalteten Bereich der **Höhlenschicht** gebaut (sonst Fehlermeldung), braucht 64 Stahlplatten,
   16 Motoren, 8 Batterien und 8 fortgeschrittene Schaltkreise und bohrt mit **80 FE/t** (kW). Danach führt ein Gerüstschacht durch das Deckgestein in die Minen und 7×7 Chunks werden ausgehöhlt.
-- **Minen-Rohstoffe**: **Diamant, Titan, Uran, Kristall**. Titan → Titanbarren (Ofen) → Titanplatte (Montage);
-  Uran → Uranpellet (Montage) → **Brennstab** (Montage, mit Titanplatten); Kristallsplitter → **Energiekristall**.
+- **Minen-Rohstoff**: **Uran** → Uranpellet (Montage) → **Brennstab** (Montage, mit Stahlplatten).
 - **Maschinen-Stufen**
   - **Elektrischer Bohrer** (Stufe 2, Freischaltung mit dem Resonanzkristall aus TD-Level 20): 3×3, doppelt so
     schnell wie der Brenner-Bohrer, 30 FE/t statt Brennstoff. **Tiefenbohrer** (Stufe 3): **5×5**, 4× schneller
@@ -258,7 +266,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl) und **U6** (Flüssigkeiten).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) und **U7** (Öl und Höhlen).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.

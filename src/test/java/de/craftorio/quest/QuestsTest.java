@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestsTest {
     @Test
     void progressIsMeasuredPerKindAndCapped() {
-        Quest.Progress progress = new Quest.Progress(12_345, Map.of("craftorio:tin_ingot", 100L), Set.of("craftorio:assembler"),
+        Quest.Progress progress = new Quest.Progress(12_345, Map.of("craftorio:plastic_bar", 100L), Set.of("craftorio:assembler"),
                 Map.of("craftorio:burner_drill", 2L, Quest.MINED_PREFIX + "minecraft:raw_iron", 5L), 3);
 
         assertTrue(Quests.byId("first_sale").orElseThrow().done(progress));
-        assertEquals(64, Quests.byId("sell_tin_ingot").orElseThrow().progress(progress), "capped at the goal");
+        assertEquals(64, Quests.byId("sell_plastic_bar").orElseThrow().progress(progress), "capped at the goal");
         assertTrue(Quests.byId("unlock_assembler").orElseThrow().done(progress));
         assertFalse(Quests.byId("unlock_cave_entrance").orElseThrow().done(progress));
         assertEquals(1, Quests.byId("td_10").orElseThrow().progress(progress) > 0 ? 1 : 0);

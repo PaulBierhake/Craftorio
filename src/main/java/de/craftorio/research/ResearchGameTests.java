@@ -48,12 +48,13 @@ public final class ResearchGameTests {
         helper.assertFalse(team.researchQueue().contains(Craftorio.id("energy_turrets").toString()), "energy turrets lose their prerequisite");
         helper.assertTrue(team.researchQueue().contains(Craftorio.id("engines").toString()), "engines stay");
 
-        helper.assertFalse(ResearchActions.toggle(player, index(helper, "caves")), "needs a drill core");
+        TeamData.registry(player.server).grantResearch(team.id(), Craftorio.id("fluid_handling").toString());
+        helper.assertFalse(ResearchActions.toggle(player, index(helper, "oil_processing")), "needs a drill core");
         player.getInventory().add(new ItemStack(ModItems.DRILL_CORE.get()));
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "caves")), "queue with drill core");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "oil_processing")), "queue with drill core");
         helper.assertValueEqual(player.getInventory().countItem(ModItems.DRILL_CORE.get()), 0, "drill core handed in");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "caves")), "dequeue");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "caves")), "queue again without paying twice");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "oil_processing")), "dequeue");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "oil_processing")), "queue again without paying twice");
         helper.succeed();
     }
 

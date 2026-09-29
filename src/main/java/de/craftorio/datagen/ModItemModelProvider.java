@@ -19,6 +19,7 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.CIRCUIT.get());
         basicItem(ModItems.MOTOR.get());
         basicItem(ModItems.STEEL_PLATE.get());
+        basicItem(ModItems.PLASTIC_BAR.get());
         basicItem(ModItems.IRON_STICK.get());
         basicItem(ModItems.STONE_BRICK.get());
         basicItem(ModItems.DRILL_CORE.get());
@@ -27,10 +28,6 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.STAR_SHARD.get());
         basicItem(ModItems.BOLT.get());
         basicItem(ModItems.CARTRIDGE.get());
-        basicItem(ModItems.RAW_TIN.get());
-        basicItem(ModItems.TIN_INGOT.get());
-        basicItem(ModItems.RAW_LEAD.get());
-        basicItem(ModItems.LEAD_INGOT.get());
         basicItem(ModItems.SULFUR.get());
         basicItem(ModItems.BATTERY.get());
         basicItem(ModItems.RED_SCIENCE.get());
@@ -38,13 +35,8 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.MILITARY_SCIENCE.get());
         basicItem(ModItems.BLUE_SCIENCE.get());
         basicItem(ModItems.ADVANCED_CIRCUIT.get());
-        basicItem(ModItems.RAW_TITANIUM.get());
-        basicItem(ModItems.TITANIUM_INGOT.get());
-        basicItem(ModItems.TITANIUM_PLATE.get());
         basicItem(ModItems.RAW_URANIUM.get());
         basicItem(ModItems.URANIUM_PELLET.get());
-        basicItem(ModItems.CRYSTAL_SHARD.get());
-        basicItem(ModItems.ENERGY_CRYSTAL.get());
         basicItem(ModItems.FUEL_ROD.get());
         handheldItem(ModItems.PATH_WAND.get());
         handheldItem(ModItems.STARTER_PICKAXE.get());

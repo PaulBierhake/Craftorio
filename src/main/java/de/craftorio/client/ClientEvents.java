@@ -114,6 +114,7 @@ public final class ClientEvents {
             event.register(ModMenus.DEPOT.get(), DepotScreen::new);
             event.register(ModMenus.LABORATORY.get(), LaboratoryScreen::new);
             event.register(ModMenus.BOILER.get(), BoilerScreen::new);
+            event.register(ModMenus.FLUID_MACHINE.get(), FluidMachineScreen::new);
         }
     }
 }

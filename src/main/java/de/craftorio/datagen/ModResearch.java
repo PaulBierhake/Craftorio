@@ -46,8 +46,18 @@ public final class ModResearch {
                 List.of("fluid_pump", "storage_tank", "underground_pipe", "assembling/fluid_pump", "assembling/storage_tank", "assembling/underground_pipe"));
         add(context, "solar_energy", 100, 30, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"), List.of("solar_panel"));
         add(context, "energy_turrets", 100, 30, List.of("turrets", "engines"), List.of("tesla_tower"));
-        add(context, "caves", 100, 30, List.of("automation", "engines"), List.of("cave_entrance"), key(ModItems.DRILL_CORE.get()));
-        add(context, "elevators", 50, 15, List.of("caves"), List.of("elevator"));
+        add(context, "oil_processing", 100, 30, R_G, List.of("fluid_handling"),
+                List.of("pumpjack", "oil_refinery", "chemical_plant", "assembling/pumpjack", "assembling/chemical_plant",
+                        "oil/basic_oil_processing", "cave_entrance"), key(ModItems.DRILL_CORE.get()));
+        add(context, "plastics", 200, 30, R_G, List.of("oil_processing"), List.of("chem/plastic_bar"));
+        add(context, "sulfur_processing", 150, 30, R_G, List.of("oil_processing"), List.of("chem/sulfur", "chem/sulfuric_acid"));
+        add(context, "advanced_electronics", 200, 30, R_G, List.of("plastics"), List.of("assembling/advanced_circuit"));
+        add(context, "battery", 150, 30, R_G, List.of("sulfur_processing"), List.of("chem/battery"));
+        add(context, "electric_energy_accumulators", 150, 30, R_G, List.of("battery", "electric_energy_distribution_1"),
+                List.of("accumulator", "assembling/accumulator"));
+        add(context, "chemical_science_pack", 75, 10, R_G, List.of("advanced_electronics", "sulfur_processing"),
+                List.of("chemical_science", "assembling/blue_science"));
+        add(context, "elevators", 50, 15, List.of("oil_processing"), List.of("elevator"));
         add(context, "fast_belts", 200, 30, R_G, List.of("logistics", "logistic_science_pack"), List.of("fast_belt", "fast_underground_belt", "fast_splitter"));
         add(context, "mine_shaft", 300, 30, List.of("elevators"), List.of("mine_shaft"), key(ModItems.DEEP_CORE.get()));
         add(context, "deep_mining", 200, 30, List.of("mine_shaft"), List.of("deep_drill"), key(ModItems.RESONANCE_CRYSTAL.get()));

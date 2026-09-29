@@ -83,11 +83,6 @@ public final class ModBlocks {
     public static final DeferredBlock<CaveEntranceBlock> CAVE_ENTRANCE = BLOCKS.registerBlock("cave_entrance",
             properties -> new CaveEntranceBlock(Layer.CAVES, properties),
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(3.0F, 1200.0F).noOcclusion().sound(SoundType.WOOD));
-    public static final DeferredBlock<OreFieldBlock> TIN_ORE_FIELD = oreField("tin_ore_field", () -> ModItems.RAW_TIN.get(), MapColor.COLOR_LIGHT_GRAY);
-    public static final DeferredBlock<OreFieldBlock> LEAD_ORE_FIELD = oreField("lead_ore_field", () -> ModItems.RAW_LEAD.get(), MapColor.COLOR_BLUE);
-    public static final DeferredBlock<OreFieldBlock> SULFUR_FIELD = oreField("sulfur_field", () -> ModItems.SULFUR.get(), MapColor.COLOR_YELLOW);
-    public static final DeferredBlock<OreFieldBlock> GOLD_ORE_FIELD = oreField("gold_ore_field", () -> Items.RAW_GOLD, MapColor.GOLD);
-    public static final DeferredBlock<OreFieldBlock> QUARTZ_FIELD = oreField("quartz_field", () -> Items.QUARTZ, MapColor.QUARTZ);
 
     // Mine layer (M7)
     /** Seals the mine layer until a mine shaft unlocks the area. */
@@ -102,10 +97,7 @@ public final class ModBlocks {
     public static final DeferredBlock<CaveEntranceBlock> MINE_SHAFT = BLOCKS.registerBlock("mine_shaft",
             properties -> new CaveEntranceBlock(Layer.MINES, properties),
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(4.0F, 1200.0F).noOcclusion().sound(SoundType.METAL));
-    public static final DeferredBlock<OreFieldBlock> DIAMOND_FIELD = oreField("diamond_field", () -> Items.DIAMOND, MapColor.DIAMOND);
-    public static final DeferredBlock<OreFieldBlock> TITANIUM_ORE_FIELD = oreField("titanium_ore_field", () -> ModItems.RAW_TITANIUM.get(), MapColor.COLOR_LIGHT_BLUE);
     public static final DeferredBlock<OreFieldBlock> URANIUM_ORE_FIELD = oreField("uranium_ore_field", () -> ModItems.RAW_URANIUM.get(), MapColor.COLOR_LIGHT_GREEN);
-    public static final DeferredBlock<OreFieldBlock> CRYSTAL_FIELD = oreField("crystal_field", () -> ModItems.CRYSTAL_SHARD.get(), MapColor.COLOR_MAGENTA);
 
     public static final DeferredBlock<DrillBlock> BURNER_DRILL = drill("burner_drill", DrillTier.BURNER);
     public static final DeferredBlock<DrillBlock> ELECTRIC_DRILL = drill("electric_drill", DrillTier.ELECTRIC);
@@ -169,6 +161,23 @@ public final class ModBlocks {
     public static final DeferredBlock<ProcessingMachineBlock> STEEL_FURNACE = machine("steel_furnace", MachineType.STEEL_FURNACE);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER_2 = machine("assembler_2", MachineType.ASSEMBLER_2);
+
+    /** Crude oil in the caves. */
+    public static final DeferredBlock<de.craftorio.oil.OilWellBlock> OIL_WELL = BLOCKS.registerBlock("oil_well",
+            de.craftorio.oil.OilWellBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3_600_000.0F).noLootTable()
+                    .isValidSpawn(Blocks::never).pushReaction(PushReaction.BLOCK).sound(SoundType.DEEPSLATE));
+    public static final DeferredBlock<de.craftorio.oil.PumpjackBlock> PUMPJACK = BLOCKS.registerBlock("pumpjack",
+            de.craftorio.oil.PumpjackBlock::new,
+            machineProperties().noOcclusion().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 6 : 0));
+    public static final DeferredBlock<de.craftorio.fluid.FluidMachineBlock> CHEMICAL_PLANT = BLOCKS.registerBlock("chemical_plant",
+            properties -> new de.craftorio.fluid.FluidMachineBlock(de.craftorio.fluid.FluidMachineType.CHEMICAL_PLANT, properties),
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 8 : 0));
+    public static final DeferredBlock<de.craftorio.fluid.FluidMachineBlock> OIL_REFINERY = BLOCKS.registerBlock("oil_refinery",
+            properties -> new de.craftorio.fluid.FluidMachineBlock(de.craftorio.fluid.FluidMachineType.OIL_REFINERY, properties),
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 8 : 0));
+    public static final DeferredBlock<de.craftorio.energy.AccumulatorBlock> ACCUMULATOR = BLOCKS.registerBlock("accumulator",
+            de.craftorio.energy.AccumulatorBlock::new, machineProperties());
 
     public static final DeferredBlock<de.craftorio.research.LaboratoryBlock> LABORATORY = BLOCKS.registerBlock("laboratory",
             de.craftorio.research.LaboratoryBlock::new, machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 10 : 0));

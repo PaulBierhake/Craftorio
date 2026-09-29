@@ -32,11 +32,6 @@ public final class ModRecipeProvider extends RecipeProvider {
     protected void buildRecipes(RecipeOutput output) {
         machineRecipes(output);
 
-        // Cave metals smelt in any furnace, including the electric furnace.
-        smelt(output, ModItems.RAW_TIN.get(), ModItems.TIN_INGOT.get(), "tin_ingot");
-        smelt(output, ModItems.RAW_LEAD.get(), ModItems.LEAD_INGOT.get(), "lead_ingot");
-        smelt(output, ModItems.RAW_TITANIUM.get(), ModItems.TITANIUM_INGOT.get(), "titanium_ingot");
-
         // The only vanilla recipes: everything else is a blueprint built at the workbench.
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.WORKBENCH.get())
                 .pattern("III")
@@ -54,12 +49,6 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.IRON_INGOT)
                 .unlockedBy("has_book", has(Items.BOOK))
                 .save(output);
-    }
-
-    private static void smelt(RecipeOutput output, ItemLike raw, ItemLike ingot, String name) {
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(raw), RecipeCategory.MISC, ingot, 0.7F, 200)
-                .unlockedBy("has_" + name, has(raw))
-                .save(output, Craftorio.id("smelting/" + name));
     }
 
     private static void machineRecipes(RecipeOutput output) {
@@ -89,20 +78,24 @@ public final class ModRecipeProvider extends RecipeProvider {
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 1),
                 SizedIngredient.of(ModItems.PIPE.get(), 2));
         // Cave products
-        assemble(output, "battery", new ItemStack(ModItems.BATTERY.get()), 60,
-                SizedIngredient.of(ModItems.LEAD_INGOT.get(), 2), SizedIngredient.of(ModItems.SULFUR.get(), 1),
-                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
-        assemble(output, "advanced_circuit", new ItemStack(ModItems.ADVANCED_CIRCUIT.get()), 80,
-                SizedIngredient.of(ModItems.CIRCUIT.get(), 2), SizedIngredient.of(ModItems.TIN_INGOT.get(), 2),
-                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
+        assemble(output, "advanced_circuit", new ItemStack(ModItems.ADVANCED_CIRCUIT.get()), 120,
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 2), SizedIngredient.of(ModItems.PLASTIC_BAR.get(), 2),
+                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 4));
+        assemble(output, "blue_science", new ItemStack(ModItems.BLUE_SCIENCE.get(), 2), 480,
+                SizedIngredient.of(ModItems.MOTOR.get(), 2), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 3),
+                SizedIngredient.of(ModItems.SULFUR.get(), 1));
+        assemble(output, "pumpjack", new ItemStack(ModItems.PUMPJACK.get()), 100,
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.IRON_GEAR.get(), 10),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 5), SizedIngredient.of(ModItems.PIPE.get(), 10));
+        assemble(output, "chemical_plant", new ItemStack(ModItems.CHEMICAL_PLANT.get()), 100,
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.IRON_GEAR.get(), 5),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 5), SizedIngredient.of(ModItems.PIPE.get(), 5));
+        assemble(output, "accumulator", new ItemStack(ModItems.ACCUMULATOR.get()), 200,
+                SizedIngredient.of(Items.IRON_INGOT, 2), SizedIngredient.of(ModItems.BATTERY.get(), 5));
         // Mine products
-        assemble(output, "titanium_plate", new ItemStack(ModItems.TITANIUM_PLATE.get()), 40, SizedIngredient.of(ModItems.TITANIUM_INGOT.get(), 1));
         assemble(output, "uranium_pellet", new ItemStack(ModItems.URANIUM_PELLET.get()), 40, SizedIngredient.of(ModItems.RAW_URANIUM.get(), 1));
-        assemble(output, "energy_crystal", new ItemStack(ModItems.ENERGY_CRYSTAL.get()), 120,
-                SizedIngredient.of(ModItems.CRYSTAL_SHARD.get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 1),
-                SizedIngredient.of(ModItems.BATTERY.get(), 1));
         assemble(output, "fuel_rod", new ItemStack(ModItems.FUEL_ROD.get()), 100,
-                SizedIngredient.of(ModItems.URANIUM_PELLET.get(), 3), SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 2));
+                SizedIngredient.of(ModItems.URANIUM_PELLET.get(), 3), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2));
         // Ammunition for automated tower supply
         assemble(output, "bolt", new ItemStack(ModItems.BOLT.get(), 16), 20,
                 SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.STICK, 2));

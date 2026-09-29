@@ -34,6 +34,8 @@ public final class ModMenus {
 
     public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.LaboratoryMenu>> LABORATORY =
             MENUS.register("laboratory", () -> IMenuTypeExtension.create(de.craftorio.menu.LaboratoryMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.FluidMachineMenu>> FLUID_MACHINE =
+            MENUS.register("fluid_machine", () -> IMenuTypeExtension.create(de.craftorio.menu.FluidMachineMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.BoilerMenu>> BOILER =
             MENUS.register("boiler", () -> IMenuTypeExtension.create(de.craftorio.menu.BoilerMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.DepotMenu>> DEPOT =

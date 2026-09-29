@@ -99,7 +99,8 @@ public final class PowerGrid {
                 if (level.isLoaded(member) && !poles.containsKey(member)
                         && level.getCapability(Capabilities.EnergyStorage.BLOCK, member, null) != null) {
                     BlockEntity blockEntity = level.getBlockEntity(member);
-                    (blockEntity instanceof PowerSource ? network.sources : network.consumers).add(member.immutable());
+                    (blockEntity instanceof PowerSource ? network.sources
+                            : blockEntity instanceof PowerStorage ? network.storages : network.consumers).add(member.immutable());
                 }
             }
         }
@@ -125,13 +126,14 @@ public final class PowerGrid {
         }
         int satisfaction = network.lastDemand == 0 ? 100 : (int) (100 * network.lastTransferred / network.lastDemand);
         return Component.translatable("craftorio.power.network", network.poles.size(), network.sources.size(),
-                network.consumers.size(), network.lastTransferred, network.lastSupply, satisfaction);
+                network.consumers.size(), network.storages.size(), network.lastTransferred, network.lastSupply, satisfaction);
     }
 
     private static final class Network {
         final Set<BlockPos> poles = new HashSet<>();
         final Set<BlockPos> sources = new LinkedHashSet<>();
         final Set<BlockPos> consumers = new LinkedHashSet<>();
+        final Set<BlockPos> storages = new LinkedHashSet<>();
         long lastSupply;
         long lastDemand;
         long lastTransferred;
@@ -139,6 +141,7 @@ public final class PowerGrid {
         void distribute(Level level) {
             List<IEnergyStorage> from = storages(level, sources);
             List<IEnergyStorage> to = storages(level, consumers);
+            List<IEnergyStorage> buffers = storages(level, storages);
             long[] supply = new long[from.size()];
             long[] demand = new long[to.size()];
             for (int i = 0; i < supply.length; i++) {
@@ -148,19 +151,48 @@ public final class PowerGrid {
                 demand[i] = to.get(i).receiveEnergy(Integer.MAX_VALUE, true);
             }
             PowerDistribution.Result result = PowerDistribution.distribute(supply, demand);
+            apply(from, result.taken(), true);
+            apply(to, result.given(), false);
+            long transferred = result.transferred();
+
+            // What the generators have left charges the accumulators; when they fall short, the accumulators help out.
+            long[] leftover = new long[supply.length];
             for (int i = 0; i < supply.length; i++) {
-                if (result.taken()[i] > 0) {
-                    from.get(i).extractEnergy((int) result.taken()[i], false);
-                }
+                leftover[i] = supply[i] - result.taken()[i];
             }
+            long[] room = new long[buffers.size()];
+            long[] stored = new long[buffers.size()];
+            for (int i = 0; i < room.length; i++) {
+                room[i] = buffers.get(i).receiveEnergy(Integer.MAX_VALUE, true);
+                stored[i] = buffers.get(i).extractEnergy(Integer.MAX_VALUE, true);
+            }
+            PowerDistribution.Result charge = PowerDistribution.distribute(leftover, room);
+            apply(from, charge.taken(), true);
+            apply(buffers, charge.given(), false);
+            long[] missing = new long[demand.length];
             for (int i = 0; i < demand.length; i++) {
-                if (result.given()[i] > 0) {
-                    to.get(i).receiveEnergy((int) result.given()[i], false);
+                missing[i] = demand[i] - result.given()[i];
+            }
+            PowerDistribution.Result discharge = PowerDistribution.distribute(stored, missing);
+            apply(buffers, discharge.taken(), true);
+            apply(to, discharge.given(), false);
+            transferred += discharge.transferred();
+
+            lastSupply = sum(supply) + discharge.transferred();
+            lastDemand = sum(demand);
+            lastTransferred = transferred;
+        }
+
+        private static void apply(List<IEnergyStorage> storages, long[] amounts, boolean extract) {
+            for (int i = 0; i < amounts.length; i++) {
+                if (amounts[i] > 0) {
+                    if (extract) {
+                        storages.get(i).extractEnergy((int) amounts[i], false);
+                    } else {
+                        storages.get(i).receiveEnergy((int) amounts[i], false);
+                    }
                 }
             }
-            lastSupply = sum(supply);
-            lastDemand = sum(demand);
-            lastTransferred = result.transferred();
         }
 
         private static List<IEnergyStorage> storages(Level level, Set<BlockPos> positions) {

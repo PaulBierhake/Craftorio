@@ -21,6 +21,9 @@ public final class CaveCarver {
     private static final double FIELD_CHANCE = 0.45;
     private static final int FIELD_MIN_SIZE = 20;
     private static final int FIELD_MAX_SIZE = 60;
+    /** A group of oil wells in the caves instead of a big field: two to five. */
+    private static final int OIL_WELLS_MIN = 2;
+    private static final int OIL_WELLS_EXTRA = 3;
 
     private CaveCarver() {
     }
@@ -37,7 +40,8 @@ public final class CaveCarver {
             int z = chunk.getMiddleBlockZ() + random.nextInt(9) - 4;
             Block field = randomField(layer, random);
             placeField(level, layer, new BlockPos(x, shape.floorY(x, z), z), field.defaultBlockState(),
-                    FIELD_MIN_SIZE + random.nextInt(FIELD_MAX_SIZE - FIELD_MIN_SIZE + 1), random);
+                    layer == Layer.CAVES ? OIL_WELLS_MIN + random.nextInt(OIL_WELLS_EXTRA + 1)
+                            : FIELD_MIN_SIZE + random.nextInt(FIELD_MAX_SIZE - FIELD_MIN_SIZE + 1), random);
         }
     }
 
@@ -71,21 +75,7 @@ public final class CaveCarver {
     }
 
     private static Block randomField(Layer layer, RandomSource random) {
-        if (layer == Layer.MINES) {
-            return switch (random.nextInt(4)) {
-                case 0 -> ModBlocks.DIAMOND_FIELD.get();
-                case 1 -> ModBlocks.TITANIUM_ORE_FIELD.get();
-                case 2 -> ModBlocks.URANIUM_ORE_FIELD.get();
-                default -> ModBlocks.CRYSTAL_FIELD.get();
-            };
-        }
-        return switch (random.nextInt(5)) {
-            case 0 -> ModBlocks.TIN_ORE_FIELD.get();
-            case 1 -> ModBlocks.LEAD_ORE_FIELD.get();
-            case 2 -> ModBlocks.SULFUR_FIELD.get();
-            case 3 -> ModBlocks.GOLD_ORE_FIELD.get();
-            default -> ModBlocks.QUARTZ_FIELD.get();
-        };
+        return layer == Layer.MINES ? ModBlocks.URANIUM_ORE_FIELD.get() : ModBlocks.OIL_WELL.get();
     }
 
     /** Grows a field over the cave floor: each column's floor is the solid block with air above near the start height. */

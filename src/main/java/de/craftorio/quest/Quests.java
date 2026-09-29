@@ -42,15 +42,15 @@ public final class Quests {
             // Caves
             unlock("cave_entrance", 500),
             build("cave_entrance", 1, 500),
-            sell("tin_ingot", "craftorio:tin_ingot", 64, 1_000),
+            sell("plastic_bar", "craftorio:plastic_bar", 64, 1_000),
             sell("battery", "craftorio:battery", 32, 1_500),
             unlock("elevator", 300),
             tdLevel("td_20", 20, 2_500),
             // Mines
             tdLevel("td_30", 30, 5_000),
             unlock("mine_shaft", 3_000),
-            sell("titanium_plate", "craftorio:titanium_plate", 64, 4_000),
-            sell("energy_crystal", "craftorio:energy_crystal", 8, 7_500),
+            sell("steel_plate", "craftorio:steel_plate", 64, 4_000),
+            sell("advanced_circuit", "craftorio:advanced_circuit", 8, 7_500),
             earn("earn_1m", 1_000_000, 25_000),
             tdLevel("td_40", 40, 25_000));
 

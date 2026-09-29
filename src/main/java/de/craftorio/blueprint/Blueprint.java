@@ -13,7 +13,7 @@ import java.util.List;
  * Loaded from {@code data/<namespace>/craftorio/blueprint/*.json} and synced to clients.
  */
 public record Blueprint(ItemStack result, List<SizedIngredient> ingredients, int order) {
-    public static final int MAX_INGREDIENTS = 4;
+    public static final int MAX_INGREDIENTS = 5;
 
     public static final Codec<Blueprint> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ItemStack.STRICT_CODEC.fieldOf("result").forGetter(Blueprint::result),
