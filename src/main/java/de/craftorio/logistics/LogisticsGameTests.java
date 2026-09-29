@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -177,14 +178,28 @@ public final class LogisticsGameTests {
     }
 
     @GameTest(template = LARGE)
-    public static void beltPlacedBesideAHigherBeltBecomesASlope(GameTestHelper helper) {
-        put(helper, new BlockPos(3, 2, 3), ModBlocks.CONVEYOR_BELT.get(), Direction.EAST, BeltSlope.FLAT, false);
-        var state = ModBlocks.CONVEYOR_BELT.get().defaultBlockState().setValue(ConveyorBeltBlock.FACING, Direction.EAST);
-        helper.setBlock(new BlockPos(2, 1, 3), state);
-        // The placement rule is a pure function of the neighbours.
-        helper.assertTrue(helper.getLevel().getBlockState(helper.absolutePos(new BlockPos(3, 2, 3))).getBlock() instanceof ConveyorBeltBlock,
-                "the higher belt stands");
+    public static void aBeltBecomesASlopeWhicheverWasPlacedFirst(GameTestHelper helper) {
+        var belt = ModBlocks.CONVEYOR_BELT.get().defaultBlockState().setValue(ConveyorBeltBlock.FACING, Direction.EAST);
+        // Low belt first, then the higher one in front of it: the low one climbs.
+        helper.setBlock(new BlockPos(2, 1, 3), belt);
+        placeBelt(helper, new BlockPos(3, 2, 3), belt);
+        helper.assertValueEqual(helper.getBlockState(new BlockPos(2, 1, 3)).getValue(ConveyorBeltBlock.SLOPE), BeltSlope.UP, "low belt placed first");
+        // High belt first, then the lower one in front of it: the low one descends.
+        placeBelt(helper, new BlockPos(6, 2, 3), belt);
+        placeBelt(helper, new BlockPos(7, 1, 3), belt);
+        helper.assertValueEqual(helper.getBlockState(new BlockPos(7, 1, 3)).getValue(ConveyorBeltBlock.SLOPE), BeltSlope.DOWN, "low belt placed second");
+        // The other order for the descent: the lower belt exists, the higher one is placed behind it.
+        placeBelt(helper, new BlockPos(11, 1, 3), belt);
+        placeBelt(helper, new BlockPos(10, 2, 3), belt);
+        helper.assertValueEqual(helper.getBlockState(new BlockPos(11, 1, 3)).getValue(ConveyorBeltBlock.SLOPE), BeltSlope.DOWN, "high belt placed second");
         helper.succeed();
+    }
+
+    /** Places a belt the way a player does: the slope is worked out from the neighbours at placement. */
+    private static void placeBelt(GameTestHelper helper, BlockPos pos, BlockState belt) {
+        var facing = belt.getValue(ConveyorBeltBlock.FACING);
+        helper.setBlock(pos, belt.setValue(ConveyorBeltBlock.SLOPE,
+                ConveyorBeltBlock.slopeFor(helper.getLevel(), helper.absolutePos(pos), facing)));
     }
 
     @GameTest(template = LARGE, timeoutTicks = 300)

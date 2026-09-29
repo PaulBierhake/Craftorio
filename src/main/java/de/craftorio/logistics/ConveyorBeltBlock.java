@@ -95,8 +95,27 @@ public final class ConveyorBeltBlock extends BaseEntityBlock {
         };
     }
 
+    /** A belt placed above a flat belt next to it turns that belt into a slope, whichever was placed first. */
+    @Override
+    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        if (level.isClientSide || kind != BeltKind.BELT || oldState.getBlock() instanceof ConveyorBeltBlock) {
+            return;
+        }
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            BlockPos lowerPos = pos.relative(side).below();
+            BlockState lower = level.getBlockState(lowerPos);
+            if (lower.getBlock() instanceof ConveyorBeltBlock belt && belt.kind == BeltKind.BELT && lower.getValue(SLOPE) == BeltSlope.FLAT) {
+                BeltSlope slope = slopeFor(level, lowerPos, lower.getValue(FACING));
+                if (slope != BeltSlope.FLAT) {
+                    level.setBlock(lowerPos, lower.setValue(SLOPE, slope), Block.UPDATE_ALL);
+                }
+            }
+        }
+    }
+
     /** A belt placed with a belt one level higher in front (or behind) turns into a slope. */
-    private static BeltSlope slopeFor(Level level, BlockPos pos, Direction facing) {
+    static BeltSlope slopeFor(Level level, BlockPos pos, Direction facing) {
         boolean flatFront = level.getBlockState(pos.relative(facing)).getBlock() instanceof ConveyorBeltBlock;
         boolean flatBack = level.getBlockState(pos.relative(facing.getOpposite())).getBlock() instanceof ConveyorBeltBlock;
         if (!flatFront && level.getBlockState(pos.relative(facing).above()).getBlock() instanceof ConveyorBeltBlock) {

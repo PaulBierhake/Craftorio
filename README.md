@@ -293,11 +293,11 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Kiste vorne gehen sie 50/50 nach links und rechts; Rechtsklick mit einem Item setzt einen **Filter**, Rechtsklick
   mit leerer Hand bestimmt, in welche Richtung das gefilterte Item geht, der Rest wechselt zwischen den anderen
   Ausgängen; Schleichen + Rechtsklick löscht den Filter), **steigende und fallende Bänder** (ein Band mit einem höheren Band davor bzw.
-  dahinter wird beim Setzen zur Schräge; Rechtsklick mit einem Band in der Hand auf die Oberseite eines Bands (oder mit
+  dahinter wird zur Schräge, egal welches zuerst gesetzt wird; Rechtsklick mit einem Band in der Hand auf die Oberseite eines Bands (oder mit
   leerer Hand) schaltet flach → hoch → runter; ein steigendes
   Band gibt an das Band eine Ebene höher weiter, ein fallendes nimmt von einer Ebene höher), **Greifarm-Varianten**
   (langer Greifarm: Reichweite 2, schneller Greifarm, Filter-Greifarm mit Filter per Rechtsklick; Schwingzeiten wie
-  in Factorio). Das rote Band kostet nach Factorio 5 Zahnräder + 1 gelbes Band. Abweichungen: Greifarme brauchen
+  in Factorio). Kurze Steuerungshinweise mit Maus-/Tasten-Symbolen erscheinen rechts neben der Hotbar. Das rote Band kostet nach Factorio 5 Zahnräder + 1 gelbes Band. Abweichungen: Greifarme brauchen
   vorerst keinen Strom (kein Brenner-Greifarm), Express-Unterflurband und -Splitter folgen mit Schmiermittel (U7).
 - **Steuerungshinweise**: Unten links zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
   angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.

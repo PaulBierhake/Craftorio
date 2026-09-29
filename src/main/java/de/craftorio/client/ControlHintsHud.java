@@ -3,6 +3,7 @@ package de.craftorio.client;
 import de.craftorio.Craftorio;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -11,35 +12,62 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Bottom left: what the right mouse button (and friends) do with the item in hand, or with the block looked at, for
- * everything with a function that is not obvious. The texts are {@code craftorio.hint.<name>.<n>}.
+ * Right next to the hotbar: what the mouse buttons do with the item in hand, or with the block looked at, for
+ * everything with a function that is not obvious. Keys are drawn as icons, the texts are
+ * {@code craftorio.hint.<name>.<n>}.
  */
 public final class ControlHintsHud {
     private static final int COLOR = 0xE8E8B0;
-    private static final int LINE_HEIGHT = 10;
-    private static final int MARGIN = 6;
-    private static final int MAX_WIDTH = 220;
+    private static final int LINE_HEIGHT = 13;
+    private static final int GAP = 3;
 
-    /** Item id (path in the craftorio namespace) → hint name and number of lines. */
-    private static final Map<String, Hint> HINTS = Map.ofEntries(
-            Map.entry("conveyor_belt", new Hint("belt", 2)),
-            Map.entry("fast_belt", new Hint("belt", 2)),
-            Map.entry("express_belt", new Hint("belt", 2)),
-            Map.entry("underground_belt", new Hint("underground", 1)),
-            Map.entry("fast_underground_belt", new Hint("underground", 1)),
-            Map.entry("splitter", new Hint("splitter", 2)),
-            Map.entry("fast_splitter", new Hint("splitter", 2)),
-            Map.entry("filter_inserter", new Hint("filter_inserter", 1)),
-            Map.entry("path_wand", new Hint("path_wand", 2)),
-            Map.entry("guide_book", new Hint("guide", 1)));
-
-    private record Hint(String name, int lines) {
+    private enum Key {
+        RIGHT_CLICK, SNEAK, GUIDE
     }
+
+    private record Line(String text, Key... keys) {
+    }
+
+    private record Hint(String name, List<Line> lines) {
+        Hint(String name, Line... lines) {
+            this(name, List.of(lines));
+        }
+    }
+
+    private static Hint hint(String name, Key[]... keys) {
+        Line[] lines = new Line[keys.length];
+        for (int i = 0; i < keys.length; i++) {
+            lines[i] = new Line(name + "." + (i + 1), keys[i]);
+        }
+        return new Hint(name, lines);
+    }
+
+    private static final Key[] R = {Key.RIGHT_CLICK};
+    private static final Key[] S_R = {Key.SNEAK, Key.RIGHT_CLICK};
+
+    private static final Hint BELT = hint("belt", R);
+    private static final Hint UNDERGROUND = hint("underground", R);
+    private static final Hint SPLITTER = hint("splitter", R, R, S_R);
+    private static final Hint FILTER_INSERTER = hint("filter_inserter", R, S_R);
+    private static final Hint PATH_WAND = hint("path_wand", R, S_R, S_R);
+    private static final Hint GUIDE = hint("guide", new Key[] {Key.GUIDE});
+
+    /** Item id (path in the craftorio namespace) → hint. */
+    private static final Map<String, Hint> HINTS = Map.ofEntries(
+            Map.entry("conveyor_belt", BELT),
+            Map.entry("fast_belt", BELT),
+            Map.entry("express_belt", BELT),
+            Map.entry("underground_belt", UNDERGROUND),
+            Map.entry("fast_underground_belt", UNDERGROUND),
+            Map.entry("splitter", SPLITTER),
+            Map.entry("fast_splitter", SPLITTER),
+            Map.entry("filter_inserter", FILTER_INSERTER),
+            Map.entry("path_wand", PATH_WAND),
+            Map.entry("guide_book", GUIDE));
 
     private ControlHintsHud() {
     }
@@ -56,15 +84,42 @@ public final class ControlHintsHud {
         if (hint == null) {
             return;
         }
-        List<net.minecraft.util.FormattedCharSequence> lines = new ArrayList<>();
-        for (int i = 1; i <= hint.lines(); i++) {
-            lines.addAll(minecraft.font.split(Component.translatable("craftorio.hint." + hint.name() + "." + i), MAX_WIDTH));
-        }
-        int y = minecraft.getWindow().getGuiScaledHeight() - MARGIN - lines.size() * LINE_HEIGHT;
-        for (var line : lines) {
-            graphics.drawString(minecraft.font, line, MARGIN, y, COLOR, true);
+        Font font = minecraft.font;
+        int x = graphics.guiWidth() / 2 + 91 + 36;
+        int y = graphics.guiHeight() - 4 - hint.lines().size() * LINE_HEIGHT;
+        for (Line line : hint.lines()) {
+            int cx = x;
+            for (int i = 0; i < line.keys().length; i++) {
+                if (i > 0) {
+                    graphics.drawString(font, "+", cx, y + 2, COLOR, true);
+                    cx += font.width("+") + GAP * 2;
+                }
+                cx += drawKey(graphics, font, minecraft, line.keys()[i], cx, y) + GAP;
+            }
+            graphics.drawString(font, Component.translatable("craftorio.hint." + line.text()), cx + 2, y + 2, COLOR, true);
             y += LINE_HEIGHT;
         }
+    }
+
+    /** Draws one key icon at (x, y) and returns its width. */
+    private static int drawKey(GuiGraphics graphics, Font font, Minecraft minecraft, Key key, int x, int y) {
+        if (key == Key.RIGHT_CLICK) {
+            // A mouse with the right button lit.
+            graphics.fill(x, y, x + 9, y + 12, 0xFFC8C8C8);
+            graphics.fill(x + 1, y + 1, x + 8, y + 11, 0xFF303030);
+            graphics.fill(x + 5, y + 1, x + 8, y + 6, 0xFFE05030);
+            graphics.fill(x + 4, y + 1, x + 5, y + 6, 0xFFC8C8C8);
+            graphics.fill(x + 1, y + 6, x + 8, y + 7, 0xFFC8C8C8);
+            return 9;
+        }
+        Component label = key == Key.SNEAK ? minecraft.options.keyShift.getTranslatedKeyMessage()
+                : ClientEvents.OPEN_GUIDE.getTranslatedKeyMessage();
+        int width = Math.max(11, font.width(label) + 6);
+        graphics.fill(x, y, x + width, y + 12, 0xFFC8C8C8);
+        graphics.fill(x + 1, y + 1, x + width - 1, y + 10, 0xFF404040);
+        graphics.fill(x + 1, y + 10, x + width - 1, y + 11, 0xFF202020);
+        graphics.drawString(font, label, x + (width - font.width(label)) / 2, y + 2, 0xFFFFFF, false);
+        return width;
     }
 
     private static Hint hintFor(Item item) {
