@@ -25,6 +25,8 @@ public final class Quests {
             build("laboratory", 1, 60),
             build("red_science", 10, 60),
             build("inserter", 1, 30),
+            unlock("underground_belt", 60),
+            build("splitter", 1, 60),
             unlock("assembler", 100),
             build("assembler", 1, 100),
             // Trade, then defend

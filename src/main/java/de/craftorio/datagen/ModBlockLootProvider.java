@@ -26,6 +26,13 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.BURNER_DRILL.get());
         dropSelf(ModBlocks.CONVEYOR_BELT.get());
         dropSelf(ModBlocks.INSERTER.get());
+        dropSelf(ModBlocks.LONG_INSERTER.get());
+        dropSelf(ModBlocks.FAST_INSERTER.get());
+        dropSelf(ModBlocks.FILTER_INSERTER.get());
+        dropSelf(ModBlocks.UNDERGROUND_BELT.get());
+        dropSelf(ModBlocks.FAST_UNDERGROUND_BELT.get());
+        dropSelf(ModBlocks.SPLITTER.get());
+        dropSelf(ModBlocks.FAST_SPLITTER.get());
         dropSelf(ModBlocks.BOILER.get());
         dropSelf(ModBlocks.STEAM_ENGINE.get());
         dropSelf(ModBlocks.OFFSHORE_PUMP.get());

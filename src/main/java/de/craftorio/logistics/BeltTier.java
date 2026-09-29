@@ -12,6 +12,15 @@ public enum BeltTier {
         this.blocksPerSecond = blocksPerSecond;
     }
 
+    /** Blocks between the two ends of an underground belt: 4 for the yellow belt, 6 for the red one (Factorio). */
+    public int undergroundGap() {
+        return switch (this) {
+            case BASIC -> 4;
+            case FAST -> 6;
+            case EXPRESS -> 8;
+        };
+    }
+
     public float blocksPerSecond() {
         return blocksPerSecond;
     }

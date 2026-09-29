@@ -32,11 +32,18 @@ public final class ConveyorBeltRenderer implements BlockEntityRenderer<ConveyorB
         for (int lane = 0; lane < 2; lane++) {
             double sideways = lane == ConveyorBeltBlockEntity.LEFT ? LANE_OFFSET : -LANE_OFFSET;
             for (BeltLane.Entry<ItemStack> entry : belt.lane(lane).entries()) {
-                double along = entry.renderProgress(partialTick) - 0.5;
+                float progress = entry.renderProgress(partialTick);
+                double along = progress - 0.5;
+                // On a slope the surface climbs (or falls) one block along the belt.
+                double height = ITEM_HEIGHT + switch (belt.slope()) {
+                    case FLAT -> 0.0;
+                    case UP -> progress;
+                    case DOWN -> 1.0 - progress;
+                };
                 pose.pushPose();
                 pose.translate(
                         0.5 + facing.getStepX() * along + left.getStepX() * sideways,
-                        ITEM_HEIGHT,
+                        height,
                         0.5 + facing.getStepZ() * along + left.getStepZ() * sideways);
                 pose.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
                 pose.mulPose(Axis.XP.rotationDegrees(90));

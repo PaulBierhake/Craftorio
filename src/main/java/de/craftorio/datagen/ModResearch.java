@@ -28,14 +28,16 @@ public final class ModResearch {
 
     public static void bootstrap(BootstrapContext<Research> context) {
         order = 0;
-        add(context, "automation", 10, 10, List.of(), List.of("assembler"));
+        add(context, "automation", 10, 10, List.of(), List.of("assembler", "long_inserter"));
+        add(context, "logistics", 75, 15, List.of(), List.of("underground_belt", "splitter"));
+        add(context, "fast_inserters", 30, 15, List.of("automation"), List.of("fast_inserter", "filter_inserter"));
         add(context, "turrets", 10, 10, List.of(), List.of("gun_turret", "cartridge", "arena_feeder"));
         add(context, "electric_smelting", 50, 30, List.of("automation"), List.of("electric_furnace"));
         add(context, "engines", 30, 15, List.of("automation"), List.of("assembling/motor"));
         add(context, "energy_turrets", 100, 30, List.of("turrets", "engines"), List.of("tesla_tower"));
         add(context, "caves", 100, 30, List.of("automation", "engines"), List.of("cave_entrance"), key(ModItems.DRILL_CORE.get()));
         add(context, "elevators", 50, 15, List.of("caves"), List.of("elevator"));
-        add(context, "fast_belts", 75, 30, List.of("automation"), List.of("fast_belt"));
+        add(context, "fast_belts", 200, 30, List.of("logistics", "automation"), List.of("fast_belt", "fast_underground_belt", "fast_splitter"));
         add(context, "mine_shaft", 300, 30, List.of("elevators"), List.of("mine_shaft"), key(ModItems.DEEP_CORE.get()));
         add(context, "deep_mining", 200, 30, List.of("mine_shaft"), List.of("deep_drill"), key(ModItems.RESONANCE_CRYSTAL.get()));
         add(context, "express_belts", 150, 30, List.of("fast_belts", "mine_shaft"), List.of("express_belt"));

@@ -28,7 +28,14 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CONVEYOR_BELT = ITEMS.registerSimpleBlockItem("conveyor_belt", ModBlocks.CONVEYOR_BELT);
     public static final DeferredItem<BlockItem> FAST_BELT = ITEMS.registerSimpleBlockItem("fast_belt", ModBlocks.FAST_BELT);
     public static final DeferredItem<BlockItem> EXPRESS_BELT = ITEMS.registerSimpleBlockItem("express_belt", ModBlocks.EXPRESS_BELT);
+    public static final DeferredItem<BlockItem> UNDERGROUND_BELT = ITEMS.registerSimpleBlockItem("underground_belt", ModBlocks.UNDERGROUND_BELT);
+    public static final DeferredItem<BlockItem> FAST_UNDERGROUND_BELT = ITEMS.registerSimpleBlockItem("fast_underground_belt", ModBlocks.FAST_UNDERGROUND_BELT);
+    public static final DeferredItem<BlockItem> SPLITTER = ITEMS.registerSimpleBlockItem("splitter", ModBlocks.SPLITTER);
+    public static final DeferredItem<BlockItem> FAST_SPLITTER = ITEMS.registerSimpleBlockItem("fast_splitter", ModBlocks.FAST_SPLITTER);
     public static final DeferredItem<BlockItem> INSERTER = ITEMS.registerSimpleBlockItem("inserter", ModBlocks.INSERTER);
+    public static final DeferredItem<BlockItem> LONG_INSERTER = ITEMS.registerSimpleBlockItem("long_inserter", ModBlocks.LONG_INSERTER);
+    public static final DeferredItem<BlockItem> FAST_INSERTER = ITEMS.registerSimpleBlockItem("fast_inserter", ModBlocks.FAST_INSERTER);
+    public static final DeferredItem<BlockItem> FILTER_INSERTER = ITEMS.registerSimpleBlockItem("filter_inserter", ModBlocks.FILTER_INSERTER);
     public static final DeferredItem<BlockItem> BOILER = ITEMS.registerSimpleBlockItem("boiler", ModBlocks.BOILER);
     public static final DeferredItem<BlockItem> STEAM_ENGINE = ITEMS.registerSimpleBlockItem("steam_engine", ModBlocks.STEAM_ENGINE);
     public static final DeferredItem<BlockItem> OFFSHORE_PUMP = ITEMS.registerSimpleBlockItem("offshore_pump", ModBlocks.OFFSHORE_PUMP);

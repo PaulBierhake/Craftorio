@@ -61,20 +61,23 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         drill(ModBlocks.DEEP_DRILL.get(), "deep_drill");
 
         // Hand-written models in src/main/resources (belt and arm geometry), rotated by facing.
-        ModelFile belt = models().getExistingFile(modLoc("block/conveyor_belt"));
-        horizontalBlock(ModBlocks.CONVEYOR_BELT.get(), belt);
-        simpleBlockItem(ModBlocks.CONVEYOR_BELT.get(), belt);
-        for (Block tieredBelt : new Block[]{ModBlocks.FAST_BELT.get(), ModBlocks.EXPRESS_BELT.get()}) {
-            String name = name(tieredBelt);
-            ModelFile model = models().withExistingParent(name, modLoc("block/conveyor_belt"))
-                    .texture("particle", modLoc("block/" + name + "_side"))
-                    .texture("top", modLoc("block/" + name)).texture("side", modLoc("block/" + name + "_side"));
-            horizontalBlock(tieredBelt, model);
-            simpleBlockItem(tieredBelt, model);
+        belt(ModBlocks.CONVEYOR_BELT.get(), "conveyor_belt", "conveyor_belt", "conveyor_belt_side", true);
+        belt(ModBlocks.FAST_BELT.get(), "fast_belt", "fast_belt", "fast_belt_side", true);
+        belt(ModBlocks.EXPRESS_BELT.get(), "express_belt", "express_belt", "express_belt_side", true);
+        belt(ModBlocks.UNDERGROUND_BELT.get(), "underground_belt", "underground_belt", "conveyor_belt_side", false);
+        belt(ModBlocks.FAST_UNDERGROUND_BELT.get(), "fast_underground_belt", "fast_underground_belt", "fast_belt_side", false);
+        belt(ModBlocks.SPLITTER.get(), "splitter", "splitter", "conveyor_belt_side", false);
+        belt(ModBlocks.FAST_SPLITTER.get(), "fast_splitter", "fast_splitter", "fast_belt_side", false);
+        for (var inserter : new Object[][]{{ModBlocks.INSERTER.get(), "inserter", "inserter_arm"},
+                {ModBlocks.LONG_INSERTER.get(), "long_inserter", "inserter_long_arm"},
+                {ModBlocks.FAST_INSERTER.get(), "fast_inserter", "inserter_fast_arm"},
+                {ModBlocks.FILTER_INSERTER.get(), "filter_inserter", "inserter_filter_arm"}}) {
+            String name = (String) inserter[1];
+            ModelFile model = name.equals("inserter") ? models().getExistingFile(modLoc("block/inserter"))
+                    : models().withExistingParent(name, modLoc("block/inserter")).texture("arm", modLoc("block/" + inserter[2]));
+            horizontalBlock((Block) inserter[0], model);
+            simpleBlockItem((Block) inserter[0], model);
         }
-        ModelFile inserter = models().getExistingFile(modLoc("block/inserter"));
-        horizontalBlock(ModBlocks.INSERTER.get(), inserter);
-        simpleBlockItem(ModBlocks.INSERTER.get(), inserter);
 
         machine(ModBlocks.BOILER.get(), "boiler");
         machine(ModBlocks.STEAM_ENGINE.get(), "steam_engine");
@@ -135,6 +138,35 @@ public final class ModBlockStateProvider extends BlockStateProvider {
     }
 
     /** Shared machine casing with a front that lights up while the machine works. */
+    /**
+     * Belt models are hand-written in src/main/resources; tiers only swap textures. Slopes use the rising and falling
+     * variants, an underground exit its own top texture.
+     */
+    private void belt(Block block, String name, String top, String side, boolean slopes) {
+        ModelFile flat = beltModel(name, "conveyor_belt", top, side);
+        ModelFile up = slopes ? beltModel(name + "_up", "conveyor_belt_up", top, side) : flat;
+        ModelFile down = slopes ? beltModel(name + "_down", "conveyor_belt_down", top, side) : flat;
+        ModelFile exit = top.endsWith("underground_belt") ? beltModel(name + "_exit", "conveyor_belt", top + "_exit", side) : flat;
+        getVariantBuilder(block).forAllStates(state -> {
+            ModelFile model = switch (state.getValue(de.craftorio.logistics.ConveyorBeltBlock.SLOPE)) {
+                case FLAT -> state.getValue(de.craftorio.logistics.ConveyorBeltBlock.EXIT) ? exit : flat;
+                case UP -> up;
+                case DOWN -> down;
+            };
+            return ConfiguredModel.builder().modelFile(model)
+                    .rotationY(((int) state.getValue(de.craftorio.logistics.ConveyorBeltBlock.FACING).toYRot() + 180) % 360).build();
+        });
+        simpleBlockItem(block, flat);
+    }
+
+    private ModelFile beltModel(String modelName, String parent, String top, String side) {
+        if (modelName.equals("conveyor_belt") || modelName.equals("conveyor_belt_up") || modelName.equals("conveyor_belt_down")) {
+            return models().getExistingFile(modLoc("block/" + modelName));
+        }
+        return models().withExistingParent(modelName, modLoc("block/" + parent))
+                .texture("particle", modLoc("block/" + side)).texture("top", modLoc("block/" + top)).texture("side", modLoc("block/" + side));
+    }
+
     private void machine(Block block, String name) {
         ModelFile off = models().orientable(name, modLoc("block/machine_side"), modLoc("block/" + name + "_front"), modLoc("block/machine_top"));
         ModelFile on = models().orientable(name + "_on", modLoc("block/machine_side"), modLoc("block/" + name + "_front_on"), modLoc("block/machine_top"));

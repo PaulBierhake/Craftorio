@@ -72,6 +72,23 @@ public final class ModBlueprints {
                 SizedIngredient.of(ModItems.STONE_BRICK.get(), 10), SizedIngredient.of(ModItems.CIRCUIT.get(), 5),
                 SizedIngredient.of(ModItems.STONE_FURNACE.get(), 1));
 
+        // Logistics
+        add(context, "long_inserter", stack(ModItems.LONG_INSERTER.get(), 1),
+                SizedIngredient.of(ModItems.INSERTER.get(), 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 1), iron(1));
+        add(context, "underground_belt", stack(ModItems.UNDERGROUND_BELT.get(), 2),
+                iron(10), SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 5));
+        add(context, "splitter", stack(ModItems.SPLITTER.get(), 1),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 5), iron(5), SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 4));
+        add(context, "fast_inserter", stack(ModItems.FAST_INSERTER.get(), 1),
+                SizedIngredient.of(ModItems.INSERTER.get(), 1), SizedIngredient.of(ModItems.CIRCUIT.get(), 2), iron(2));
+        add(context, "filter_inserter", stack(ModItems.FILTER_INSERTER.get(), 1),
+                SizedIngredient.of(ModItems.FAST_INSERTER.get(), 1), SizedIngredient.of(ModItems.CIRCUIT.get(), 4));
+        add(context, "fast_underground_belt", stack(ModItems.FAST_UNDERGROUND_BELT.get(), 2),
+                SizedIngredient.of(ModItems.IRON_GEAR.get(), 40), SizedIngredient.of(ModItems.UNDERGROUND_BELT.get(), 2));
+        add(context, "fast_splitter", stack(ModItems.FAST_SPLITTER.get(), 1),
+                SizedIngredient.of(ModItems.SPLITTER.get(), 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 10),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 10));
+
         // Turrets
         add(context, "arena_feeder", stack(ModItems.ARENA_FEEDER.get(), 1),
                 iron(8), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 4), SizedIngredient.of(ModItems.CIRCUIT.get(), 2),
@@ -87,9 +104,8 @@ public final class ModBlueprints {
                 iron(16), SizedIngredient.of(ModItems.IRON_GEAR.get(), 8), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 8));
         add(context, "elevator", stack(ModItems.ELEVATOR.get(), 2),
                 iron(8), SizedIngredient.of(ModItems.MOTOR.get(), 2), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 4));
-        add(context, "fast_belt", stack(ModItems.FAST_BELT.get(), 4),
-                SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 4), SizedIngredient.of(ModItems.IRON_GEAR.get(), 4),
-                SizedIngredient.of(ModItems.CIRCUIT.get(), 1));
+        add(context, "fast_belt", stack(ModItems.FAST_BELT.get(), 1),
+                SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 1));
         add(context, "mine_shaft", stack(ModItems.MINE_SHAFT.get(), 1),
                 SizedIngredient.of(ModItems.LEAD_INGOT.get(), 16), SizedIngredient.of(ModItems.MOTOR.get(), 8),
                 SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 4), SizedIngredient.of(ModItems.BATTERY.get(), 4));

@@ -39,6 +39,9 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
     private final BeltLane<ItemStack>[] lanes = new BeltLane[]{new BeltLane<ItemStack>(), new BeltLane<ItemStack>()};
     private final IItemHandler[] handlers = new IItemHandler[7];
     private boolean dirty;
+    private ItemStack filter = ItemStack.EMPTY;
+    private @Nullable SplitterLogic.Output priority;
+    private int roundRobin;
 
     public ConveyorBeltBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CONVEYOR_BELT.get(), pos, state);
@@ -50,6 +53,37 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
 
     public BeltTier tier() {
         return getBlockState().getBlock() instanceof ConveyorBeltBlock belt ? belt.tier() : BeltTier.BASIC;
+    }
+
+    public BeltKind kind() {
+        return getBlockState().getBlock() instanceof ConveyorBeltBlock belt ? belt.kind() : BeltKind.BELT;
+    }
+
+    public BeltSlope slope() {
+        return getBlockState().getValue(ConveyorBeltBlock.SLOPE);
+    }
+
+    /** Splitter setting: only this item goes to the front output (empty: no filter). */
+    public ItemStack filter() {
+        return filter;
+    }
+
+    public void setFilter(ItemStack stack) {
+        filter = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
+        setChanged();
+    }
+
+    /** Splitter setting: the output tried first, or null. */
+    public @Nullable SplitterLogic.Output priority() {
+        return priority;
+    }
+
+    /** Cycles no priority, front, left, right. */
+    public @Nullable SplitterLogic.Output cyclePriority() {
+        SplitterLogic.Output[] outputs = SplitterLogic.Output.values();
+        priority = priority == null ? outputs[0] : priority.ordinal() + 1 < outputs.length ? outputs[priority.ordinal() + 1] : null;
+        setChanged();
+        return priority;
     }
 
     public BeltLane<ItemStack> lane(int index) {
@@ -75,19 +109,81 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
     }
 
     private boolean handOff(Level level, ItemStack stack, int lane, float overshoot) {
-        Direction facing = facing();
-        BlockPos front = worldPosition.relative(facing);
-        if (level.getBlockEntity(front) instanceof ConveyorBeltBlockEntity next) {
-            return next.acceptFromBelt(facing, lane, stack, overshoot);
+        BeltKind kind = kind();
+        if (kind == BeltKind.UNDERGROUND && !getBlockState().getValue(ConveyorBeltBlock.EXIT)) {
+            BlockPos exit = ConveyorBeltBlock.findExit(level, worldPosition, facing(), tier());
+            return exit != null && level.getBlockEntity(exit) instanceof ConveyorBeltBlockEntity end && end.acceptFromTunnel(lane, stack);
         }
-        IItemHandler target = level.getCapability(Capabilities.ItemHandler.BLOCK, front, facing.getOpposite());
+        if (kind == BeltKind.SPLITTER) {
+            return splitOff(level, stack, lane, overshoot);
+        }
+        return passOn(level, facing(), stack, lane, overshoot);
+    }
+
+    /** Hands an item to the belt or container in front of this belt in {@code direction}. */
+    private boolean passOn(Level level, Direction direction, ItemStack stack, int lane, float overshoot) {
+        BlockPos front = worldPosition.relative(direction);
+        boolean sideways = direction != facing();
+        boolean beltThere = false;
+        // Side outputs of a splitter only feed belts on the same level.
+        for (int dy = sideways ? 0 : -1; dy <= (sideways ? 0 : 1); dy++) {
+            if (level.getBlockEntity(front.above(dy)) instanceof ConveyorBeltBlockEntity next) {
+                beltThere = true;
+                if (next.acceptFromBelt(direction, lane, stack, overshoot, worldPosition, slope())) {
+                    return true;
+                }
+            }
+        }
+        if (beltThere) {
+            return false;
+        }
+        IItemHandler target = level.getCapability(Capabilities.ItemHandler.BLOCK, front, direction.getOpposite());
         return target != null && ItemHandlerHelper.insertItem(target, stack.copy(), false).isEmpty();
     }
 
+    /** Splitter: tries the outputs in the order given by {@link SplitterLogic}. */
+    private boolean splitOff(Level level, ItemStack stack, int lane, float overshoot) {
+        Direction facing = facing();
+        boolean hasFilter = !filter.isEmpty();
+        List<SplitterLogic.Output> order = SplitterLogic.order(hasFilter, hasFilter && ItemStack.isSameItemSameComponents(filter, stack),
+                priority, roundRobin);
+        for (SplitterLogic.Output output : order) {
+            Direction direction = switch (output) {
+                case FRONT -> facing;
+                case LEFT -> facing.getCounterClockWise();
+                case RIGHT -> facing.getClockWise();
+            };
+            if (passOn(level, direction, stack, lane, overshoot)) {
+                roundRobin++;
+                setChanged();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Underground exit: items arrive from the entrance at the start of a lane. */
+    boolean acceptFromTunnel(int lane, ItemStack stack) {
+        boolean accepted = lanes[lane].acceptFromBehind(stack, 0);
+        if (accepted) {
+            dirty = true;
+        }
+        return accepted;
+    }
+
     /** An item arriving from a neighbouring belt that moves towards {@code travel}. */
-    boolean acceptFromBelt(Direction travel, int lane, ItemStack stack, float overshoot) {
+    boolean acceptFromBelt(Direction travel, int lane, ItemStack stack, float overshoot, BlockPos from, BeltSlope senderSlope) {
         Direction facing = facing();
         boolean accepted;
+        if (kind() == BeltKind.UNDERGROUND && getBlockState().getValue(ConveyorBeltBlock.EXIT)) {
+            return false; // the back of an exit is the tunnel
+        }
+        if (kind() == BeltKind.SPLITTER && travel != facing) {
+            return false; // splitters take items from behind only
+        }
+        if (!BeltGeometry.connects(from.getY(), senderSlope.outputLevel(), worldPosition.getY(), slope().inputLevel())) {
+            return false;
+        }
         if (travel == facing) {
             accepted = lanes[lane].acceptFromBehind(stack, overshoot);
         } else if (travel == facing.getOpposite()) {
@@ -106,8 +202,18 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
 
     private boolean isFedFromBehind() {
         Direction facing = facing();
-        return level != null && level.getBlockEntity(worldPosition.relative(facing.getOpposite())) instanceof ConveyorBeltBlockEntity behind
-                && behind.facing() == facing;
+        if (level == null) {
+            return false;
+        }
+        for (int dy = -1; dy <= 1; dy++) {
+            BlockPos at = worldPosition.relative(facing.getOpposite()).above(dy);
+            if (level.getBlockEntity(at) instanceof ConveyorBeltBlockEntity behind && behind.facing() == facing
+                    && behind.kind() != BeltKind.UNDERGROUND
+                    && BeltGeometry.connects(at.getY(), behind.slope().outputLevel(), worldPosition.getY(), slope().inputLevel())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** The lane next to the given side of this belt. */
@@ -181,11 +287,26 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
             lanesTag.add(entries);
         }
         tag.put("lanes", lanesTag);
+        if (!filter.isEmpty()) {
+            tag.put("filter", filter.save(registries));
+        }
+        if (priority != null) {
+            tag.putString("priority", priority.name());
+        }
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
+        filter = tag.contains("filter") ? ItemStack.parse(registries, tag.getCompound("filter")).orElse(ItemStack.EMPTY) : ItemStack.EMPTY;
+        priority = null;
+        if (tag.contains("priority")) {
+            try {
+                priority = SplitterLogic.Output.valueOf(tag.getString("priority"));
+            } catch (IllegalArgumentException unknown) {
+                priority = null;
+            }
+        }
         ListTag lanesTag = tag.getList("lanes", Tag.TAG_LIST);
         for (int i = 0; i < lanes.length; i++) {
             lanes[i].clear();

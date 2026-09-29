@@ -258,7 +258,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem) und **U3** (Rot).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot) und **U4** (Logistik).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -287,6 +287,16 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Rezept braucht mehr Gold oder Redstone; `ProgressionGameTests` stellt sicher, dass jedes Rezept aus dem
   Handabbau heraus herstellbar ist. Abweichungen: Kisten sind vorerst die Vanilla-Truhe, Brenner-Greifarm und
   Greifarm-Varianten folgen mit U4 (Logistik), Flüssigkeiten mit U6.
+- **Logistik (U4)**: *Unterflurband* (Forschung Logistik; zwei Teile, das zweite bis zu 4 Blöcke hinter dem ersten in
+  einer Linie wird zum Ausgang, das schnelle Unterflurband schafft 6), *Splitter* (ein Block breit: Eingang hinten,
+  Ausgänge vorne, links und rechts; Items wechseln reihum; Rechtsklick mit einem Item setzt einen **Filter** – Treffer
+  gehen geradeaus, der Rest zur Seite –, Rechtsklick mit leerer Hand schaltet die **Ausgangspriorität** weiter,
+  Schleichen + Klick löscht den Filter), **steigende und fallende Bänder** (ein Band mit einem höheren Band davor bzw.
+  dahinter wird beim Setzen zur Schräge; Rechtsklick mit leerer Hand schaltet flach → hoch → runter; ein steigendes
+  Band gibt an das Band eine Ebene höher weiter, ein fallendes nimmt von einer Ebene höher), **Greifarm-Varianten**
+  (langer Greifarm: Reichweite 2, schneller Greifarm, Filter-Greifarm mit Filter per Rechtsklick; Schwingzeiten wie
+  in Factorio). Das rote Band kostet nach Factorio 5 Zahnräder + 1 gelbes Band. Abweichungen: Greifarme brauchen
+  vorerst keinen Strom (kein Brenner-Greifarm), Express-Unterflurband und -Splitter folgen mit Schmiermittel (U7).
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
   Schwerter, Rüstung und Schere bleiben.
 

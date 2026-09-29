@@ -57,6 +57,14 @@ public final class RecipeTableGameTests {
             new Object[]{"electric_drill", 1, List.of(of(ModItems.CIRCUIT.get(), 3), of(ModItems.IRON_GEAR.get(), 5), of(Items.IRON_INGOT, 10))},
             new Object[]{"assembler", 1, List.of(of(ModItems.CIRCUIT.get(), 3), of(ModItems.IRON_GEAR.get(), 5), of(Items.IRON_INGOT, 9))},
             new Object[]{"red_science", 1, List.of(of(Items.COPPER_INGOT, 1), of(ModItems.IRON_GEAR.get(), 1))},
+            new Object[]{"fast_belt", 1, List.of(of(ModItems.IRON_GEAR.get(), 5), of(ModItems.CONVEYOR_BELT.get(), 1))},
+            new Object[]{"underground_belt", 2, List.of(of(Items.IRON_INGOT, 10), of(ModItems.CONVEYOR_BELT.get(), 5))},
+            new Object[]{"splitter", 1, List.of(of(ModItems.CIRCUIT.get(), 5), of(Items.IRON_INGOT, 5), of(ModItems.CONVEYOR_BELT.get(), 4))},
+            new Object[]{"long_inserter", 1, List.of(of(ModItems.INSERTER.get(), 1), of(ModItems.IRON_GEAR.get(), 1), of(Items.IRON_INGOT, 1))},
+            new Object[]{"fast_inserter", 1, List.of(of(ModItems.INSERTER.get(), 1), of(ModItems.CIRCUIT.get(), 2), of(Items.IRON_INGOT, 2))},
+            new Object[]{"filter_inserter", 1, List.of(of(ModItems.FAST_INSERTER.get(), 1), of(ModItems.CIRCUIT.get(), 4))},
+            new Object[]{"fast_underground_belt", 2, List.of(of(ModItems.IRON_GEAR.get(), 40), of(ModItems.UNDERGROUND_BELT.get(), 2))},
+            new Object[]{"fast_splitter", 1, List.of(of(ModItems.SPLITTER.get(), 1), of(ModItems.IRON_GEAR.get(), 10), of(ModItems.CIRCUIT.get(), 10))},
             new Object[]{"gun_turret", 1, List.of(of(ModItems.IRON_GEAR.get(), 10), of(Items.COPPER_INGOT, 10), of(Items.IRON_INGOT, 20))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );

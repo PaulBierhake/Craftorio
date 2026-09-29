@@ -16,10 +16,12 @@ import de.craftorio.energy.PowerPoleBlock;
 import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.machine.MachineType;
 import de.craftorio.machine.ProcessingMachineBlock;
+import de.craftorio.logistics.BeltKind;
 import de.craftorio.logistics.BeltTier;
 import de.craftorio.logistics.ConveyorBeltBlock;
 import de.craftorio.logistics.ElevatorBlock;
 import de.craftorio.logistics.InserterBlock;
+import de.craftorio.logistics.InserterType;
 import de.craftorio.machine.DrillBlock;
 import de.craftorio.machine.DrillTier;
 import de.craftorio.world.OreFieldBlock;
@@ -110,13 +112,15 @@ public final class ModBlocks {
     public static final DeferredBlock<ConveyorBeltBlock> CONVEYOR_BELT = belt("conveyor_belt", BeltTier.BASIC);
     public static final DeferredBlock<ConveyorBeltBlock> FAST_BELT = belt("fast_belt", BeltTier.FAST);
     public static final DeferredBlock<ConveyorBeltBlock> EXPRESS_BELT = belt("express_belt", BeltTier.EXPRESS);
+    public static final DeferredBlock<ConveyorBeltBlock> UNDERGROUND_BELT = belt("underground_belt", BeltTier.BASIC, BeltKind.UNDERGROUND);
+    public static final DeferredBlock<ConveyorBeltBlock> FAST_UNDERGROUND_BELT = belt("fast_underground_belt", BeltTier.FAST, BeltKind.UNDERGROUND);
+    public static final DeferredBlock<ConveyorBeltBlock> SPLITTER = belt("splitter", BeltTier.BASIC, BeltKind.SPLITTER);
+    public static final DeferredBlock<ConveyorBeltBlock> FAST_SPLITTER = belt("fast_splitter", BeltTier.FAST, BeltKind.SPLITTER);
 
-    public static final DeferredBlock<InserterBlock> INSERTER = BLOCKS.registerBlock("inserter", InserterBlock::new,
-            BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_YELLOW)
-                    .strength(1.5F)
-                    .noOcclusion()
-                    .sound(SoundType.METAL));
+    public static final DeferredBlock<InserterBlock> INSERTER = inserter("inserter", InserterType.BASIC);
+    public static final DeferredBlock<InserterBlock> LONG_INSERTER = inserter("long_inserter", InserterType.LONG);
+    public static final DeferredBlock<InserterBlock> FAST_INSERTER = inserter("fast_inserter", InserterType.FAST);
+    public static final DeferredBlock<InserterBlock> FILTER_INSERTER = inserter("filter_inserter", InserterType.FILTER);
 
     public static final DeferredBlock<de.craftorio.energy.BoilerBlock> BOILER = BLOCKS.registerBlock("boiler",
             de.craftorio.energy.BoilerBlock::new,
@@ -218,8 +222,17 @@ public final class ModBlocks {
                 machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 8 : 0));
     }
 
+    private static DeferredBlock<InserterBlock> inserter(String name, InserterType type) {
+        return BLOCKS.registerBlock(name, properties -> new InserterBlock(type, properties),
+                BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(1.5F).noOcclusion().sound(SoundType.METAL));
+    }
+
     private static DeferredBlock<ConveyorBeltBlock> belt(String name, BeltTier tier) {
-        return BLOCKS.registerBlock(name, properties -> new ConveyorBeltBlock(tier, properties),
+        return belt(name, tier, BeltKind.BELT);
+    }
+
+    private static DeferredBlock<ConveyorBeltBlock> belt(String name, BeltTier tier, BeltKind kind) {
+        return BLOCKS.registerBlock(name, properties -> new ConveyorBeltBlock(tier, kind, properties),
                 BlockBehaviour.Properties.of()
                         .mapColor(MapColor.COLOR_GRAY)
                         .strength(1.5F)

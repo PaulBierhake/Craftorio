@@ -42,11 +42,13 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ConveyorBeltBlockEntity>> CONVEYOR_BELT = BLOCK_ENTITIES.register("conveyor_belt",
             () -> BlockEntityType.Builder.of(ConveyorBeltBlockEntity::new, ModBlocks.CONVEYOR_BELT.get(), ModBlocks.FAST_BELT.get(),
-                    ModBlocks.EXPRESS_BELT.get()).build(null));
+                    ModBlocks.EXPRESS_BELT.get(), ModBlocks.UNDERGROUND_BELT.get(), ModBlocks.FAST_UNDERGROUND_BELT.get(),
+                    ModBlocks.SPLITTER.get(), ModBlocks.FAST_SPLITTER.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<InserterBlockEntity>> INSERTER = BLOCK_ENTITIES.register("inserter",
-            () -> BlockEntityType.Builder.of(InserterBlockEntity::new, ModBlocks.INSERTER.get()).build(null));
+            () -> BlockEntityType.Builder.of(InserterBlockEntity::new, ModBlocks.INSERTER.get(), ModBlocks.LONG_INSERTER.get(),
+                    ModBlocks.FAST_INSERTER.get(), ModBlocks.FILTER_INSERTER.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorBlockEntity>> GENERATOR = BLOCK_ENTITIES.register("generator",
