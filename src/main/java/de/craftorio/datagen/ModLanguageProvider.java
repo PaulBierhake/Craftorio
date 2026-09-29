@@ -320,6 +320,12 @@ public final class ModLanguageProvider {
             add("craftorio.elevator.mode.send_down", "Mode: send down");
             add("craftorio.elevator.target", "→ partner %s blocks away");
             add("craftorio.elevator.no_target", "→ no elevator in this column!");
+            add("craftorio.entrance.caves", "Cave entrance – construction site");
+            add("craftorio.entrance.mines", "Mine shaft – construction site");
+            add("craftorio.entrance.drilling", "Drilling: %s%%");
+            add("craftorio.entrance.power", "Needs %s FE/t from a power pole");
+            add("craftorio.entrance.open", "Open – take the scaffolding down (sneak).");
+            add("craftorio.entrance.drop", "Drop in:");
             add("craftorio.cave.needs", "Construction site needs:");
             add("craftorio.cave.drilling", "Drilling: %s%% (needs %s FE/t from a power pole)");
             add("craftorio.cave.open", "Cave entrance open – take the scaffolding down (sneak to descend).");
@@ -961,6 +967,12 @@ public final class ModLanguageProvider {
             add("craftorio.elevator.mode.send_down", "Modus: nach unten senden");
             add("craftorio.elevator.target", "→ Gegenstück %s Blöcke entfernt");
             add("craftorio.elevator.no_target", "→ kein Aufzug in dieser Spalte!");
+            add("craftorio.entrance.caves", "Höhleneingang – Baustelle");
+            add("craftorio.entrance.mines", "Minenschacht – Baustelle");
+            add("craftorio.entrance.drilling", "Bohren: %s%%");
+            add("craftorio.entrance.power", "Braucht %s FE/t von einem Strommast");
+            add("craftorio.entrance.open", "Offen – am Gerüst hinabsteigen (Schleichen).");
+            add("craftorio.entrance.drop", "Einwerfen:");
             add("craftorio.cave.needs", "Baustelle braucht noch:");
             add("craftorio.cave.drilling", "Bohrung: %s%% (braucht %s FE/t über einen Strommast)");
             add("craftorio.cave.open", "Höhleneingang offen – über das Gerüst hinab (Schleichen zum Absteigen).");

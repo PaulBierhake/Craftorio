@@ -28,7 +28,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class CaveEntranceBlockEntity extends BlockEntity {
+public final class CaveEntranceBlockEntity extends BlockEntity implements net.minecraft.world.MenuProvider {
     public static final int DRILL_TICKS = 1_200;
 
     private final Map<Item, Integer> delivered = new LinkedHashMap<>();
@@ -59,6 +59,51 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
 
     public static int energyPerTick(Layer target) {
         return target == Layer.CAVES ? 40 : 80;
+    }
+
+    private final net.minecraft.world.inventory.ContainerData data = new net.minecraft.world.inventory.ContainerData() {
+        @Override
+        public int get(int index) {
+            if (index == 0) {
+                return stage();
+            }
+            if (index == 1) {
+                return drillProgress;
+            }
+            if (index == 2) {
+                return de.craftorio.menu.SplitIntData.low(energy.getEnergyStored());
+            }
+            if (index == 3) {
+                return de.craftorio.menu.SplitIntData.high(energy.getEnergyStored());
+            }
+            int item = index - de.craftorio.menu.EntranceMenu.DELIVERED_DATA;
+            java.util.List<Item> items = new java.util.ArrayList<>(requirements().keySet());
+            return item >= 0 && item < items.size() ? delivered.getOrDefault(items.get(item), 0) : 0;
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int getCount() {
+            return de.craftorio.menu.EntranceMenu.DATA_COUNT;
+        }
+    };
+
+    public int delivered(Item item) {
+        return delivered.getOrDefault(item, 0);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public net.minecraft.world.inventory.@org.jetbrains.annotations.Nullable AbstractContainerMenu createMenu(int containerId,
+            net.minecraft.world.entity.player.Inventory inventory, net.minecraft.world.entity.player.Player player) {
+        return new de.craftorio.menu.EntranceMenu(containerId, inventory, this, data);
     }
 
     public Layer target() {

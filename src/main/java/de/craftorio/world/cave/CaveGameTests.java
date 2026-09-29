@@ -81,6 +81,25 @@ public final class CaveGameTests {
     }
 
     @GameTest(template = EMPTY)
+    @SuppressWarnings("removal")
+    public static void theEntranceMenuBooksDeliveriesAndKeepsWhatIsNotNeeded(GameTestHelper helper) {
+        BlockPos entrance = new BlockPos(3, 1, 3);
+        helper.setBlock(entrance, ModBlocks.CAVE_ENTRANCE.get());
+        CaveEntranceBlockEntity site = helper.getBlockEntity(entrance);
+        var player = helper.makeMockServerPlayerInLevel();
+        var menu = new de.craftorio.menu.EntranceMenu(1, player.getInventory(), site, new net.minecraft.world.inventory.SimpleContainerData(de.craftorio.menu.EntranceMenu.DATA_COUNT));
+
+        helper.assertFalse(menu.getSlot(0).mayPlace(new ItemStack(Items.DIRT)), "only needed items go in");
+        helper.assertTrue(menu.getSlot(0).mayPlace(new ItemStack(Items.COBBLESTONE)), "cobblestone is needed");
+        menu.getSlot(0).set(new ItemStack(Items.IRON_INGOT, 64));
+        helper.assertValueEqual(site.delivered(Items.IRON_INGOT), 32, "the needed 32 are booked at once");
+        helper.assertValueEqual(menu.getSlot(0).getItem().getCount(), 32, "the surplus stays in the slot");
+        menu.removed(player);
+        helper.assertValueEqual(player.getInventory().countItem(Items.IRON_INGOT), 32, "and goes back to the player");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
     public static void carvingMineLayerUsesBasaltFloor(GameTestHelper helper) {
         BlockPos column = helper.absolutePos(new BlockPos(2, 0, 2));
         int x = column.getX();

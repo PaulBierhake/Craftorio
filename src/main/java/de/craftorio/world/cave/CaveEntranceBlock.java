@@ -149,8 +149,9 @@ public final class CaveEntranceBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof CaveEntranceBlockEntity site) {
-            player.displayClientMessage(site.status(), false);
+        if (!level.isClientSide && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer
+                && level.getBlockEntity(pos) instanceof CaveEntranceBlockEntity site) {
+            serverPlayer.openMenu(site, pos);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
