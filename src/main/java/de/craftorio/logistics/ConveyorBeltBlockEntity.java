@@ -40,7 +40,7 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
     private final IItemHandler[] handlers = new IItemHandler[7];
     private boolean dirty;
     private ItemStack filter = ItemStack.EMPTY;
-    private @Nullable SplitterLogic.Output priority;
+    private SplitterLogic.Output filterOutput = SplitterLogic.Output.FRONT;
     private int roundRobin;
 
     public ConveyorBeltBlockEntity(BlockPos pos, BlockState state) {
@@ -73,17 +73,17 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
         setChanged();
     }
 
-    /** Splitter setting: the output tried first, or null. */
-    public @Nullable SplitterLogic.Output priority() {
-        return priority;
+    /** Splitter setting: where items that match the filter go. */
+    public SplitterLogic.Output filterOutput() {
+        return filterOutput;
     }
 
-    /** Cycles no priority, front, left, right. */
-    public @Nullable SplitterLogic.Output cyclePriority() {
+    /** Cycles the output of the filtered item: front, left, right. */
+    public SplitterLogic.Output cycleFilterOutput() {
         SplitterLogic.Output[] outputs = SplitterLogic.Output.values();
-        priority = priority == null ? outputs[0] : priority.ordinal() + 1 < outputs.length ? outputs[priority.ordinal() + 1] : null;
+        filterOutput = outputs[(filterOutput.ordinal() + 1) % outputs.length];
         setChanged();
-        return priority;
+        return filterOutput;
     }
 
     public BeltLane<ItemStack> lane(int index) {
@@ -141,25 +141,52 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
         return target != null && ItemHandlerHelper.insertItem(target, stack.copy(), false).isEmpty();
     }
 
-    /** Splitter: tries the outputs in the order given by {@link SplitterLogic}. */
+    /** Splitter: tries the connected outputs in the order given by {@link SplitterLogic}. */
     private boolean splitOff(Level level, ItemStack stack, int lane, float overshoot) {
         Direction facing = facing();
+        java.util.EnumSet<SplitterLogic.Output> connected = java.util.EnumSet.noneOf(SplitterLogic.Output.class);
+        for (SplitterLogic.Output output : SplitterLogic.Output.values()) {
+            if (isConnected(level, directionOf(output, facing))) {
+                connected.add(output);
+            }
+        }
         boolean hasFilter = !filter.isEmpty();
-        List<SplitterLogic.Output> order = SplitterLogic.order(hasFilter, hasFilter && ItemStack.isSameItemSameComponents(filter, stack),
-                priority, roundRobin);
+        List<SplitterLogic.Output> order = SplitterLogic.order(connected, hasFilter,
+                hasFilter && ItemStack.isSameItemSameComponents(filter, stack), filterOutput, roundRobin);
         for (SplitterLogic.Output output : order) {
-            Direction direction = switch (output) {
-                case FRONT -> facing;
-                case LEFT -> facing.getCounterClockWise();
-                case RIGHT -> facing.getClockWise();
-            };
-            if (passOn(level, direction, stack, lane, overshoot)) {
-                roundRobin++;
+            if (passOn(level, directionOf(output, facing), stack, lane, overshoot)) {
+                if (order.size() > 1) {
+                    roundRobin++; // items with a fixed output do not disturb the alternation
+                }
                 setChanged();
                 return true;
             }
         }
         return false;
+    }
+
+    private static Direction directionOf(SplitterLogic.Output output, Direction facing) {
+        return switch (output) {
+            case FRONT -> facing;
+            case LEFT -> facing.getCounterClockWise();
+            case RIGHT -> facing.getClockWise();
+        };
+    }
+
+    /** Does a belt or a container stand where an item would go? */
+    private boolean isConnected(Level level, Direction direction) {
+        BlockPos front = worldPosition.relative(direction);
+        if (direction == facing()) {
+            for (int dy = -1; dy <= 1; dy++) {
+                if (level.getBlockEntity(front.above(dy)) instanceof ConveyorBeltBlockEntity) {
+                    return true;
+                }
+            }
+        } else if (level.getBlockEntity(front) instanceof ConveyorBeltBlockEntity next) {
+            // A belt beside the splitter only counts if it does not run back into it.
+            return next.facing() != direction.getOpposite();
+        }
+        return level.getCapability(Capabilities.ItemHandler.BLOCK, front, direction.getOpposite()) != null;
     }
 
     /** Underground exit: items arrive from the entrance at the start of a lane. */
@@ -290,21 +317,19 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
         if (!filter.isEmpty()) {
             tag.put("filter", filter.save(registries));
         }
-        if (priority != null) {
-            tag.putString("priority", priority.name());
-        }
+        tag.putString("filter_output", filterOutput.name());
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         filter = tag.contains("filter") ? ItemStack.parse(registries, tag.getCompound("filter")).orElse(ItemStack.EMPTY) : ItemStack.EMPTY;
-        priority = null;
-        if (tag.contains("priority")) {
+        filterOutput = SplitterLogic.Output.FRONT;
+        if (tag.contains("filter_output")) {
             try {
-                priority = SplitterLogic.Output.valueOf(tag.getString("priority"));
+                filterOutput = SplitterLogic.Output.valueOf(tag.getString("filter_output"));
             } catch (IllegalArgumentException unknown) {
-                priority = null;
+                filterOutput = SplitterLogic.Output.FRONT;
             }
         }
         ListTag lanesTag = tag.getList("lanes", Tag.TAG_LIST);

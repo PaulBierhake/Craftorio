@@ -95,6 +95,47 @@ public final class LogisticsGameTests {
     }
 
     @GameTest(template = LARGE, timeoutTicks = 400)
+    public static void splitterOnlyUsesConnectedOutputs(GameTestHelper helper) {
+        put(helper, new BlockPos(2, 1, 3), ModBlocks.CONVEYOR_BELT.get(), Direction.EAST, BeltSlope.FLAT, false);
+        put(helper, new BlockPos(3, 1, 3), ModBlocks.SPLITTER.get(), Direction.EAST, BeltSlope.FLAT, false);
+        BlockPos left = new BlockPos(3, 1, 2);
+        BlockPos right = new BlockPos(3, 1, 4);
+        helper.setBlock(left, Blocks.CHEST);
+        helper.setBlock(right, Blocks.CHEST);
+        feed(helper, new BlockPos(2, 1, 3), Direction.WEST, new ItemStack(Items.IRON_INGOT, 6));
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(count(helper, left, Items.IRON_INGOT), 3, "left");
+            helper.assertValueEqual(count(helper, right, Items.IRON_INGOT), 3, "right");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 400)
+    public static void splitterFilterDirectionIsChosen(GameTestHelper helper) {
+        put(helper, new BlockPos(2, 1, 3), ModBlocks.CONVEYOR_BELT.get(), Direction.EAST, BeltSlope.FLAT, false);
+        BlockPos splitter = new BlockPos(3, 1, 3);
+        put(helper, splitter, ModBlocks.SPLITTER.get(), Direction.EAST, BeltSlope.FLAT, false);
+        ConveyorBeltBlockEntity entity = helper.getBlockEntity(splitter);
+        entity.setFilter(new ItemStack(Items.IRON_INGOT));
+        entity.cycleFilterOutput(); // front -> left
+        BlockPos front = new BlockPos(4, 1, 3);
+        BlockPos left = new BlockPos(3, 1, 2);
+        BlockPos right = new BlockPos(3, 1, 4);
+        for (BlockPos chest : new BlockPos[]{front, left, right}) {
+            helper.setBlock(chest, Blocks.CHEST);
+        }
+        feed(helper, new BlockPos(2, 1, 3), Direction.WEST, new ItemStack(Items.IRON_INGOT, 3));
+        feed(helper, new BlockPos(2, 1, 3), Direction.WEST, new ItemStack(Items.COPPER_INGOT, 4));
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(count(helper, left, Items.IRON_INGOT), 3, "filtered iron goes left");
+            helper.assertValueEqual(count(helper, front, Items.COPPER_INGOT), 2, "copper alternates: front");
+            helper.assertValueEqual(count(helper, right, Items.COPPER_INGOT), 2, "copper alternates: right");
+            helper.assertValueEqual(count(helper, left, Items.COPPER_INGOT), 0, "no copper on the filter side");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 400)
     public static void splitterFilterSendsOnlyMatchesForward(GameTestHelper helper) {
         BlockPos splitter = new BlockPos(3, 1, 3);
         put(helper, new BlockPos(2, 1, 3), ModBlocks.CONVEYOR_BELT.get(), Direction.EAST, BeltSlope.FLAT, false);

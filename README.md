@@ -289,14 +289,18 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Greifarm-Varianten folgen mit U4 (Logistik), Flüssigkeiten mit U6.
 - **Logistik (U4)**: *Unterflurband* (Forschung Logistik; zwei Teile, das zweite bis zu 4 Blöcke hinter dem ersten in
   einer Linie wird zum Ausgang, das schnelle Unterflurband schafft 6), *Splitter* (ein Block breit: Eingang hinten,
-  Ausgänge vorne, links und rechts; Items wechseln reihum; Rechtsklick mit einem Item setzt einen **Filter** – Treffer
-  gehen geradeaus, der Rest zur Seite –, Rechtsklick mit leerer Hand schaltet die **Ausgangspriorität** weiter,
-  Schleichen + Klick löscht den Filter), **steigende und fallende Bänder** (ein Band mit einem höheren Band davor bzw.
-  dahinter wird beim Setzen zur Schräge; Rechtsklick mit leerer Hand schaltet flach → hoch → runter; ein steigendes
+  Ausgänge vorne, links und rechts; Items wechseln reihum zwischen den **angeschlossenen** Ausgängen – ohne Band oder
+  Kiste vorne gehen sie 50/50 nach links und rechts; Rechtsklick mit einem Item setzt einen **Filter**, Rechtsklick
+  mit leerer Hand bestimmt, in welche Richtung das gefilterte Item geht, der Rest wechselt zwischen den anderen
+  Ausgängen; Schleichen + Rechtsklick löscht den Filter), **steigende und fallende Bänder** (ein Band mit einem höheren Band davor bzw.
+  dahinter wird beim Setzen zur Schräge; Rechtsklick mit einem Band in der Hand auf die Oberseite eines Bands (oder mit
+  leerer Hand) schaltet flach → hoch → runter; ein steigendes
   Band gibt an das Band eine Ebene höher weiter, ein fallendes nimmt von einer Ebene höher), **Greifarm-Varianten**
   (langer Greifarm: Reichweite 2, schneller Greifarm, Filter-Greifarm mit Filter per Rechtsklick; Schwingzeiten wie
   in Factorio). Das rote Band kostet nach Factorio 5 Zahnräder + 1 gelbes Band. Abweichungen: Greifarme brauchen
   vorerst keinen Strom (kein Brenner-Greifarm), Express-Unterflurband und -Splitter folgen mit Schmiermittel (U7).
+- **Steuerungshinweise**: Unten links zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
+  angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
   Schwerter, Rüstung und Schere bleiben.
 

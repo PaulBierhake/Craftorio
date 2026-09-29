@@ -1,14 +1,14 @@
 package de.craftorio.logistics;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Which outputs a splitter offers an item, in the order they are tried. Without settings items alternate between
- * front, left and right; a priority output is tried first; with a filter, matching items only go to the front and
- * everything else alternates between left and right. Pure logic for unit tests.
+ * Which outputs a splitter offers an item, in the order they are tried. Items alternate between the connected
+ * outputs only. With a filter, matching items go to the output chosen for the filter and everything else alternates
+ * between the other connected outputs; if the chosen output is not connected (or nothing else is), items fall back to
+ * alternating between whatever is connected, so nothing jams. Pure logic for unit tests.
  */
 public final class SplitterLogic {
     public enum Output {
@@ -19,26 +19,30 @@ public final class SplitterLogic {
     }
 
     /**
+     * @param connected    outputs that lead to a belt or container
      * @param hasFilter    a filter item is set
      * @param matches      the item matches the filter (ignored without a filter)
-     * @param priority     the preferred output, or null
+     * @param filterOutput where matching items go
      * @param roundRobin   counter that advances after every item that was handed over
      */
-    public static List<Output> order(boolean hasFilter, boolean matches, @Nullable Output priority, int roundRobin) {
-        if (hasFilter) {
-            if (matches) {
-                return List.of(Output.FRONT);
+    public static List<Output> order(Set<Output> connected, boolean hasFilter, boolean matches, Output filterOutput, int roundRobin) {
+        List<Output> candidates = new ArrayList<>();
+        for (Output output : Output.values()) {
+            if (connected.contains(output)) {
+                candidates.add(output);
             }
-            return rotate(List.of(Output.LEFT, Output.RIGHT), roundRobin);
         }
-        List<Output> all = rotate(List.of(Output.FRONT, Output.LEFT, Output.RIGHT), roundRobin);
-        if (priority == null) {
-            return all;
+        if (hasFilter) {
+            if (matches && candidates.contains(filterOutput)) {
+                return List.of(filterOutput);
+            }
+            List<Output> others = new ArrayList<>(candidates);
+            others.remove(filterOutput);
+            if (!others.isEmpty()) {
+                candidates = others;
+            }
         }
-        List<Output> ordered = new ArrayList<>();
-        ordered.add(priority);
-        all.stream().filter(output -> output != priority).forEach(ordered::add);
-        return ordered;
+        return rotate(candidates, roundRobin);
     }
 
     private static List<Output> rotate(List<Output> outputs, int by) {

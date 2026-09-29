@@ -148,7 +148,17 @@ public final class ConveyorBeltBlock extends BaseEntityBlock {
                 && block.getBlock() instanceof ConveyorBeltBlock) && level.getBlockEntity(pos) instanceof ConveyorBeltBlockEntity splitter) {
             if (!level.isClientSide) {
                 splitter.setFilter(stack);
-                player.displayClientMessage(Component.translatable("craftorio.splitter.filter_set", stack.getHoverName()), true);
+                player.displayClientMessage(Component.translatable("craftorio.splitter.filter_set", stack.getHoverName(),
+                        Component.translatable("craftorio.splitter.output." + splitter.filterOutput().name().toLowerCase())), true);
+            }
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+        }
+        // A plain belt in hand, clicked on the top of a belt, changes the slope instead of stacking a belt on it.
+        if (kind == BeltKind.BELT && hit.getDirection() == Direction.UP && !player.isShiftKeyDown()
+                && stack.getItem() instanceof net.minecraft.world.item.BlockItem block
+                && block.getBlock() instanceof ConveyorBeltBlock other && other.kind == BeltKind.BELT) {
+            if (!level.isClientSide) {
+                level.setBlock(pos, state.setValue(SLOPE, state.getValue(SLOPE).next()), Block.UPDATE_ALL);
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
@@ -163,10 +173,12 @@ public final class ConveyorBeltBlock extends BaseEntityBlock {
                 if (player.isShiftKeyDown()) {
                     splitter.setFilter(ItemStack.EMPTY);
                     player.displayClientMessage(Component.translatable("craftorio.splitter.filter_cleared"), true);
+                } else if (splitter.filter().isEmpty()) {
+                    player.displayClientMessage(Component.translatable("craftorio.splitter.no_filter"), true);
                 } else {
-                    var priority = splitter.cyclePriority();
-                    player.displayClientMessage(Component.translatable("craftorio.splitter.priority."
-                            + (priority == null ? "none" : priority.name().toLowerCase())), true);
+                    var output = splitter.cycleFilterOutput();
+                    player.displayClientMessage(Component.translatable("craftorio.splitter.filter_set", splitter.filter().getHoverName(),
+                            Component.translatable("craftorio.splitter.output." + output.name().toLowerCase())), true);
                 }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);

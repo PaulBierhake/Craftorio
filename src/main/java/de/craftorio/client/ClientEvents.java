@@ -88,6 +88,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerGuiLayers(RegisterGuiLayersEvent event) {
             event.registerAboveAll(Craftorio.id("credits"), CreditsHud::render);
+            event.registerAboveAll(Craftorio.id("control_hints"), ControlHintsHud::render);
         }
 
         @SubscribeEvent
