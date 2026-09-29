@@ -48,6 +48,7 @@ public final class ClientEvents {
                     event.getToolTip().add(Component.translatable("craftorio.tooltip.arena_feeder").withStyle(ChatFormatting.AQUA));
                 }
             }
+            addBlueprintDescription(event, stack);
             long unit = Economy.unitPrice(stack);
             if (unit == 0) {
                 return;
@@ -56,6 +57,23 @@ public final class ClientEvents {
                     ? Component.translatable("craftorio.tooltip.sell_price_stack", Credits.format(unit), Credits.format(unit * stack.getCount()))
                     : Component.translatable("craftorio.tooltip.sell_price", Credits.format(unit));
             event.getToolTip().add(line.copy().withStyle(ChatFormatting.GOLD));
+        }
+
+        /** Items that a blueprint builds carry its short description. */
+        private static void addBlueprintDescription(ItemTooltipEvent event, ItemStack stack) {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.level == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(Craftorio.MOD_ID)) {
+                return;
+            }
+            for (var holder : minecraft.level.registryAccess().registryOrThrow(de.craftorio.registry.ModRegistries.BLUEPRINTS).holders().toList()) {
+                if (holder.value().result().is(stack.getItem())) {
+                    String key = "craftorio.blueprint." + holder.key().location().getPath() + ".desc";
+                    if (net.minecraft.client.resources.language.I18n.exists(key)) {
+                        event.getToolTip().add(Component.translatable(key).withStyle(ChatFormatting.GRAY));
+                    }
+                    return;
+                }
+            }
         }
 
         @SubscribeEvent

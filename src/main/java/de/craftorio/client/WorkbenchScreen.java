@@ -91,10 +91,12 @@ public final class WorkbenchScreen extends BlueprintListScreen<WorkbenchMenu> {
 
     /** Materials with what the player already carries, missing ones in red. */
     @Override
-    protected List<Component> ingredientTooltip(Blueprint blueprint) {
+    protected List<Component> ingredientTooltip(Holder.Reference<Blueprint> holder) {
+        Blueprint blueprint = holder.value();
         Inventory inventory = minecraft.player.getInventory();
         List<Component> lines = new ArrayList<>();
         lines.add(blueprint.result().getHoverName());
+        addDescription(lines, holder);
         lines.add(Component.translatable("craftorio.blueprint.materials").withColor(GRAY));
         for (SizedIngredient ingredient : blueprint.ingredients()) {
             int have = Blueprints.count(inventory, ingredient);

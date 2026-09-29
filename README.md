@@ -348,6 +348,7 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   ermöglichen (Arena-Siegel als gegeben), und jedes Rezept muss herstellbar sein. Das Terminal zeigt in der Statistik, wann (Weltzeit) welche
   Forschung fertig wurde; Richtwerte für Spieltests: rote Pakete automatisiert 30–60 min, grüne 2–3 h, Öl 5–7 h, blaue 8–12 h. Weichen
   sie deutlich ab, zuerst `pacing.researchCost` in der Server-Config anpassen, nicht einzelne Rezepte.
+- **Beschreibungen (A4)**: Jeder Bauplan hat eine Kurzbeschreibung mit Eckwerten (Rate, Energie, Reichweite), sichtbar im Tooltip der Werkbank-Zeile und im Item-Tooltip.
 - **Steuerungshinweise**: Rechts neben der Hotbar zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
   angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);

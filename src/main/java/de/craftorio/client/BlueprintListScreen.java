@@ -94,13 +94,26 @@ public abstract class BlueprintListScreen<M extends AbstractContainerMenu> exten
             graphics.fill(leftPos + imageWidth - 6, thumbY, leftPos + imageWidth - 3, thumbY + thumb, 0xFF8A8A9A);
         }
         if (hovered != null) {
-            graphics.renderComponentTooltip(font, ingredientTooltip(hovered.value()), mouseX, mouseY);
+            graphics.renderComponentTooltip(font, ingredientTooltip(hovered), mouseX, mouseY);
         }
     }
 
-    protected List<Component> ingredientTooltip(Blueprint blueprint) {
+    /** The short description of the blueprint (craftorio.blueprint.&lt;id&gt;.desc), wrapped to the tooltip width. */
+    protected void addDescription(List<Component> lines, Holder.Reference<Blueprint> holder) {
+        String key = "craftorio.blueprint." + holder.key().location().getPath() + ".desc";
+        if (!net.minecraft.client.resources.language.I18n.exists(key)) {
+            return;
+        }
+        for (var part : font.getSplitter().splitLines(Component.translatable(key), 200, net.minecraft.network.chat.Style.EMPTY)) {
+            lines.add(Component.literal(part.getString()).withStyle(net.minecraft.ChatFormatting.GRAY));
+        }
+    }
+
+    protected List<Component> ingredientTooltip(Holder.Reference<Blueprint> holder) {
+        Blueprint blueprint = holder.value();
         List<Component> lines = new ArrayList<>();
         lines.add(blueprint.result().getHoverName());
+        addDescription(lines, holder);
         lines.add(Component.translatable("craftorio.blueprint.materials").withColor(GRAY));
         for (SizedIngredient ingredient : blueprint.ingredients()) {
             lines.add(Component.literal(ingredient.count() + "× ").append(firstItem(ingredient).getHoverName()));

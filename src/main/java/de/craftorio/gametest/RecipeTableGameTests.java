@@ -182,4 +182,28 @@ public final class RecipeTableGameTests {
             }
         }
     }
+
+    /** Every blueprint has a description in both languages (craftorio.blueprint.&lt;id&gt;.desc). */
+    @GameTest(template = "empty")
+    public static void everyBlueprintHasADescriptionInBothLanguages(GameTestHelper helper) throws java.io.IOException {
+        var registry = helper.getLevel().registryAccess().registryOrThrow(ModRegistries.BLUEPRINTS);
+        List<String> problems = new ArrayList<>();
+        for (String language : List.of("en_us", "de_de")) {
+            try (var stream = RecipeTableGameTests.class.getResourceAsStream("/assets/craftorio/lang/" + language + ".json")) {
+                if (stream == null) {
+                    problems.add("no lang file " + language);
+                    continue;
+                }
+                var json = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+                registry.keySet().forEach(id -> {
+                    var text = json.get("craftorio.blueprint." + id.getPath() + ".desc");
+                    if (text == null || text.getAsString().isBlank()) {
+                        problems.add(id.getPath() + " has no description in " + language);
+                    }
+                });
+            }
+        }
+        helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+        helper.succeed();
+    }
 }
