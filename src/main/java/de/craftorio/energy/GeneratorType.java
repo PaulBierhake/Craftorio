@@ -2,13 +2,13 @@ package de.craftorio.energy;
 
 import de.craftorio.registry.ModItems;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 
-/** Generator generations: the coal generator burns furnace fuel, the reactor burns fuel rods. */
+/** Generator generations: the coal generator burns fuel (Factorio fuel values, see {@link Fuel}), the reactor burns fuel rods. */
 public enum GeneratorType {
-    COAL(60, 20_000, 1_000),
-    /** Mine-layer power: one fuel rod runs 6000 ticks (5 minutes) at 400 FE/t. */
-    REACTOR(400, 200_000, 4_000);
+    /** 900 kW like a Factorio steam engine; the fuel buffer is a few seconds of output. */
+    COAL(900, 60_000, 1_800),
+    /** Mine-layer power: one fuel rod runs 6000 ticks (5 minutes) at 8000 kW. */
+    REACTOR(8_000, 400_000, 16_000);
 
     public static final int FUEL_ROD_TICKS = 6_000;
 
@@ -40,7 +40,7 @@ public enum GeneratorType {
             return 0;
         }
         return switch (this) {
-            case COAL -> stack.getBurnTime(RecipeType.SMELTING);
+            case COAL -> Fuel.burnTicks(stack, fePerTick);
             case REACTOR -> stack.is(ModItems.FUEL_ROD.get()) ? FUEL_ROD_TICKS : 0;
         };
     }

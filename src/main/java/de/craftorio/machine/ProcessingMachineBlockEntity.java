@@ -1,5 +1,6 @@
 package de.craftorio.machine;
 
+import de.craftorio.CraftorioConfig;
 import de.craftorio.energy.EnergyBuffer;
 import de.craftorio.menu.ProcessingMachineMenu;
 import de.craftorio.menu.SplitIntData;
@@ -116,8 +117,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
             progress = 0;
         } else if (canOutput(job.result()) && energy.consume(type.energyPerTick())) {
             working = true;
-            recipeTime = job.time();
-            if (++progress >= job.time()) {
+            recipeTime = CraftorioConfig.craftingTicks(job.time());
+            if (++progress >= recipeTime) {
                 progress = 0;
                 consume(job.ingredients());
                 ItemStack output = items.getStackInSlot(type.outputSlot());

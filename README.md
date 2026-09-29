@@ -261,6 +261,23 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ![EMI Bauplan](docs/screenshots/m8-emi-bauplan.png)
 ![EMI Montage](docs/screenshots/m8-emi-montage.png)
 
+### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
+
+Umgesetzt: **U0** (Arena-Fehler und -Komfort) und **U1** (Grundlagen).
+
+- **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Kohle-Generator 900 kW (wie eine Dampfmaschine), Elektro-Ofen
+  180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
+- **Brennwerte** wie in Factorio: Kohle 4 MJ, Holz 2 MJ; Brenner-Bohrer und Generatoren rechnen die Brenndauer aus
+  Brennwert und Leistung.
+- **Tempo-Faktoren** in `serverconfig/craftorio-server.toml`: `pacing.craftingSpeed` (Maschinen und Schmelzen),
+  `pacing.miningSpeed` (Bohrer), `pacing.researchCost` (ab dem Forschungssystem). Standard 1,0 = Factorio-Zeiten;
+  Bänder bleiben fest.
+- **Team-Chunkloader**: Die Chunks mit den meisten Maschinen eines Teams bleiben geladen (`chunkloader.chunksPerTeam`,
+  Standard 64; `chunkloader.onlyWhileOnline`, Standard an), damit die Fabrik weiterläuft, während das Team in der
+  Arena ist. Die Tickets werden alle 5 Sekunden abgeglichen und nach einem Neustart neu gesetzt.
+- **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
+  Schwerter, Rüstung und Schere bleiben.
+
 ## Projektstruktur
 
 ```

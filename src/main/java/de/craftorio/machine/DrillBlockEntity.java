@@ -1,6 +1,8 @@
 package de.craftorio.machine;
 
+import de.craftorio.CraftorioConfig;
 import de.craftorio.energy.EnergyBuffer;
+import de.craftorio.energy.Fuel;
 import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.world.OreFieldBlock;
 import net.minecraft.core.BlockPos;
@@ -10,7 +12,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -80,7 +81,7 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
     public DrillBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DRILL.get(), pos, state);
         this.tier = state.getBlock() instanceof DrillBlock drill ? drill.tier() : DrillTier.BURNER;
-        this.production = new DrillProduction(tier.itemsPerBlockPerSecond());
+        this.production = new DrillProduction(tier.itemsPerBlockPerSecond() * CraftorioConfig.miningSpeed());
         this.energy = new EnergyBuffer(Math.max(1, tier.energyPerTick() * 200), tier.energyPerTick() * 4, 0, this::setChanged);
     }
 
@@ -94,7 +95,7 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     public static boolean isFuel(ItemStack stack) {
-        return !stack.isEmpty() && stack.getBurnTime(RecipeType.SMELTING) > 0;
+        return Fuel.isFuel(stack);
     }
 
     public IItemHandler handler() {
@@ -179,7 +180,7 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
         if (!isFuel(fuel)) {
             return false;
         }
-        burnTicks = fuel.getBurnTime(RecipeType.SMELTING);
+        burnTicks = Fuel.burnTicks(fuel, DrillTier.BURNER_KW);
         burnDuration = burnTicks;
         ItemStack remainder = fuel.getCraftingRemainingItem();
         fuel.shrink(1);
@@ -210,7 +211,7 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
             return Component.translatable("craftorio.drill.status_electric", blocks, tier.area(), rate,
                     energy.getEnergyStored(), tier.energyPerTick());
         }
-        int fuelSeconds = (burnTicks + (isFuel(fuel) ? fuel.getCount() * fuel.getBurnTime(RecipeType.SMELTING) : 0)) / 20;
+        int fuelSeconds = (burnTicks + (isFuel(fuel) ? fuel.getCount() * Fuel.burnTicks(fuel, DrillTier.BURNER_KW) : 0)) / 20;
         return Component.translatable("craftorio.drill.status", blocks, tier.area(), rate, fuelSeconds);
     }
 

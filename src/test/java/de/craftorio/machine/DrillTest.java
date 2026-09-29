@@ -36,7 +36,7 @@ class DrillTest {
 
     @Test
     void higherTiersMineFasterAndCoverMore() {
-        assertEquals(0.27, DrillTier.BURNER.maxItemsPerSecond(), 1e-9);
+        assertEquals(0.25, DrillTier.BURNER.maxItemsPerSecond(), 1e-9);
         assertEquals(0.54, DrillTier.ELECTRIC.maxItemsPerSecond(), 1e-9);
         assertEquals(25, DrillTier.DEEP.area());
         assertEquals(3.0, DrillTier.DEEP.maxItemsPerSecond(), 1e-9);

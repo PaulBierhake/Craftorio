@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Which team placed a protected block, per dimension. Protected are all Craftorio blocks except world blocks (ore
@@ -86,6 +88,18 @@ public final class BlockOwnership extends SavedData {
         Optional<Team> first = ownership.owner(level, a);
         Optional<Team> second = ownership.owner(level, b);
         return first.isEmpty() || second.isEmpty() || first.get().id().equals(second.get().id());
+    }
+
+    /**
+     * How many claimed blocks each team has per chunk (chunk key → count), with owners resolved through
+     * {@code resolve} (team mergers); owners it does not know are left out.
+     */
+    public Map<UUID, Map<Long, Integer>> chunkWeights(Function<UUID, Optional<UUID>> resolve) {
+        Map<UUID, Map<Long, Integer>> result = new HashMap<>();
+        owners.forEach((pos, stored) -> resolve.apply(stored).ifPresent(team -> result
+                .computeIfAbsent(team, key -> new HashMap<>())
+                .merge(ChunkPos.asLong(BlockPos.getX(pos) >> 4, BlockPos.getZ(pos) >> 4), 1, Integer::sum)));
+        return result;
     }
 
     @Override

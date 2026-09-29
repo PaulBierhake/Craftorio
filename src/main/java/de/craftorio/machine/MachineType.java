@@ -1,15 +1,15 @@
 package de.craftorio.machine;
 
-/** The processing machines; each defines its slot count and power draw. */
+/** The processing machines; each defines its slot count and power draw in kW (= FE/t, see {@link de.craftorio.energy.Energy}). */
 public enum MachineType {
     /** Vanilla smelting recipes, electrically heated and faster than a furnace. */
-    ELECTRIC_FURNACE(1, 20),
-    PRESS(1, 15),
+    ELECTRIC_FURNACE(1, 180),
+    PRESS(1, 75),
     /** Crafts the recipe selected in its GUI. */
-    ASSEMBLER(4, 25);
+    ASSEMBLER(4, 75);
 
-    public static final int ENERGY_CAPACITY = 10_000;
-    public static final int MAX_INPUT = 500;
+    public static final int ENERGY_CAPACITY = 20_000;
+    public static final int MAX_INPUT = 2_000;
     /** Smelting time in ticks (vanilla furnace: 200). */
     public static final int SMELTING_TIME = 80;
 
