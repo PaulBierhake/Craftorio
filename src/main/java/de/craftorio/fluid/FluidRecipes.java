@@ -19,9 +19,12 @@ import java.util.Optional;
  * input tanks in the order listed. The research that unlocks a recipe names it by its id, e.g. {@code craftorio:chem/plastic_bar}.
  */
 public final class FluidRecipes {
-    /** @param itemOut empty if the recipe makes a fluid; @param fluidOut empty if it makes an item */
+    /**
+     * @param itemOut empty if the recipe makes a fluid; @param fluidOut empty if it makes an item
+     * @param keepsFirst the first item ingredient is not used up (the seed comes back from the plant)
+     */
     public record Recipe(ResourceLocation id, FluidMachineType machine, List<ItemStack> itemsIn, List<FluidStack> fluidsIn,
-                         ItemStack itemOut, FluidStack fluidOut, int ticks) {
+                         ItemStack itemOut, FluidStack fluidOut, int ticks, boolean keepsFirst) {
     }
 
     private static List<Recipe> all;
@@ -48,14 +51,26 @@ public final class FluidRecipes {
                     recipe("chem/battery", FluidMachineType.CHEMICAL_PLANT,
                             List.of(new ItemStack(Items.IRON_INGOT, 1), new ItemStack(Items.COPPER_INGOT, 1)),
                             List.of(new FluidStack(ModFluids.SULFURIC_ACID.get(), 20)),
-                            new ItemStack(ModItems.BATTERY.get()), FluidStack.EMPTY, 80));
+                            new ItemStack(ModItems.BATTERY.get()), FluidStack.EMPTY, 80),
+                    // The greenhouse (docs/FACTORIO-UMBAU.md §7): seed + water → plants, in ticks (seconds × 20).
+                    crop("farm/wheat", Items.WHEAT_SEEDS, 50, new ItemStack(Items.WHEAT, 3), 400, true),
+                    crop("farm/pumpkin", Items.PUMPKIN_SEEDS, 50, new ItemStack(Items.PUMPKIN), 600, false),
+                    crop("farm/carrot", Items.CARROT, 50, new ItemStack(Items.CARROT, 3), 400, false),
+                    crop("farm/potato", Items.POTATO, 50, new ItemStack(Items.POTATO, 3), 400, false),
+                    crop("farm/sugar_cane", Items.SUGAR_CANE, 50, new ItemStack(Items.SUGAR_CANE, 2), 300, false),
+                    crop("farm/tree", Items.OAK_SAPLING, 100, new ItemStack(Items.OAK_LOG, 4), 800, true));
         }
         return all;
     }
 
     private static Recipe recipe(String id, FluidMachineType machine, List<ItemStack> itemsIn, List<FluidStack> fluidsIn,
                                  ItemStack itemOut, FluidStack fluidOut, int ticks) {
-        return new Recipe(Craftorio.id(id), machine, itemsIn, fluidsIn, itemOut, fluidOut, ticks);
+        return new Recipe(Craftorio.id(id), machine, itemsIn, fluidsIn, itemOut, fluidOut, ticks, false);
+    }
+
+    private static Recipe crop(String id, net.minecraft.world.item.Item seed, int water, ItemStack harvest, int ticks, boolean keepsSeed) {
+        return new Recipe(Craftorio.id(id), FluidMachineType.GREENHOUSE, List.of(new ItemStack(seed)),
+                List.of(new FluidStack(Fluids.WATER, water)), harvest, FluidStack.EMPTY, ticks, keepsSeed);
     }
 
     /** The recipes of one machine type in a fixed order shared by server and client. */

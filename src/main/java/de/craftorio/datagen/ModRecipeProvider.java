@@ -90,6 +90,9 @@ public final class ModRecipeProvider extends RecipeProvider {
         assemble(output, "chemical_plant", new ItemStack(ModItems.CHEMICAL_PLANT.get()), 100,
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.IRON_GEAR.get(), 5),
                 SizedIngredient.of(ModItems.CIRCUIT.get(), 5), SizedIngredient.of(ModItems.PIPE.get(), 5));
+        // Bio fuel: ten pieces of plant matter press to one (12 MJ)
+        assemble(output, "bio_fuel", new ItemStack(ModItems.BIO_FUEL.get()), 40,
+                new SizedIngredient(Ingredient.of(Items.WHEAT, Items.CARROT, Items.POTATO, Items.PUMPKIN, Items.SUGAR_CANE), 10));
         assemble(output, "accumulator", new ItemStack(ModItems.ACCUMULATOR.get()), 200,
                 SizedIngredient.of(Items.IRON_INGOT, 2), SizedIngredient.of(ModItems.BATTERY.get(), 5));
         // Mine products

@@ -266,4 +266,42 @@ public final class FluidGameTests {
         var storage = helper.getLevel().getCapability(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK, helper.absolutePos(pos), null);
         return storage == null ? 0 : storage.getEnergyStored();
     }
+
+    @GameTest(template = LARGE, timeoutTicks = 700)
+    public static void aGreenhouseGrowsWheatAndKeepsTheSeed(GameTestHelper helper) {
+        FluidMachineBlockEntity greenhouse = machine(helper, new BlockPos(2, 1, 3), ModBlocks.GREENHOUSE.get(), "farm/wheat");
+        helper.assertFalse(greenhouse.items().isItemValid(0, new ItemStack(Items.CARROT)), "only wheat seeds for wheat");
+        greenhouse.items().insertItem(0, new ItemStack(Items.WHEAT_SEEDS), false);
+        greenhouse.fluids().fill(new FluidStack(Fluids.WATER, 100), IFluidHandler.FluidAction.EXECUTE);
+        helper.onEachTick(() -> greenhouse.energy().setEnergy(20_000));
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(greenhouse.items().getStackInSlot(FluidMachineType.OUTPUT_SLOT).getCount(), 3, "three wheat per harvest");
+            helper.assertValueEqual(greenhouse.items().getStackInSlot(0).getCount(), 1, "the seed is still there");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 900)
+    public static void aGreenhouseUsesUpPumpkinSeeds(GameTestHelper helper) {
+        FluidMachineBlockEntity greenhouse = machine(helper, new BlockPos(2, 1, 3), ModBlocks.GREENHOUSE.get(), "farm/pumpkin");
+        greenhouse.items().insertItem(0, new ItemStack(Items.PUMPKIN_SEEDS, 2), false);
+        greenhouse.fluids().fill(new FluidStack(Fluids.WATER, 100), IFluidHandler.FluidAction.EXECUTE);
+        helper.onEachTick(() -> greenhouse.energy().setEnergy(20_000));
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(greenhouse.items().getStackInSlot(FluidMachineType.OUTPUT_SLOT).getCount(), 1, "one pumpkin");
+            helper.assertTrue(greenhouse.items().getStackInSlot(0).getCount() <= 1, "a seed was used up");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void bioFuelBurnsLikeSolidFuel(GameTestHelper helper) {
+        helper.assertTrue(Math.abs(de.craftorio.energy.Fuel.megajoules(new ItemStack(de.craftorio.registry.ModItems.BIO_FUEL.get())) - 12.0) < 0.01,
+                "12 MJ");
+        BlockPos boiler = new BlockPos(2, 1, 3);
+        helper.setBlock(boiler, ModBlocks.BOILER.get());
+        BoilerBlockEntity entity = helper.getBlockEntity(boiler);
+        helper.assertTrue(entity.fuel().isItemValid(0, new ItemStack(de.craftorio.registry.ModItems.BIO_FUEL.get())), "boilers take bio fuel");
+        helper.succeed();
+    }
 }

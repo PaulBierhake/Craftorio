@@ -49,6 +49,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> PUMPJACK = ITEMS.registerSimpleBlockItem("pumpjack", ModBlocks.PUMPJACK);
     public static final DeferredItem<BlockItem> CHEMICAL_PLANT = ITEMS.registerSimpleBlockItem("chemical_plant", ModBlocks.CHEMICAL_PLANT);
     public static final DeferredItem<BlockItem> OIL_REFINERY = ITEMS.registerSimpleBlockItem("oil_refinery", ModBlocks.OIL_REFINERY);
+    public static final DeferredItem<BlockItem> GREENHOUSE = ITEMS.registerSimpleBlockItem("greenhouse", ModBlocks.GREENHOUSE);
+    public static final DeferredItem<Item> BIO_FUEL = ITEMS.registerItem("bio_fuel", BioFuelItem::new, new Item.Properties());
     public static final DeferredItem<BlockItem> ACCUMULATOR = ITEMS.registerSimpleBlockItem("accumulator", ModBlocks.ACCUMULATOR);
     public static final DeferredItem<Item> PLASTIC_BAR = ITEMS.registerSimpleItem("plastic_bar");
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE = ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);

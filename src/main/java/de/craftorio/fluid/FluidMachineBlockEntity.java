@@ -231,7 +231,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
     }
 
     private void finish(FluidRecipes.Recipe recipe) {
-        for (int i = 0; i < recipe.itemsIn().size(); i++) {
+        for (int i = recipe.keepsFirst() ? 1 : 0; i < recipe.itemsIn().size(); i++) {
             items.extractItem(i, recipe.itemsIn().get(i).getCount(), false);
         }
         for (int i = 0; i < recipe.fluidsIn().size(); i++) {

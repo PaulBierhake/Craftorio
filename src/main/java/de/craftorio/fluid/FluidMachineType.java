@@ -4,7 +4,9 @@ package de.craftorio.fluid;
 public enum FluidMachineType {
     /** 3×3 in Factorio, one block here. */
     CHEMICAL_PLANT(210),
-    OIL_REFINERY(420);
+    OIL_REFINERY(420),
+    /** Grows plants from seeds and water. */
+    GREENHOUSE(90);
 
     /** Item slots in front of the output slot; the output slot is the last one. */
     public static final int INPUT_SLOTS = 2;

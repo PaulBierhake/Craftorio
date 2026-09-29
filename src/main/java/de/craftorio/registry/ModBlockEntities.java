@@ -118,7 +118,7 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.fluid.FluidMachineBlockEntity>> FLUID_MACHINE = BLOCK_ENTITIES.register("fluid_machine",
             () -> BlockEntityType.Builder.of(de.craftorio.fluid.FluidMachineBlockEntity::new, ModBlocks.CHEMICAL_PLANT.get(),
-                    ModBlocks.OIL_REFINERY.get()).build(null));
+                    ModBlocks.OIL_REFINERY.get(), ModBlocks.GREENHOUSE.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.AccumulatorBlockEntity>> ACCUMULATOR = BLOCK_ENTITIES.register("accumulator",

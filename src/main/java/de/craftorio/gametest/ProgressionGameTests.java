@@ -85,7 +85,11 @@ public final class ProgressionGameTests {
         // Fluid recipes: items in, items out; the fluids are stand-in items (water is always there).
         for (FluidRecipes.Recipe recipe : FluidRecipes.all()) {
             List<List<Item>> ingredients = new ArrayList<>();
-            ingredients.add(List.of(recipe.machine() == FluidMachineType.OIL_REFINERY ? ModItems.OIL_REFINERY.get() : ModItems.CHEMICAL_PLANT.get()));
+            ingredients.add(List.of(switch (recipe.machine()) {
+                case OIL_REFINERY -> ModItems.OIL_REFINERY.get();
+                case CHEMICAL_PLANT -> ModItems.CHEMICAL_PLANT.get();
+                case GREENHOUSE -> ModItems.GREENHOUSE.get();
+            }));
             recipe.itemsIn().forEach(stack -> ingredients.add(List.of(stack.getItem())));
             recipe.fluidsIn().forEach(fluid -> {
                 if (fluid.getFluid() != Fluids.WATER) {
@@ -106,7 +110,9 @@ public final class ProgressionGameTests {
 
     /** Everything that can be made from hand-mined materials and the arena seals with the steps {@code allowed}. */
     private static Set<Item> closure(List<Step> steps, java.util.function.Predicate<Step> allowed) {
-        Set<Item> have = new HashSet<>(List.of(Items.RAW_IRON, Items.RAW_COPPER, Items.COAL, Items.COBBLESTONE, Items.SAND, Items.CLAY_BALL));
+        // Seeds and crops come from breaking grass and from villages in the ordinary world.
+        Set<Item> have = new HashSet<>(List.of(Items.RAW_IRON, Items.RAW_COPPER, Items.COAL, Items.COBBLESTONE, Items.SAND, Items.CLAY_BALL,
+                Items.WHEAT_SEEDS, Items.PUMPKIN_SEEDS, Items.CARROT, Items.POTATO, Items.SUGAR_CANE, Items.OAK_SAPLING));
         BuiltInRegistries.ITEM.stream().filter(item -> item.getDefaultInstance().is(ItemTags.LOGS)).forEach(have::add);
         BuiltInRegistries.ITEM.stream().filter(item -> item instanceof KeyMaterialItem).forEach(have::add);
         boolean changed = true;

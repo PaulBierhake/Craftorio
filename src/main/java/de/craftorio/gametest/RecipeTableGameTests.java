@@ -87,6 +87,7 @@ public final class RecipeTableGameTests {
             new Object[]{"stone_wall", 1, List.of(of(ModItems.STONE_BRICK.get(), 5))},
             new Object[]{"military_science", 2, List.of(of(ModItems.AP_MAGAZINE.get(), 1), of(ModItems.GRENADE.get(), 1), of(ModItems.STONE_WALL.get(), 2))},
             new Object[]{"flamethrower_turret", 1, List.of(of(ModItems.STEEL_PLATE.get(), 30), of(ModItems.IRON_GEAR.get(), 15), of(ModItems.PIPE.get(), 10), of(ModItems.MOTOR.get(), 5))},
+            new Object[]{"greenhouse", 1, List.of(of(Items.IRON_INGOT, 15), of(ModItems.IRON_GEAR.get(), 5), of(ModItems.CIRCUIT.get(), 3), of(ModItems.PIPE.get(), 5))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );
 

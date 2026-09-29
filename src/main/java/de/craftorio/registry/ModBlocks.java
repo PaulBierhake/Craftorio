@@ -176,6 +176,9 @@ public final class ModBlocks {
     public static final DeferredBlock<de.craftorio.fluid.FluidMachineBlock> OIL_REFINERY = BLOCKS.registerBlock("oil_refinery",
             properties -> new de.craftorio.fluid.FluidMachineBlock(de.craftorio.fluid.FluidMachineType.OIL_REFINERY, properties),
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 8 : 0));
+    public static final DeferredBlock<de.craftorio.fluid.FluidMachineBlock> GREENHOUSE = BLOCKS.registerBlock("greenhouse",
+            properties -> new de.craftorio.fluid.FluidMachineBlock(de.craftorio.fluid.FluidMachineType.GREENHOUSE, properties),
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 10 : 0));
     public static final DeferredBlock<de.craftorio.energy.AccumulatorBlock> ACCUMULATOR = BLOCKS.registerBlock("accumulator",
             de.craftorio.energy.AccumulatorBlock::new, machineProperties());
 

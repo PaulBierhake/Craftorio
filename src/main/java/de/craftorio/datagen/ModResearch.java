@@ -63,6 +63,9 @@ public final class ModResearch {
         add(context, "lasers", 100, 30, List.of(Pack.RED, Pack.GREEN, Pack.BLUE), List.of("chemical_science_pack", "battery"), List.of());
         add(context, "laser_turrets", 150, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY), List.of("lasers", "military_science_pack"),
                 List.of("laser_tower"));
+        add(context, "agriculture", 30, 15, List.of(), List.of("greenhouse", "farm/wheat", "farm/carrot", "farm/potato",
+                "farm/pumpkin", "farm/sugar_cane", "farm/tree"));
+        add(context, "bio_fuel", 50, 30, R_G, List.of("agriculture", "logistic_science_pack"), List.of("assembling/bio_fuel"));
         add(context, "electric_energy_accumulators", 150, 30, R_G, List.of("battery", "electric_energy_distribution_1"),
                 List.of("accumulator", "assembling/accumulator"));
         add(context, "chemical_science_pack", 75, 10, R_G, List.of("advanced_electronics", "sulfur_processing"),

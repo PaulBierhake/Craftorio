@@ -62,6 +62,10 @@ public final class Quests {
             sell("battery", "craftorio:battery", 32, 300),
             unlock("advanced_circuit", "craftorio:assembling/advanced_circuit", 50),
             unlock("accumulator", 50),
+            // Plants
+            unlock("greenhouse", 0).withItem("craftorio:pipe", 5),
+            build("greenhouse", 1, 30),
+            unlock("bio_fuel", "craftorio:assembling/bio_fuel", 50),
             tdLevel("td_10", 10, 500),
             // Military and blue science
             unlock("military_science", 100),

@@ -268,7 +268,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense) und **U9** (Leitfaden und Balancing).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) und **U10** (Pflanzen).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -333,6 +333,13 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   dem Arena-Vorrat (bis 20.000), das der Arena-Einspeiser aus angeschlossenen Rohren nimmt. Der Laserturm kostet jetzt 20 Stahl, 20 Schaltkreise und
   12 Batterien. Der alte Bohrkern, Resonanzkristall, Tiefenkern und Sternenerz-Splitter sind durch die vier Siegel ersetzt. Abweichungen: Der Tesla-Turm
   bleibt vorerst; der Flammenwerfer nutzt nur Rohöl (Schwer- und Leichtöl folgen mit der fortgeschrittenen Ölverarbeitung).
+- **Pflanzen (U10)**: Das *Gewächshaus* (Forschung Landwirtschaft, 30 rote Pakete; 15 Eisenplatten, 5 Zahnräder, 3 Schaltkreise,
+  5 Rohre) ist eine Maschine mit Menü wie die Chemiefabrik: Rezept wählen, Wasser per Rohr, Saatgut per Greifarm, 90 kW; die Ernte
+  geht nach vorn. Rezepte: Weizen (20 s, 1 Saat + 50 Wasser → 3 Weizen, die Saat bleibt), Kürbis (30 s, 1 Kern → 1 Kürbis), Karotte und
+  Kartoffel (20 s, 1 → 3), Zuckerrohr (15 s, 1 → 2), Eichensetzling (40 s, 100 Wasser → 4 Eichenstämme, der Setzling bleibt: Holz für
+  Strommasten ohne Abholzen). Die Ernte lässt sich am Handelsposten verkaufen. *Bio-Brennstoff* (Forschung Bio-Brennstoff, 50 rote und
+  grüne Pakete): zehn Pflanzen → 1 in der Montagemaschine, 12 MJ (dreimal Kohle) für Kessel, Öfen und Brenner-Bohrer. Nicht dabei:
+  Dünger aus der Chemie und Nahrungseffekte (der Umbau nimmt das Essen aus dem Spiel).
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

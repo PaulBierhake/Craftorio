@@ -317,7 +317,7 @@ Jedes Paket ist ein eigener Commit und für sich spielbar. Tests und README wie 
 | **U7 – Öl und Höhlen** ✅ | Ölquellen in den Höhlen, Pumpjack, Raffinerie, Chemiefabrik, Kunststoff, Schwefel, Batterie, Akku (Backlog C1), fortschrittlicher Schaltkreis, Blaues Paket, Höhleneingang über Forschung; Zinn/Blei/Titan usw. entfernen | C1 |
 | **U8 – Militär und TD** ✅ | Magazine, Granate, Mauer, Graues Paket, Geschütz-, Laser- und Flammenwerfer-Turm in der Arena, Einspeiser mit Flüssigkeit, Arena-Siegel als Forschungsschlüssel | – |
 | **U9 – Leitfaden und Balancing** ✅ | Leitfaden aus Meilensteinen (§10), kleine Belohnungen, Progressionstest (jede Forschung mit dem bis dahin Freigeschalteten erfüllbar), Zeitmessung im Terminal, Handbuch-Seiten | A2 |
-| **U10 – Pflanzen** | Gewächshaus, Pflanzenrezepte, Bio-Brennstoff | – |
+| **U10 – Pflanzen** ✅ | Gewächshaus, Pflanzenrezepte, Bio-Brennstoff | – |
 | **U11 – Endgame (später)** | Uran in den Minen, Lila und Gelb, Montagemaschine 3/Module, Kernkraft | – |
 
 Weiterhin gültig aus dem Backlog: A4 (Beschreibungen), B3 (Lager-Depot), D7 (Arena-Karten), E1–E3 (Höhlen).
