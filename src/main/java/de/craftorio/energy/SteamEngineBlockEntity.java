@@ -18,6 +18,8 @@ public final class SteamEngineBlockEntity extends BlockEntity implements PowerSo
     public static final int RUNNING = 0;
     public static final int NO_BOILER = 1;
     public static final int NO_STEAM = 2;
+    /** Steam is there, but the output buffer is full: nothing draws power from the engine (no pole or no consumer). */
+    public static final int BUFFER_FULL = 3;
 
     private final EnergyBuffer energy = new EnergyBuffer(2 * POWER, 0, 2 * POWER, this::setChanged);
     private int status = NO_BOILER;
@@ -39,7 +41,7 @@ public final class SteamEngineBlockEntity extends BlockEntity implements PowerSo
         engine.status = NO_BOILER;
         for (Direction direction : Direction.values()) {
             if (level.getBlockEntity(pos.relative(direction)) instanceof BoilerBlockEntity boiler) {
-                engine.status = NO_STEAM;
+                engine.status = engine.energy.freeSpace() < POWER && boiler.hasWater() ? BUFFER_FULL : NO_STEAM;
                 if (engine.energy.freeSpace() >= POWER && boiler.tryServe(pos, level.getGameTime())) {
                     engine.energy.generate(POWER);
                     engine.status = RUNNING;

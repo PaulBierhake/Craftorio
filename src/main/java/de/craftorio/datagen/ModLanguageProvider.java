@@ -64,6 +64,7 @@ public final class ModLanguageProvider {
             add("craftorio.boiler.no_water", "No water: put an offshore pump at the shore next to the boiler");
             add("craftorio.steam_engine.status.0", "Running: 900 kW");
             add("craftorio.steam_engine.status.1", "No boiler next to the engine");
+            add("craftorio.steam_engine.status.3", "Ready, but nobody takes the power: connect a power pole and a consumer");
             add("craftorio.steam_engine.status.2", "The boiler has no steam (fuel or water missing, or two engines already use it)");
             add("craftorio.workbench.locked", "Needs research");
             add("craftorio.workbench.missing", "Missing materials");
@@ -503,6 +504,7 @@ public final class ModLanguageProvider {
             add("craftorio.boiler.no_water", "Kein Wasser: Offshore-Pumpe am Ufer neben den Kessel setzen");
             add("craftorio.steam_engine.status.0", "Läuft: 900 kW");
             add("craftorio.steam_engine.status.1", "Kein Kessel neben der Maschine");
+            add("craftorio.steam_engine.status.3", "Bereit, aber niemand nimmt den Strom ab: Strommast und Verbraucher anschließen");
             add("craftorio.steam_engine.status.2", "Der Kessel hat keinen Dampf (Brennstoff oder Wasser fehlt, oder zwei Maschinen nutzen ihn schon)");
             add("craftorio.workbench.locked", "Forschung nötig");
             add("craftorio.workbench.missing", "Material fehlt");
