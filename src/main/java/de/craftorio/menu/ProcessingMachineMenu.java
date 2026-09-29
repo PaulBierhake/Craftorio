@@ -11,7 +11,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class ProcessingMachineMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 9;
+    public static final int DATA_COUNT = 10;
     public static final int FUEL_X = 56;
     public static final int FUEL_Y = 59;
     public static final int BUTTON_PREVIOUS_RECIPE = 0;
@@ -37,8 +37,14 @@ public final class ProcessingMachineMenu extends MachineMenuBase {
         if (type.usesFuel()) {
             addSlot(new SlotItemHandler(machine.items(), type.fuelSlot(), FUEL_X, FUEL_Y));
         }
+        addModuleSlots(machine.modules().inventory());
         addPlayerInventory(inventory);
         addDataSlots(data);
+    }
+
+    /** A productivity module sits in a machine whose recipe may not use one. */
+    public boolean productivityBlocked() {
+        return data.get(9) != 0;
     }
 
     public static int inputX(MachineType type, int slot) {

@@ -21,6 +21,7 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.STEEL_PLATE.get());
         basicItem(ModItems.PLASTIC_BAR.get());
         basicItem(ModItems.BIO_FUEL.get());
+        ModItems.MODULES.values().forEach(module -> basicItem(module.get()));
         basicItem(ModItems.SOLID_FUEL.get());
         basicItem(ModItems.PROCESSING_UNIT.get());
         basicItem(ModItems.ELECTRIC_ENGINE.get());

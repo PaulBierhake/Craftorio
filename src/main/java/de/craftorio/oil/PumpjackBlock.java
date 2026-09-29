@@ -57,13 +57,4 @@ public final class PumpjackBlock extends MachineBaseBlock implements FluidConnec
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.PUMPJACK.get(), PumpjackBlockEntity::serverTick);
     }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof PumpjackBlockEntity pumpjack) {
-            serverPlayer.displayClientMessage(Component.translatable(pumpjack.onWell() ? "craftorio.pumpjack.status" : "craftorio.pumpjack.no_well",
-                    OilWellBlock.yieldPercent(pos.below()), pumpjack.tank().getFluidAmount(), PumpjackBlockEntity.TANK), true);
-        }
-        return InteractionResult.sidedSuccess(level.isClientSide);
-    }
 }

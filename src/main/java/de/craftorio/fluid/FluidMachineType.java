@@ -33,6 +33,15 @@ public enum FluidMachineType {
         return power;
     }
 
+    /** Module slots (Factorio 1.1): chemical plant and refinery 3, centrifuge 2, the greenhouse none. */
+    public int moduleSlots() {
+        return switch (this) {
+            case CHEMICAL_PLANT, OIL_REFINERY -> 3;
+            case CENTRIFUGE -> 2;
+            case GREENHOUSE -> 0;
+        };
+    }
+
     /** Product slots this machine shows and offers to inserters. */
     public int outputSlots() {
         return this == CENTRIFUGE ? 2 : 1;

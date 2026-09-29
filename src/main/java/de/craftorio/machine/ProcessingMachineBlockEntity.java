@@ -7,6 +7,9 @@ import de.craftorio.energy.Fuel;
 import de.craftorio.fluid.FluidBuffer;
 import de.craftorio.menu.ProcessingMachineMenu;
 import de.craftorio.menu.SplitIntData;
+import de.craftorio.module.ModuleEffects;
+import de.craftorio.module.ModuleState;
+import de.craftorio.module.ProductivityRules;
 import de.craftorio.recipe.MachineRecipe;
 import de.craftorio.protection.BlockOwnership;
 import de.craftorio.recipe.MachineRecipeKind;
@@ -44,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.List;
 
-public final class ProcessingMachineBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents {
+public final class ProcessingMachineBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents, de.craftorio.module.ModuleHost {
     public static final int FLUID_CAPACITY = 1_000;
     private final MachineType type;
     private final EnergyBuffer energy = new EnergyBuffer(MachineType.ENERGY_CAPACITY, MachineType.MAX_INPUT, 0, this::setChanged);
@@ -58,6 +61,10 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     /** Fluid ingredient tank of the machines that have a fluid input (see {@link MachineType#fluidInput()}). */
     private final FluidBuffer fluid = new FluidBuffer(FLUID_CAPACITY, this::setChanged);
     private final IFluidHandler fluidHandler = new FluidInput();
+    /** Module slots of the machines that have them (see {@link MachineType#moduleSlots()}). */
+    private final ModuleState modules;
+    /** A productivity module is in a recipe that may not use one: the machine stops (shown in the GUI). */
+    private boolean productivityBlocked;
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -72,6 +79,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                 case 6 -> burnTotal;
                 case 7 -> fluid.isEmpty() ? -1 : BuiltInRegistries.FLUID.getId(fluid.getFluid().getFluid());
                 case 8 -> fluid.getFluidAmount();
+                case 9 -> productivityBlocked ? 1 : 0;
                 default -> 0;
             };
         }
@@ -89,6 +97,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     public ProcessingMachineBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.MACHINE.get(), pos, state);
         this.type = ((ProcessingMachineBlock) state.getBlock()).machineType();
+        this.modules = new ModuleState(type.moduleSlots(), this::setChanged);
         this.items = new ItemStackHandler(type.slotCount()) {
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
@@ -122,9 +131,27 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         return fluid;
     }
 
+    public ModuleState modules() {
+        return modules;
+    }
+
+    /** Module and beacon effects on this machine right now. */
+    public ModuleEffects moduleEffects() {
+        return level == null ? ModuleEffects.NONE : modules.effects(level, worldPosition);
+    }
+
     /** The fluid input for the pipes; null for machines without one. */
     public @Nullable IFluidHandler fluidHandler() {
         return type.fluidInput() ? fluidHandler : null;
+    }
+
+    /** Ticks the current recipe takes with the modules in place (0 before the first run). */
+    public int recipeTime() {
+        return recipeTime;
+    }
+
+    public boolean productivityBlocked() {
+        return productivityBlocked;
     }
 
     /** Progress of the current job in percent, or -1 if the machine is idle. */
@@ -144,20 +171,24 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     private void tick(Level level, BlockPos pos, BlockState state) {
         Job job = findJob(level);
         boolean working = false;
-        if (job == null) {
+        ModuleEffects effects = modules.effects(level, pos);
+        productivityBlocked = job != null && modules.hasProductivity() && !ProductivityRules.allowed(job.result());
+        if (job == null || productivityBlocked) {
             progress = 0;
-        } else if (canOutput(job.result()) && drawPower()) {
+        } else if (canOutput(job.result()) && drawPower(effects)) {
             working = true;
-            recipeTime = CraftorioConfig.craftingTicks(type.ticks(job.time()));
+            recipeTime = CraftorioConfig.craftingTicks(Math.max(1, (int) Math.round(job.time() / (type.speed() * effects.speedFactor()))));
             if (++progress >= recipeTime) {
                 progress = 0;
                 consume(job.ingredients());
                 job.fluids().forEach(stack -> fluid.use(stack.getAmount()));
+                int extra = modules.bar().add(effects.productivityBonus());
                 ItemStack output = items.getStackInSlot(type.outputSlot());
+                int made = job.result().getCount() * (1 + extra);
                 if (output.isEmpty()) {
-                    items.setStackInSlot(type.outputSlot(), job.result().copy());
+                    items.setStackInSlot(type.outputSlot(), job.result().copyWithCount(Math.min(made, job.result().getMaxStackSize())));
                 } else {
-                    output.grow(job.result().getCount());
+                    output.grow(Math.min(made, output.getMaxStackSize() - output.getCount()));
                     items.setStackInSlot(type.outputSlot(), output);
                 }
             }
@@ -188,9 +219,9 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     }
 
     /** Pays for one tick of work with fuel or grid power. */
-    private boolean drawPower() {
+    private boolean drawPower(ModuleEffects effects) {
         if (!type.usesFuel()) {
-            return energy.consume(type.energyPerTick());
+            return energy.consume(effects.power(type.energyPerTick()));
         }
         if (burnTicks <= 0) {
             ItemStack fuel = items.getStackInSlot(type.fuelSlot());
@@ -232,7 +263,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                         .map(recipe -> new Job(recipe.value().ingredients(), List.of(), recipe.value().result(), recipe.value().time()))
                         .orElse(null);
             }
-            case ASSEMBLER, ASSEMBLER_2 -> {
+            case ASSEMBLER, ASSEMBLER_2, ASSEMBLER_3 -> {
                 MachineRecipe recipe = selectedAssemblerRecipe(level);
                 if (recipe == null || !recipe.matches(input, level) || (recipe.needsFluid() && !fluidAvailable(recipe.fluids()))) {
                     yield null;
@@ -298,7 +329,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                     || level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.SMELTING.type()).stream()
                     .filter(recipe -> knows(level, recipe.id()))
                     .anyMatch(recipe -> recipe.value().ingredients().stream().anyMatch(ingredient -> ingredient.ingredient().test(stack)));
-            case ASSEMBLER, ASSEMBLER_2 -> {
+            case ASSEMBLER, ASSEMBLER_2, ASSEMBLER_3 -> {
                 MachineRecipe recipe = selectedAssemblerRecipe(level);
                 yield recipe != null && slot < recipe.ingredients().size() && recipe.ingredients().get(slot).ingredient().test(stack);
             }
@@ -402,6 +433,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
             for (int slot = 0; slot < items.getSlots(); slot++) {
                 Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), items.getStackInSlot(slot));
             }
+            modules.dropContents(level, worldPosition);
         }
     }
 
@@ -414,6 +446,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         tag.putInt("burn_total", burnTotal);
         tag.putInt("progress", progress);
         fluid.writeToNBT(registries, tag);
+        modules.save(tag, registries);
         if (selectedRecipe != null) {
             tag.putString("recipe", selectedRecipe.toString());
         }
@@ -428,6 +461,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         burnTicks = tag.getInt("burn_ticks");
         burnTotal = tag.getInt("burn_total");
         fluid.readFromNBT(registries, tag);
+        modules.load(tag, registries);
         selectedRecipe = tag.contains("recipe") ? ResourceLocation.tryParse(tag.getString("recipe")) : null;
     }
 

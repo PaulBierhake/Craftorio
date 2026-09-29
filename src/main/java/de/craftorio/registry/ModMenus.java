@@ -14,6 +14,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModMenus {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Craftorio.MOD_ID);
 
+    public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.PumpjackMenu>> PUMPJACK =
+            MENUS.register("pumpjack", () -> IMenuTypeExtension.create(de.craftorio.menu.PumpjackMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.BeaconMenu>> BEACON =
+            MENUS.register("beacon", () -> IMenuTypeExtension.create(de.craftorio.menu.BeaconMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.ReactorMenu>> REACTOR =
             MENUS.register("reactor", () -> IMenuTypeExtension.create(de.craftorio.menu.ReactorMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<ProcessingMachineMenu>> PROCESSING_MACHINE =

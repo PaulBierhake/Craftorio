@@ -36,7 +36,9 @@ public final class DataGenerators {
         generator.addProvider(event.includeClient(), new ModLanguageProvider.English(output));
         generator.addProvider(event.includeClient(), new ModLanguageProvider.German(output));
 
-        generator.addProvider(event.includeServer(), new ModBlockTagsProvider(output, lookup, fileHelper));
+        ModBlockTagsProvider blockTags = new ModBlockTagsProvider(output, lookup, fileHelper);
+        generator.addProvider(event.includeServer(), blockTags);
+        generator.addProvider(event.includeServer(), new ModItemTagsProvider(output, lookup, blockTags.contentsGetter(), fileHelper));
         generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(output, lookup,
                 new RegistrySetBuilder().add(ModRegistries.BLUEPRINTS, ModBlueprints::bootstrap)
                         .add(ModRegistries.RESEARCH, ModResearch::bootstrap), Set.of(Craftorio.MOD_ID)));

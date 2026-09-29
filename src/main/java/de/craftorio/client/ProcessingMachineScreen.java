@@ -118,6 +118,9 @@ public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingM
             graphics.drawString(font, Component.translatable("craftorio.gui.no_recipe"), leftPos + 30, topPos + 23, 0xFFFFFF, false);
             return;
         }
+        if (menu.productivityBlocked()) {
+            graphics.drawString(font, Component.translatable("craftorio.module.productivity_blocked"), leftPos + 8, topPos + 40, 0xFF5555, false);
+        }
         graphics.renderItem(recipe.result(), leftPos + 26, topPos + 19);
         graphics.drawString(font, recipe.result().getHoverName(), leftPos + 46, topPos + 23, 0xFFFFFF, false);
         // Ghost icons show which ingredient each input slot expects.

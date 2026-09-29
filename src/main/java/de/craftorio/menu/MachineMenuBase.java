@@ -13,10 +13,27 @@ import org.jetbrains.annotations.Nullable;
 public abstract class MachineMenuBase extends AbstractContainerMenu {
     protected final BlockEntity blockEntity;
     private int machineSlots;
+    private int moduleSlots;
+    /** Left edge and top of the module panel, right of the main GUI (see {@code MachineScreenBase}). */
+    public static final int MODULE_X = 181;
+    public static final int MODULE_Y = 18;
 
     protected MachineMenuBase(@Nullable MenuType<?> type, int containerId, BlockEntity blockEntity) {
         super(type, containerId);
         this.blockEntity = blockEntity;
+    }
+
+    /** Adds the module slots in a column right of the GUI; call after the machine's own slots and before {@link #addPlayerInventory}. */
+    protected void addModuleSlots(net.neoforged.neoforge.items.IItemHandler modules) {
+        moduleSlots = modules.getSlots();
+        for (int i = 0; i < moduleSlots; i++) {
+            addSlot(new net.neoforged.neoforge.items.SlotItemHandler(modules, i, MODULE_X, MODULE_Y + 18 * i));
+        }
+    }
+
+    /** How many module slots this menu has: the last slots before the player inventory. */
+    public int moduleSlotCount() {
+        return moduleSlots;
     }
 
     /** Call after adding the machine's own slots. */

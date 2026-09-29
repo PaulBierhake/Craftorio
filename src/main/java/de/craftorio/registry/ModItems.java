@@ -48,6 +48,25 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SOLAR_PANEL = ITEMS.registerSimpleBlockItem("solar_panel", ModBlocks.SOLAR_PANEL);
     public static final DeferredItem<BlockItem> STEEL_FURNACE = ITEMS.registerSimpleBlockItem("steel_furnace", ModBlocks.STEEL_FURNACE);
     public static final DeferredItem<BlockItem> ASSEMBLER_2 = ITEMS.registerSimpleBlockItem("assembler_2", ModBlocks.ASSEMBLER_2);
+    public static final DeferredItem<BlockItem> ASSEMBLER_3 = ITEMS.registerSimpleBlockItem("assembler_3", ModBlocks.ASSEMBLER_3);
+    public static final DeferredItem<BlockItem> BEACON = ITEMS.registerSimpleBlockItem("beacon", ModBlocks.BEACON);
+
+    /** The nine modules: speed, efficiency and productivity, tiers 1 to 3 (id {@code speed_module_1} and so on). */
+    public static final java.util.Map<String, DeferredItem<de.craftorio.module.ModuleItem>> MODULES = new java.util.LinkedHashMap<>();
+
+    static {
+        for (de.craftorio.module.ModuleKind kind : de.craftorio.module.ModuleKind.values()) {
+            for (int tier = 1; tier <= de.craftorio.module.ModuleKind.TIERS; tier++) {
+                int level = tier;
+                MODULES.put(kind.id(tier), ITEMS.register(kind.id(tier),
+                        () -> new de.craftorio.module.ModuleItem(kind, level, new Item.Properties().stacksTo(50))));
+            }
+        }
+    }
+
+    public static DeferredItem<de.craftorio.module.ModuleItem> module(de.craftorio.module.ModuleKind kind, int tier) {
+        return MODULES.get(kind.id(tier));
+    }
     public static final DeferredItem<BlockItem> OIL_WELL = ITEMS.registerSimpleBlockItem("oil_well", ModBlocks.OIL_WELL);
     public static final DeferredItem<BlockItem> PUMPJACK = ITEMS.registerSimpleBlockItem("pumpjack", ModBlocks.PUMPJACK);
     public static final DeferredItem<BlockItem> CHEMICAL_PLANT = ITEMS.registerSimpleBlockItem("chemical_plant", ModBlocks.CHEMICAL_PLANT);

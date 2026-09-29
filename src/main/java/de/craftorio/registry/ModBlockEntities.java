@@ -77,7 +77,7 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ProcessingMachineBlockEntity>> MACHINE = BLOCK_ENTITIES.register("machine",
             () -> BlockEntityType.Builder.of(ProcessingMachineBlockEntity::new,
                     ModBlocks.STONE_FURNACE.get(), ModBlocks.STEEL_FURNACE.get(), ModBlocks.ELECTRIC_FURNACE.get(),
-                    ModBlocks.ASSEMBLER.get(), ModBlocks.ASSEMBLER_2.get()).build(null));
+                    ModBlocks.ASSEMBLER.get(), ModBlocks.ASSEMBLER_2.get(), ModBlocks.ASSEMBLER_3.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerBlockEntity>> TOWER = BLOCK_ENTITIES.register("tower",
@@ -132,6 +132,10 @@ public final class ModBlockEntities {
                     ModBlocks.OIL_REFINERY.get(), ModBlocks.GREENHOUSE.get(), ModBlocks.CENTRIFUGE.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.module.BeaconBlockEntity>> BEACON = BLOCK_ENTITIES.register("beacon",
+            () -> BlockEntityType.Builder.of(de.craftorio.module.BeaconBlockEntity::new, ModBlocks.BEACON.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.AccumulatorBlockEntity>> ACCUMULATOR = BLOCK_ENTITIES.register("accumulator",
             () -> BlockEntityType.Builder.of(de.craftorio.energy.AccumulatorBlockEntity::new, ModBlocks.ACCUMULATOR.get()).build(null));
 
@@ -149,6 +153,7 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, DRILL.get(), (drill, side) -> drill.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CONVEYOR_BELT.get(), ConveyorBeltBlockEntity::handler);
 
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, BEACON.get(), (beacon, side) -> beacon.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, REACTOR.get(), (reactor, side) -> reactor.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, STEAM_TURBINE.get(), (turbine, side) -> turbine.energy());
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, STEAM_TURBINE.get(), (turbine, side) -> turbine.steam());

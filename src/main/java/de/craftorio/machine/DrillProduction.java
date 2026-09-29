@@ -22,10 +22,15 @@ public final class DrillProduction {
 
     /** Like {@link #tick(int)} at {@code 1 / slowdown} of the rate: uranium ore is mined at half speed. */
     public int tick(int fieldBlocks, int slowdown) {
+        return tick(fieldBlocks, 1.0 / slowdown);
+    }
+
+    /** Like {@link #tick(int)} at {@code factor} times the rate (module speed, slowdown of uranium ore). */
+    public int tick(int fieldBlocks, double factor) {
         if (fieldBlocks <= 0) {
             return 0;
         }
-        progress += fieldBlocks * perBlockPerTick / slowdown;
+        progress += Math.round(fieldBlocks * perBlockPerTick * factor);
         int finished = (int) (progress / ONE_ITEM);
         progress -= finished * ONE_ITEM;
         return finished;

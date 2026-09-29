@@ -6,6 +6,9 @@ import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.machine.MachineRules;
 import de.craftorio.menu.FluidMachineMenu;
 import de.craftorio.menu.SplitIntData;
+import de.craftorio.module.ModuleEffects;
+import de.craftorio.module.ModuleState;
+import de.craftorio.module.ProductivityRules;
 import de.craftorio.protection.BlockOwnership;
 import de.craftorio.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -41,7 +44,7 @@ import java.util.List;
  * Crafts the selected {@link FluidRecipes.Recipe}: item ingredients in slot n, fluid ingredients in input tank n,
  * products in the output slot or the output tank (which is pushed into the pipes around the machine).
  */
-public final class FluidMachineBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents {
+public final class FluidMachineBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents, de.craftorio.module.ModuleHost {
     private static final int FIRST_OUTPUT = FluidMachineType.INPUT_TANKS;
     private static final int PUSH = 60;
 
@@ -63,6 +66,8 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
     private final FluidBuffer[] tanks = new FluidBuffer[FluidMachineType.INPUT_TANKS + FluidMachineType.OUTPUT_TANKS];
     private final IItemHandler itemAutomation = new ItemAutomation();
     private final IFluidHandler fluids = new Fluids();
+    private final ModuleState modules;
+    private boolean productivityBlocked;
     private int progress;
     private int recipeTime;
     private @Nullable ResourceLocation selectedRecipe;
@@ -76,6 +81,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
                 case 2 -> progress;
                 case 3 -> recipeTime;
                 case 4 -> selectedIndex();
+                case FluidMachineMenu.DATA_COUNT - 1 -> productivityBlocked ? 1 : 0;
                 default -> {
                     int tank = (index - FluidMachineMenu.TANK_DATA) / 2;
                     if (tank < 0 || tank >= tanks.length) {
@@ -101,6 +107,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
     public FluidMachineBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FLUID_MACHINE.get(), pos, state);
         this.type = ((FluidMachineBlock) state.getBlock()).machineType();
+        this.modules = new ModuleState(type.moduleSlots(), this::setChanged);
         for (int i = 0; i < tanks.length; i++) {
             tanks[i] = new FluidBuffer(FluidMachineType.TANK_CAPACITY, this::setChanged);
         }
@@ -108,6 +115,14 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
 
     public FluidMachineType type() {
         return type;
+    }
+
+    public ModuleState modules() {
+        return modules;
+    }
+
+    public ModuleEffects moduleEffects() {
+        return level == null ? ModuleEffects.NONE : modules.effects(level, worldPosition);
     }
 
     public EnergyBuffer energy() {
@@ -185,15 +200,17 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
     private void tick(Level level, BlockPos pos, BlockState state) {
         FluidRecipes.Recipe recipe = selected();
         boolean working = false;
-        if (recipe != null && MachineRules.knows(level, pos, recipe.id()) && canWork(recipe) && energy.consume(type.power())) {
+        ModuleEffects effects = modules.effects(level, pos);
+        productivityBlocked = recipe != null && modules.hasProductivity() && !ProductivityRules.allowed(recipe.itemsOut().stream().map(FluidRecipes.ItemOutput::stack).toList());
+        if (recipe != null && !productivityBlocked && MachineRules.knows(level, pos, recipe.id()) && canWork(recipe) && energy.consume(effects.power(type.power()))) {
             working = true;
-            recipeTime = CraftorioConfig.craftingTicks(recipe.ticks());
+            recipeTime = CraftorioConfig.craftingTicks(effects.ticks(recipe.ticks()));
             if (++progress >= recipeTime) {
                 progress = 0;
-                finish(recipe);
+                finish(recipe, 1 + modules.bar().add(effects.productivityBonus()));
             }
             setChanged();
-        } else if (recipe == null || !canWork(recipe)) {
+        } else if (recipe == null || productivityBlocked || !canWork(recipe)) {
             progress = 0;
         }
         for (int out = FIRST_OUTPUT; out < tanks.length; out++) {
@@ -242,29 +259,32 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
         return true;
     }
 
-    private void finish(FluidRecipes.Recipe recipe) {
+    /** Finishes a run; {@code batches} is 2 or more when the productivity bar gave extra products. */
+    private void finish(FluidRecipes.Recipe recipe, int batches) {
         for (int i = recipe.keepsFirst() ? 1 : 0; i < recipe.itemsIn().size(); i++) {
             items.extractItem(i, recipe.itemsIn().get(i).getCount(), false);
         }
         for (int i = 0; i < recipe.fluidsIn().size(); i++) {
             tanks[i].use(recipe.fluidsIn().get(i).getAmount());
         }
-        List<ItemStack> made = recipe.rollOutputs(level == null ? RandomSource.create() : level.random);
-        for (int i = 0; i < made.size(); i++) {
-            if (made.get(i).isEmpty()) {
-                continue;
+        for (int batch = 0; batch < batches; batch++) {
+            List<ItemStack> made = recipe.rollOutputs(level == null ? RandomSource.create() : level.random);
+            for (int i = 0; i < made.size(); i++) {
+                if (made.get(i).isEmpty()) {
+                    continue;
+                }
+                int slot = FluidMachineType.OUTPUT_SLOT + recipe.itemsOut().get(i).slot();
+                ItemStack have = items.getStackInSlot(slot);
+                if (have.isEmpty()) {
+                    items.setStackInSlot(slot, made.get(i));
+                } else {
+                    have.grow(Math.min(made.get(i).getCount(), have.getMaxStackSize() - have.getCount()));
+                    items.setStackInSlot(slot, have);
+                }
             }
-            int slot = FluidMachineType.OUTPUT_SLOT + recipe.itemsOut().get(i).slot();
-            ItemStack have = items.getStackInSlot(slot);
-            if (have.isEmpty()) {
-                items.setStackInSlot(slot, made.get(i));
-            } else {
-                have.grow(made.get(i).getCount());
-                items.setStackInSlot(slot, have);
+            for (int i = 0; i < recipe.fluidsOut().size(); i++) {
+                tanks[FIRST_OUTPUT + i].fill(recipe.fluidsOut().get(i).copy(), IFluidHandler.FluidAction.EXECUTE);
             }
-        }
-        for (int i = 0; i < recipe.fluidsOut().size(); i++) {
-            tanks[FIRST_OUTPUT + i].fill(recipe.fluidsOut().get(i).copy(), IFluidHandler.FluidAction.EXECUTE);
         }
     }
 
@@ -314,6 +334,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
             for (int slot = 0; slot < items.getSlots(); slot++) {
                 Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), items.getStackInSlot(slot));
             }
+            modules.dropContents(level, worldPosition);
         }
     }
 
@@ -326,6 +347,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
         for (int i = 0; i < tanks.length; i++) {
             tag.put("tank" + i, tanks[i].writeToNBT(registries, new CompoundTag()));
         }
+        modules.save(tag, registries);
         if (selectedRecipe != null) {
             tag.putString("recipe", selectedRecipe.toString());
         }
@@ -340,6 +362,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
         for (int i = 0; i < tanks.length; i++) {
             tanks[i].readFromNBT(registries, tag.getCompound("tank" + i));
         }
+        modules.load(tag, registries);
         selectedRecipe = tag.contains("recipe") ? ResourceLocation.tryParse(tag.getString("recipe")) : null;
     }
 

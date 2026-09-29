@@ -115,6 +115,17 @@ public final class ModRecipeProvider extends RecipeProvider {
                 new SizedIngredient(Ingredient.of(Items.WHEAT, Items.CARROT, Items.POTATO, Items.PUMPKIN, Items.SUGAR_CANE), 10));
         assemble(output, "accumulator", new ItemStack(ModItems.ACCUMULATOR.get()), 200,
                 SizedIngredient.of(Items.IRON_INGOT, 2), SizedIngredient.of(ModItems.BATTERY.get(), 5));
+        // Modules (wiki 1.1): tier 1 takes 15 s, tier 2 30 s, tier 3 60 s
+        for (de.craftorio.module.ModuleKind kind : de.craftorio.module.ModuleKind.values()) {
+            assemble(output, kind.id(1), new ItemStack(ModItems.module(kind, 1).get()), 300,
+                    SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 5), SizedIngredient.of(ModItems.CIRCUIT.get(), 5));
+            assemble(output, kind.id(2), new ItemStack(ModItems.module(kind, 2).get()), 600,
+                    SizedIngredient.of(ModItems.module(kind, 1).get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 5),
+                    SizedIngredient.of(ModItems.PROCESSING_UNIT.get(), 5));
+            assemble(output, kind.id(3), new ItemStack(ModItems.module(kind, 3).get()), 1_200,
+                    SizedIngredient.of(ModItems.module(kind, 2).get(), 5), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 5),
+                    SizedIngredient.of(ModItems.PROCESSING_UNIT.get(), 5));
+        }
         // Mine products
         // Wiki 1.1: fuel cells 10 s (10 cells), uranium rounds magazine 10 s
         assemble(output, "uranium_fuel_cell", new ItemStack(ModItems.URANIUM_FUEL_CELL.get(), 10), 200,

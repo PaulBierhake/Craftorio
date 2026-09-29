@@ -168,6 +168,9 @@ public final class ModBlocks {
     public static final DeferredBlock<ProcessingMachineBlock> STEEL_FURNACE = machine("steel_furnace", MachineType.STEEL_FURNACE);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER_2 = machine("assembler_2", MachineType.ASSEMBLER_2);
+    public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER_3 = machine("assembler_3", MachineType.ASSEMBLER_3);
+    public static final DeferredBlock<de.craftorio.module.BeaconBlock> BEACON = BLOCKS.registerBlock("beacon",
+            de.craftorio.module.BeaconBlock::new, machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 10 : 0));
 
     /** Crude oil in the caves. */
     public static final DeferredBlock<de.craftorio.oil.OilWellBlock> OIL_WELL = BLOCKS.registerBlock("oil_well",

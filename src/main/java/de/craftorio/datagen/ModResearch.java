@@ -83,6 +83,15 @@ public final class ModResearch {
         add(context, "deep_mining", 200, 30, R_G_B, List.of("mine_shaft"), List.of("deep_drill"));
         // Until U11c and U11e replace them: the express belt needs lubricant, the reactor the mine shaft.
         add(context, "express_belts", 300, 15, R_G_B, List.of("fast_belts", "lubricant"), List.of("assembling/express_belt"));
+        // Modules (U11d). Production science joins the costs of module 3, automation 3 and effect transmission with U11e.
+        add(context, "modules", 100, 30, R_G, List.of("advanced_electronics"), List.of());
+        for (String kind : List.of("speed", "efficiency", "productivity")) {
+            add(context, kind + "_module", 50, 30, R_G, List.of("modules"), List.of("assembling/" + kind + "_module_1"));
+            add(context, kind + "_module_2", 75, 30, R_G_B, List.of("advanced_electronics_2", kind + "_module"), List.of("assembling/" + kind + "_module_2"));
+            add(context, kind + "_module_3", 300, 60, R_G_B, List.of(kind + "_module_2"), List.of("assembling/" + kind + "_module_3"));
+        }
+        add(context, "automation_3", 150, 60, R_G_B, List.of("speed_module"), List.of("assembler_3"));
+        add(context, "effect_transmission", 75, 30, R_G_B, List.of("advanced_electronics_2"), List.of("beacon"));
         // Uranium (U11b). Production/utility packs join the costs with U11e; Kovarex and reprocessing still lack the production pack.
         add(context, "uranium_processing", 200, 30, R_G_B, List.of("chemical_science_pack", "concrete", "mine_shaft"),
                 List.of("centrifuge", "centrifuge/uranium_processing", "assembling/uranium_fuel_cell"));

@@ -38,6 +38,7 @@ public final class DrillMenu extends MachineMenuBase {
                 return false;
             }
         });
+        addModuleSlots(drill.modules().inventory());
         addPlayerInventory(inventory);
         addDataSlots(data);
     }

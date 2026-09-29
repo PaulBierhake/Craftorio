@@ -71,6 +71,13 @@ enum StatusProvider implements IBlockComponentProvider, IServerDataProvider<Bloc
                         .orElse(Component.translatable("craftorio.elevator.no_target")));
             }
         }
+        if (blockEntity instanceof de.craftorio.module.ModuleHost host && host.modules().slots() > 0) {
+            var effects = host.modules().effects(level, accessor.getPosition());
+            if (!effects.isNone()) {
+                lines.add(Component.translatable("craftorio.module.jade", String.format(java.util.Locale.ROOT, "%+.0f", effects.speed()),
+                        String.format(java.util.Locale.ROOT, "%+.0f", effects.energy()), String.format(java.util.Locale.ROOT, "%+.0f", effects.productivity())));
+            }
+        }
         if (!lines.isEmpty()) {
             ListTag list = new ListTag();
             lines.forEach(line -> list.add(StringTag.valueOf(Component.Serializer.toJson(line, level.registryAccess()))));

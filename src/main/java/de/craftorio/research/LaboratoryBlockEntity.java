@@ -6,6 +6,8 @@ import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.menu.LaboratoryMenu;
 import de.craftorio.menu.SplitIntData;
 import de.craftorio.protection.BlockOwnership;
+import de.craftorio.module.ModuleEffects;
+import de.craftorio.module.ModuleState;
 import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.registry.ModRegistries;
 import de.craftorio.team.Team;
@@ -39,7 +41,7 @@ import java.util.Optional;
  * needs, then works for the research's time per unit at {@link #POWER} kW. Finished units count for the team, so any
  * number of labs speed a research up.
  */
-public final class LaboratoryBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents {
+public final class LaboratoryBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents, de.craftorio.module.ModuleHost {
     /** 60 kW like Factorio's lab. */
     public static final int POWER = 60;
     public static final int ENERGY_CAPACITY = 6_000;
@@ -97,6 +99,9 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
         }
     };
 
+    public static final int MODULE_SLOTS = 2;
+    private final ModuleState modules = new ModuleState(MODULE_SLOTS, this::setChanged);
+    private ModuleEffects effects = ModuleEffects.NONE;
     private int ticksLeft;
     private int ticksTotal;
     private @Nullable String unitResearch;
@@ -133,6 +138,10 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
         return energy;
     }
 
+    public ModuleState modules() {
+        return modules;
+    }
+
     public ItemStackHandler packs() {
         return packs;
     }
@@ -151,12 +160,13 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
 
     private void tick(ServerLevel level, BlockPos pos, BlockState state) {
         Optional<Team> owner = BlockOwnership.get(level).owner(level, pos);
+        effects = modules.effects(level, pos);
         int before = status;
         boolean working = false;
         if (owner.isEmpty()) {
             status = NO_TEAM;
         } else if (ticksLeft > 0) {
-            if (energy.consume(POWER)) {
+            if (energy.consume(effects.power(POWER))) {
                 working = true;
                 status = WORKING;
                 if (--ticksLeft == 0) {
@@ -196,7 +206,7 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
             packs.extractItem(pack.ordinal(), 1, false);
         }
         unitResearch = active;
-        ticksTotal = ticksLeft = CraftorioConfig.craftingTicks(research.seconds() * 20);
+        ticksTotal = ticksLeft = CraftorioConfig.craftingTicks(effects.ticks(research.seconds() * 20));
         return WORKING;
     }
 
@@ -211,7 +221,9 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
         if (data == null) {
             return;
         }
-        boolean done = TeamData.registry(level.getServer()).addResearchUnits(team.id(), research, 1, ResearchActions.units(data));
+        // Productivity modules make a unit count for more (Factorio: research productivity).
+        int units = 1 + modules.bar().add(effects.productivityBonus());
+        boolean done = TeamData.registry(level.getServer()).addResearchUnits(team.id(), research, units, ResearchActions.units(data));
         if (done) {
             Component name = Component.translatable("craftorio.research." + ResourceLocation.parse(research).getPath());
             for (java.util.UUID member : team.members()) {
@@ -232,6 +244,7 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
             Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), packs.getStackInSlot(slot));
             packs.setStackInSlot(slot, ItemStack.EMPTY);
         }
+        modules.dropContents(level, worldPosition);
     }
 
     @Override
@@ -248,6 +261,7 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.put("packs", packs.serializeNBT(registries));
+        modules.save(tag, registries);
         tag.putInt("energy", energy.getEnergyStored());
         tag.putInt("ticks_left", ticksLeft);
         tag.putInt("ticks_total", ticksTotal);
@@ -260,6 +274,7 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         packs.deserializeNBT(registries, tag.getCompound("packs"));
+        modules.load(tag, registries);
         energy.setEnergy(tag.getInt("energy"));
         ticksLeft = tag.getInt("ticks_left");
         ticksTotal = tag.getInt("ticks_total");

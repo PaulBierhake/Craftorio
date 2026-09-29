@@ -4,7 +4,18 @@ import de.craftorio.energy.EnergyBuffer;
 import de.craftorio.fluid.FluidBuffer;
 import de.craftorio.fluid.FluidHelper;
 import de.craftorio.machine.MachineBaseBlock;
+import de.craftorio.menu.PumpjackMenu;
+import de.craftorio.menu.SplitIntData;
+import de.craftorio.module.ModuleEffects;
+import de.craftorio.module.ModuleState;
 import de.craftorio.registry.ModBlockEntities;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import org.jetbrains.annotations.Nullable;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModFluids;
 import net.minecraft.core.BlockPos;
@@ -18,7 +29,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 /** Makes 10 units of crude oil per second at 100 % yield (0.5 per tick) for 90 kW and hands it to its neighbours. */
-public final class PumpjackBlockEntity extends BlockEntity {
+public final class PumpjackBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents, de.craftorio.module.ModuleHost {
     public static final int POWER = 90;
     public static final int TANK = 200;
     private static final int PUSH = 20;
@@ -27,8 +38,33 @@ public final class PumpjackBlockEntity extends BlockEntity {
 
     private final FluidBuffer crude = new FluidBuffer(TANK, FluidBuffer.only(ModFluids.CRUDE_OIL.get()), this::setChanged);
     private final EnergyBuffer energy = new EnergyBuffer(20 * POWER, 10 * POWER, 0, this::setChanged);
+    public static final int MODULE_SLOTS = 2;
+    private final ModuleState modules = new ModuleState(MODULE_SLOTS, this::setChanged);
     private int millis;
     private boolean onWell;
+    private int yield;
+
+    private final ContainerData data = new ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> SplitIntData.low(energy.getEnergyStored());
+                case 1 -> SplitIntData.high(energy.getEnergyStored());
+                case 2 -> onWell ? yield : -1;
+                case 3 -> crude.getFluidAmount();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int getCount() {
+            return PumpjackMenu.DATA_COUNT;
+        }
+    };
 
     public PumpjackBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PUMPJACK.get(), pos, state);
@@ -44,6 +80,27 @@ public final class PumpjackBlockEntity extends BlockEntity {
 
     public boolean onWell() {
         return onWell;
+    }
+
+    public ModuleState modules() {
+        return modules;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return getBlockState().getBlock().getName();
+    }
+
+    @Override
+    public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+        return new PumpjackMenu(containerId, inventory, this, data);
+    }
+
+    @Override
+    public void dropContents() {
+        if (level != null) {
+            modules.dropContents(level, worldPosition);
+        }
     }
 
     public IFluidHandler handler(Direction side) {
@@ -88,9 +145,12 @@ public final class PumpjackBlockEntity extends BlockEntity {
     public static void serverTick(Level level, BlockPos pos, BlockState state, PumpjackBlockEntity pumpjack) {
         pumpjack.onWell = level.getBlockState(pos.below()).is(ModBlocks.OIL_WELL.get());
         boolean working = false;
-        if (pumpjack.onWell && pumpjack.crude.space() > 0 && pumpjack.energy.consume(POWER)) {
+        ModuleEffects effects = pumpjack.modules.effects(level, pos);
+        pumpjack.yield = pumpjack.onWell ? OilWellBlock.yieldPercent(pos.below()) : 0;
+        if (pumpjack.onWell && pumpjack.crude.space() > 0 && pumpjack.energy.consume(effects.power(POWER))) {
             working = true;
-            pumpjack.millis += MILLIS_PER_TICK * OilWellBlock.yieldPercent(pos.below()) / 100;
+            // Speed makes it pump faster, productivity raises the yield.
+            pumpjack.millis += (int) Math.round(MILLIS_PER_TICK * pumpjack.yield / 100.0 * effects.speedFactor() * (1 + effects.productivityBonus()));
             int made = pumpjack.millis / 1000;
             if (made > 0) {
                 pumpjack.millis -= made * 1000;
@@ -116,6 +176,7 @@ public final class PumpjackBlockEntity extends BlockEntity {
         crude.writeToNBT(registries, tag);
         tag.putInt("energy", energy.getEnergyStored());
         tag.putInt("millis", millis);
+        modules.save(tag, registries);
     }
 
     @Override
@@ -124,5 +185,6 @@ public final class PumpjackBlockEntity extends BlockEntity {
         crude.readFromNBT(registries, tag);
         energy.setEnergy(tag.getInt("energy"));
         millis = tag.getInt("millis");
+        modules.load(tag, registries);
     }
 }

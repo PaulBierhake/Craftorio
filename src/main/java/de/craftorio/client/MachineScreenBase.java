@@ -37,6 +37,61 @@ public abstract class MachineScreenBase<M extends MachineMenuBase> extends Abstr
             graphics.blit(TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1, 176, 0, 18, 18);
         }
         renderEnergyBar(graphics);
+        renderModulePanel(graphics);
+    }
+
+    /** The module slots hang off the right edge of the GUI in a small panel of their own. */
+    private void renderModulePanel(GuiGraphics graphics) {
+        int count = menu.moduleSlotCount();
+        if (count == 0) {
+            return;
+        }
+        int x = leftPos + imageWidth - 1;
+        int y = topPos + MachineMenuBase.MODULE_Y - 6;
+        int height = 18 * count + 12;
+        graphics.fill(x, y, x + 28, y + height, 0xFF555555);
+        graphics.fill(x + 1, y + 1, x + 27, y + height - 1, 0xFFC6C6C6);
+        int first = menu.slots.size() - 36 - count;
+        for (int i = 0; i < count; i++) {
+            Slot slot = menu.slots.get(first + i);
+            graphics.blit(TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1, 176, 0, 18, 18);
+        }
+    }
+
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
+        int count = menu.moduleSlotCount();
+        if (count > 0 && mouseX >= guiLeft + imageWidth - 1 && mouseX < guiLeft + imageWidth + 27
+                && mouseY >= guiTop + MachineMenuBase.MODULE_Y - 6 && mouseY < guiTop + MachineMenuBase.MODULE_Y + 18 * count + 6) {
+            return false;
+        }
+        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton);
+    }
+
+    /** The sum of the effects of the modules in the panel, for the tooltip over it. */
+    private void renderModuleTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+        int count = menu.moduleSlotCount();
+        if (count == 0) {
+            return;
+        }
+        int x = leftPos + imageWidth - 1;
+        int y = topPos + MachineMenuBase.MODULE_Y - 6;
+        if (mouseX < x || mouseX >= x + 28 || mouseY < y || mouseY >= y + 18 * count + 12 || getSlotUnderMouse() != null) {
+            return;
+        }
+        int first = menu.slots.size() - 36 - count;
+        de.craftorio.module.ModuleEffects total = de.craftorio.module.ModuleEffects.NONE;
+        for (int i = 0; i < count; i++) {
+            if (menu.slots.get(first + i).getItem().getItem() instanceof de.craftorio.module.ModuleItem module) {
+                total = total.plus(module.effects());
+            }
+        }
+        java.util.List<Component> lines = new java.util.ArrayList<>();
+        lines.add(Component.translatable("craftorio.module.panel"));
+        lines.add(Component.translatable("craftorio.module.effect.speed", String.format(Locale.ROOT, "%+.0f", total.speed())));
+        lines.add(Component.translatable("craftorio.module.effect.energy", String.format(Locale.ROOT, "%+.0f", total.energy())));
+        lines.add(Component.translatable("craftorio.module.effect.productivity", String.format(Locale.ROOT, "%+.0f", total.productivity())));
+        graphics.renderComponentTooltip(font, lines, mouseX, mouseY);
     }
 
     private void renderEnergyBar(GuiGraphics graphics) {
@@ -59,5 +114,6 @@ public abstract class MachineScreenBase<M extends MachineMenuBase> extends Abstr
                     String.format(Locale.ROOT, "%,d", energy()), String.format(Locale.ROOT, "%,d", capacity())), mouseX, mouseY);
         }
         renderTooltip(graphics, mouseX, mouseY);
+        renderModuleTooltip(graphics, mouseX, mouseY);
     }
 }

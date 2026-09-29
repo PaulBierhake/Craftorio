@@ -139,6 +139,38 @@ public final class ModLanguageProvider {
             add(ModBlocks.SOLAR_PANEL.get(), "Solar Panel");
             add(ModBlocks.STEEL_FURNACE.get(), "Steel Furnace");
             add(ModBlocks.ASSEMBLER_2.get(), "Assembling Machine 2");
+            add(ModBlocks.ASSEMBLER_3.get(), "Assembling Machine 3");
+            add(ModBlocks.BEACON.get(), "Beacon");
+            for (var kind : de.craftorio.module.ModuleKind.values()) {
+                String name = switch (kind) {
+                    case SPEED -> "Speed";
+                    case EFFICIENCY -> "Efficiency";
+                    case PRODUCTIVITY -> "Productivity";
+                };
+                for (int tier = 1; tier <= 3; tier++) {
+                    add(ModItems.module(kind, tier).get(), name + " Module" + (tier > 1 ? " " + tier : ""));
+                    add("craftorio.research." + kind.id(tier).replace("_module_1", "_module"), name + " Module" + (tier > 1 ? " " + tier : ""));
+                }
+            }
+            add("craftorio.research.modules", "Modules");
+            add("craftorio.research.automation_3", "Automation 3");
+            add("craftorio.research.effect_transmission", "Effect Transmission");
+            add("craftorio.blueprint.assembler_3.desc", "Assembling machine 3: speed 1.25 for 375 kW, four module slots, takes fluid ingredients through pipes.");
+            add("craftorio.blueprint.beacon.desc", "Beacon: hands half of the effect of its speed and efficiency modules to every machine within 9×9 blocks (480 kW).");
+            add("craftorio.module.effect.speed", "Speed: %s %%");
+            add("craftorio.module.effect.energy", "Energy: %s %%");
+            add("craftorio.module.effect.productivity", "Productivity: %s %%");
+            add("craftorio.module.no_beacon", "Not allowed in beacons");
+            add("craftorio.module.panel", "Modules");
+            add("craftorio.module.jade", "Modules: speed %s %% · energy %s %% · productivity %s %%");
+            add("craftorio.module.productivity_blocked", "No productivity");
+            add("craftorio.beacon.info", "Speed and efficiency modules");
+            add("craftorio.beacon.range", "reach 50 % into 9×9 blocks");
+            add("craftorio.beacon.active", "Running");
+            add("craftorio.beacon.inactive", "Needs power and a module");
+            add("craftorio.pumpjack.no_well_gui", "Not on an oil well!");
+            add("craftorio.pumpjack.yield", "Yield: %s %%");
+            add("craftorio.pumpjack.oil", "Crude oil: %s / %s");
             add("craftorio.solar.output", "Solar panel: %s of %s kW");
             add("craftorio.solar.no_sky", "The solar panel needs open sky");
             add("craftorio.research.electronics", "Electronics");
@@ -839,6 +871,38 @@ public final class ModLanguageProvider {
             add(ModBlocks.SOLAR_PANEL.get(), "Solarpanel");
             add(ModBlocks.STEEL_FURNACE.get(), "Stahlofen");
             add(ModBlocks.ASSEMBLER_2.get(), "Montagemaschine 2");
+            add(ModBlocks.ASSEMBLER_3.get(), "Montagemaschine 3");
+            add(ModBlocks.BEACON.get(), "Beacon");
+            for (var kind : de.craftorio.module.ModuleKind.values()) {
+                String name = switch (kind) {
+                    case SPEED -> "Geschwindigkeitsmodul";
+                    case EFFICIENCY -> "Effizienzmodul";
+                    case PRODUCTIVITY -> "Produktivitätsmodul";
+                };
+                for (int tier = 1; tier <= 3; tier++) {
+                    add(ModItems.module(kind, tier).get(), name + (tier > 1 ? " " + tier : ""));
+                    add("craftorio.research." + kind.id(tier).replace("_module_1", "_module"), name + (tier > 1 ? " " + tier : ""));
+                }
+            }
+            add("craftorio.research.modules", "Module");
+            add("craftorio.research.automation_3", "Automatisierung 3");
+            add("craftorio.research.effect_transmission", "Effektübertragung");
+            add("craftorio.blueprint.assembler_3.desc", "Montagemaschine 3: Geschwindigkeit 1,25 bei 375 kW, vier Modul-Slots, nimmt Flüssigkeiten durch Rohre.");
+            add("craftorio.blueprint.beacon.desc", "Beacon: gibt die Hälfte der Wirkung seiner Geschwindigkeits- und Effizienzmodule an jede Maschine im 9×9-Bereich weiter (480 kW).");
+            add("craftorio.module.effect.speed", "Tempo: %s %%");
+            add("craftorio.module.effect.energy", "Energie: %s %%");
+            add("craftorio.module.effect.productivity", "Produktivität: %s %%");
+            add("craftorio.module.no_beacon", "Nicht in Beacons erlaubt");
+            add("craftorio.module.panel", "Module");
+            add("craftorio.module.jade", "Module: Tempo %s %% · Energie %s %% · Produktivität %s %%");
+            add("craftorio.module.productivity_blocked", "Nicht produktiv");
+            add("craftorio.beacon.info", "Geschwindigkeits- und Effizienzmodule");
+            add("craftorio.beacon.range", "wirkt zu 50 % im 9×9-Bereich");
+            add("craftorio.beacon.active", "Läuft");
+            add("craftorio.beacon.inactive", "Braucht Strom und ein Modul");
+            add("craftorio.pumpjack.no_well_gui", "Nicht auf einer Ölquelle!");
+            add("craftorio.pumpjack.yield", "Ertrag: %s %%");
+            add("craftorio.pumpjack.oil", "Rohöl: %s / %s");
             add("craftorio.solar.output", "Solarpanel: %s von %s kW");
             add("craftorio.solar.no_sky", "Das Solarpanel braucht freien Himmel");
             add("craftorio.research.electronics", "Elektronik");

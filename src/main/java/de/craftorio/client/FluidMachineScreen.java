@@ -78,6 +78,9 @@ public final class FluidMachineScreen extends MachineScreenBase<FluidMachineMenu
             graphics.drawString(font, Component.translatable("craftorio.gui.no_recipe"), leftPos + 30, topPos + 23, 0xFFFFFF, false);
         } else {
             graphics.drawString(font, Component.translatable("craftorio.recipe." + recipe.id().getPath().replace('/', '.')), leftPos + 28, topPos + 23, 0xFFFFFF, false);
+            if (menu.productivityBlocked()) {
+                graphics.drawString(font, Component.translatable("craftorio.module.productivity_blocked"), leftPos + 44, topPos + 38, 0xFF5555, false);
+            }
             for (int i = 0; i < recipe.itemsIn().size(); i++) {
                 if (!menu.slots.get(i).hasItem()) {
                     ItemStack ghost = recipe.itemsIn().get(i);

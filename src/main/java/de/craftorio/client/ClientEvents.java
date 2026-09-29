@@ -123,6 +123,8 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ModMenus.REACTOR.get(), ReactorScreen::new);
+            event.register(ModMenus.BEACON.get(), BeaconScreen::new);
+            event.register(ModMenus.PUMPJACK.get(), PumpjackScreen::new);
             event.register(ModMenus.DRILL.get(), DrillScreen::new);
             event.register(ModMenus.TRADING_POST.get(), TradingPostScreen::new);
             event.register(ModMenus.PROCESSING_MACHINE.get(), ProcessingMachineScreen::new);

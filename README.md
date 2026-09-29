@@ -271,7 +271,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran) und **U11c** (Kernkraft).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran), **U11c** (Kernkraft) und **U11d** (Module).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -355,6 +355,11 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Reaktor) und lädt neue Zellen nur unter der im GUI eingestellten Temperatur. *Wärmerohre* leiten die Wärme zu *Wärmetauschern*
   (10 MW, ab 500 °C, ~103 Hochdruckdampf/s aus Wasser), *Dampfturbinen* machen aus 60 Hochdruckdampf/s 5,82 MW. Faustregel wie in
   Factorio: 1 Reaktor : 4 Wärmetauscher : 7 Turbinen. Der Reaktor kostet hier 100 statt 500 von jedem Bauteil.
+- **Module (U11d)**: Geschwindigkeits-, Effizienz- und Produktivitätsmodule (je drei Stufen, Forschung ab „Module") stecken in den
+  Modul-Slots am rechten Rand der Maschinen-GUIs (Montagemaschine 2/3, Elektroofen, Bohrer, Labor, Chemiefabrik, Raffinerie, Zentrifuge,
+  Pumpjack). Produktivität gilt nur für Zwischenprodukte. Der *Beacon* gibt die Hälfte der Wirkung seiner Geschwindigkeits- und
+  Effizienzmodule an alle Maschinen im 9×9-Bereich weiter. Die *Montagemaschine 3* (Forschung Automatisierung 3) hat Geschwindigkeit 1,25
+  und vier Slots.
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

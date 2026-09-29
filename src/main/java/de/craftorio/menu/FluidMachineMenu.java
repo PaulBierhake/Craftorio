@@ -17,7 +17,7 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 public final class FluidMachineMenu extends MachineMenuBase {
     public static final int TANK_DATA = 5;
     public static final int TANKS = FluidMachineType.INPUT_TANKS + FluidMachineType.OUTPUT_TANKS;
-    public static final int DATA_COUNT = TANK_DATA + 2 * TANKS;
+    public static final int DATA_COUNT = TANK_DATA + 2 * TANKS + 1;
     public static final int BUTTON_PREVIOUS_RECIPE = 0;
     public static final int BUTTON_NEXT_RECIPE = 1;
     public static final int SLOT_Y = 53;
@@ -47,8 +47,14 @@ public final class FluidMachineMenu extends MachineMenuBase {
         for (int slot = 0; slot < machine.type().outputSlots(); slot++) {
             addSlot(new SlotItemHandler(machine.items(), FluidMachineType.OUTPUT_SLOT + slot, SLOT_X[2 + slot], SLOT_Y));
         }
+        addModuleSlots(machine.modules().inventory());
         addPlayerInventory(inventory);
         addDataSlots(data);
+    }
+
+    /** A productivity module sits in a machine whose recipe may not use one. */
+    public boolean productivityBlocked() {
+        return data.get(DATA_COUNT - 1) != 0;
     }
 
     public FluidMachineBlockEntity machine() {

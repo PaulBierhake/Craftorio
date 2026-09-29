@@ -37,6 +37,15 @@ public enum DrillTier {
         return itemsPerBlockPerSecond;
     }
 
+    /** Module slots (Factorio 1.1): electric drill 3, deep drill 4, the burner drill none. */
+    public int moduleSlots() {
+        return switch (this) {
+            case BURNER -> 0;
+            case ELECTRIC -> 3;
+            case DEEP -> 4;
+        };
+    }
+
     public int energyPerTick() {
         return energyPerTick;
     }

@@ -82,6 +82,11 @@ public final class ModBlueprints {
         add(context, "assembler_2", stack(ModItems.ASSEMBLER_2.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2), SizedIngredient.of(ModItems.CIRCUIT.get(), 3),
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.ASSEMBLER.get(), 1));
+        add(context, "assembler_3", stack(ModItems.ASSEMBLER_3.get(), 1),
+                SizedIngredient.of(ModItems.ASSEMBLER_2.get(), 2), SizedIngredient.of(ModItems.module(de.craftorio.module.ModuleKind.SPEED, 1).get(), 4));
+        add(context, "beacon", stack(ModItems.BEACON.get(), 1),
+                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 20), SizedIngredient.of(ModItems.CIRCUIT.get(), 20),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 10), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 10));
         add(context, "steel_furnace", stack(ModItems.STEEL_FURNACE.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 6), SizedIngredient.of(ModItems.STONE_BRICK.get(), 10));
         add(context, "underground_pipe", stack(ModItems.UNDERGROUND_PIPE.get(), 2), SizedIngredient.of(ModItems.PIPE.get(), 10), iron(5));

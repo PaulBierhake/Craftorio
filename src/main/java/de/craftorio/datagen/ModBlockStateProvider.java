@@ -94,6 +94,8 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.STEEL_FURNACE.get(), "steel_furnace");
         machine(ModBlocks.ASSEMBLER.get(), "assembler");
         machine(ModBlocks.ASSEMBLER_2.get(), "assembler_2");
+        machine(ModBlocks.ASSEMBLER_3.get(), "assembler_3");
+        machine(ModBlocks.BEACON.get(), "beacon");
         machine(ModBlocks.LABORATORY.get(), "laboratory");
         workbench(ModBlocks.WORKBENCH.get(), "workbench");
         ModelFile terminal = models().orientable("terminal", modLoc("block/machine_side"), modLoc("block/terminal_front"), modLoc("block/machine_top"));

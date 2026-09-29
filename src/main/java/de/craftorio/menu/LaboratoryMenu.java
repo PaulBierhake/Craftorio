@@ -29,6 +29,7 @@ public final class LaboratoryMenu extends MachineMenuBase {
         for (Research.Pack pack : Research.Pack.values()) {
             addSlot(new SlotItemHandler(lab.packs(), pack.ordinal(), SLOT_X + pack.ordinal() * SLOT_STEP, SLOT_Y));
         }
+        addModuleSlots(lab.modules().inventory());
         addPlayerInventory(inventory);
         addDataSlots(data);
     }

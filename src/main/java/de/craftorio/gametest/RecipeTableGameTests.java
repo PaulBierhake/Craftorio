@@ -99,6 +99,8 @@ public final class RecipeTableGameTests {
             new Object[]{"heat_pipe", 1, List.of(of(Items.COPPER_INGOT, 20), of(ModItems.STEEL_PLATE.get(), 10))},
             new Object[]{"heat_exchanger", 1, List.of(of(Items.COPPER_INGOT, 100), of(ModItems.PIPE.get(), 10), of(ModItems.STEEL_PLATE.get(), 10))},
             new Object[]{"steam_turbine", 1, List.of(of(Items.COPPER_INGOT, 50), of(ModItems.IRON_GEAR.get(), 50), of(ModItems.PIPE.get(), 20))},
+            new Object[]{"assembler_3", 1, List.of(of(ModItems.ASSEMBLER_2.get(), 2), of(ModItems.module(de.craftorio.module.ModuleKind.SPEED, 1).get(), 4))},
+            new Object[]{"beacon", 1, List.of(of(ModItems.ADVANCED_CIRCUIT.get(), 20), of(ModItems.CIRCUIT.get(), 20), of(ModItems.STEEL_PLATE.get(), 10), of(ModItems.COPPER_CABLE.get(), 10))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );
 
@@ -122,6 +124,9 @@ public final class RecipeTableGameTests {
             new Object[]{"assembling", "low_density_structure", 1, 400, List.of(of(ModItems.STEEL_PLATE.get(), 2), of(Items.COPPER_INGOT, 20), of(ModItems.PLASTIC_BAR.get(), 5))},
             new Object[]{"assembling", "uranium_fuel_cell", 10, 200, List.of(of(Items.IRON_INGOT, 10), of(ModItems.URANIUM_235.get(), 1), of(ModItems.URANIUM_238.get(), 19))},
             new Object[]{"assembling", "uranium_magazine", 1, 200, List.of(of(ModItems.AP_MAGAZINE.get(), 1), of(ModItems.URANIUM_238.get(), 1))},
+            new Object[]{"assembling", "speed_module_1", 1, 300, List.of(of(ModItems.ADVANCED_CIRCUIT.get(), 5), of(ModItems.CIRCUIT.get(), 5))},
+            new Object[]{"assembling", "efficiency_module_2", 1, 600, List.of(of(ModItems.module(de.craftorio.module.ModuleKind.EFFICIENCY, 1).get(), 4), of(ModItems.ADVANCED_CIRCUIT.get(), 5), of(ModItems.PROCESSING_UNIT.get(), 5))},
+            new Object[]{"assembling", "productivity_module_3", 1, 1_200, List.of(of(ModItems.module(de.craftorio.module.ModuleKind.PRODUCTIVITY, 2).get(), 5), of(ModItems.ADVANCED_CIRCUIT.get(), 5), of(ModItems.PROCESSING_UNIT.get(), 5))},
             new Object[]{"smelting", "steel_plate", 1, 320, List.of(of(Items.IRON_INGOT, 5))},
             new Object[]{"smelting", "stone_brick", 1, 64, List.of(of(Items.COBBLESTONE, 2))}
     );
@@ -354,6 +359,13 @@ public final class RecipeTableGameTests {
                 new Object[]{"robotics", 75L, 30, rgb},
                 new Object[]{"advanced_electronics_2", 300L, 30, rgb},
                 new Object[]{"low_density_structure", 300L, 45, rgb},
+                new Object[]{"modules", 100L, 30, rg},
+                new Object[]{"speed_module", 50L, 30, rg},
+                new Object[]{"efficiency_module", 50L, 30, rg},
+                new Object[]{"productivity_module", 50L, 30, rg},
+                new Object[]{"speed_module_2", 75L, 30, rgb},
+                new Object[]{"efficiency_module_2", 75L, 30, rgb},
+                new Object[]{"productivity_module_2", 75L, 30, rgb},
                 new Object[]{"uranium_processing", 200L, 30, rgb},
                 new Object[]{"nuclear_power", 800L, 30, rgb});
         List<String> problems = new ArrayList<>();

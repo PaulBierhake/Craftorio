@@ -697,6 +697,25 @@ Tests: `HeatLogicTest`, `NuclearGameTests` (40 MW und Temperaturanstieg, Nachbar
 Ladegrenze, Wärmerohr bis Dampf, 500-°C-Grenze und Dampfarten, **1 Reaktor + 4 Tauscher + 7 Turbinen tragen 7 × 5,82 MW**; die Tauscher
 stehen zwischen den Turbinen, weil ein langes Rohr nur die halbe Füllstandsdifferenz je Tick weitergibt) und Rezepttabelle.
 
+**Umgesetzt (U11d), gegen das Factorio-1.1-Wiki geprüft.** Reine Regeln in `ModuleEffects` (Summe, Grenze 20 % für Tempo und Energie,
+Produktivitätsbalken, Beacon-Weitergabe zu 50 %, +300 % Produktivität als Obergrenze) mit Unit-Tests `ModuleEffectsTest`. Die neun Module:
+Geschwindigkeit +20/30/50 % Tempo bei +50/60/70 % Energie, Effizienz −30/40/50 % Energie, Produktivität +4/6/10 % Produkte bei −5/10/15 %
+Tempo und +40/60/80 % Energie. Rezepte (Wiki): Stufe 1 15 s aus 5 fortschrittlichen + 5 normalen Schaltkreisen, Stufe 2 30 s aus 4 Modulen der
+Vorstufe + 5 fortschrittlichen Schaltkreisen + 5 Prozessoren, Stufe 3 60 s aus **5** Modulen der Vorstufe + 5 + 5 (die Skizze oben sagte 4).
+Forschung (Wiki): „Module" 100 × RG (Voraussetzung Fortschrittliche Elektronik), je Art 50 × RG, Stufe 2 75 × RGB (mit Fortschrittlicher
+Elektronik 2), Stufe 3 300 × RGBP, 60 s (im Wiki **ohne** Nutzlast, die Skizze oben nannte U). **Vorläufig** bis U11e: Modul 3, Automatisierung 3
+(150 × RGBP, 60 s) und Effektübertragung (75 × RGBP) kosten noch ohne Lila. Slots: Montagemaschine 1 keine, 2 zwei, **3 vier**, Elektroofen 2,
+Elektrobohrer 3, Tiefenbohrer 4, Labor 2, Chemiefabrik 3, Raffinerie 3, Zentrifuge 2, Pumpjack 2 (bekommt dafür ein GUI statt der Statusmeldung),
+Beacon 2; Brennstoffmaschinen und Gewächshaus keine. Die Slots hängen in einem eigenen Streifen rechts am GUI (`MachineScreenBase`), ein Tooltip
+zeigt die Summe. Wirkung: Tempo, Energieaufnahme (Maschinen, Bohrer, Labor, Pumpjack), Produktivität als Extra-Erzeugnis je 100 % Balken
+(Labor: zählt die Einheit mehrfach, Bohrer: Extra-Erz ohne Extra-Säure, Pumpjack: höherer Ertrag). Produktivität nur für Zwischenprodukte
+(Item-Tag `craftorio:productivity_allowed`, Ölrezepte ohne Item-Ausgabe immer erlaubt), sonst hält die Maschine an und zeigt „Nicht produktiv".
+**Beacons** (480 kW, 9×9 Blöcke, ±1 Block in der Höhe, 50 % der Wirkung, addieren sich, nur mit Strom und mindestens einem Modul, nehmen keine
+Produktivitätsmodule) werden in `Beacons` je Dimension geführt; jede Maschine fragt sie einmal pro Sekunde ab. **Montagemaschine 3**: Geschw. 1,25,
+375 kW, Flüssigkeitseingang wie Stufe 2, Bauplan 2 × Montagemaschine 2 + 4 Geschwindigkeitsmodule 1. Jade zeigt die Modulwirkung an.
+Tests: `ModuleGameTests` (20 % kürzer, Produktivität abgelehnt und Extra-Zahnrad je 10 Durchläufe, Beacon-Reichweite und -Summe, Slot-Tabelle,
+Montagemaschine 3) und Rezepttabelle.
+
 ### 11.11 Pakete (Reihenfolge, je ein Commit)
 
 | Paket | Inhalt | Akzeptanz |
@@ -704,7 +723,7 @@ stehen zwischen den Turbinen, weil ein langes Rohr nur die halbe Füllstandsdiff
 | **U11a – Bereinigung und Öl-Nachtrag** ✅ | Forschungskorrekturen (§11.6 oben), mehrere Flüssigkeitsausgänge, fortgeschrittene Ölverarbeitung, Cracking, Schmiermittel, fester Brennstoff, Express-Band mit Schmiermittel, Beton (Item + Block), Schiene, Prozessor, Elektromotor, Flugrahmen, Leichtbaustruktur, Montagemaschine 2 mit Flüssigkeitseingang für Beton/Prozessor | Rezepttabellen-Test um §11.3 erweitert und grün; Progressionstest grün; GameTest: Raffinerie liefert drei Fluide, Cracking wandelt um |
 | **U11b – Uran** ✅ | Bohrer mit Flüssigkeitseingang, Uranabbau mit Säure, Säure in die Minen (§11.8), Zentrifuge (Block, Menü), Uranverarbeitung mit Wahrscheinlichkeit, U-235/U-238, Brennstoffzelle, Uran-Magazin, Forschung Uranverarbeitung | GameTests: Bohrer ohne Säure fördert nichts, mit Säure schon; Zentrifuge 10.000 Läufe ≈ 0,7 % U-235 |
 | **U11c – Kernkraft** ✅ | Wärmenetz (`HeatLogic` + Unit-Tests), Kernreaktor mit Steuerung und Nachbarbonus, Wärmerohr, Wärmetauscher, Hochdruckdampf, Dampfturbine, Wiederaufbereitung, alter Reaktor migriert | GameTest: 1 Reaktor + 4 Tauscher + 7 Turbinen versorgen 40 MW Last stabil; Nachbarbonus verdoppelt die Wärme; Zelle hält 200 s |
-| **U11d – Module, Montagemaschine 3, Beacon** | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |
+| **U11d – Module, Montagemaschine 3, Beacon** ✅ | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |
 | **U11e – Lila und Gelb** | Pakete `PRODUCTION`/`UTILITY` im Enum, Labor und Terminal; Rezepte der Pakete; neue Forschungen aus §11.6; Diamant- und Sternen-Siegel; Kovarex; Module 3; Bergbauproduktivität (optional) | Progressionstest bis Gelb grün (mit Siegeln); GameTest: Labor akzeptiert Lila/Gelb |
 | **U11f – TD-Endgame** | Behemoth, Schwarmkönigin (Level 50), Kurve 31–50, Uran-Munition im Einspeiser und in `TowerStats`, Turmstufen 4–5, Siegel-Belohnungen 40/50 | Unit-Test der Level-Kurve; GameTest: Level 50 vergibt das Sternen-Siegel; Uran-Munition wird verbraucht |
 | **U11g – Leitfaden, Handbuch, Balancing** | Leitfaden-Schritte (§11.12), Handbuch-Seiten zu Modulen, Kernkraft und Uran, Verkaufspreise, Zeitmessung um die Meilensteine aus §11.9, README-Abschnitt „Endgame" | Alle Tests grün; Leitfaden bis Gelb durchspielbar (Progressionstest deckt Leitfaden-Reihenfolge ab) |
