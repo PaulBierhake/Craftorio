@@ -33,6 +33,8 @@ public final class RemovedVanillaRecipes {
         }
         // Stone is made from stone bricks' raw material only by the mod's 2:1 furnace recipe.
         names.add(ResourceLocation.withDefaultNamespace("stone"));
+        // Rails are a blueprint now (stone, iron rod, steel).
+        names.add(ResourceLocation.withDefaultNamespace("rail"));
         return names;
     }
 

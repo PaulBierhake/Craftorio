@@ -65,7 +65,7 @@ public final class FluidMachineScreen extends MachineScreenBase<FluidMachineMenu
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         super.renderBg(graphics, partialTick, mouseX, mouseY);
-        int arrowX = leftPos + 87;
+        int arrowX = leftPos + 80;
         int arrowY = topPos + FluidMachineMenu.SLOT_Y;
         graphics.blit(TEXTURE, arrowX, arrowY, 176, 18, 24, 17);
         int done = (int) (24 * menu.progress());
@@ -95,15 +95,16 @@ public final class FluidMachineScreen extends MachineScreenBase<FluidMachineMenu
     }
 
     private void renderBar(GuiGraphics graphics, int tank, @Nullable FluidRecipes.Recipe recipe) {
-        int x = leftPos + FluidMachineMenu.BAR_X[tank == 2 ? 2 : tank];
+        int x = leftPos + FluidMachineMenu.BAR_X[tank];
+        int width = FluidMachineMenu.BAR_WIDTHS[tank];
         int y = topPos + FluidMachineMenu.BAR_Y;
-        graphics.fill(x, y, x + FluidMachineMenu.BAR_WIDTH, y + FluidMachineMenu.BAR_HEIGHT, 0xFF373737);
-        graphics.fill(x + 1, y + 1, x + FluidMachineMenu.BAR_WIDTH - 1, y + FluidMachineMenu.BAR_HEIGHT - 1, 0xFF1E1E1E);
+        graphics.fill(x, y, x + width, y + FluidMachineMenu.BAR_HEIGHT, 0xFF373737);
+        graphics.fill(x + 1, y + 1, x + width - 1, y + FluidMachineMenu.BAR_HEIGHT - 1, 0xFF1E1E1E);
         Fluid fluid = menu.fluid(tank);
         int amount = menu.amount(tank);
         if (fluid != Fluids.EMPTY && amount > 0) {
             int height = (FluidMachineMenu.BAR_HEIGHT - 2) * amount / FluidMachineType.TANK_CAPACITY;
-            graphics.fill(x + 1, y + FluidMachineMenu.BAR_HEIGHT - 1 - Math.max(1, height), x + FluidMachineMenu.BAR_WIDTH - 1,
+            graphics.fill(x + 1, y + FluidMachineMenu.BAR_HEIGHT - 1 - Math.max(1, height), x + width - 1,
                     y + FluidMachineMenu.BAR_HEIGHT - 1, ModFluids.color(fluid));
         }
     }
@@ -113,7 +114,7 @@ public final class FluidMachineScreen extends MachineScreenBase<FluidMachineMenu
         super.render(graphics, mouseX, mouseY, partialTick);
         FluidRecipes.Recipe recipe = selectedRecipe();
         for (int tank = 0; tank < FluidMachineMenu.TANKS; tank++) {
-            if (!isHovering(FluidMachineMenu.BAR_X[tank], FluidMachineMenu.BAR_Y, FluidMachineMenu.BAR_WIDTH, FluidMachineMenu.BAR_HEIGHT, mouseX, mouseY)) {
+            if (!isHovering(FluidMachineMenu.BAR_X[tank], FluidMachineMenu.BAR_Y, FluidMachineMenu.BAR_WIDTHS[tank], FluidMachineMenu.BAR_HEIGHT, mouseX, mouseY)) {
                 continue;
             }
             Fluid fluid = menu.fluid(tank);

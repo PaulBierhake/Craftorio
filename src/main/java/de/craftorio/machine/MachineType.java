@@ -59,6 +59,11 @@ public enum MachineType {
         return this == ASSEMBLER || this == ASSEMBLER_2;
     }
 
+    /** Assembling machines 2 and 3 can take a fluid ingredient through a pipe (concrete, lubricant recipes). */
+    public boolean fluidInput() {
+        return this == ASSEMBLER_2;
+    }
+
     public boolean usesFuel() {
         return fuel;
     }

@@ -22,6 +22,7 @@ import java.util.List;
  */
 public final class ModResearch {
     private static final List<Pack> R_G = List.of(Pack.RED, Pack.GREEN);
+    private static final List<Pack> R_G_B = List.of(Pack.RED, Pack.GREEN, Pack.BLUE);
     private static int order;
 
     private ModResearch() {
@@ -36,7 +37,6 @@ public final class ModResearch {
         add(context, "steel_processing", 50, 5, List.of(), List.of("smelting/steel_plate"));
         add(context, "logistic_science_pack", 75, 5, List.of(), List.of("green_science", "assembling/green_science"), key(ModItems.BRONZE_SEAL.get()));
         add(context, "turrets", 10, 10, List.of(), List.of("gun_turret", "magazine", "arena_feeder"));
-        add(context, "electric_smelting", 50, 30, List.of("automation"), List.of("electric_furnace"));
         add(context, "engines", 100, 15, R_G, List.of("steel_processing", "logistic_science_pack"), List.of("assembling/motor"));
         add(context, "automation_2", 40, 15, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"), List.of("assembler_2"));
         add(context, "electric_energy_distribution_1", 120, 30, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"),
@@ -48,7 +48,7 @@ public final class ModResearch {
         add(context, "energy_turrets", 100, 30, List.of("turrets", "engines"), List.of("tesla_tower"));
         add(context, "oil_processing", 100, 30, R_G, List.of("fluid_handling"),
                 List.of("pumpjack", "oil_refinery", "chemical_plant", "assembling/pumpjack", "assembling/chemical_plant",
-                        "oil/basic_oil_processing", "cave_entrance"));
+                        "oil/basic_oil_processing", "chem/solid_fuel_from_petroleum_gas", "cave_entrance"));
         add(context, "plastics", 200, 30, R_G, List.of("oil_processing"), List.of("chem/plastic_bar"));
         add(context, "sulfur_processing", 150, 30, R_G, List.of("oil_processing"), List.of("chem/sulfur", "chem/sulfuric_acid"));
         add(context, "advanced_electronics", 200, 30, R_G, List.of("plastics"), List.of("assembling/advanced_circuit"));
@@ -66,16 +66,30 @@ public final class ModResearch {
         add(context, "agriculture", 30, 15, List.of(), List.of("greenhouse", "farm/wheat", "farm/carrot", "farm/potato",
                 "farm/pumpkin", "farm/sugar_cane", "farm/tree"));
         add(context, "bio_fuel", 50, 30, R_G, List.of("agriculture", "logistic_science_pack"), List.of("assembling/bio_fuel"));
+        // Corrections and additions of package U11a (costs and prerequisites from the Factorio 1.1 wiki)
+        add(context, "advanced_material_processing_2", 250, 30, R_G_B, List.of("advanced_material_processing", "chemical_science_pack"), List.of("electric_furnace"));
+        add(context, "advanced_oil_processing", 75, 30, R_G_B, List.of("chemical_science_pack"),
+                List.of("oil/advanced_oil_processing", "chem/heavy_oil_cracking", "chem/light_oil_cracking",
+                        "chem/solid_fuel_from_heavy_oil", "chem/solid_fuel_from_light_oil"));
+        add(context, "lubricant", 50, 30, R_G_B, List.of("advanced_oil_processing"), List.of("chem/lubricant"));
+        add(context, "concrete", 250, 30, R_G, List.of("advanced_material_processing", "automation_2"), List.of("assembling/concrete"));
+        add(context, "railway", 75, 30, R_G, List.of("engines", "fast_belts"), List.of("rail", "assembling/rail"));
+        add(context, "electric_engine", 50, 30, R_G_B, List.of("lubricant"), List.of("assembling/electric_engine"));
+        add(context, "robotics", 75, 30, R_G_B, List.of("electric_engine", "battery"), List.of("flying_robot_frame", "assembling/flying_robot_frame"));
+        add(context, "advanced_electronics_2", 300, 30, R_G_B, List.of("advanced_electronics", "chemical_science_pack"), List.of("assembling/processing_unit"));
+        add(context, "low_density_structure", 300, 45, R_G_B, List.of("advanced_material_processing", "chemical_science_pack"),
+                List.of("low_density_structure", "assembling/low_density_structure"));
+        add(context, "mine_shaft", 300, 30, R_G_B, List.of("elevators", "chemical_science_pack"), List.of("mine_shaft"), key(ModItems.PLATINUM_SEAL.get()));
+        add(context, "deep_mining", 200, 30, R_G_B, List.of("mine_shaft"), List.of("deep_drill"));
+        // Until U11c and U11e replace them: the express belt needs lubricant, the reactor the mine shaft.
+        add(context, "express_belts", 300, 15, R_G_B, List.of("fast_belts", "lubricant"), List.of("assembling/express_belt"));
+        add(context, "nuclear_power", 300, 30, R_G_B, List.of("mine_shaft"), List.of("reactor"));
         add(context, "electric_energy_accumulators", 150, 30, R_G, List.of("battery", "electric_energy_distribution_1"),
                 List.of("accumulator", "assembling/accumulator"));
         add(context, "chemical_science_pack", 75, 10, R_G, List.of("advanced_electronics", "sulfur_processing"),
                 List.of("chemical_science", "assembling/blue_science"), key(ModItems.GOLD_SEAL.get()));
         add(context, "elevators", 50, 15, List.of("oil_processing"), List.of("elevator"));
         add(context, "fast_belts", 200, 30, R_G, List.of("logistics", "logistic_science_pack"), List.of("fast_belt", "fast_underground_belt", "fast_splitter"));
-        add(context, "mine_shaft", 300, 30, List.of("elevators"), List.of("mine_shaft"), key(ModItems.PLATINUM_SEAL.get()));
-        add(context, "deep_mining", 200, 30, List.of("mine_shaft"), List.of("deep_drill"));
-        add(context, "express_belts", 150, 30, List.of("fast_belts", "mine_shaft"), List.of("express_belt"));
-        add(context, "nuclear_power", 300, 30, List.of("mine_shaft"), List.of("reactor"));
     }
 
     private static SizedIngredient key(ItemLike item) {

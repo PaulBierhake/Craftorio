@@ -11,7 +11,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class ProcessingMachineMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 7;
+    public static final int DATA_COUNT = 9;
     public static final int FUEL_X = 56;
     public static final int FUEL_Y = 59;
     public static final int BUTTON_PREVIOUS_RECIPE = 0;
@@ -70,6 +70,15 @@ public final class ProcessingMachineMenu extends MachineMenuBase {
     public float burnFraction() {
         int total = data.get(6);
         return total <= 0 ? 0 : Math.min(1F, (float) data.get(5) / total);
+    }
+
+    public net.minecraft.world.level.material.Fluid fluid() {
+        int id = (short) data.get(7);
+        return id < 0 ? net.minecraft.world.level.material.Fluids.EMPTY : net.minecraft.core.registries.BuiltInRegistries.FLUID.byId(id);
+    }
+
+    public int fluidAmount() {
+        return data.get(8);
     }
 
     /** Index into {@link ProcessingMachineBlockEntity#assemblerRecipes}, or -1. */

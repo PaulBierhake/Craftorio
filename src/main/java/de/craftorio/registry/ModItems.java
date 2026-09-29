@@ -52,6 +52,12 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> GREENHOUSE = ITEMS.registerSimpleBlockItem("greenhouse", ModBlocks.GREENHOUSE);
     public static final DeferredItem<Item> BIO_FUEL = ITEMS.registerItem("bio_fuel", BioFuelItem::new, new Item.Properties());
     public static final DeferredItem<BlockItem> ACCUMULATOR = ITEMS.registerSimpleBlockItem("accumulator", ModBlocks.ACCUMULATOR);
+    public static final DeferredItem<Item> SOLID_FUEL = ITEMS.registerItem("solid_fuel", SolidFuelItem::new, new Item.Properties());
+    public static final DeferredItem<BlockItem> CONCRETE = ITEMS.registerSimpleBlockItem("concrete", ModBlocks.CONCRETE);
+    public static final DeferredItem<Item> PROCESSING_UNIT = ITEMS.registerSimpleItem("processing_unit");
+    public static final DeferredItem<Item> ELECTRIC_ENGINE = ITEMS.registerSimpleItem("electric_engine");
+    public static final DeferredItem<Item> FLYING_ROBOT_FRAME = ITEMS.registerSimpleItem("flying_robot_frame");
+    public static final DeferredItem<Item> LOW_DENSITY_STRUCTURE = ITEMS.registerSimpleItem("low_density_structure");
     public static final DeferredItem<Item> PLASTIC_BAR = ITEMS.registerSimpleItem("plastic_bar");
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE = ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);
     public static final DeferredItem<BlockItem> STONE_FURNACE = ITEMS.registerSimpleBlockItem("stone_furnace", ModBlocks.STONE_FURNACE);

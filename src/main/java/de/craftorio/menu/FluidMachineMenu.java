@@ -16,16 +16,17 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 /** Chemical plant and oil refinery: recipe arrows, two item inputs, the product slot and three fluid bars. */
 public final class FluidMachineMenu extends MachineMenuBase {
     public static final int TANK_DATA = 5;
-    public static final int TANKS = FluidMachineType.INPUT_TANKS + 1;
+    public static final int TANKS = FluidMachineType.INPUT_TANKS + FluidMachineType.OUTPUT_TANKS;
     public static final int DATA_COUNT = TANK_DATA + 2 * TANKS;
     public static final int BUTTON_PREVIOUS_RECIPE = 0;
     public static final int BUTTON_NEXT_RECIPE = 1;
     public static final int SLOT_Y = 53;
     /** Left edge of the input slots, the output slot, and the fluid bars (two inputs, one output). */
-    public static final int[] SLOT_X = {44, 62, 116};
-    public static final int[] BAR_X = {8, 26, 134};
+    public static final int[] SLOT_X = {44, 62, 106};
+    /** Two input bars, then three thinner output bars in front of the energy bar. */
+    public static final int[] BAR_X = {8, 26, 126, 134, 142};
+    public static final int[] BAR_WIDTHS = {14, 14, 7, 7, 7};
     public static final int BAR_Y = 40;
-    public static final int BAR_WIDTH = 14;
     public static final int BAR_HEIGHT = 36;
 
     private final FluidMachineBlockEntity machine;

@@ -271,7 +271,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) und **U10** (Pflanzen).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen) und **U11a** (Öl-Nachtrag).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -343,6 +343,10 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Strommasten ohne Abholzen). Die Ernte lässt sich am Handelsposten verkaufen. *Bio-Brennstoff* (Forschung Bio-Brennstoff, 50 rote und
   grüne Pakete): zehn Pflanzen → 1 in der Montagemaschine, 12 MJ (dreimal Kohle) für Kessel, Öfen und Brenner-Bohrer. Nicht dabei:
   Dünger aus der Chemie und Nahrungseffekte (der Umbau nimmt das Essen aus dem Spiel).
+- **Öl-Nachtrag (U11a)**: Die Raffinerie hat drei Ausgangstanks; *Fortgeschrittene Ölverarbeitung* liefert Schweröl, Leichtöl und Erdgas,
+  die Chemiefabrik crackt Schwer- und Leichtöl, macht Schmiermittel und festen Brennstoff. Die Montagemaschine 2 hat einen Flüssigkeitseingang
+  für Beton, Prozessor, Elektromotor und Express-Band (Schmiermittel). Neu: Schiene, Flugroboterrahmen, Leichtbaustruktur; Forschung
+  „Fortgeschrittene Materialverarbeitung 2" ersetzt „Elektrisches Schmelzen".
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

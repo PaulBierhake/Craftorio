@@ -179,6 +179,9 @@ public final class ModBlocks {
     public static final DeferredBlock<de.craftorio.fluid.FluidMachineBlock> GREENHOUSE = BLOCKS.registerBlock("greenhouse",
             properties -> new de.craftorio.fluid.FluidMachineBlock(de.craftorio.fluid.FluidMachineType.GREENHOUSE, properties),
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 10 : 0));
+    /** Concrete: a building block for the factory (and the base of the centrifuge and the reactor). */
+    public static final DeferredBlock<Block> CONCRETE = BLOCKS.registerSimpleBlock("concrete",
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(1.8F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
     public static final DeferredBlock<de.craftorio.energy.AccumulatorBlock> ACCUMULATOR = BLOCKS.registerBlock("accumulator",
             de.craftorio.energy.AccumulatorBlock::new, machineProperties());
 

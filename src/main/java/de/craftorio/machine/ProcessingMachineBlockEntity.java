@@ -4,6 +4,7 @@ import de.craftorio.CraftorioConfig;
 import de.craftorio.client.ClientTeamState;
 import de.craftorio.energy.EnergyBuffer;
 import de.craftorio.energy.Fuel;
+import de.craftorio.fluid.FluidBuffer;
 import de.craftorio.menu.ProcessingMachineMenu;
 import de.craftorio.menu.SplitIntData;
 import de.craftorio.recipe.MachineRecipe;
@@ -13,6 +14,7 @@ import de.craftorio.research.Researches;
 import de.craftorio.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -33,6 +35,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +45,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public final class ProcessingMachineBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents {
+    public static final int FLUID_CAPACITY = 1_000;
     private final MachineType type;
     private final EnergyBuffer energy = new EnergyBuffer(MachineType.ENERGY_CAPACITY, MachineType.MAX_INPUT, 0, this::setChanged);
     private final ItemStackHandler items;
@@ -50,6 +55,9 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     private int burnTicks;
     private int burnTotal;
     private @Nullable ResourceLocation selectedRecipe;
+    /** Fluid ingredient tank of the machines that have a fluid input (see {@link MachineType#fluidInput()}). */
+    private final FluidBuffer fluid = new FluidBuffer(FLUID_CAPACITY, this::setChanged);
+    private final IFluidHandler fluidHandler = new FluidInput();
 
     private final ContainerData data = new ContainerData() {
         @Override
@@ -62,6 +70,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                 case 4 -> selectedRecipeIndex();
                 case 5 -> burnTicks;
                 case 6 -> burnTotal;
+                case 7 -> fluid.isEmpty() ? -1 : BuiltInRegistries.FLUID.getId(fluid.getFluid().getFluid());
+                case 8 -> fluid.getFluidAmount();
                 default -> 0;
             };
         }
@@ -108,6 +118,15 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         return items;
     }
 
+    public FluidBuffer fluid() {
+        return fluid;
+    }
+
+    /** The fluid input for the pipes; null for machines without one. */
+    public @Nullable IFluidHandler fluidHandler() {
+        return type.fluidInput() ? fluidHandler : null;
+    }
+
     /** Progress of the current job in percent, or -1 if the machine is idle. */
     public int progressPercent() {
         return recipeTime <= 0 || progress == 0 ? -1 : 100 * progress / recipeTime;
@@ -133,6 +152,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
             if (++progress >= recipeTime) {
                 progress = 0;
                 consume(job.ingredients());
+                job.fluids().forEach(stack -> fluid.use(stack.getAmount()));
                 ItemStack output = items.getStackInSlot(type.outputSlot());
                 if (output.isEmpty()) {
                     items.setStackInSlot(type.outputSlot(), job.result().copy());
@@ -187,7 +207,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         return true;
     }
 
-    private record Job(List<SizedIngredient> ingredients, ItemStack result, int time) {
+    private record Job(List<SizedIngredient> ingredients, List<FluidStack> fluids, ItemStack result, int time) {
     }
 
     private @Nullable Job findJob(Level level) {
@@ -200,7 +220,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                 }
                 SingleRecipeInput single = new SingleRecipeInput(stack);
                 Job smelting = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, single, level)
-                        .map(recipe -> new Job(List.of(new SizedIngredient(Ingredient.of(stack.getItem()), 1)),
+                        .map(recipe -> new Job(List.of(new SizedIngredient(Ingredient.of(stack.getItem()), 1)), List.of(),
                                 recipe.value().assemble(single, level.registryAccess()), MachineType.smeltingTicks(recipe.value().getCookingTime())))
                         .orElse(null);
                 if (smelting != null) {
@@ -209,14 +229,29 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                 yield level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.SMELTING.type()).stream()
                         .filter(recipe -> knows(level, recipe.id()) && recipe.value().matches(input, level))
                         .findFirst()
-                        .map(recipe -> new Job(recipe.value().ingredients(), recipe.value().result(), recipe.value().time()))
+                        .map(recipe -> new Job(recipe.value().ingredients(), List.of(), recipe.value().result(), recipe.value().time()))
                         .orElse(null);
             }
             case ASSEMBLER, ASSEMBLER_2 -> {
                 MachineRecipe recipe = selectedAssemblerRecipe(level);
-                yield recipe != null && recipe.matches(input, level) ? new Job(recipe.ingredients(), recipe.result(), recipe.time()) : null;
+                if (recipe == null || !recipe.matches(input, level) || (recipe.needsFluid() && !fluidAvailable(recipe.fluids()))) {
+                    yield null;
+                }
+                yield new Job(recipe.ingredients(), recipe.fluids(), recipe.result(), recipe.time());
             }
         };
+    }
+
+    private boolean fluidAvailable(List<FluidStack> needed) {
+        if (!type.fluidInput()) {
+            return false;
+        }
+        for (FluidStack stack : needed) {
+            if (!FluidStack.isSameFluid(fluid.getFluid(), stack) || fluid.getFluidAmount() < stack.getAmount()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private RecipeInput inputs() {
@@ -315,13 +350,17 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         if (selectedRecipeIndex() < 0 && direction < 0) {
             index = recipes.size() - 1;
         }
-        // Skip recipes the owning team has not researched yet.
-        for (int tried = 0; tried < recipes.size() && !knows(level, recipes.get(index).id()); tried++) {
+        // Skip recipes the owning team has not researched yet and fluid recipes this machine cannot do.
+        for (int tried = 0; tried < recipes.size() && !usable(recipes.get(index)); tried++) {
             index = Math.floorMod(index + direction, recipes.size());
         }
-        if (knows(level, recipes.get(index).id())) {
+        if (usable(recipes.get(index))) {
             setSelectedRecipe(recipes.get(index).id());
         }
+    }
+
+    private boolean usable(RecipeHolder<MachineRecipe> recipe) {
+        return knows(level, recipe.id()) && (!recipe.value().needsFluid() || type.fluidInput());
     }
 
     /**
@@ -339,6 +378,11 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     public void setSelectedRecipe(@Nullable ResourceLocation id) {
         selectedRecipe = id;
         progress = 0;
+        // A fluid that the new recipe does not use would block the tank.
+        MachineRecipe recipe = level == null ? null : selectedAssemblerRecipe(level);
+        if (!fluid.isEmpty() && (recipe == null || !recipe.needsFluid() || !FluidStack.isSameFluid(recipe.fluids().get(0), fluid.getFluid()))) {
+            fluid.setFluid(FluidStack.EMPTY);
+        }
         setChanged();
     }
 
@@ -369,6 +413,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         tag.putInt("burn_ticks", burnTicks);
         tag.putInt("burn_total", burnTotal);
         tag.putInt("progress", progress);
+        fluid.writeToNBT(registries, tag);
         if (selectedRecipe != null) {
             tag.putString("recipe", selectedRecipe.toString());
         }
@@ -382,7 +427,47 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         progress = tag.getInt("progress");
         burnTicks = tag.getInt("burn_ticks");
         burnTotal = tag.getInt("burn_total");
+        fluid.readFromNBT(registries, tag);
         selectedRecipe = tag.contains("recipe") ? ResourceLocation.tryParse(tag.getString("recipe")) : null;
+    }
+
+    /** Takes the fluid the selected recipe needs, up to the tank's capacity; nothing can be drained. */
+    private final class FluidInput implements IFluidHandler {
+        @Override
+        public int getTanks() {
+            return 1;
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            return fluid.getFluid();
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return FLUID_CAPACITY;
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            MachineRecipe recipe = level == null ? null : selectedAssemblerRecipe(level);
+            return recipe != null && recipe.needsFluid() && FluidStack.isSameFluid(recipe.fluids().get(0), stack);
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            return isFluidValid(0, resource) ? fluid.fill(resource, action) : 0;
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
     }
 
     private final class AutomationHandler implements IItemHandler {

@@ -146,6 +146,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.FLUID_PUMP.get(), pump);
         simpleBlockItem(ModBlocks.FLUID_PUMP.get(), pump);
         simpleBlockWithItem(ModBlocks.OIL_WELL.get(), cubeAll(ModBlocks.OIL_WELL.get()));
+        simpleBlockWithItem(ModBlocks.CONCRETE.get(), cubeAll(ModBlocks.CONCRETE.get()));
         machine(ModBlocks.PUMPJACK.get(), "pumpjack");
         machine(ModBlocks.CHEMICAL_PLANT.get(), "chemical_plant");
         machine(ModBlocks.OIL_REFINERY.get(), "oil_refinery");

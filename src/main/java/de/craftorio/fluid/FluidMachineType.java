@@ -11,9 +11,11 @@ public enum FluidMachineType {
     /** Item slots in front of the output slot; the output slot is the last one. */
     public static final int INPUT_SLOTS = 2;
     public static final int OUTPUT_SLOT = INPUT_SLOTS;
-    /** Two input tanks and one output tank (tank index 2). */
+    /** Two input tanks and three output tanks. */
     public static final int INPUT_TANKS = 2;
     public static final int TANK_CAPACITY = 1_000;
+    /** Output tanks (tank index {@link #INPUT_TANKS} and up): the refinery's advanced oil processing makes three fluids. */
+    public static final int OUTPUT_TANKS = 3;
 
     private final int power;
 

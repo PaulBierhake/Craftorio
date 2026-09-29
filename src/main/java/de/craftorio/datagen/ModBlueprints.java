@@ -105,6 +105,13 @@ public final class ModBlueprints {
         add(context, "greenhouse", stack(ModItems.GREENHOUSE.get(), 1),
                 iron(15), SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.CIRCUIT.get(), 3),
                 SizedIngredient.of(ModItems.PIPE.get(), 5));
+        add(context, "rail", new ItemStack(Items.RAIL, 2),
+                SizedIngredient.of(Items.COBBLESTONE, 1), SizedIngredient.of(ModItems.IRON_STICK.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1));
+        add(context, "flying_robot_frame", stack(ModItems.FLYING_ROBOT_FRAME.get(), 1),
+                SizedIngredient.of(ModItems.ELECTRIC_ENGINE.get(), 1), SizedIngredient.of(ModItems.BATTERY.get(), 2),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(ModItems.CIRCUIT.get(), 3));
+        add(context, "low_density_structure", stack(ModItems.LOW_DENSITY_STRUCTURE.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2), copper(20), SizedIngredient.of(ModItems.PLASTIC_BAR.get(), 5));
         add(context, "accumulator", stack(ModItems.ACCUMULATOR.get(), 1), iron(2), SizedIngredient.of(ModItems.BATTERY.get(), 5));
         add(context, "chemical_science", stack(ModItems.BLUE_SCIENCE.get(), 2),
                 SizedIngredient.of(ModItems.MOTOR.get(), 2), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 3),
@@ -160,9 +167,6 @@ public final class ModBlueprints {
         add(context, "deep_drill", stack(ModItems.DEEP_DRILL.get(), 1),
                 SizedIngredient.of(ModItems.ELECTRIC_DRILL.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 12),
                 SizedIngredient.of(ModItems.MOTOR.get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 2));
-        add(context, "express_belt", stack(ModItems.EXPRESS_BELT.get(), 4),
-                SizedIngredient.of(ModItems.FAST_BELT.get(), 4), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2),
-                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 1));
         add(context, "reactor", stack(ModItems.REACTOR.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 20), SizedIngredient.of(ModItems.STONE_BRICK.get(), 32),
                 SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 8), SizedIngredient.of(ModItems.BATTERY.get(), 8));

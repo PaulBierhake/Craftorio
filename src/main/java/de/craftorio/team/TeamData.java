@@ -93,9 +93,14 @@ public final class TeamData extends SavedData {
                 team.activeResearch() == null ? 0 : team.researchProgress(team.activeResearch())));
     }
 
+    /** Researches that were renamed between versions. */
+    private static String renamed(String id) {
+        return id.equals("electric_smelting") ? "advanced_material_processing_2" : id;
+    }
+
     private static Map<String, Long> readLongs(CompoundTag tag) {
         Map<String, Long> values = new HashMap<>();
-        tag.getAllKeys().forEach(key -> values.put(key, tag.getLong(key)));
+        tag.getAllKeys().forEach(key -> values.put(renamed(key), tag.getLong(key)));
         return values;
     }
 
@@ -166,7 +171,7 @@ public final class TeamData extends SavedData {
             data.registry.restore(entry.getUUID("id"), entry.getString("name"), entry.getLong("balance"), members,
                     researched, entry.getLong("total_earned"), entry.getLong("total_spent"), sales);
             data.registry.restoreResearch(entry.getUUID("id"),
-                    entry.getList("research_queue", Tag.TAG_STRING).stream().map(Tag::getAsString).toList(),
+                    entry.getList("research_queue", Tag.TAG_STRING).stream().map(Tag::getAsString).map(TeamData::renamed).toList(),
                     readLongs(entry.getCompound("research_progress")),
                     entry.getList("research_keys", Tag.TAG_STRING).stream().map(Tag::getAsString).toList());
             data.registry.restoreSettings(entry.getUUID("id"),

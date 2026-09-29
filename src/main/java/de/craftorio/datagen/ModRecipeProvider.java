@@ -7,6 +7,9 @@ import de.craftorio.registry.ModItems;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.world.level.material.Fluids;
+import de.craftorio.registry.ModFluids;
 
 import java.util.List;
 import net.minecraft.core.HolderLookup;
@@ -90,6 +93,23 @@ public final class ModRecipeProvider extends RecipeProvider {
         assemble(output, "chemical_plant", new ItemStack(ModItems.CHEMICAL_PLANT.get()), 100,
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.IRON_GEAR.get(), 5),
                 SizedIngredient.of(ModItems.CIRCUIT.get(), 5), SizedIngredient.of(ModItems.PIPE.get(), 5));
+        // Wiki 1.1: rail 0.5 s (2), flying robot frame 20 s, low density structure 20 s
+        assemble(output, "rail", new ItemStack(Items.RAIL, 2), 10,
+                SizedIngredient.of(Items.COBBLESTONE, 1), SizedIngredient.of(ModItems.IRON_STICK.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1));
+        assemble(output, "flying_robot_frame", new ItemStack(ModItems.FLYING_ROBOT_FRAME.get()), 400,
+                SizedIngredient.of(ModItems.ELECTRIC_ENGINE.get(), 1), SizedIngredient.of(ModItems.BATTERY.get(), 2),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(ModItems.CIRCUIT.get(), 3));
+        assemble(output, "low_density_structure", new ItemStack(ModItems.LOW_DENSITY_STRUCTURE.get()), 400,
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2), SizedIngredient.of(Items.COPPER_INGOT, 20), SizedIngredient.of(ModItems.PLASTIC_BAR.get(), 5));
+        // Recipes with a fluid ingredient: assembling machines 2 and 3 only
+        assembleWithFluid(output, "concrete", new ItemStack(ModItems.CONCRETE.get(), 10), 200, new FluidStack(Fluids.WATER, 100),
+                SizedIngredient.of(ModItems.STONE_BRICK.get(), 5), SizedIngredient.of(Items.RAW_IRON, 1));
+        assembleWithFluid(output, "processing_unit", new ItemStack(ModItems.PROCESSING_UNIT.get()), 200, new FluidStack(ModFluids.SULFURIC_ACID.get(), 5),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 20), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 2));
+        assembleWithFluid(output, "electric_engine", new ItemStack(ModItems.ELECTRIC_ENGINE.get()), 200, new FluidStack(ModFluids.LUBRICANT.get(), 15),
+                SizedIngredient.of(ModItems.MOTOR.get(), 1), SizedIngredient.of(ModItems.CIRCUIT.get(), 2));
+        assembleWithFluid(output, "express_belt", new ItemStack(ModItems.EXPRESS_BELT.get()), 10, new FluidStack(ModFluids.LUBRICANT.get(), 20),
+                SizedIngredient.of(ModItems.FAST_BELT.get(), 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 10));
         // Bio fuel: ten pieces of plant matter press to one (12 MJ)
         assemble(output, "bio_fuel", new ItemStack(ModItems.BIO_FUEL.get()), 40,
                 new SizedIngredient(Ingredient.of(Items.WHEAT, Items.CARROT, Items.POTATO, Items.PUMPKIN, Items.SUGAR_CANE), 10));
@@ -116,6 +136,12 @@ public final class ModRecipeProvider extends RecipeProvider {
     private static void smelting(RecipeOutput output, String name, ItemStack result, int time, SizedIngredient... ingredients) {
         output.accept(Craftorio.id("smelting/" + name),
                 new MachineRecipe(MachineRecipeKind.SMELTING, List.of(ingredients), result, time), null);
+    }
+
+    /** An assembler recipe with a fluid ingredient (assembling machines 2 and 3 only, no hand crafting). */
+    private static void assembleWithFluid(RecipeOutput output, String name, ItemStack result, int time, FluidStack fluid, SizedIngredient... ingredients) {
+        output.accept(Craftorio.id("assembling/" + name),
+                new MachineRecipe(MachineRecipeKind.ASSEMBLING, List.of(ingredients), List.of(fluid), result, time), null);
     }
 
     private static void assemble(RecipeOutput output, String name, ItemStack result, int time, SizedIngredient... ingredients) {

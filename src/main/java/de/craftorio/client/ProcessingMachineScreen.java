@@ -16,6 +16,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingMachineMenu> {
+    private static final int FLUID_X = 134;
+    private static final int FLUID_Y = 40;
+    private static final int FLUID_HEIGHT = 36;
+
     private final MachineType type;
 
     public ProcessingMachineScreen(ProcessingMachineMenu menu, Inventory inventory, Component title) {
@@ -68,6 +72,16 @@ public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingM
         if (type.assembling()) {
             renderRecipe(graphics);
         }
+        if (type.fluidInput()) {
+            int x = leftPos + FLUID_X;
+            int y = topPos + FLUID_Y;
+            graphics.fill(x, y, x + 14, y + FLUID_HEIGHT, 0xFF373737);
+            graphics.fill(x + 1, y + 1, x + 13, y + FLUID_HEIGHT - 1, 0xFF1E1E1E);
+            if (menu.fluid() != net.minecraft.world.level.material.Fluids.EMPTY && menu.fluidAmount() > 0) {
+                int height = Math.max(1, (FLUID_HEIGHT - 2) * menu.fluidAmount() / ProcessingMachineBlockEntity.FLUID_CAPACITY);
+                graphics.fill(x + 1, y + FLUID_HEIGHT - 1 - height, x + 13, y + FLUID_HEIGHT - 1, de.craftorio.registry.ModFluids.color(menu.fluid()));
+            }
+        }
         if (type.usesFuel()) {
             int flame = (int) (13 * menu.burnFraction());
             int x = leftPos + ProcessingMachineMenu.FUEL_X + 1;
@@ -76,6 +90,24 @@ public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingM
             if (flame > 0) {
                 graphics.fillGradient(x + 1, y + 13 - flame, x + 13, y + 13, 0xFFFFD54F, 0xFFE0801F);
             }
+        }
+    }
+
+    @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        if (type.fluidInput() && isHovering(FLUID_X, FLUID_Y, 14, FLUID_HEIGHT, mouseX, mouseY)) {
+            MachineRecipe recipe = selectedRecipe();
+            Component text;
+            if (menu.fluid() != net.minecraft.world.level.material.Fluids.EMPTY && menu.fluidAmount() > 0) {
+                text = Component.translatable("craftorio.fluid.contents", new net.neoforged.neoforge.fluids.FluidStack(menu.fluid(), 1).getHoverName(),
+                        menu.fluidAmount(), ProcessingMachineBlockEntity.FLUID_CAPACITY);
+            } else if (recipe != null && recipe.needsFluid()) {
+                text = Component.translatable("craftorio.fluid.wanted", recipe.fluids().get(0).getHoverName(), recipe.fluids().get(0).getAmount());
+            } else {
+                text = Component.translatable("craftorio.fluid.empty", ProcessingMachineBlockEntity.FLUID_CAPACITY);
+            }
+            graphics.renderTooltip(font, text, mouseX, mouseY);
         }
     }
 

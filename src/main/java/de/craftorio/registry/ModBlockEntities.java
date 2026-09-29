@@ -142,6 +142,7 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, GENERATOR.get(), (generator, side) -> generator.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.type().usesFuel() ? null : machine.energy());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.fluidHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BOILER.get(), (boiler, side) -> insertOnly(boiler.fuel()));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, STEAM_ENGINE.get(), (engine, side) -> engine.energy());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, SOLAR_PANEL.get(), (panel, side) -> panel.energy());

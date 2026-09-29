@@ -14,29 +14,42 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.List;
 
 /** Recipe for furnaces (counted smelting) and the assembling machine: counted ingredients, one result, the crafting time in ticks at speed 1 (Factorio seconds × 20). */
-public record MachineRecipe(MachineRecipeKind kind, List<SizedIngredient> ingredients, ItemStack result, int time)
+public record MachineRecipe(MachineRecipeKind kind, List<SizedIngredient> ingredients, List<FluidStack> fluids, ItemStack result, int time)
         implements Recipe<RecipeInput> {
+
+    /** Without fluid ingredients. */
+    public MachineRecipe(MachineRecipeKind kind, List<SizedIngredient> ingredients, ItemStack result, int time) {
+        this(kind, ingredients, List.of(), result, time);
+    }
+
+    public boolean needsFluid() {
+        return !fluids.isEmpty();
+    }
+
 
     public static final int MAX_INGREDIENTS = 4;
 
     public static MapCodec<MachineRecipe> codec(MachineRecipeKind kind) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
                 SizedIngredient.FLAT_CODEC.listOf(1, MAX_INGREDIENTS).fieldOf("ingredients").forGetter(MachineRecipe::ingredients),
+                FluidStack.CODEC.listOf(0, 2).optionalFieldOf("fluids", List.of()).forGetter(MachineRecipe::fluids),
                 ItemStack.STRICT_CODEC.fieldOf("result").forGetter(MachineRecipe::result),
                 Codec.intRange(1, 72_000).optionalFieldOf("time", 40).forGetter(MachineRecipe::time)
-        ).apply(instance, (ingredients, result, time) -> new MachineRecipe(kind, ingredients, result, time)));
+        ).apply(instance, (ingredients, fluids, result, time) -> new MachineRecipe(kind, ingredients, fluids, result, time)));
     }
 
     public static StreamCodec<RegistryFriendlyByteBuf, MachineRecipe> streamCodec(MachineRecipeKind kind) {
         return StreamCodec.composite(
                 SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), MachineRecipe::ingredients,
+                FluidStack.STREAM_CODEC.apply(ByteBufCodecs.list()), MachineRecipe::fluids,
                 ItemStack.STREAM_CODEC, MachineRecipe::result,
                 ByteBufCodecs.VAR_INT, MachineRecipe::time,
-                (ingredients, result, time) -> new MachineRecipe(kind, ingredients, result, time));
+                (ingredients, fluids, result, time) -> new MachineRecipe(kind, ingredients, fluids, result, time));
     }
 
     /** True if the inputs hold enough of every ingredient (items may be spread over several slots). */

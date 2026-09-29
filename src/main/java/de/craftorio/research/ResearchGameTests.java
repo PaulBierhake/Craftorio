@@ -50,6 +50,7 @@ public final class ResearchGameTests {
         helper.assertTrue(team.researchQueue().contains(Craftorio.id("engines").toString()), "engines stay");
 
         TeamData.registry(player.server).grantResearch(team.id(), Craftorio.id("elevators").toString());
+        TeamData.registry(player.server).grantResearch(team.id(), Craftorio.id("chemical_science_pack").toString());
         helper.assertFalse(ResearchActions.toggle(player, index(helper, "mine_shaft")), "needs a platinum seal");
         player.getInventory().add(new ItemStack(ModItems.PLATINUM_SEAL.get()));
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "mine_shaft")), "queue with the seal");

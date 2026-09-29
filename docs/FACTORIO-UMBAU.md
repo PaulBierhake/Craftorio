@@ -654,11 +654,23 @@ Fortsetzung der Tabelle aus §2, grob wie ein erster Factorio-Durchlauf ohne Rak
 
 Abgeschlossene Forschungen mit geänderten Kosten bleiben abgeschlossen.
 
+**Umgesetzt (U11a), gegen das Factorio-1.1-Wiki geprüft.** Abweichungen von den Gedächtniswerten oben, die im Code gelten:
+Fortgeschrittene Ölverarbeitung 100 Rohöl + 50 Wasser → 25 Schweröl, 45 Leichtöl, 55 Erdgas (5 s); Cracken 40 Schweröl + 30 Wasser → 30 Leichtöl
+und 30 Leichtöl + 30 Wasser → 20 Erdgas (je 2 s); Schmiermittel 10 Schweröl → 10 (1 s); fester Brennstoff in **drei** Varianten (10 Leichtöl,
+20 Schweröl oder 20 Erdgas → 1, je 2 s). Forschungen (1.1): Fortgeschrittene Materialverarbeitung 2 250 × RGB, 30 s (ersetzt `electric_smelting`,
+alte Spielstände werden beim Laden umbenannt); Fortgeschrittene Ölverarbeitung 75, Schmiermittel 50, Elektromotor 50, Robotik 75, Fortgeschrittene
+Elektronik 2 300 (alle RGB, 30 s); Beton 250 × RG; Schienen 75 × RG; Leichtbaustruktur 300 × RGB, 45 s. Assembler-Rezepte mit Flüssigkeit
+(nur Montagemaschine 2 und höher): Beton 5 Ziegel + 1 Eisenerz + 100 Wasser → 10 (10 s), Prozessor 20 Schaltkreise + 2 fortgeschrittene + 5 Säure
+(10 s), Elektromotor 1 Motor + 2 Schaltkreise + 15 Schmiermittel (10 s), Express-Band 10 Zahnräder + 1 schnelles Band + 20 Schmiermittel (0,5 s).
+Schiene (2 aus 1 Stein, 1 Stab, 1 Stahl), Flugroboterrahmen (20 s) und Leichtbaustruktur (20 s) sind Bauplan und Montagemaschinen-Rezept.
+Vorläufig (bis U11c/U11e): Express-Bänder und Kernkraft haben noch die Übergangsvoraussetzungen in `ModResearch`.
+Tests: `RecipeTableGameTests` (Blueprints, Maschinen-, Fluid-Assembler-, Öl-/Chemie- und Forschungstabelle), `FluidGameTests`.
+
 ### 11.11 Pakete (Reihenfolge, je ein Commit)
 
 | Paket | Inhalt | Akzeptanz |
 |---|---|---|
-| **U11a – Bereinigung und Öl-Nachtrag** | Forschungskorrekturen (§11.6 oben), mehrere Flüssigkeitsausgänge, fortgeschrittene Ölverarbeitung, Cracking, Schmiermittel, fester Brennstoff, Express-Band mit Schmiermittel, Beton (Item + Block), Schiene, Prozessor, Elektromotor, Flugrahmen, Leichtbaustruktur, Montagemaschine 2 mit Flüssigkeitseingang für Beton/Prozessor | Rezepttabellen-Test um §11.3 erweitert und grün; Progressionstest grün; GameTest: Raffinerie liefert drei Fluide, Cracking wandelt um |
+| **U11a – Bereinigung und Öl-Nachtrag** ✅ | Forschungskorrekturen (§11.6 oben), mehrere Flüssigkeitsausgänge, fortgeschrittene Ölverarbeitung, Cracking, Schmiermittel, fester Brennstoff, Express-Band mit Schmiermittel, Beton (Item + Block), Schiene, Prozessor, Elektromotor, Flugrahmen, Leichtbaustruktur, Montagemaschine 2 mit Flüssigkeitseingang für Beton/Prozessor | Rezepttabellen-Test um §11.3 erweitert und grün; Progressionstest grün; GameTest: Raffinerie liefert drei Fluide, Cracking wandelt um |
 | **U11b – Uran** | Bohrer mit Flüssigkeitseingang, Uranabbau mit Säure, Säure in die Minen (§11.8), Zentrifuge (Block, Menü), Uranverarbeitung mit Wahrscheinlichkeit, U-235/U-238, Brennstoffzelle, Uran-Magazin, Forschung Uranverarbeitung | GameTests: Bohrer ohne Säure fördert nichts, mit Säure schon; Zentrifuge 10.000 Läufe ≈ 0,7 % U-235 |
 | **U11c – Kernkraft** | Wärmenetz (`HeatLogic` + Unit-Tests), Kernreaktor mit Steuerung und Nachbarbonus, Wärmerohr, Wärmetauscher, Hochdruckdampf, Dampfturbine, Wiederaufbereitung, alter Reaktor migriert | GameTest: 1 Reaktor + 4 Tauscher + 7 Turbinen versorgen 40 MW Last stabil; Nachbarbonus verdoppelt die Wärme; Zelle hält 200 s |
 | **U11d – Module, Montagemaschine 3, Beacon** | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |

@@ -11,10 +11,12 @@ import de.craftorio.fluid.FluidRecipes;
 import de.craftorio.fluid.FluidPumpBlock;
 import de.craftorio.fluid.FluidPumpBlockEntity;
 import de.craftorio.fluid.UndergroundPipeBlock;
+import de.craftorio.machine.ProcessingMachineBlockEntity;
 import de.craftorio.oil.OilWellBlock;
 import de.craftorio.oil.PumpjackBlockEntity;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModFluids;
+import de.craftorio.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
@@ -199,6 +201,71 @@ public final class FluidGameTests {
                 .getFluid().getFluid() == ModFluids.PETROLEUM_GAS.get(), "petroleum gas in the pipe next to the refinery"));
     }
 
+    @GameTest(template = LARGE, timeoutTicks = 300)
+    public static void advancedOilProcessingFillsThreeOutputTanks(GameTestHelper helper) {
+        FluidMachineBlockEntity refinery = machine(helper, new BlockPos(2, 1, 3), ModBlocks.OIL_REFINERY.get(), "oil/advanced_oil_processing");
+        refinery.fluids().fill(new FluidStack(ModFluids.CRUDE_OIL.get(), 100), IFluidHandler.FluidAction.EXECUTE);
+        refinery.fluids().fill(new FluidStack(Fluids.WATER, 50), IFluidHandler.FluidAction.EXECUTE);
+        helper.onEachTick(() -> refinery.energy().setEnergy(20_000));
+
+        helper.succeedWhen(() -> {
+            int first = FluidMachineType.INPUT_TANKS;
+            helper.assertValueEqual(refinery.tank(first).getFluidAmount(), 25, "heavy oil");
+            helper.assertValueEqual(refinery.tank(first + 1).getFluidAmount(), 45, "light oil");
+            helper.assertValueEqual(refinery.tank(first + 2).getFluidAmount(), 55, "petroleum gas");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void crackingTurnsHeavyOilAndWaterIntoLightOil(GameTestHelper helper) {
+        FluidMachineBlockEntity plant = machine(helper, new BlockPos(2, 1, 3), ModBlocks.CHEMICAL_PLANT.get(), "chem/heavy_oil_cracking");
+        plant.fluids().fill(new FluidStack(ModFluids.HEAVY_OIL.get(), 40), IFluidHandler.FluidAction.EXECUTE);
+        plant.fluids().fill(new FluidStack(Fluids.WATER, 30), IFluidHandler.FluidAction.EXECUTE);
+        helper.onEachTick(() -> plant.energy().setEnergy(20_000));
+
+        helper.succeedWhen(() -> helper.assertValueEqual(plant.tank(FluidMachineType.INPUT_TANKS).getFluidAmount(), 30, "light oil"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void solidFuelComesFromPetroleumGas(GameTestHelper helper) {
+        FluidMachineBlockEntity plant = machine(helper, new BlockPos(2, 1, 3), ModBlocks.CHEMICAL_PLANT.get(), "chem/solid_fuel_from_petroleum_gas");
+        plant.fluids().fill(new FluidStack(ModFluids.PETROLEUM_GAS.get(), 40), IFluidHandler.FluidAction.EXECUTE);
+        helper.onEachTick(() -> plant.energy().setEnergy(20_000));
+
+        helper.succeedWhen(() -> helper.assertValueEqual(plant.items().getStackInSlot(FluidMachineType.OUTPUT_SLOT).getCount(), 2, "two solid fuel"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 400)
+    public static void assemblingMachine2CraftsWithAFluidIngredient(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 3);
+        helper.setBlock(pos, ModBlocks.ASSEMBLER_2.get());
+        ProcessingMachineBlockEntity machine = helper.getBlockEntity(pos);
+        machine.setSelectedRecipe(Craftorio.id("assembling/electric_engine"));
+        helper.onEachTick(() -> machine.energy().setEnergy(20_000));
+        helper.assertTrue(machine.fluidHandler() != null, "assembling machine 2 has a fluid input");
+        helper.assertValueEqual(machine.fluidHandler().fill(new FluidStack(ModFluids.SULFURIC_ACID.get(), 100), IFluidHandler.FluidAction.SIMULATE), 0,
+                "only the recipe's fluid goes in");
+        machine.fluidHandler().fill(new FluidStack(ModFluids.LUBRICANT.get(), 15), IFluidHandler.FluidAction.EXECUTE);
+        machine.items().insertItem(0, new ItemStack(ModItems.MOTOR.get(), 1), false);
+        machine.items().insertItem(1, new ItemStack(ModItems.CIRCUIT.get(), 2), false);
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(machine.items().getStackInSlot(machine.type().outputSlot()).getCount(), 1, "an electric engine");
+            helper.assertValueEqual(machine.fluid().getFluidAmount(), 0, "15 lubricant used");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void assemblingMachine1HasNoFluidInput(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 3);
+        helper.setBlock(pos, ModBlocks.ASSEMBLER.get());
+        ProcessingMachineBlockEntity machine = helper.getBlockEntity(pos);
+        helper.assertTrue(machine.fluidHandler() == null, "assembling machine 1 takes no fluids");
+        helper.assertFalse(ProcessingMachineBlockEntity.assemblerRecipes(helper.getLevel()).stream()
+                .filter(holder -> holder.value().needsFluid()).map(holder -> holder.id()).toList().isEmpty(), "fluid recipes exist");
+        helper.succeed();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 200)
     public static void aPumpjackOnAnOilWellFillsTheRefinery(GameTestHelper helper) {
         helper.setBlock(new BlockPos(2, 1, 3), ModBlocks.OIL_WELL.get());
@@ -231,10 +298,10 @@ public final class FluidGameTests {
         helper.assertValueEqual(battery.ticks(), 80, "battery 4 s");
         helper.assertValueEqual(battery.fluidsIn().get(0).getAmount(), 20, "20 sulfuric acid per battery");
         var acid = FluidRecipes.byId(Craftorio.id("chem/sulfuric_acid")).orElseThrow();
-        helper.assertValueEqual(acid.fluidOut().getAmount(), 50, "50 sulfuric acid");
+        helper.assertValueEqual(acid.fluidsOut().get(0).getAmount(), 50, "50 sulfuric acid");
         helper.assertValueEqual(acid.itemsIn().get(0).getCount(), 5, "5 sulfur");
         var oil = FluidRecipes.byId(Craftorio.id("oil/basic_oil_processing")).orElseThrow();
-        helper.assertValueEqual(oil.fluidsIn().get(0).getAmount() + ":" + oil.fluidOut().getAmount(), "100:45", "basic oil processing");
+        helper.assertValueEqual(oil.fluidsIn().get(0).getAmount() + ":" + oil.fluidsOut().get(0).getAmount(), "100:45", "basic oil processing");
         helper.assertValueEqual(oil.ticks(), 100, "5 s");
         helper.succeed();
     }

@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 /** Stone furnace (fuel), electric furnace or assembler (grid power). */
-public final class ProcessingMachineBlock extends MachineBaseBlock {
+public final class ProcessingMachineBlock extends MachineBaseBlock implements de.craftorio.fluid.FluidConnector {
     private final MachineType machineType;
     private final MapCodec<ProcessingMachineBlock> codec;
 
@@ -29,6 +29,11 @@ public final class ProcessingMachineBlock extends MachineBaseBlock {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return codec;
+    }
+
+    @Override
+    public boolean connectsFluid(BlockState state, net.minecraft.core.Direction face) {
+        return machineType.fluidInput();
     }
 
     @Override

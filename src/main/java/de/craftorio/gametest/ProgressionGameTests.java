@@ -63,7 +63,17 @@ public final class ProgressionGameTests {
         }
         for (RecipeType<MachineRecipe> type : List.of(ModRecipes.SMELTING.get(), ModRecipes.ASSEMBLING.get())) {
             for (RecipeHolder<MachineRecipe> holder : recipes.getAllRecipesFor(type)) {
-                steps.add(new Step("machine recipe " + holder.id(), holder.id().toString(), sized(holder.value().ingredients()),
+                List<List<Item>> ingredients = new ArrayList<>(sized(holder.value().ingredients()));
+                // Fluid ingredients need assembling machine 2 (or better) and the fluid itself.
+                if (holder.value().needsFluid()) {
+                    ingredients.add(List.of(ModItems.ASSEMBLER_2.get()));
+                    holder.value().fluids().forEach(fluid -> {
+                        if (fluid.getFluid() != Fluids.WATER) {
+                            ingredients.add(List.of(fluidStandIn(fluid.getFluid())));
+                        }
+                    });
+                }
+                steps.add(new Step("machine recipe " + holder.id(), holder.id().toString(), ingredients,
                         List.of(holder.value().result().getItem())));
             }
         }
@@ -100,9 +110,7 @@ public final class ProgressionGameTests {
             if (!recipe.itemOut().isEmpty()) {
                 results.add(recipe.itemOut().getItem());
             }
-            if (!recipe.fluidOut().isEmpty()) {
-                results.add(fluidStandIn(recipe.fluidOut().getFluid()));
-            }
+            recipe.fluidsOut().forEach(fluid -> results.add(fluidStandIn(fluid.getFluid())));
             steps.add(new Step("fluid recipe " + recipe.id(), recipe.id().toString(), ingredients, results));
         }
         return steps;
@@ -205,7 +213,19 @@ public final class ProgressionGameTests {
         if (fluid == ModFluids.CRUDE_OIL.get()) {
             return CRUDE_OIL;
         }
-        return fluid == ModFluids.PETROLEUM_GAS.get() ? Items.GREEN_DYE : Items.YELLOW_DYE;
+        if (fluid == ModFluids.PETROLEUM_GAS.get()) {
+            return Items.GREEN_DYE;
+        }
+        if (fluid == ModFluids.HEAVY_OIL.get()) {
+            return Items.RED_DYE;
+        }
+        if (fluid == ModFluids.LIGHT_OIL.get()) {
+            return Items.ORANGE_DYE;
+        }
+        if (fluid == ModFluids.LUBRICANT.get()) {
+            return Items.BROWN_DYE;
+        }
+        return Items.YELLOW_DYE; // sulfuric acid
     }
 
     private static boolean addResources(Set<Item> have, Block... fields) {

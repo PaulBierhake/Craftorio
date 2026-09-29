@@ -41,7 +41,7 @@ import java.util.List;
  * products in the output slot or the output tank (which is pushed into the pipes around the machine).
  */
 public final class FluidMachineBlockEntity extends BlockEntity implements MenuProvider, MachineBaseBlock.DropsContents {
-    private static final int OUTPUT_TANK = FluidMachineType.INPUT_TANKS;
+    private static final int FIRST_OUTPUT = FluidMachineType.INPUT_TANKS;
     private static final int PUSH = 60;
 
     private final FluidMachineType type;
@@ -59,7 +59,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
             setChanged();
         }
     };
-    private final FluidBuffer[] tanks = new FluidBuffer[FluidMachineType.INPUT_TANKS + 1];
+    private final FluidBuffer[] tanks = new FluidBuffer[FluidMachineType.INPUT_TANKS + FluidMachineType.OUTPUT_TANKS];
     private final IItemHandler itemAutomation = new ItemAutomation();
     private final IFluidHandler fluids = new Fluids();
     private int progress;
@@ -146,8 +146,11 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
         progress = 0;
         FluidRecipes.Recipe recipe = selected();
         // Fluids the new recipe does not use would block its tanks: they are let go.
-        for (int i = 0; i < FluidMachineType.INPUT_TANKS; i++) {
-            FluidStack wanted = recipe != null && i < recipe.fluidsIn().size() ? recipe.fluidsIn().get(i) : FluidStack.EMPTY;
+        for (int i = 0; i < tanks.length; i++) {
+            boolean input = i < FIRST_OUTPUT;
+            int index = input ? i : i - FIRST_OUTPUT;
+            List<FluidStack> list = recipe == null ? List.of() : input ? recipe.fluidsIn() : recipe.fluidsOut();
+            FluidStack wanted = index < list.size() ? list.get(index) : FluidStack.EMPTY;
             if (!tanks[i].isEmpty() && (wanted.isEmpty() || !FluidStack.isSameFluid(wanted, tanks[i].getFluid()))) {
                 tanks[i].setFluid(FluidStack.EMPTY);
             }
@@ -192,11 +195,14 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
         } else if (recipe == null || !canWork(recipe)) {
             progress = 0;
         }
-        if (!tanks[OUTPUT_TANK].isEmpty()) {
+        for (int out = FIRST_OUTPUT; out < tanks.length; out++) {
+            if (tanks[out].isEmpty()) {
+                continue;
+            }
             for (Direction direction : Direction.values()) {
                 IFluidHandler neighbour = FluidHelper.neighbour(level, pos, direction);
                 if (neighbour != null) {
-                    FluidHelper.push(tanks[OUTPUT_TANK], neighbour, PUSH);
+                    FluidHelper.push(tanks[out], neighbour, PUSH);
                 }
             }
         }
@@ -225,9 +231,14 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
                 return false;
             }
         }
-        FluidStack fluidOut = recipe.fluidOut();
-        return fluidOut.isEmpty() || (tanks[OUTPUT_TANK].space() >= fluidOut.getAmount()
-                && (tanks[OUTPUT_TANK].isEmpty() || FluidStack.isSameFluid(tanks[OUTPUT_TANK].getFluid(), fluidOut)));
+        for (int i = 0; i < recipe.fluidsOut().size(); i++) {
+            FluidStack made = recipe.fluidsOut().get(i);
+            FluidBuffer tank = tanks[FIRST_OUTPUT + i];
+            if (tank.space() < made.getAmount() || (!tank.isEmpty() && !FluidStack.isSameFluid(tank.getFluid(), made))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void finish(FluidRecipes.Recipe recipe) {
@@ -246,8 +257,8 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
                 items.setStackInSlot(FluidMachineType.OUTPUT_SLOT, have);
             }
         }
-        if (!recipe.fluidOut().isEmpty()) {
-            tanks[OUTPUT_TANK].fill(recipe.fluidOut().copy(), IFluidHandler.FluidAction.EXECUTE);
+        for (int i = 0; i < recipe.fluidsOut().size(); i++) {
+            tanks[FIRST_OUTPUT + i].fill(recipe.fluidsOut().get(i).copy(), IFluidHandler.FluidAction.EXECUTE);
         }
     }
 
@@ -384,12 +395,22 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
-            return tanks[OUTPUT_TANK].drain(resource, action);
+            for (int i = FIRST_OUTPUT; i < tanks.length; i++) {
+                if (FluidStack.isSameFluid(tanks[i].getFluid(), resource)) {
+                    return tanks[i].drain(resource, action);
+                }
+            }
+            return FluidStack.EMPTY;
         }
 
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
-            return tanks[OUTPUT_TANK].drain(maxDrain, action);
+            for (int i = FIRST_OUTPUT; i < tanks.length; i++) {
+                if (!tanks[i].isEmpty()) {
+                    return tanks[i].drain(maxDrain, action);
+                }
+            }
+            return FluidStack.EMPTY;
         }
     }
 }
