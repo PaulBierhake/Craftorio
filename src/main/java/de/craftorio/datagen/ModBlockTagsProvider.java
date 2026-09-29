@@ -52,7 +52,7 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.MINE_RUBBLE.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.URANIUM_ORE_FIELD.get(), ModBlocks.MINE_SHAFT.get(),
                 ModBlocks.ELECTRIC_DRILL.get(), ModBlocks.DEEP_DRILL.get(), ModBlocks.FAST_BELT.get(), ModBlocks.EXPRESS_BELT.get(),
-                ModBlocks.REACTOR.get(), ModBlocks.LASER_TOWER.get());
+                ModBlocks.REACTOR.get(), ModBlocks.HEAT_PIPE.get(), ModBlocks.HEAT_EXCHANGER.get(), ModBlocks.STEAM_TURBINE.get(), ModBlocks.LASER_TOWER.get());
         tag(BlockTags.NEEDS_DIAMOND_TOOL).add(ModBlocks.URANIUM_ORE_FIELD.get());
     }
 }

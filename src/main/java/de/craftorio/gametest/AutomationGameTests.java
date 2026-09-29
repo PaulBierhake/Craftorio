@@ -3,8 +3,6 @@ package de.craftorio.gametest;
 import de.craftorio.Craftorio;
 import de.craftorio.logistics.ConveyorBeltBlock;
 import de.craftorio.logistics.InserterBlock;
-import de.craftorio.energy.GeneratorBlockEntity;
-import de.craftorio.energy.GeneratorType;
 import de.craftorio.machine.DrillBlock;
 import de.craftorio.machine.DrillTier;
 import de.craftorio.registry.ModBlocks;
@@ -182,22 +180,6 @@ public final class AutomationGameTests {
         DrillBlockEntity entity = helper.getBlockEntity(drill);
         helper.assertTrue(entity.fluidHandler() == null, "the burner drill takes no fluids");
         helper.succeed();
-    }
-
-    @GameTest(template = EMPTY, timeoutTicks = 100)
-    public static void reactorBurnsFuelCellsOnly(GameTestHelper helper) {
-        BlockPos pos = new BlockPos(2, 1, 2);
-        helper.setBlock(pos, ModBlocks.REACTOR.get());
-        IItemHandler fuel = handler(helper, pos, Direction.UP);
-        helper.assertTrue(fuel.insertItem(0, new ItemStack(Items.COAL), false).getCount() == 1, "reactor rejects coal");
-        fuel.insertItem(0, new ItemStack(ModItems.URANIUM_FUEL_CELL.get()), false);
-        GeneratorBlockEntity reactor = helper.getBlockEntity(pos);
-
-        helper.runAtTickTime(50, () -> {
-            helper.assertTrue(reactor.energy().getEnergyStored() >= 40 * GeneratorType.REACTOR.fePerTick(), "reactor output");
-            helper.assertValueEqual(reactor.energy().getMaxEnergyStored(), GeneratorType.REACTOR.capacity(), "reactor buffer");
-            helper.succeed();
-        });
     }
 
     @GameTest(template = EMPTY)

@@ -94,6 +94,11 @@ public final class RecipeTableGameTests {
             new Object[]{"flying_robot_frame", 1, List.of(of(ModItems.ELECTRIC_ENGINE.get(), 1), of(ModItems.BATTERY.get(), 2), of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.CIRCUIT.get(), 3))},
             new Object[]{"low_density_structure", 1, List.of(of(ModItems.STEEL_PLATE.get(), 2), of(Items.COPPER_INGOT, 20), of(ModItems.PLASTIC_BAR.get(), 5))},
             new Object[]{"centrifuge", 1, List.of(of(ModItems.CONCRETE.get(), 100), of(ModItems.STEEL_PLATE.get(), 50), of(ModItems.ADVANCED_CIRCUIT.get(), 100), of(ModItems.IRON_GEAR.get(), 100))},
+            // Wiki 1.1 asks 500 of each for the reactor; a blueprint is built from the player's inventory, so it takes 100 (see docs §11)
+            new Object[]{"reactor", 1, List.of(of(ModItems.CONCRETE.get(), 100), of(ModItems.STEEL_PLATE.get(), 100), of(ModItems.ADVANCED_CIRCUIT.get(), 100), of(Items.COPPER_INGOT, 100))},
+            new Object[]{"heat_pipe", 1, List.of(of(Items.COPPER_INGOT, 20), of(ModItems.STEEL_PLATE.get(), 10))},
+            new Object[]{"heat_exchanger", 1, List.of(of(Items.COPPER_INGOT, 100), of(ModItems.PIPE.get(), 10), of(ModItems.STEEL_PLATE.get(), 10))},
+            new Object[]{"steam_turbine", 1, List.of(of(Items.COPPER_INGOT, 50), of(ModItems.IRON_GEAR.get(), 50), of(ModItems.PIPE.get(), 20))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );
 
@@ -295,6 +300,13 @@ public final class RecipeTableGameTests {
                 problems.add(row.id() + " has other ingredients or products than the table");
             }
         }
+        // nuclear power (wiki 1.1): 40 MW reactor, 200 s cell, 10 MW / 103 steam per s exchanger, 60 steam per s and 5.82 MW turbine
+        helper.assertValueEqual(de.craftorio.heat.HeatLogic.REACTOR_HEAT, 40 * 1000, "reactor 40 MW");
+        helper.assertValueEqual(de.craftorio.heat.HeatLogic.CELL_TICKS, 200 * 20, "a cell burns 200 s");
+        helper.assertValueEqual(de.craftorio.heat.HeatLogic.EXCHANGER_HEAT, 10 * 1000, "exchanger 10 MW");
+        helper.assertValueEqual(de.craftorio.heat.HeatLogic.TURBINE_POWER, 5_820, "turbine 5.82 MW");
+        helper.assertValueEqual(de.craftorio.heat.HeatLogic.TURBINE_STEAM_PER_TICK * 20, 60, "turbine 60 steam/s");
+        helper.assertValueEqual(de.craftorio.heat.HeatLogic.STEAM_TEMPERATURE, 500.0, "steam is made from 500 °C");
         helper.assertValueEqual(de.craftorio.machine.DrillBlockEntity.ACID_PER_ORE, 1, "10 acid per 10 uranium ore");
         helper.assertValueEqual(de.craftorio.machine.DrillBlockEntity.URANIUM_SLOWDOWN, 2, "uranium ore is mined at half speed");
         helper.assertValueEqual(de.craftorio.fluid.FluidMachineType.CENTRIFUGE.power(), 350, "centrifuge 350 kW");

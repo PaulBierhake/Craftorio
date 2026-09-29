@@ -170,9 +170,16 @@ public final class ModBlueprints {
         add(context, "deep_drill", stack(ModItems.DEEP_DRILL.get(), 1),
                 SizedIngredient.of(ModItems.ELECTRIC_DRILL.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 12),
                 SizedIngredient.of(ModItems.MOTOR.get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 2));
+        // Wiki 1.1: 500 of each. A blueprint is built from the player's inventory only, so the reactor takes a fifth of that.
         add(context, "reactor", stack(ModItems.REACTOR.get(), 1),
-                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 20), SizedIngredient.of(ModItems.STONE_BRICK.get(), 32),
-                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 8), SizedIngredient.of(ModItems.BATTERY.get(), 8));
+                SizedIngredient.of(ModItems.CONCRETE.get(), 100), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 100),
+                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 100), SizedIngredient.of(Items.COPPER_INGOT, 100));
+        add(context, "heat_pipe", stack(ModItems.HEAT_PIPE.get(), 1),
+                SizedIngredient.of(Items.COPPER_INGOT, 20), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 10));
+        add(context, "heat_exchanger", stack(ModItems.HEAT_EXCHANGER.get(), 1),
+                SizedIngredient.of(Items.COPPER_INGOT, 100), SizedIngredient.of(ModItems.PIPE.get(), 10), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 10));
+        add(context, "steam_turbine", stack(ModItems.STEAM_TURBINE.get(), 1),
+                SizedIngredient.of(Items.COPPER_INGOT, 50), SizedIngredient.of(ModItems.IRON_GEAR.get(), 50), SizedIngredient.of(ModItems.PIPE.get(), 20));
         add(context, "laser_tower", stack(ModItems.LASER_TOWER.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 20), SizedIngredient.of(ModItems.CIRCUIT.get(), 20),
                 SizedIngredient.of(ModItems.BATTERY.get(), 12));

@@ -6,7 +6,6 @@ import de.craftorio.Craftorio;
 import de.craftorio.economy.block.TradingPostBlockEntity;
 import de.craftorio.defense.TowerBlockEntity;
 import de.craftorio.defense.TowerRuinBlockEntity;
-import de.craftorio.energy.GeneratorBlockEntity;
 import de.craftorio.energy.PowerPoleBlockEntity;
 import de.craftorio.machine.ProcessingMachineBlockEntity;
 import de.craftorio.research.LaboratoryBlockEntity;
@@ -51,8 +50,20 @@ public final class ModBlockEntities {
                     ModBlocks.FAST_INSERTER.get(), ModBlocks.FILTER_INSERTER.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorBlockEntity>> GENERATOR = BLOCK_ENTITIES.register("generator",
-            () -> BlockEntityType.Builder.of(GeneratorBlockEntity::new, ModBlocks.REACTOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.heat.ReactorBlockEntity>> REACTOR = BLOCK_ENTITIES.register("reactor",
+            () -> BlockEntityType.Builder.of(de.craftorio.heat.ReactorBlockEntity::new, ModBlocks.REACTOR.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.heat.HeatPipeBlockEntity>> HEAT_PIPE = BLOCK_ENTITIES.register("heat_pipe",
+            () -> BlockEntityType.Builder.of(de.craftorio.heat.HeatPipeBlockEntity::new, ModBlocks.HEAT_PIPE.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.heat.HeatExchangerBlockEntity>> HEAT_EXCHANGER = BLOCK_ENTITIES.register("heat_exchanger",
+            () -> BlockEntityType.Builder.of(de.craftorio.heat.HeatExchangerBlockEntity::new, ModBlocks.HEAT_EXCHANGER.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.SteamTurbineBlockEntity>> STEAM_TURBINE = BLOCK_ENTITIES.register("steam_turbine",
+            () -> BlockEntityType.Builder.of(de.craftorio.energy.SteamTurbineBlockEntity::new, ModBlocks.STEAM_TURBINE.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PowerPoleBlockEntity>> POWER_POLE = BLOCK_ENTITIES.register("power_pole",
@@ -138,8 +149,10 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, DRILL.get(), (drill, side) -> drill.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CONVEYOR_BELT.get(), ConveyorBeltBlockEntity::handler);
 
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, GENERATOR.get(), (generator, side) -> insertOnly(generator.fuel()));
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, GENERATOR.get(), (generator, side) -> generator.energy());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, REACTOR.get(), (reactor, side) -> reactor.automation());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, STEAM_TURBINE.get(), (turbine, side) -> turbine.energy());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, STEAM_TURBINE.get(), (turbine, side) -> turbine.steam());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, HEAT_EXCHANGER.get(), (exchanger, side) -> exchanger.handler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.type().usesFuel() ? null : machine.energy());
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.fluidHandler());

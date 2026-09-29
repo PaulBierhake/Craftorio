@@ -271,7 +271,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag) und **U11b** (Uran).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran) und **U11c** (Kernkraft).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -351,6 +351,10 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   befördert jetzt auch Flüssigkeiten, damit die Säure hinunterkommt). Die *Zentrifuge* (Forschung Uranverarbeitung) trennt 10 Erz in 12 s
   in U-235 (0,7 %) und U-238; daraus werden Uran-Brennstoffzellen (Montagemaschine) und Uran-Magazine. Kovarex-Anreicherung und
   Wiederaufbereitung verbrauchter Zellen sind eigene Zentrifugenrezepte mit eigener Forschung.
+- **Kernkraft (U11c)**: Der *Kernreaktor* verbrennt eine Uran-Brennstoffzelle in 200 s zu 40 MW Wärme (+100 % je angrenzendem laufendem
+  Reaktor) und lädt neue Zellen nur unter der im GUI eingestellten Temperatur. *Wärmerohre* leiten die Wärme zu *Wärmetauschern*
+  (10 MW, ab 500 °C, ~103 Hochdruckdampf/s aus Wasser), *Dampfturbinen* machen aus 60 Hochdruckdampf/s 5,82 MW. Faustregel wie in
+  Factorio: 1 Reaktor : 4 Wärmetauscher : 7 Turbinen. Der Reaktor kostet hier 100 statt 500 von jedem Bauteil.
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

@@ -167,6 +167,9 @@ public final class ModLanguageProvider {
             add("craftorio.workbench.can_build", "ready to build");
             add("craftorio.boiler.water", "Water: connected");
             add("craftorio.boiler.no_water", "No water: connect an offshore pump or a pipe with water");
+            add("craftorio.steam_turbine.status.0", "Running: 5.82 MW");
+            add("craftorio.steam_turbine.status.2", "No hot steam: connect a heat exchanger or a pipe with hot steam");
+            add("craftorio.steam_turbine.status.3", "Ready, but nobody takes the power: connect a power pole and a consumer");
             add("craftorio.steam_engine.status.0", "Running: 900 kW");
             add("craftorio.steam_engine.status.1", "No steam: put a boiler or a pipe with steam next to the engine");
             add("craftorio.steam_engine.status.3", "Ready, but nobody takes the power: connect a power pole and a consumer");
@@ -277,7 +280,7 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.fast_belt.desc", "Fast belt: 30 items/s.");
             add("craftorio.blueprint.mine_shaft.desc", "Mine shaft: built in an unlocked cave area, it drills down into the mines.");
             add("craftorio.blueprint.deep_drill.desc", "Deep drill: mines a 5×5 area at up to 3 items/s for 150 kW.");
-            add("craftorio.blueprint.reactor.desc", "Reactor: burns uranium fuel cells for 8 MW of endgame power (until the nuclear rework).");
+            add("craftorio.blueprint.reactor.desc", "Reactor: burns one uranium fuel cell in 200 s for 40 MW of heat (+100 % per adjacent running reactor). Heat goes into heat pipes and heat exchangers.");
             add("craftorio.blueprint.laser_tower.desc", "Laser tower: long-range energy beam that burns through armour; needs power from the arena feeder.");
             add("craftorio.blueprint.locked", "This recipe needs a research first");
 
@@ -387,7 +390,19 @@ public final class ModLanguageProvider {
             add(ModBlocks.DEEP_DRILL.get(), "Deep Drill");
             add(ModBlocks.FAST_BELT.get(), "Fast Belt");
             add(ModBlocks.EXPRESS_BELT.get(), "Express Belt");
-            add(ModBlocks.REACTOR.get(), "Reactor");
+            add(ModBlocks.REACTOR.get(), "Nuclear Reactor");
+            add(ModBlocks.HEAT_PIPE.get(), "Heat Pipe");
+            add(ModBlocks.HEAT_EXCHANGER.get(), "Heat Exchanger");
+            add(ModBlocks.STEAM_TURBINE.get(), "Steam Turbine");
+            add("fluid_type.craftorio.hot_steam", "Hot Steam");
+            add("craftorio.blueprint.heat_pipe.desc", "Heat pipe: carries heat from the reactor to the heat exchangers (arms connect by themselves).");
+            add("craftorio.blueprint.heat_exchanger.desc", "Heat exchanger: 10 MW of heat turn water into hot steam (about 103 units/s), needs 500 °C.");
+            add("craftorio.blueprint.steam_turbine.desc", "Steam turbine: 60 hot steam per second give 5.82 MW. One reactor runs 4 heat exchangers and 7 turbines.");
+            add("craftorio.heat.temperature", "Temperature: %s °C");
+            add("craftorio.heat_exchanger.status", "Heat exchanger: %s °C · water %s · steam %s");
+            add("craftorio.reactor.temperature", "Temperature: %s °C");
+            add("craftorio.reactor.heat", "Heat: %s MW");
+            add("craftorio.reactor.limit", "New cell below %s °C");
             add(ModBlocks.LASER_TOWER.get(), "Laser Tower");
             add("entity.craftorio.crystal_golem", "Crystal Golem");
             add("craftorio.command.layer_unlocked", "Unlocked %s chunks of the layer (Y %s to %s); they are being dug out.");
@@ -852,6 +867,9 @@ public final class ModLanguageProvider {
             add("craftorio.workbench.can_build", "baubereit");
             add("craftorio.boiler.water", "Wasser: angeschlossen");
             add("craftorio.boiler.no_water", "Kein Wasser: Offshore-Pumpe oder ein Rohr mit Wasser anschließen");
+            add("craftorio.steam_turbine.status.0", "Läuft: 5,82 MW");
+            add("craftorio.steam_turbine.status.2", "Kein Hochdruckdampf: Wärmetauscher oder Rohr mit Hochdruckdampf anschließen");
+            add("craftorio.steam_turbine.status.3", "Bereit, aber niemand nimmt den Strom ab: Strommast und Verbraucher anschließen");
             add("craftorio.steam_engine.status.0", "Läuft: 900 kW");
             add("craftorio.steam_engine.status.1", "Kein Dampf: Kessel oder Rohr mit Dampf neben die Maschine setzen");
             add("craftorio.steam_engine.status.3", "Bereit, aber niemand nimmt den Strom ab: Strommast und Verbraucher anschließen");
@@ -962,7 +980,7 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.fast_belt.desc", "Schnelles Band: 30 Items/s.");
             add("craftorio.blueprint.mine_shaft.desc", "Minenschacht: in einem freigeschalteten Höhlenbereich gebaut, bohrt er sich in die Minen.");
             add("craftorio.blueprint.deep_drill.desc", "Tiefenbohrer: baut 5×5 mit bis zu 3 Items/s ab, 150 kW.");
-            add("craftorio.blueprint.reactor.desc", "Reaktor: verbrennt Uran-Brennstoffzellen für 8 MW Endgame-Strom (bis zum Kernkraft-Umbau).");
+            add("craftorio.blueprint.reactor.desc", "Reaktor: verbrennt eine Uran-Brennstoffzelle in 200 s zu 40 MW Wärme (+100 % je angrenzendem laufendem Reaktor). Die Wärme geht in Wärmerohre und Wärmetauscher.");
             add("craftorio.blueprint.laser_tower.desc", "Laserturm: energiereicher Strahl mit großer Reichweite, der Panzerung durchbrennt; braucht Strom vom Arena-Einspeiser.");
             add("craftorio.blueprint.locked", "Für dieses Rezept fehlt eine Forschung");
 
@@ -1072,7 +1090,19 @@ public final class ModLanguageProvider {
             add(ModBlocks.DEEP_DRILL.get(), "Tiefenbohrer");
             add(ModBlocks.FAST_BELT.get(), "Schnelles Förderband");
             add(ModBlocks.EXPRESS_BELT.get(), "Express-Förderband");
-            add(ModBlocks.REACTOR.get(), "Reaktor");
+            add(ModBlocks.REACTOR.get(), "Kernreaktor");
+            add(ModBlocks.HEAT_PIPE.get(), "Wärmerohr");
+            add(ModBlocks.HEAT_EXCHANGER.get(), "Wärmetauscher");
+            add(ModBlocks.STEAM_TURBINE.get(), "Dampfturbine");
+            add("fluid_type.craftorio.hot_steam", "Hochdruckdampf");
+            add("craftorio.blueprint.heat_pipe.desc", "Wärmerohr: leitet Wärme vom Reaktor zu den Wärmetauschern (die Arme verbinden sich von selbst).");
+            add("craftorio.blueprint.heat_exchanger.desc", "Wärmetauscher: 10 MW Wärme machen Wasser zu Hochdruckdampf (etwa 103 Einheiten/s), braucht 500 °C.");
+            add("craftorio.blueprint.steam_turbine.desc", "Dampfturbine: 60 Hochdruckdampf pro Sekunde geben 5,82 MW. Ein Reaktor versorgt 4 Wärmetauscher und 7 Turbinen.");
+            add("craftorio.heat.temperature", "Temperatur: %s °C");
+            add("craftorio.heat_exchanger.status", "Wärmetauscher: %s °C · Wasser %s · Dampf %s");
+            add("craftorio.reactor.temperature", "Temperatur: %s °C");
+            add("craftorio.reactor.heat", "Wärme: %s MW");
+            add("craftorio.reactor.limit", "Neue Zelle unter %s °C");
             add(ModBlocks.LASER_TOWER.get(), "Laserturm");
             add("entity.craftorio.crystal_golem", "Kristallgolem");
             add("craftorio.command.layer_unlocked", "%s Chunks der Schicht freigeschaltet (Y %s bis %s); sie werden ausgehöhlt.");

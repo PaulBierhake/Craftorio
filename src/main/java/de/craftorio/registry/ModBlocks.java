@@ -10,8 +10,6 @@ import de.craftorio.defense.arena.ArenaBlocks;
 import de.craftorio.defense.arena.ArenaFeederBlock;
 import de.craftorio.blueprint.WorkbenchBlock;
 import de.craftorio.economy.block.TradingPostBlock;
-import de.craftorio.energy.GeneratorBlock;
-import de.craftorio.energy.GeneratorType;
 import de.craftorio.energy.PoleTier;
 import de.craftorio.energy.PowerPoleBlock;
 import de.craftorio.energy.SolarPanelBlock;
@@ -134,9 +132,18 @@ public final class ModBlocks {
             de.craftorio.fluid.FluidPumpBlock::new, machineProperties());
     public static final DeferredBlock<de.craftorio.energy.OffshorePumpBlock> OFFSHORE_PUMP = BLOCKS.registerBlock("offshore_pump",
             de.craftorio.energy.OffshorePumpBlock::new, machineProperties().noOcclusion());
-    public static final DeferredBlock<GeneratorBlock> REACTOR = BLOCKS.registerBlock("reactor",
-            properties -> new GeneratorBlock(GeneratorType.REACTOR, properties),
+    public static final DeferredBlock<de.craftorio.heat.ReactorBlock> REACTOR = BLOCKS.registerBlock("reactor",
+            de.craftorio.heat.ReactorBlock::new,
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 15 : 4));
+    public static final DeferredBlock<de.craftorio.heat.HeatPipeBlock> HEAT_PIPE = BLOCKS.registerBlock("heat_pipe",
+            de.craftorio.heat.HeatPipeBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(1.5F).noOcclusion().sound(SoundType.METAL));
+    public static final DeferredBlock<de.craftorio.heat.HeatExchangerBlock> HEAT_EXCHANGER = BLOCKS.registerBlock("heat_exchanger",
+            de.craftorio.heat.HeatExchangerBlock::new,
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 8 : 0));
+    public static final DeferredBlock<de.craftorio.energy.SteamTurbineBlock> STEAM_TURBINE = BLOCKS.registerBlock("steam_turbine",
+            de.craftorio.energy.SteamTurbineBlock::new,
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 4 : 0));
 
     public static final DeferredBlock<PowerPoleBlock> POWER_POLE = BLOCKS.registerBlock("power_pole",
             properties -> new PowerPoleBlock(PoleTier.SMALL, properties),

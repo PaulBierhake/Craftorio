@@ -1,7 +1,6 @@
 package de.craftorio.registry;
 
 import de.craftorio.Craftorio;
-import de.craftorio.menu.GeneratorMenu;
 import de.craftorio.menu.ProcessingMachineMenu;
 import de.craftorio.menu.TerminalMenu;
 import de.craftorio.menu.TowerMenu;
@@ -15,8 +14,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModMenus {
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, Craftorio.MOD_ID);
 
-    public static final DeferredHolder<MenuType<?>, MenuType<GeneratorMenu>> GENERATOR =
-            MENUS.register("generator", () -> IMenuTypeExtension.create(GeneratorMenu::new));
+    public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.ReactorMenu>> REACTOR =
+            MENUS.register("reactor", () -> IMenuTypeExtension.create(de.craftorio.menu.ReactorMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<ProcessingMachineMenu>> PROCESSING_MACHINE =
             MENUS.register("processing_machine", () -> IMenuTypeExtension.create(ProcessingMachineMenu::new));
 

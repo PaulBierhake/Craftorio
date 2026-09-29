@@ -682,13 +682,28 @@ Abweichung von §11.10: NeoForge 21.1 hat kein `MissingMappingsEvent`, `fuel_rod
 (sie verschwinden). Tests: Rezepttabellen-Test (Zentrifuge, Zellen, Magazin, Forschung), GameTests für Bohrer mit/ohne Säure, Zentrifuge, Kovarex,
 Aufzug mit Flüssigkeit und Statistik über 200.000 Läufe.
 
+**Umgesetzt (U11c), gegen das Factorio-1.1-Wiki geprüft.** Wärmenetz: reine Regeln in `HeatLogic` (Unit-Tests), Wärme in FE wie Strom
+(1 MJ = 20.000 FE, also Wärmerohr und Wärmetauscher 20.000 FE/°C, Reaktor 200.000 FE/°C = 10 MJ/°C; 15–1000 °C). Jede Verbindung leitet mit
+der halben Kapazität je Nachbar mal Temperaturdifferenz, dadurch überschwingt kein Knoten, in welcher Reihenfolge die Blöcke ticken; ein
+40-MW-Strang schafft rund 60 Wärmerohre. Kernreaktor (40 MW, Zelle 200 s unabhängig von der Last, +100 % je angrenzendem laufendem
+Reaktor in allen sechs Richtungen, GUI mit Brennstoff- und Ausgangsslot, Temperaturanzeige und Grenze 500–1000 °C für neue Zellen,
+Standard 900 °C), Wärmerohr (Kupfer 20 + Stahl 10), Wärmetauscher (10 MW, ab 500 °C, ~103 Hochdruckdampf/s aus Wasser 1:1; Kupfer 100 + 10 Rohre + 10 Stahl),
+Dampfturbine (60 Hochdruckdampf/s → 5,82 MW, nur bei Abnahme; Kupfer 50 + 50 Zahnräder + 20 Rohre). Hochdruckdampf ist ein eigenes
+Fluid (`hot_steam`), Dampfmaschinen nehmen nur `steam`, Turbinen nur `hot_steam`. Der alte Generator-Code (`GeneratorBlock` usw.) ist entfernt;
+die Block-ID `reactor` bleibt (alte Block-Entities werden beim Laden verworfen). **Abweichung:** Ein Bauplan wird nur aus dem Spielerinventar
+gebaut, 4 × 500 Items passen nicht hinein, der Reaktor kostet daher 100 Beton + 100 Stahl + 100 fortschrittliche Schaltkreise + 100 Kupferplatten.
+Die Wiederaufbereitung (Zentrifugenrezept) kam schon mit U11b. Der Strom-/Netzcode zählt weiter mit `int` (die Summen bleiben unter 2,1 Mrd. FE/t).
+Tests: `HeatLogicTest`, `NuclearGameTests` (40 MW und Temperaturanstieg, Nachbarbonus 80/120 MW, Zelle 200 s mit verbrauchter Zelle,
+Ladegrenze, Wärmerohr bis Dampf, 500-°C-Grenze und Dampfarten, **1 Reaktor + 4 Tauscher + 7 Turbinen tragen 7 × 5,82 MW**; die Tauscher
+stehen zwischen den Turbinen, weil ein langes Rohr nur die halbe Füllstandsdifferenz je Tick weitergibt) und Rezepttabelle.
+
 ### 11.11 Pakete (Reihenfolge, je ein Commit)
 
 | Paket | Inhalt | Akzeptanz |
 |---|---|---|
 | **U11a – Bereinigung und Öl-Nachtrag** ✅ | Forschungskorrekturen (§11.6 oben), mehrere Flüssigkeitsausgänge, fortgeschrittene Ölverarbeitung, Cracking, Schmiermittel, fester Brennstoff, Express-Band mit Schmiermittel, Beton (Item + Block), Schiene, Prozessor, Elektromotor, Flugrahmen, Leichtbaustruktur, Montagemaschine 2 mit Flüssigkeitseingang für Beton/Prozessor | Rezepttabellen-Test um §11.3 erweitert und grün; Progressionstest grün; GameTest: Raffinerie liefert drei Fluide, Cracking wandelt um |
 | **U11b – Uran** ✅ | Bohrer mit Flüssigkeitseingang, Uranabbau mit Säure, Säure in die Minen (§11.8), Zentrifuge (Block, Menü), Uranverarbeitung mit Wahrscheinlichkeit, U-235/U-238, Brennstoffzelle, Uran-Magazin, Forschung Uranverarbeitung | GameTests: Bohrer ohne Säure fördert nichts, mit Säure schon; Zentrifuge 10.000 Läufe ≈ 0,7 % U-235 |
-| **U11c – Kernkraft** | Wärmenetz (`HeatLogic` + Unit-Tests), Kernreaktor mit Steuerung und Nachbarbonus, Wärmerohr, Wärmetauscher, Hochdruckdampf, Dampfturbine, Wiederaufbereitung, alter Reaktor migriert | GameTest: 1 Reaktor + 4 Tauscher + 7 Turbinen versorgen 40 MW Last stabil; Nachbarbonus verdoppelt die Wärme; Zelle hält 200 s |
+| **U11c – Kernkraft** ✅ | Wärmenetz (`HeatLogic` + Unit-Tests), Kernreaktor mit Steuerung und Nachbarbonus, Wärmerohr, Wärmetauscher, Hochdruckdampf, Dampfturbine, Wiederaufbereitung, alter Reaktor migriert | GameTest: 1 Reaktor + 4 Tauscher + 7 Turbinen versorgen 40 MW Last stabil; Nachbarbonus verdoppelt die Wärme; Zelle hält 200 s |
 | **U11d – Module, Montagemaschine 3, Beacon** | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |
 | **U11e – Lila und Gelb** | Pakete `PRODUCTION`/`UTILITY` im Enum, Labor und Terminal; Rezepte der Pakete; neue Forschungen aus §11.6; Diamant- und Sternen-Siegel; Kovarex; Module 3; Bergbauproduktivität (optional) | Progressionstest bis Gelb grün (mit Siegeln); GameTest: Labor akzeptiert Lila/Gelb |
 | **U11f – TD-Endgame** | Behemoth, Schwarmkönigin (Level 50), Kurve 31–50, Uran-Munition im Einspeiser und in `TowerStats`, Turmstufen 4–5, Siegel-Belohnungen 40/50 | Unit-Test der Level-Kurve; GameTest: Level 50 vergibt das Sternen-Siegel; Uran-Munition wird verbraucht |

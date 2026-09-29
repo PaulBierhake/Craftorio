@@ -76,6 +76,9 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.FAST_BELT.get());
         dropSelf(ModBlocks.EXPRESS_BELT.get());
         dropSelf(ModBlocks.REACTOR.get());
+        dropSelf(ModBlocks.HEAT_PIPE.get());
+        dropSelf(ModBlocks.HEAT_EXCHANGER.get());
+        dropSelf(ModBlocks.STEAM_TURBINE.get());
         tower(ModBlocks.LASER_TOWER.get());
     }
 

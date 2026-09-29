@@ -86,7 +86,7 @@ public final class ModResearch {
         // Uranium (U11b). Production/utility packs join the costs with U11e; Kovarex and reprocessing still lack the production pack.
         add(context, "uranium_processing", 200, 30, R_G_B, List.of("chemical_science_pack", "concrete", "mine_shaft"),
                 List.of("centrifuge", "centrifuge/uranium_processing", "assembling/uranium_fuel_cell"));
-        add(context, "nuclear_power", 800, 30, R_G_B, List.of("uranium_processing"), List.of("reactor"));
+        add(context, "nuclear_power", 800, 30, R_G_B, List.of("uranium_processing"), List.of("reactor", "heat_pipe", "heat_exchanger", "steam_turbine"));
         add(context, "kovarex_enrichment_process", 1500, 30, R_G_B, List.of("uranium_processing", "nuclear_power"), List.of("centrifuge/kovarex_enrichment"));
         add(context, "nuclear_fuel_reprocessing", 50, 30, R_G_B, List.of("nuclear_power"), List.of("centrifuge/nuclear_fuel_reprocessing"));
         add(context, "uranium_ammo", 1000, 45, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY, Pack.BLUE), List.of("uranium_processing", "military_science_pack"),

@@ -76,6 +76,19 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.OFFSHORE_PUMP.get(), models().cubeBottomTop("offshore_pump", modLoc("block/offshore_pump_side"),
                 modLoc("block/machine_top"), modLoc("block/offshore_pump_top")));
         machine(ModBlocks.REACTOR.get(), "reactor");
+        machine(ModBlocks.HEAT_EXCHANGER.get(), "heat_exchanger");
+        machine(ModBlocks.STEAM_TURBINE.get(), "steam_turbine");
+        ModelFile heatCore = models().getExistingFile(modLoc("block/heat_pipe_core"));
+        ModelFile heatArm = models().getExistingFile(modLoc("block/heat_pipe_arm"));
+        var heatParts = getMultipartBuilder(ModBlocks.HEAT_PIPE.get());
+        heatParts.part().modelFile(heatCore).addModel().end();
+        for (var direction : net.minecraft.core.Direction.values()) {
+            int x = direction == net.minecraft.core.Direction.UP ? 270 : direction == net.minecraft.core.Direction.DOWN ? 90 : 0;
+            int y = direction.getAxis().isHorizontal() ? (int) direction.toYRot() : 0;
+            heatParts.part().modelFile(heatArm).rotationX(x).rotationY((y + 180) % 360).addModel()
+                    .condition(net.minecraft.world.level.block.PipeBlock.PROPERTY_BY_DIRECTION.get(direction), true).end();
+        }
+        simpleBlockItem(ModBlocks.HEAT_PIPE.get(), models().getExistingFile(modLoc("block/heat_pipe_item")));
         machine(ModBlocks.ELECTRIC_FURNACE.get(), "electric_furnace");
         machine(ModBlocks.STONE_FURNACE.get(), "stone_furnace");
         machine(ModBlocks.STEEL_FURNACE.get(), "steel_furnace");

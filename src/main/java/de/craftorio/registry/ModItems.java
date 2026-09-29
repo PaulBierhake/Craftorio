@@ -40,6 +40,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> STEAM_ENGINE = ITEMS.registerSimpleBlockItem("steam_engine", ModBlocks.STEAM_ENGINE);
     public static final DeferredItem<BlockItem> OFFSHORE_PUMP = ITEMS.registerSimpleBlockItem("offshore_pump", ModBlocks.OFFSHORE_PUMP);
     public static final DeferredItem<BlockItem> REACTOR = ITEMS.registerSimpleBlockItem("reactor", ModBlocks.REACTOR);
+    public static final DeferredItem<BlockItem> HEAT_PIPE = ITEMS.registerSimpleBlockItem("heat_pipe", ModBlocks.HEAT_PIPE);
+    public static final DeferredItem<BlockItem> HEAT_EXCHANGER = ITEMS.registerSimpleBlockItem("heat_exchanger", ModBlocks.HEAT_EXCHANGER);
+    public static final DeferredItem<BlockItem> STEAM_TURBINE = ITEMS.registerSimpleBlockItem("steam_turbine", ModBlocks.STEAM_TURBINE);
     public static final DeferredItem<BlockItem> POWER_POLE = ITEMS.registerSimpleBlockItem("power_pole", ModBlocks.POWER_POLE);
     public static final DeferredItem<BlockItem> MEDIUM_POWER_POLE = ITEMS.registerSimpleBlockItem("medium_power_pole", ModBlocks.MEDIUM_POWER_POLE);
     public static final DeferredItem<BlockItem> SOLAR_PANEL = ITEMS.registerSimpleBlockItem("solar_panel", ModBlocks.SOLAR_PANEL);

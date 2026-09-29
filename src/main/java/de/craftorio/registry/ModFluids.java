@@ -24,6 +24,8 @@ public final class ModFluids {
     public static final Map<String, Integer> COLORS = new LinkedHashMap<>();
 
     public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> STEAM = fluid("steam", 0xFFDCE6EE, -100, 200);
+    /** 500 °C steam from the heat exchangers: only steam turbines take it. */
+    public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> HOT_STEAM = fluid("hot_steam", 0xFFF4D9C6, -100, 200);
     public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> CRUDE_OIL = fluid("crude_oil", 0xFF1A1420, 900, 3000);
     public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> HEAVY_OIL = fluid("heavy_oil", 0xFF6B2A2A, 950, 3500);
     public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> LIGHT_OIL = fluid("light_oil", 0xFFD49A2A, 850, 2000);

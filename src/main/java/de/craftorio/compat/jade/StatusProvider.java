@@ -53,6 +53,11 @@ enum StatusProvider implements IBlockComponentProvider, IServerDataProvider<Bloc
             if (tower.type().usesItemAmmo()) {
                 lines.add(Component.translatable("craftorio.jade.ammo", tower.ammo().getStackInSlot(0).getCount()));
             }
+        } else if (blockEntity instanceof de.craftorio.heat.HeatNode node) {
+            lines.add(Component.translatable("craftorio.heat.temperature", Math.round(node.temperature())));
+            if (blockEntity instanceof de.craftorio.heat.ReactorBlockEntity reactor && reactor.burning()) {
+                lines.add(Component.translatable("craftorio.reactor.heat", String.format(java.util.Locale.ROOT, "%.0f", reactor.heatPerTick() / 1000.0)));
+            }
         } else if (blockEntity instanceof TowerRuinBlockEntity ruin) {
             lines.add(Component.translatable("craftorio.jade.ruin", Credits.format(ruin.rebuildCost())).withStyle(ChatFormatting.RED));
         } else if (blockEntity instanceof CaveEntranceBlockEntity site) {

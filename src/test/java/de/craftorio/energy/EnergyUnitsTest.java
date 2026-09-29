@@ -22,7 +22,9 @@ class EnergyUnitsTest {
     void generatorsCarryTheirMachines() {
         // One 900 kW generator runs five 180 kW electric furnaces.
         assertEquals(5, Energy.STEAM_ENGINE_KW / de.craftorio.machine.MachineType.ELECTRIC_FURNACE.energyPerTick());
-        assertTrue(GeneratorType.REACTOR.fePerTick() > Energy.STEAM_ENGINE_KW);
+        assertTrue(de.craftorio.heat.HeatLogic.TURBINE_POWER > Energy.STEAM_ENGINE_KW);
+        // A pipe holds 1 MJ per degree in Factorio, which is 20,000 FE here.
+        assertEquals(Energy.FE_PER_MJ, de.craftorio.heat.HeatLogic.PIPE_CAPACITY);
     }
 
     @Test
