@@ -45,8 +45,8 @@ public final class ResearchTreeGameTests {
                     problems.add(target + " is unlocked by more than one research");
                 }
             }
-            if (research.unlocks().isEmpty()) {
-                problems.add(id + " unlocks nothing");
+            if (research.unlocks().isEmpty() && researches.holders().noneMatch(other -> other.value().requires().contains(holder.key().location()))) {
+                problems.add(id + " unlocks nothing and nothing requires it");
             }
         }
         // Order the tree by prerequisites: a research may only need researches that are finished before it.

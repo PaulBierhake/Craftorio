@@ -193,7 +193,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     private @Nullable Job findJob(Level level) {
         RecipeInput input = inputs();
         return switch (type) {
-            case ELECTRIC_FURNACE, STONE_FURNACE -> {
+            case ELECTRIC_FURNACE, STONE_FURNACE, STEEL_FURNACE -> {
                 ItemStack stack = items.getStackInSlot(0);
                 if (stack.isEmpty()) {
                     yield null;
@@ -212,7 +212,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                         .map(recipe -> new Job(recipe.value().ingredients(), recipe.value().result(), recipe.value().time()))
                         .orElse(null);
             }
-            case ASSEMBLER -> {
+            case ASSEMBLER, ASSEMBLER_2 -> {
                 MachineRecipe recipe = selectedAssemblerRecipe(level);
                 yield recipe != null && recipe.matches(input, level) ? new Job(recipe.ingredients(), recipe.result(), recipe.time()) : null;
             }
@@ -259,11 +259,11 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
             return true;
         }
         return switch (type) {
-            case ELECTRIC_FURNACE, STONE_FURNACE -> level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level).isPresent()
+            case ELECTRIC_FURNACE, STONE_FURNACE, STEEL_FURNACE -> level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level).isPresent()
                     || level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.SMELTING.type()).stream()
                     .filter(recipe -> knows(level, recipe.id()))
                     .anyMatch(recipe -> recipe.value().ingredients().stream().anyMatch(ingredient -> ingredient.ingredient().test(stack)));
-            case ASSEMBLER -> {
+            case ASSEMBLER, ASSEMBLER_2 -> {
                 MachineRecipe recipe = selectedAssemblerRecipe(level);
                 yield recipe != null && slot < recipe.ingredients().size() && recipe.ingredients().get(slot).ingredient().test(stack);
             }
@@ -304,7 +304,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
 
     /** Steps through the assembler recipes (from the GUI's arrow buttons). */
     public void cycleRecipe(int direction) {
-        if (level == null || type != MachineType.ASSEMBLER) {
+        if (level == null || !type.assembling()) {
             return;
         }
         List<RecipeHolder<MachineRecipe>> recipes = assemblerRecipes(level);

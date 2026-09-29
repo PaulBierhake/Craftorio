@@ -86,7 +86,9 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.REACTOR.get(), "reactor");
         machine(ModBlocks.ELECTRIC_FURNACE.get(), "electric_furnace");
         machine(ModBlocks.STONE_FURNACE.get(), "stone_furnace");
+        machine(ModBlocks.STEEL_FURNACE.get(), "steel_furnace");
         machine(ModBlocks.ASSEMBLER.get(), "assembler");
+        machine(ModBlocks.ASSEMBLER_2.get(), "assembler_2");
         machine(ModBlocks.LABORATORY.get(), "laboratory");
         workbench(ModBlocks.WORKBENCH.get(), "workbench");
         ModelFile terminal = models().orientable("terminal", modLoc("block/machine_side"), modLoc("block/terminal_front"), modLoc("block/machine_top"));
@@ -128,6 +130,12 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         ModelFile pole = models().getExistingFile(modLoc("block/power_pole"));
         simpleBlock(ModBlocks.POWER_POLE.get(), pole);
         simpleBlockItem(ModBlocks.POWER_POLE.get(), pole);
+        ModelFile mediumPole = models().getExistingFile(modLoc("block/medium_power_pole"));
+        simpleBlock(ModBlocks.MEDIUM_POWER_POLE.get(), mediumPole);
+        simpleBlockItem(ModBlocks.MEDIUM_POWER_POLE.get(), mediumPole);
+        ModelFile solar = models().getExistingFile(modLoc("block/solar_panel"));
+        simpleBlock(ModBlocks.SOLAR_PANEL.get(), solar);
+        simpleBlockItem(ModBlocks.SOLAR_PANEL.get(), solar);
     }
 
     private void workbench(Block block, String name) {

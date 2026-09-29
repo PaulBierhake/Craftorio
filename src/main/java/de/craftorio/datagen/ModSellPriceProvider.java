@@ -54,6 +54,8 @@ public final class ModSellPriceProvider extends DataMapProvider {
         price(prices, ModItems.COPPER_CABLE.get(), 12);
         price(prices, ModItems.PIPE.get(), 24);
         price(prices, ModItems.STONE_BRICK.get(), 12);
+        price(prices, ModItems.IRON_STICK.get(), 10);
+        price(prices, ModItems.STEEL_PLATE.get(), 90);
 
         // Step 3+: assembled
         price(prices, ModItems.IRON_GEAR.get(), 60);

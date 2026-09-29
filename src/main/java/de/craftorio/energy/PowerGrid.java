@@ -15,6 +15,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,20 +23,18 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * Power networks of one level. Poles are wired when closer than {@link #WIRE_RANGE}; every block with an FE
- * storage within {@link #SUPPLY_RADIUS} of a pole joins that pole's network. Generators ({@link PowerSource})
+ * Power networks of one level. Poles are wired when closer than the shorter wire range of the two ({@link PoleTier}); every block with an FE
+ * storage within the supply radius of a pole joins that pole's network. Generators ({@link PowerSource})
  * supply, everything else consumes. Membership is rebuilt when poles change and once a second (to notice newly
  * placed machines); energy is distributed every tick.
  */
 @EventBusSubscriber(modid = Craftorio.MOD_ID)
 public final class PowerGrid {
-    public static final double WIRE_RANGE = 8.0;
-    public static final int SUPPLY_RADIUS = 2;
     private static final int REBUILD_INTERVAL = 20;
     private static final Map<ServerLevel, PowerGrid> GRIDS = new WeakHashMap<>();
 
     private final ServerLevel level;
-    private final Set<BlockPos> poles = new LinkedHashSet<>();
+    private final Map<BlockPos, PoleTier> poles = new LinkedHashMap<>();
     private final List<Network> networks = new ArrayList<>();
     private final Map<BlockPos, Network> networkByPole = new HashMap<>();
     private boolean dirty = true;
@@ -59,14 +58,14 @@ public final class PowerGrid {
         }
     }
 
-    void addPole(BlockPos pos) {
-        if (poles.add(pos.immutable())) {
+    void addPole(BlockPos pos, PoleTier tier) {
+        if (poles.put(pos.immutable(), tier) != tier) {
             dirty = true;
         }
     }
 
     void removePole(BlockPos pos) {
-        if (poles.remove(pos)) {
+        if (poles.remove(pos) != null) {
             dirty = true;
         }
     }
@@ -85,18 +84,19 @@ public final class PowerGrid {
         rebuildIn = REBUILD_INTERVAL;
         networks.clear();
         networkByPole.clear();
-        List<BlockPos> poleList = new ArrayList<>(poles);
+        List<BlockPos> poleList = new ArrayList<>(poles.keySet());
         List<int[]> coordinates = poleList.stream().map(pos -> new int[]{pos.getX(), pos.getY(), pos.getZ()}).toList();
-        int[] groups = PoleGrouping.group(coordinates, WIRE_RANGE);
+        double[] ranges = poleList.stream().mapToDouble(pos -> poles.get(pos).wireRange()).toArray();
+        int[] groups = PoleGrouping.group(coordinates, ranges);
         Map<Integer, Network> byGroup = new HashMap<>();
         for (int i = 0; i < poleList.size(); i++) {
             BlockPos pole = poleList.get(i);
             Network network = byGroup.computeIfAbsent(groups[i], group -> new Network());
             network.poles.add(pole);
             networkByPole.put(pole, network);
-            for (BlockPos member : BlockPos.betweenClosed(pole.offset(-SUPPLY_RADIUS, -SUPPLY_RADIUS, -SUPPLY_RADIUS),
-                    pole.offset(SUPPLY_RADIUS, SUPPLY_RADIUS, SUPPLY_RADIUS))) {
-                if (level.isLoaded(member) && !poles.contains(member)
+            int radius = poles.get(pole).supplyRadius();
+            for (BlockPos member : BlockPos.betweenClosed(pole.offset(-radius, -radius, -radius), pole.offset(radius, radius, radius))) {
+                if (level.isLoaded(member) && !poles.containsKey(member)
                         && level.getCapability(Capabilities.EnergyStorage.BLOCK, member, null) != null) {
                     BlockEntity blockEntity = level.getBlockEntity(member);
                     (blockEntity instanceof PowerSource ? network.sources : network.consumers).add(member.immutable());
@@ -109,7 +109,7 @@ public final class PowerGrid {
                 List<BlockPos> wires = new ArrayList<>();
                 for (int j = 0; j < poleList.size(); j++) {
                     // Each wire is stored on one end only so it is drawn once.
-                    if (j > i && PoleGrouping.connected(coordinates.get(i), coordinates.get(j), WIRE_RANGE)) {
+                    if (j > i && PoleGrouping.connected(coordinates.get(i), coordinates.get(j), ranges[i], ranges[j])) {
                         wires.add(poleList.get(j));
                     }
                 }

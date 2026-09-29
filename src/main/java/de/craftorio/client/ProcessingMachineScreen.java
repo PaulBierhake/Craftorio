@@ -26,7 +26,7 @@ public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingM
     @Override
     protected void init() {
         super.init();
-        if (type == MachineType.ASSEMBLER) {
+        if (type.assembling()) {
             addRenderableWidget(Button.builder(Component.literal("<"), button -> click(ProcessingMachineMenu.BUTTON_PREVIOUS_RECIPE))
                     .bounds(leftPos + 8, topPos + 18, 14, 18).build());
             addRenderableWidget(Button.builder(Component.literal(">"), button -> click(ProcessingMachineMenu.BUTTON_NEXT_RECIPE))
@@ -58,14 +58,14 @@ public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingM
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         super.renderBg(graphics, partialTick, mouseX, mouseY);
-        int arrowX = leftPos + (type == MachineType.ASSEMBLER ? 87 : 79);
+        int arrowX = leftPos + (type.assembling() ? 87 : 79);
         int arrowY = topPos + ProcessingMachineMenu.inputY(type);
         graphics.blit(TEXTURE, arrowX, arrowY, 176, 18, 24, 17);
         int done = (int) (24 * menu.progress());
         if (done > 0) {
             graphics.blit(TEXTURE, arrowX, arrowY, 176, 35, done, 17);
         }
-        if (type == MachineType.ASSEMBLER) {
+        if (type.assembling()) {
             renderRecipe(graphics);
         }
         if (type.usesFuel()) {

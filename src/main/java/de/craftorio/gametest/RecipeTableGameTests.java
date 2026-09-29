@@ -66,6 +66,12 @@ public final class RecipeTableGameTests {
             new Object[]{"fast_underground_belt", 2, List.of(of(ModItems.IRON_GEAR.get(), 40), of(ModItems.UNDERGROUND_BELT.get(), 2))},
             new Object[]{"fast_splitter", 1, List.of(of(ModItems.SPLITTER.get(), 1), of(ModItems.IRON_GEAR.get(), 10), of(ModItems.CIRCUIT.get(), 10))},
             new Object[]{"gun_turret", 1, List.of(of(ModItems.IRON_GEAR.get(), 10), of(Items.COPPER_INGOT, 10), of(Items.IRON_INGOT, 20))},
+            new Object[]{"iron_stick", 2, List.of(of(Items.IRON_INGOT, 1))},
+            new Object[]{"green_science", 1, List.of(of(ModItems.INSERTER.get(), 1), of(ModItems.CONVEYOR_BELT.get(), 1))},
+            new Object[]{"medium_power_pole", 1, List.of(of(ModItems.STEEL_PLATE.get(), 2), of(Items.COPPER_INGOT, 2), of(ModItems.IRON_STICK.get(), 4))},
+            new Object[]{"assembler_2", 1, List.of(of(ModItems.STEEL_PLATE.get(), 2), of(ModItems.CIRCUIT.get(), 3), of(ModItems.IRON_GEAR.get(), 5), of(ModItems.ASSEMBLER.get(), 1))},
+            new Object[]{"steel_furnace", 1, List.of(of(ModItems.STEEL_PLATE.get(), 6), of(ModItems.STONE_BRICK.get(), 10))},
+            new Object[]{"solar_panel", 1, List.of(of(ModItems.STEEL_PLATE.get(), 5), of(ModItems.CIRCUIT.get(), 15), of(Items.COPPER_INGOT, 5))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );
 
@@ -76,6 +82,10 @@ public final class RecipeTableGameTests {
             new Object[]{"assembling", "circuit", 1, 10, List.of(of(ModItems.COPPER_CABLE.get(), 3), of(Items.IRON_INGOT, 1))},
             new Object[]{"assembling", "pipe", 1, 10, List.of(of(Items.IRON_INGOT, 1))},
             new Object[]{"assembling", "red_science", 1, 100, List.of(of(Items.COPPER_INGOT, 1), of(ModItems.IRON_GEAR.get(), 1))},
+            new Object[]{"assembling", "iron_stick", 2, 10, List.of(of(Items.IRON_INGOT, 1))},
+            new Object[]{"assembling", "green_science", 1, 120, List.of(of(ModItems.INSERTER.get(), 1), of(ModItems.CONVEYOR_BELT.get(), 1))},
+            new Object[]{"assembling", "motor", 1, 200, List.of(of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.IRON_GEAR.get(), 1), of(ModItems.PIPE.get(), 2))},
+            new Object[]{"smelting", "steel_plate", 1, 320, List.of(of(Items.IRON_INGOT, 5))},
             new Object[]{"smelting", "stone_brick", 1, 64, List.of(of(Items.COBBLESTONE, 2))}
     );
 
@@ -127,6 +137,9 @@ public final class RecipeTableGameTests {
         helper.assertValueEqual(MachineType.STONE_FURNACE.ticks(MachineType.smeltingTicks(200)), 64, "stone furnace, speed 1");
         helper.assertValueEqual(MachineType.ELECTRIC_FURNACE.ticks(MachineType.smeltingTicks(200)), 32, "electric furnace, speed 2");
         helper.assertValueEqual(MachineType.ASSEMBLER.ticks(10), 20, "assembling machine 1, speed 0.5");
+        helper.assertValueEqual(MachineType.STEEL_FURNACE.ticks(MachineType.smeltingTicks(200)), 32, "steel furnace, speed 2");
+        helper.assertValueEqual(MachineType.ASSEMBLER_2.ticks(30), 40, "assembling machine 2, speed 0.75");
+        helper.assertValueEqual(MachineType.ASSEMBLER_2.energyPerTick(), 150, "assembling machine 2 150 kW");
         helper.assertValueEqual(MachineType.STONE_FURNACE.energyPerTick(), 90, "stone furnace 90 kW");
         helper.assertValueEqual(MachineType.ASSEMBLER.energyPerTick(), 75, "assembling machine 1 75 kW");
         helper.succeed();

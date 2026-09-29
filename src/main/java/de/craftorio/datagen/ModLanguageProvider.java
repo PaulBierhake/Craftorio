@@ -43,6 +43,21 @@ public final class ModLanguageProvider {
             add(ModItems.IRON_GEAR.get(), "Iron Gear");
             add(ModItems.CIRCUIT.get(), "Circuit");
             add(ModItems.MOTOR.get(), "Motor");
+            add(ModItems.STEEL_PLATE.get(), "Steel Plate");
+            add(ModItems.IRON_STICK.get(), "Iron Rod");
+            add(ModBlocks.MEDIUM_POWER_POLE.get(), "Medium Power Pole");
+            add(ModBlocks.SOLAR_PANEL.get(), "Solar Panel");
+            add(ModBlocks.STEEL_FURNACE.get(), "Steel Furnace");
+            add(ModBlocks.ASSEMBLER_2.get(), "Assembling Machine 2");
+            add("craftorio.solar.output", "Solar panel: %s of %s kW");
+            add("craftorio.solar.no_sky", "The solar panel needs open sky");
+            add("craftorio.research.electronics", "Electronics");
+            add("craftorio.research.steel_processing", "Steel Processing");
+            add("craftorio.research.logistic_science_pack", "Logistic Science Pack");
+            add("craftorio.research.automation_2", "Automation 2");
+            add("craftorio.research.electric_energy_distribution_1", "Electric Energy Distribution 1");
+            add("craftorio.research.advanced_material_processing", "Advanced Material Processing");
+            add("craftorio.research.solar_energy", "Solar Energy");
 
             add("craftorio.gui.energy", "Energy: %s / %s FE");
             add("craftorio.gui.no_recipe", "Choose a recipe");
@@ -74,7 +89,7 @@ public final class ModLanguageProvider {
             add("craftorio.research.turrets", "Turrets");
             add("craftorio.research.gun_turrets", "Gun Turrets");
             add("craftorio.research.energy_turrets", "Energy Turrets");
-            add("craftorio.research.engines", "Engines");
+            add("craftorio.research.engines", "Engine");
             add("craftorio.research.caves", "Cave Access");
             add("craftorio.research.elevators", "Cargo Elevators");
             add("craftorio.research.fast_belts", "Fast Belts");
@@ -521,6 +536,21 @@ public final class ModLanguageProvider {
             add(ModItems.IRON_GEAR.get(), "Zahnrad");
             add(ModItems.CIRCUIT.get(), "Schaltkreis");
             add(ModItems.MOTOR.get(), "Motor");
+            add(ModItems.STEEL_PLATE.get(), "Stahlplatte");
+            add(ModItems.IRON_STICK.get(), "Eisenstange");
+            add(ModBlocks.MEDIUM_POWER_POLE.get(), "Mittlerer Strommast");
+            add(ModBlocks.SOLAR_PANEL.get(), "Solarpanel");
+            add(ModBlocks.STEEL_FURNACE.get(), "Stahlofen");
+            add(ModBlocks.ASSEMBLER_2.get(), "Montagemaschine 2");
+            add("craftorio.solar.output", "Solarpanel: %s von %s kW");
+            add("craftorio.solar.no_sky", "Das Solarpanel braucht freien Himmel");
+            add("craftorio.research.electronics", "Elektronik");
+            add("craftorio.research.steel_processing", "Stahlverarbeitung");
+            add("craftorio.research.logistic_science_pack", "Logistik-Wissenschaftspaket");
+            add("craftorio.research.automation_2", "Automatisierung 2");
+            add("craftorio.research.electric_energy_distribution_1", "Elektrische Energieverteilung 1");
+            add("craftorio.research.advanced_material_processing", "Fortgeschrittene Materialverarbeitung");
+            add("craftorio.research.solar_energy", "Solarenergie");
 
             add("craftorio.gui.energy", "Energie: %s / %s FE");
             add("craftorio.gui.no_recipe", "Rezept wählen");

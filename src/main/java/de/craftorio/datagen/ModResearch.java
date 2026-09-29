@@ -21,6 +21,7 @@ import java.util.List;
  * (docs/FACTORIO-UMBAU.md §5), and the science pack costs follow that table.
  */
 public final class ModResearch {
+    private static final List<Pack> R_G = List.of(Pack.RED, Pack.GREEN);
     private static int order;
 
     private ModResearch() {
@@ -30,14 +31,22 @@ public final class ModResearch {
         order = 0;
         add(context, "automation", 10, 10, List.of(), List.of("assembler", "long_inserter"));
         add(context, "logistics", 75, 15, List.of(), List.of("underground_belt", "splitter"));
-        add(context, "fast_inserters", 30, 15, List.of("automation"), List.of("fast_inserter", "filter_inserter"));
+        add(context, "electronics", 30, 15, List.of("automation"), List.of());
+        add(context, "fast_inserters", 30, 15, List.of("electronics"), List.of("fast_inserter", "filter_inserter"));
+        add(context, "steel_processing", 50, 5, List.of(), List.of("smelting/steel_plate"));
+        add(context, "logistic_science_pack", 75, 5, List.of(), List.of("green_science", "assembling/green_science"));
         add(context, "turrets", 10, 10, List.of(), List.of("gun_turret", "cartridge", "arena_feeder"));
         add(context, "electric_smelting", 50, 30, List.of("automation"), List.of("electric_furnace"));
-        add(context, "engines", 30, 15, List.of("automation"), List.of("assembling/motor"));
+        add(context, "engines", 100, 15, R_G, List.of("steel_processing", "logistic_science_pack"), List.of("assembling/motor"));
+        add(context, "automation_2", 40, 15, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"), List.of("assembler_2"));
+        add(context, "electric_energy_distribution_1", 120, 30, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"),
+                List.of("medium_power_pole"));
+        add(context, "advanced_material_processing", 75, 30, R_G, List.of("steel_processing", "logistic_science_pack"), List.of("steel_furnace"));
+        add(context, "solar_energy", 100, 30, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"), List.of("solar_panel"));
         add(context, "energy_turrets", 100, 30, List.of("turrets", "engines"), List.of("tesla_tower"));
         add(context, "caves", 100, 30, List.of("automation", "engines"), List.of("cave_entrance"), key(ModItems.DRILL_CORE.get()));
         add(context, "elevators", 50, 15, List.of("caves"), List.of("elevator"));
-        add(context, "fast_belts", 200, 30, List.of("logistics", "automation"), List.of("fast_belt", "fast_underground_belt", "fast_splitter"));
+        add(context, "fast_belts", 200, 30, R_G, List.of("logistics", "logistic_science_pack"), List.of("fast_belt", "fast_underground_belt", "fast_splitter"));
         add(context, "mine_shaft", 300, 30, List.of("elevators"), List.of("mine_shaft"), key(ModItems.DEEP_CORE.get()));
         add(context, "deep_mining", 200, 30, List.of("mine_shaft"), List.of("deep_drill"), key(ModItems.RESONANCE_CRYSTAL.get()));
         add(context, "express_belts", 150, 30, List.of("fast_belts", "mine_shaft"), List.of("express_belt"));
@@ -51,8 +60,13 @@ public final class ModResearch {
 
     private static void add(BootstrapContext<Research> context, String name, long units, int seconds, List<String> requires,
                             List<String> unlocks, SizedIngredient... unlockItems) {
+        add(context, name, units, seconds, List.of(Pack.RED), requires, unlocks, unlockItems);
+    }
+
+    private static void add(BootstrapContext<Research> context, String name, long units, int seconds, List<Pack> packs,
+                            List<String> requires, List<String> unlocks, SizedIngredient... unlockItems) {
         context.register(ResourceKey.create(ModRegistries.RESEARCH, id(name)),
-                new Research(units, List.of(Pack.RED), seconds, requires.stream().map(ModResearch::id).toList(),
+                new Research(units, packs, seconds, requires.stream().map(ModResearch::id).toList(),
                         unlocks.stream().map(ModResearch::id).toList(), List.of(unlockItems), order++));
     }
 

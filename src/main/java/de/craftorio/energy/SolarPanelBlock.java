@@ -1,8 +1,10 @@
 package de.craftorio.energy;
 
 import com.mojang.serialization.MapCodec;
+import de.craftorio.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -11,29 +13,21 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Wires itself to every pole within its {@link PoleTier#wireRange() wire range} and powers machines within
- * its {@link PoleTier#supplyRadius() supply radius}. Right-click shows the network's statistics.
- */
-public final class PowerPoleBlock extends BaseEntityBlock {
-    public static final MapCodec<PowerPoleBlock> CODEC = simpleCodec(properties -> new PowerPoleBlock(PoleTier.SMALL, properties));
-    private static final VoxelShape SHAPE = Block.box(6, 0, 6, 10, 16, 10);
+/** A flat panel on the ground that feeds the power grid with daylight; right-click shows its current output. */
+public final class SolarPanelBlock extends BaseEntityBlock {
+    public static final MapCodec<SolarPanelBlock> CODEC = simpleCodec(SolarPanelBlock::new);
+    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 6, 16);
 
-    private final PoleTier tier;
-
-    public PowerPoleBlock(PoleTier tier, Properties properties) {
+    public SolarPanelBlock(Properties properties) {
         super(properties);
-        this.tier = tier;
-    }
-
-    public PoleTier tier() {
-        return tier;
     }
 
     @Override
@@ -53,13 +47,20 @@ public final class PowerPoleBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new PowerPoleBlockEntity(pos, state);
+        return new SolarPanelBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.SOLAR_PANEL.get(), SolarPanelBlockEntity::serverTick);
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
-            player.displayClientMessage(PowerGrid.of(serverLevel).describe(pos), false);
+        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof SolarPanelBlockEntity panel) {
+            serverPlayer.displayClientMessage(panel.seesSky()
+                    ? Component.translatable("craftorio.solar.output", panel.output(), SolarLogic.PEAK_KW)
+                    : Component.translatable("craftorio.solar.no_sky"), true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

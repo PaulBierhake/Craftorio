@@ -41,6 +41,10 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> OFFSHORE_PUMP = ITEMS.registerSimpleBlockItem("offshore_pump", ModBlocks.OFFSHORE_PUMP);
     public static final DeferredItem<BlockItem> REACTOR = ITEMS.registerSimpleBlockItem("reactor", ModBlocks.REACTOR);
     public static final DeferredItem<BlockItem> POWER_POLE = ITEMS.registerSimpleBlockItem("power_pole", ModBlocks.POWER_POLE);
+    public static final DeferredItem<BlockItem> MEDIUM_POWER_POLE = ITEMS.registerSimpleBlockItem("medium_power_pole", ModBlocks.MEDIUM_POWER_POLE);
+    public static final DeferredItem<BlockItem> SOLAR_PANEL = ITEMS.registerSimpleBlockItem("solar_panel", ModBlocks.SOLAR_PANEL);
+    public static final DeferredItem<BlockItem> STEEL_FURNACE = ITEMS.registerSimpleBlockItem("steel_furnace", ModBlocks.STEEL_FURNACE);
+    public static final DeferredItem<BlockItem> ASSEMBLER_2 = ITEMS.registerSimpleBlockItem("assembler_2", ModBlocks.ASSEMBLER_2);
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE = ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);
     public static final DeferredItem<BlockItem> STONE_FURNACE = ITEMS.registerSimpleBlockItem("stone_furnace", ModBlocks.STONE_FURNACE);
     public static final DeferredItem<BlockItem> LABORATORY = ITEMS.registerSimpleBlockItem("laboratory", ModBlocks.LABORATORY);
@@ -115,6 +119,8 @@ public final class ModItems {
     public static final DeferredItem<Item> ADVANCED_CIRCUIT = ITEMS.registerSimpleItem("advanced_circuit");
 
     // Intermediate products; each processing step is worth more than its inputs.
+    public static final DeferredItem<Item> STEEL_PLATE = ITEMS.registerSimpleItem("steel_plate");
+    public static final DeferredItem<Item> IRON_STICK = ITEMS.registerSimpleItem("iron_stick");
     public static final DeferredItem<Item> PIPE = ITEMS.registerSimpleItem("pipe");
     public static final DeferredItem<Item> STONE_BRICK = ITEMS.registerSimpleItem("stone_brick");
     public static final DeferredItem<Item> COPPER_CABLE = ITEMS.registerSimpleItem("copper_cable");

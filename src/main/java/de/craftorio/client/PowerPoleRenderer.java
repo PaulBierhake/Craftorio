@@ -2,7 +2,7 @@ package de.craftorio.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.craftorio.energy.PowerGrid;
+import de.craftorio.energy.PoleTier;
 import de.craftorio.energy.PowerPoleBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -48,6 +48,6 @@ public final class PowerPoleRenderer implements BlockEntityRenderer<PowerPoleBlo
 
     @Override
     public AABB getRenderBoundingBox(PowerPoleBlockEntity pole) {
-        return new AABB(pole.getBlockPos()).inflate(PowerGrid.WIRE_RANGE + 1);
+        return new AABB(pole.getBlockPos()).inflate(PoleTier.maxWireRange() + 1);
     }
 }

@@ -36,6 +36,7 @@ public final class CraftorioEmiPlugin implements EmiPlugin {
         registry.addCategory(ASSEMBLING);
         registry.addCategory(BLUEPRINT);
         registry.addWorkstation(ASSEMBLING, EmiStack.of(ModBlocks.ASSEMBLER.get()));
+        registry.addWorkstation(ASSEMBLING, EmiStack.of(ModBlocks.ASSEMBLER_2.get()));
         registry.addWorkstation(BLUEPRINT, EmiStack.of(ModBlocks.WORKBENCH.get()));
 
         for (RecipeHolder<MachineRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLING.get())) {

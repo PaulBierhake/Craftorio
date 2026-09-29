@@ -10,15 +10,21 @@ public final class PoleGrouping {
 
     /** @param positions pole coordinates as {x, y, z}; returns a network index per pole, numbered from 0 */
     public static int[] group(List<int[]> positions, double range) {
+        double[] ranges = new double[positions.size()];
+        java.util.Arrays.fill(ranges, range);
+        return group(positions, ranges);
+    }
+
+    /** Like {@link #group(List, double)} with a wire range per pole; two poles are wired when within the shorter one. */
+    public static int[] group(List<int[]> positions, double[] ranges) {
         int n = positions.size();
         int[] parent = new int[n];
         for (int i = 0; i < n; i++) {
             parent[i] = i;
         }
-        double rangeSquared = range * range;
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                if (distanceSquared(positions.get(i), positions.get(j)) <= rangeSquared) {
+                if (connected(positions.get(i), positions.get(j), ranges[i], ranges[j])) {
                     parent[find(parent, i)] = find(parent, j);
                 }
             }
@@ -39,6 +45,10 @@ public final class PoleGrouping {
 
     public static boolean connected(int[] a, int[] b, double range) {
         return distanceSquared(a, b) <= range * range;
+    }
+
+    public static boolean connected(int[] a, int[] b, double rangeA, double rangeB) {
+        return connected(a, b, Math.min(rangeA, rangeB));
     }
 
     private static int find(int[] parent, int i) {

@@ -33,6 +33,7 @@ public final class ModBlueprints {
         add(context, "copper_cable", stack(ModItems.COPPER_CABLE.get(), 2), copper(1));
         add(context, "circuit", stack(ModItems.CIRCUIT.get(), 1), iron(1), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 3));
         add(context, "pipe", stack(ModItems.PIPE.get(), 1), iron(1));
+        add(context, "iron_stick", stack(ModItems.IRON_STICK.get(), 2), iron(1));
 
         // Start: mining, smelting, transport, power, science
         add(context, "stone_furnace", stack(ModItems.STONE_FURNACE.get(), 1), SizedIngredient.of(Items.COBBLESTONE, 5));
@@ -53,6 +54,9 @@ public final class ModBlueprints {
                 SizedIngredient.of(ModItems.CIRCUIT.get(), 10), SizedIngredient.of(ModItems.IRON_GEAR.get(), 10),
                 SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 4));
         add(context, "red_science", stack(ModItems.RED_SCIENCE.get(), 1), copper(1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 1));
+        // Green science: after the research "logistic science pack"
+        add(context, "green_science", stack(ModItems.GREEN_SCIENCE.get(), 1),
+                SizedIngredient.of(ModItems.INSERTER.get(), 1), SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 1));
 
         // Start: trade and defend
         add(context, "trading_post", stack(ModItems.TRADING_POST.get(), 1),
@@ -71,6 +75,17 @@ public final class ModBlueprints {
         add(context, "electric_furnace", stack(ModItems.ELECTRIC_FURNACE.get(), 1),
                 SizedIngredient.of(ModItems.STONE_BRICK.get(), 10), SizedIngredient.of(ModItems.CIRCUIT.get(), 5),
                 SizedIngredient.of(ModItems.STONE_FURNACE.get(), 1));
+
+        // Steel age (the motor and the steel plate itself are machine recipes only, as in Factorio)
+        add(context, "medium_power_pole", stack(ModItems.MEDIUM_POWER_POLE.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2), copper(2), SizedIngredient.of(ModItems.IRON_STICK.get(), 4));
+        add(context, "assembler_2", stack(ModItems.ASSEMBLER_2.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2), SizedIngredient.of(ModItems.CIRCUIT.get(), 3),
+                SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.ASSEMBLER.get(), 1));
+        add(context, "steel_furnace", stack(ModItems.STEEL_FURNACE.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 6), SizedIngredient.of(ModItems.STONE_BRICK.get(), 10));
+        add(context, "solar_panel", stack(ModItems.SOLAR_PANEL.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.CIRCUIT.get(), 15), copper(5));
 
         // Logistics
         add(context, "long_inserter", stack(ModItems.LONG_INSERTER.get(), 1),

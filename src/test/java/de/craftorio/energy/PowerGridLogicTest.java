@@ -22,6 +22,16 @@ class PowerGridLogicTest {
     }
 
     @Test
+    void twoPolesAreWiredOnlyWithinTheShorterRange() {
+        List<int[]> poles = List.of(new int[]{0, 64, 0}, new int[]{9, 64, 0});
+        int[] mediumToMedium = PoleGrouping.group(poles, new double[]{9.0, 9.0});
+        int[] smallToMedium = PoleGrouping.group(poles, new double[]{8.0, 9.0});
+
+        assertEquals(mediumToMedium[0], mediumToMedium[1]);
+        assertNotEquals(smallToMedium[0], smallToMedium[1]);
+    }
+
+    @Test
     void fullSupplyWhenGeneratorsCanCoverDemand() {
         PowerDistribution.Result result = PowerDistribution.distribute(new long[]{200}, new long[]{20, 30});
 

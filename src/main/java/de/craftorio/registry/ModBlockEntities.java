@@ -56,12 +56,17 @@ public final class ModBlockEntities {
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PowerPoleBlockEntity>> POWER_POLE = BLOCK_ENTITIES.register("power_pole",
-            () -> BlockEntityType.Builder.of(PowerPoleBlockEntity::new, ModBlocks.POWER_POLE.get()).build(null));
+            () -> BlockEntityType.Builder.of(PowerPoleBlockEntity::new, ModBlocks.POWER_POLE.get(), ModBlocks.MEDIUM_POWER_POLE.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.SolarPanelBlockEntity>> SOLAR_PANEL = BLOCK_ENTITIES.register("solar_panel",
+            () -> BlockEntityType.Builder.of(de.craftorio.energy.SolarPanelBlockEntity::new, ModBlocks.SOLAR_PANEL.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ProcessingMachineBlockEntity>> MACHINE = BLOCK_ENTITIES.register("machine",
             () -> BlockEntityType.Builder.of(ProcessingMachineBlockEntity::new,
-                    ModBlocks.STONE_FURNACE.get(), ModBlocks.ELECTRIC_FURNACE.get(), ModBlocks.ASSEMBLER.get()).build(null));
+                    ModBlocks.STONE_FURNACE.get(), ModBlocks.STEEL_FURNACE.get(), ModBlocks.ELECTRIC_FURNACE.get(),
+                    ModBlocks.ASSEMBLER.get(), ModBlocks.ASSEMBLER_2.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerBlockEntity>> TOWER = BLOCK_ENTITIES.register("tower",
@@ -113,6 +118,7 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.type().usesFuel() ? null : machine.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BOILER.get(), (boiler, side) -> insertOnly(boiler.fuel()));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, STEAM_ENGINE.get(), (engine, side) -> engine.energy());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, SOLAR_PANEL.get(), (panel, side) -> panel.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, LABORATORY.get(), (lab, side) -> lab.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LABORATORY.get(), (lab, side) -> lab.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? null : insertOnly(tower.ammo()));

@@ -42,11 +42,11 @@ public final class ProcessingMachineMenu extends MachineMenuBase {
     }
 
     public static int inputX(MachineType type, int slot) {
-        return type == MachineType.ASSEMBLER ? 8 + slot * 18 : 56;
+        return type.assembling() ? 8 + slot * 18 : 56;
     }
 
     public static int inputY(MachineType type) {
-        return type == MachineType.ASSEMBLER ? 53 : 35;
+        return type.assembling() ? 53 : 35;
     }
 
     public static int outputX(MachineType type) {

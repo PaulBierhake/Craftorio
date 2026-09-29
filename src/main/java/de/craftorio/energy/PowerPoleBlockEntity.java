@@ -43,7 +43,8 @@ public final class PowerPoleBlockEntity extends BlockEntity {
     public void onLoad() {
         super.onLoad();
         if (level instanceof ServerLevel serverLevel) {
-            PowerGrid.of(serverLevel).addPole(worldPosition);
+            PowerGrid.of(serverLevel).addPole(worldPosition,
+                    getBlockState().getBlock() instanceof PowerPoleBlock pole ? pole.tier() : PoleTier.SMALL);
         }
     }
 

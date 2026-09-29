@@ -9,8 +9,12 @@ public enum MachineType {
     STONE_FURNACE(1, 90, true, 1.0),
     /** Vanilla smelting recipes, electrically heated; twice the speed of a stone furnace. */
     ELECTRIC_FURNACE(1, 180, false, 2.0),
+    /** Burns fuel (90 kW) like the stone furnace, at twice its speed. */
+    STEEL_FURNACE(1, 90, true, 2.0),
     /** Crafts the recipe selected in its GUI (assembling machine 1). */
-    ASSEMBLER(4, 75, false, 0.5);
+    ASSEMBLER(4, 75, false, 0.5),
+    /** Assembling machine 2: faster than machine 1 at twice the power draw. */
+    ASSEMBLER_2(4, 150, false, 0.75);
 
     public static final int ENERGY_CAPACITY = 20_000;
     public static final int MAX_INPUT = 2_000;
@@ -48,6 +52,11 @@ public enum MachineType {
 
     public int slotCount() {
         return inputSlots + 1 + fuelSlots();
+    }
+
+    /** Assemblers craft the recipe chosen in their GUI; furnaces smelt what is put in. */
+    public boolean assembling() {
+        return this == ASSEMBLER || this == ASSEMBLER_2;
     }
 
     public boolean usesFuel() {

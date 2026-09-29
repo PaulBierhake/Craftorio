@@ -65,6 +65,7 @@ public final class ModRecipeProvider extends RecipeProvider {
     private static void machineRecipes(RecipeOutput output) {
         // Furnace recipes with counted ingredients; times are Factorio seconds × 20 at speed 1.
         smelting(output, "stone_brick", new ItemStack(ModItems.STONE_BRICK.get()), 64, SizedIngredient.of(Items.COBBLESTONE, 2));
+        smelting(output, "steel_plate", new ItemStack(ModItems.STEEL_PLATE.get()), 320, SizedIngredient.of(Items.IRON_INGOT, 5));
 
         // Assembler: Factorio recipes (the assembling machine 1 has speed 0.5, so it takes twice as long).
         assemble(output, "iron_gear", new ItemStack(ModItems.IRON_GEAR.get()), 10, SizedIngredient.of(Items.IRON_INGOT, 2));
@@ -72,12 +73,15 @@ public final class ModRecipeProvider extends RecipeProvider {
         assemble(output, "circuit", new ItemStack(ModItems.CIRCUIT.get()), 10,
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 3), SizedIngredient.of(Items.IRON_INGOT, 1));
         assemble(output, "pipe", new ItemStack(ModItems.PIPE.get()), 10, SizedIngredient.of(Items.IRON_INGOT, 1));
+        assemble(output, "iron_stick", new ItemStack(ModItems.IRON_STICK.get(), 2), 10, SizedIngredient.of(Items.IRON_INGOT, 1));
+        assemble(output, "green_science", new ItemStack(ModItems.GREEN_SCIENCE.get()), 120,
+                SizedIngredient.of(ModItems.INSERTER.get(), 1), SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 1));
         assemble(output, "red_science", new ItemStack(ModItems.RED_SCIENCE.get()), 100,
                 SizedIngredient.of(Items.COPPER_INGOT, 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 1));
-        // Bridge until steel (engine unit: 1 steel + 1 gear + 2 pipes, 10 s)
+        // Engine unit: 1 steel + 1 gear + 2 pipes, 10 s; assemblers only
         assemble(output, "motor", new ItemStack(ModItems.MOTOR.get()), 200,
-                SizedIngredient.of(ModItems.IRON_GEAR.get(), 2), SizedIngredient.of(Items.IRON_INGOT, 1),
-                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 1),
+                SizedIngredient.of(ModItems.PIPE.get(), 2));
         // Cave products
         assemble(output, "battery", new ItemStack(ModItems.BATTERY.get()), 60,
                 SizedIngredient.of(ModItems.LEAD_INGOT.get(), 2), SizedIngredient.of(ModItems.SULFUR.get(), 1),

@@ -258,7 +258,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot) und **U4** (Logistik).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik) und **U5** (Grün und Stahl).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -299,7 +299,15 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   (langer Greifarm: Reichweite 2, schneller Greifarm, Filter-Greifarm mit Filter per Rechtsklick; Schwingzeiten wie
   in Factorio). Kurze Steuerungshinweise mit Maus-/Tasten-Symbolen erscheinen rechts neben der Hotbar. Das rote Band kostet nach Factorio 5 Zahnräder + 1 gelbes Band. Abweichungen: Greifarme brauchen
   vorerst keinen Strom (kein Brenner-Greifarm), Express-Unterflurband und -Splitter folgen mit Schmiermittel (U7).
-- **Steuerungshinweise**: Unten links zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
+- **Grün und Stahl (U5)**: *Stahlplatte* (5 Eisenplatten, 16 s im Ofen; Forschung Stahlverarbeitung), *Grünes Paket*
+  (1 Greifarm + 1 Förderband, 6 s; Forschung Logistik-Wissenschaftspaket), *Motor* (1 Stahl + 1 Zahnrad + 2 Rohre, nur in
+  der Montagemaschine; Forschung Motor), *Stahlofen* (Geschwindigkeit 2, Brennstoff), *Montagemaschine 2* (Geschwindigkeit
+  0,75, 150 kW), *mittlerer Strommast* (versorgt 7×7, Kabel bis 9 Blöcke; zwischen zwei Masten gilt die kürzere Reichweite)
+  und *Solarpanel* (bis 60 kW, tags voll, in der Dämmerung abnehmend, nachts nichts; braucht freien Himmel). Neu ist die
+  *Eisenstange*, und Forschungen können jetzt rote und grüne Pakete kosten (Motor, Automatisierung 2, Energieverteilung 1,
+  Fortgeschrittene Materialverarbeitung, Solarenergie, Logistik 2). Abweichungen: keine Stahlkiste (es gibt noch keine
+  Kisten-Blöcke); da die Welt standardmäßig keine Nacht hat, liefert das Solarpanel dort immer volle Leistung.
+- **Steuerungshinweise**: Rechts neben der Hotbar zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
   angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
   Schwerter, Rüstung und Schere bleiben.

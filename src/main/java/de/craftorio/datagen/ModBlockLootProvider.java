@@ -37,6 +37,10 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.STEAM_ENGINE.get());
         dropSelf(ModBlocks.OFFSHORE_PUMP.get());
         dropSelf(ModBlocks.POWER_POLE.get());
+        dropSelf(ModBlocks.MEDIUM_POWER_POLE.get());
+        dropSelf(ModBlocks.SOLAR_PANEL.get());
+        dropSelf(ModBlocks.STEEL_FURNACE.get());
+        dropSelf(ModBlocks.ASSEMBLER_2.get());
         dropSelf(ModBlocks.ELECTRIC_FURNACE.get());
         dropSelf(ModBlocks.STONE_FURNACE.get());
         dropSelf(ModBlocks.ASSEMBLER.get());

@@ -36,9 +36,11 @@ public final class ResearchGameTests {
 
         helper.assertFalse(ResearchActions.toggle(player, index(helper, "energy_turrets")), "prerequisites are neither done nor queued");
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "turrets")), "queue turrets");
-        helper.assertFalse(ResearchActions.toggle(player, index(helper, "engines")), "automation is still missing");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "automation")), "queue automation");
+        helper.assertFalse(ResearchActions.toggle(player, index(helper, "engines")), "steel and green science are still missing");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "steel_processing")), "queue steel processing");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "logistic_science_pack")), "queue green science");
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "engines")), "queue engines");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "automation")), "queue automation");
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "energy_turrets")), "prerequisites are queued before it");
         helper.assertValueEqual(team.activeResearch(), Craftorio.id("turrets").toString(), "first in the queue is active");
 
@@ -126,7 +128,7 @@ public final class ResearchGameTests {
         helper.assertTrue(Researches.gate(helper.getLevel().registryAccess(), Craftorio.id("assembling/motor").toString()).isPresent(), "motor recipe has a gate");
         helper.assertTrue(BlockOwnership.get(helper.getLevel()).owner(helper.getLevel(), helper.absolutePos(pos)).isPresent(), "assembler has an owner");
         helper.assertTrue(helper.getLevel().getRecipeManager().byKey(Craftorio.id("assembling/motor")).isPresent(), "recipe exists");
-        ItemStack gear = new ItemStack(ModItems.IRON_GEAR.get(), 2);
+        ItemStack gear = new ItemStack(ModItems.STEEL_PLATE.get(), 2);
         helper.assertFalse(assembler.items().insertItem(0, gear, false).isEmpty(), "the motor recipe is locked for the owner");
         registry.grantResearch(team.id(), Craftorio.id("engines").toString());
         helper.assertTrue(assembler.items().insertItem(0, gear, false).isEmpty(), "unlocked by the engines research");

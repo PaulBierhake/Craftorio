@@ -12,7 +12,9 @@ import de.craftorio.blueprint.WorkbenchBlock;
 import de.craftorio.economy.block.TradingPostBlock;
 import de.craftorio.energy.GeneratorBlock;
 import de.craftorio.energy.GeneratorType;
+import de.craftorio.energy.PoleTier;
 import de.craftorio.energy.PowerPoleBlock;
+import de.craftorio.energy.SolarPanelBlock;
 import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.machine.MachineType;
 import de.craftorio.machine.ProcessingMachineBlock;
@@ -134,16 +136,29 @@ public final class ModBlocks {
             properties -> new GeneratorBlock(GeneratorType.REACTOR, properties),
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 15 : 4));
 
-    public static final DeferredBlock<PowerPoleBlock> POWER_POLE = BLOCKS.registerBlock("power_pole", PowerPoleBlock::new,
+    public static final DeferredBlock<PowerPoleBlock> POWER_POLE = BLOCKS.registerBlock("power_pole",
+            properties -> new PowerPoleBlock(PoleTier.SMALL, properties),
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.WOOD)
                     .strength(1.0F)
                     .noOcclusion()
                     .sound(SoundType.WOOD));
+    public static final DeferredBlock<PowerPoleBlock> MEDIUM_POWER_POLE = BLOCKS.registerBlock("medium_power_pole",
+            properties -> new PowerPoleBlock(PoleTier.MEDIUM, properties),
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(2.0F)
+                    .requiresCorrectToolForDrops()
+                    .noOcclusion()
+                    .sound(SoundType.METAL));
+    public static final DeferredBlock<SolarPanelBlock> SOLAR_PANEL = BLOCKS.registerBlock("solar_panel", SolarPanelBlock::new,
+            machineProperties().noOcclusion());
 
     public static final DeferredBlock<ProcessingMachineBlock> ELECTRIC_FURNACE = machine("electric_furnace", MachineType.ELECTRIC_FURNACE);
     public static final DeferredBlock<ProcessingMachineBlock> STONE_FURNACE = machine("stone_furnace", MachineType.STONE_FURNACE);
+    public static final DeferredBlock<ProcessingMachineBlock> STEEL_FURNACE = machine("steel_furnace", MachineType.STEEL_FURNACE);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
+    public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER_2 = machine("assembler_2", MachineType.ASSEMBLER_2);
 
     public static final DeferredBlock<de.craftorio.research.LaboratoryBlock> LABORATORY = BLOCKS.registerBlock("laboratory",
             de.craftorio.research.LaboratoryBlock::new, machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 10 : 0));
