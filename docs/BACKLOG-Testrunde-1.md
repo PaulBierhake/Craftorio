@@ -6,7 +6,7 @@ für eine KI-Coding-Session (z. B. Sonnet) gedacht.
 
 > **Update (Runde 3):** Die Progression wird auf Factorio umgestellt, siehe `docs/FACTORIO-UMBAU.md`. Dadurch
 > gehen **A1, A2, A3, B1, B2 und C1** in den Umbaupaketen U2–U7/U9 auf und werden hier nicht separat umgesetzt.
-> Weiterhin einzeln umzusetzen: **D1–D6 und C2** (Umbaupaket U0, zuerst), **A4, B3, D7, E1–E3**.
+> Stand nach den Umbaupaketen U0–U10: alles erledigt bis auf **B3** (Lager-Depot). B3 ist zurückgestellt, weil es in Factorio kein Zentraldepot gibt; falls es später gewünscht ist, gilt der Entwurf unten weiter.
 > Entscheidungen aus Abschnitt 4 sind getroffen: E-1 lokal, E-2 Oberwelt (Variante a), E-3 ja, E-4 gemischt, E-5 wie empfohlen.
 
 ---
@@ -52,27 +52,27 @@ Tests, Texte in EN und DE vorhanden, README/Handbuch aktualisiert, Verhalten wen
 
 Prio: **P0** blockiert das Spiel · **P1** stört deutlich · **P2** Ausbau/Komfort. Aufwand: S < ½ Tag, M ≈ 1 Tag, L > 1 Tag.
 
-| ID | Thema | Bereich | Prio | Aufwand | Hängt ab von |
-|---|---|---|---|---|---|
-| A1 | Materialkette nach Factorio-Vorbild (nichts Unbeschaffbares) | Progression | **P0** | L | – |
-| A2 | Weniger Geld durch Belohnungen, Preise neu ausbalancieren | Progression | P1 | M | A1 |
-| A3 | Terminal an der Konstruktionswerkbank bauen | Progression | P1 | S | A1 |
-| A4 | Beschreibungen zu Maschinen/Items in der Werkbank | UX | P1 | M | – |
-| B1 | Splitter, Merger, Filter | Logistik | P1 | L | – |
-| B2 | Steigende und fallende Bänder | Logistik | P2 | M | – |
-| B3 | Lager-Depot mit Einlass/Auslass und großem Inventar | Logistik | P1 | L | Entscheidung E-1 |
-| C1 | Akkus als Strompuffer | Energie | P1 | M | – |
-| C2 | Strom und Munition für die Arena verständlich machen | Arena/UX | P1 | S | – |
-| D1 | Wellen in der Arena starten | Arena | P1 | M | – |
-| D2 | Pfadstab: keine Abzweigungen setzbar | Arena | P1 | S | – |
-| D3 | Wasser-Karten: es muss immer ein erkennbarer Weg existieren | Arena | **P0** | M | – |
-| D4 | Turmdepot als entnehmbares Inventar statt Auswerfen | Arena | P1 | M | – |
-| D5 | Türme aus dem Depot stapeln nicht | Arena | P1 | S | – |
-| D6 | Blumen und Gras droppen beim Kartenneubau | Arena | P1 | S | – |
-| D7 | Arena-Karten kreativer und „voller" | Arena/Inhalt | P2 | L | D6 |
-| E1 | Höhleneingang in flachen Welten / Y-Höhe | Höhlen | P1 | M–L | Entscheidung E-2 |
-| E2 | Höhlen ausgestalten und dekorieren | Höhlen/Inhalt | P2 | M | – |
-| E3 | GUI für den Höhleneingang (Baustelle) | Höhlen/UX | P1 | M | – |
+| ID | Thema | Bereich | Prio | Aufwand | Hängt ab von | Stand |
+|---|---|---|---|---|---|---|
+| A1 | Materialkette nach Factorio-Vorbild (nichts Unbeschaffbares) | Progression | **P0** | L | – | ✅ Umbau U2–U5 |
+| A2 | Weniger Geld durch Belohnungen, Preise neu ausbalancieren | Progression | P1 | M | A1 | ✅ U9 (Items statt Credits, Test) |
+| A3 | Terminal an der Konstruktionswerkbank bauen | Progression | P1 | S | A1 | ✅ U3 |
+| A4 | Beschreibungen zu Maschinen/Items in der Werkbank | UX | P1 | M | – | ✅ |
+| B1 | Splitter, Merger, Filter | Logistik | P1 | L | – | ✅ U4 |
+| B2 | Steigende und fallende Bänder | Logistik | P2 | M | – | ✅ U4 |
+| B3 | Lager-Depot mit Einlass/Auslass und großem Inventar | Logistik | P1 | L | Entscheidung E-1 | ⏸ zurückgestellt: Factorio kennt kein Zentraldepot (nur Kisten); der Aufzug verbindet die Ebenen |
+| C1 | Akkus als Strompuffer | Energie | P1 | M | – | ✅ U7 (Akku) |
+| C2 | Strom und Munition für die Arena verständlich machen | Arena/UX | P1 | S | – | ✅ U0 |
+| D1 | Wellen in der Arena starten | Arena | P1 | M | – | ✅ U0 |
+| D2 | Pfadstab: keine Abzweigungen setzbar | Arena | P1 | S | – | ✅ U0 |
+| D3 | Wasser-Karten: es muss immer ein erkennbarer Weg existieren | Arena | **P0** | M | – | ✅ U0 |
+| D4 | Turmdepot als entnehmbares Inventar statt Auswerfen | Arena | P1 | M | – | ✅ U0 |
+| D5 | Türme aus dem Depot stapeln nicht | Arena | P1 | S | – | ✅ U0 |
+| D6 | Blumen und Gras droppen beim Kartenneubau | Arena | P1 | S | – | ✅ U0 |
+| D7 | Arena-Karten kreativer und „voller" | Arena/Inhalt | P2 | L | D6 | ✅ |
+| E1 | Höhleneingang in flachen Welten / Y-Höhe | Höhlen | P1 | M–L | Entscheidung E-2 | ✅ (a) Meldung und Warnung; Variante (b) nicht nötig |
+| E2 | Höhlen ausgestalten und dekorieren | Höhlen/Inhalt | P2 | M | – | ✅ |
+| E3 | GUI für den Höhleneingang (Baustelle) | Höhlen/UX | P1 | M | – | ✅ |
 
 ---
 

@@ -2,7 +2,9 @@ package de.craftorio.defense;
 
 import net.minecraft.world.item.Items;
 import de.craftorio.Craftorio;
+import de.craftorio.defense.arena.ArenaBuilder;
 import de.craftorio.defense.arena.ArenaLayout;
+import de.craftorio.defense.arena.ArenaTheme;
 import de.craftorio.defense.arena.Arenas;
 import de.craftorio.defense.arena.Tile;
 import net.minecraft.network.chat.Component;
@@ -253,6 +255,37 @@ public final class DefenseGameTests {
         helper.assertTrue(setup.defense.drawFluid(setup.zone().slot(), TowerType.FLAME.fluidPerShot()), "a shot burns oil");
         helper.assertValueEqual(setup.zone().fluid(), 50 - TowerType.FLAME.fluidPerShot(), "reserve after the shot");
         helper.assertFalse(setup.defense.drawFluid(setup.zone().slot(), 1_000), "not more than the reserve holds");
+        helper.succeed();
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 400, batch = "defense_decor")
+    public static void decoratedMapsKeepPathsAndTowerSpotsFree(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "DecorTest");
+        ServerLevel arena = TowerDefense.arena(setup.player.server);
+        int slot = setup.zone().slot();
+        List<String> problems = new ArrayList<>();
+        java.util.Set<ArenaTheme> seen = new java.util.HashSet<>();
+        for (int level : new int[]{1, 2, 3, 4, 10, 11, 12}) {
+            ArenaLayout layout = ArenaLayout.generate(4_242L + level, level);
+            seen.add(layout.theme());
+            ArenaBuilder.buildField(arena, slot, layout, 4_242L + level);
+            int banners = 0;
+            for (int x = 0; x < ArenaLayout.SIZE; x++) {
+                for (int z = 0; z < ArenaLayout.SIZE; z++) {
+                    Tile tile = layout.tile(x, z);
+                    var above = arena.getBlockState(Arenas.field(slot, x, z, Arenas.BUILD_Y));
+                    if ((tile == Tile.GROUND || tile == Tile.ROUGH) && !above.isAir() && !above.canBeReplaced()) {
+                        problems.add(layout.theme() + " " + x + "," + z + " " + tile + " blocked by " + above.getBlock().getName().getString());
+                    }
+                    banners += arena.getBlockState(Arenas.field(slot, x, z, Arenas.WALL_TOP - 1)).getBlock() instanceof net.minecraft.world.level.block.WallBannerBlock ? 1 : 0;
+                }
+            }
+            if (banners < 6) {
+                problems.add(layout.theme() + " has only " + banners + " banners");
+            }
+        }
+        helper.assertTrue(seen.size() >= 4, "themes tested: " + seen);
+        helper.assertTrue(problems.isEmpty(), String.join("; ", problems.subList(0, Math.min(6, problems.size()))));
         helper.succeed();
     }
 
