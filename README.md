@@ -180,6 +180,7 @@ und das Handbuch-Ersatzbuch.
   der Generatoren und springt ein, wenn sie nicht reichen. Zinn, Blei, Titan, Gold, Quarz, Diamant, Kristalle und Energiekristalle
   gibt es nicht mehr; Zinn-/Blei-/Titan-Rezepte wurden auf Stahl, Kunststoff und Batterien umgestellt.
 
+- **Normale Welt nötig**: Die Schichten erzeugt der Weltgenerator; in Superflat-Welten (Oberfläche y = −60) und in vor dem Höhlen-Update erzeugten Chunks gibt es keine. Der Eingang meldet das beim Setzen, der Server warnt im Log und Operatoren beim Beitritt. Ein eigenes Welt-Preset ist nicht nötig: jeder normale Welttyp enthält die Schichten. Der Eingang hat ein Menü mit Anforderungen, Fortschrittsbalken und Einwurf-Slot (Automatik per Greifarm/Band bleibt).
 - **Warenaufzug** (Bauplan nach dem Höhleneingang, 2 Stück pro Bau): Zwei Aufzüge in derselben Spalte
   (gleiches X/Z) verbinden sich automatisch – auch durch Deckgestein und massiven Fels, bis 256 Blöcke weit.
   Rechtsklick wechselt den Modus: *nach oben senden*, *nach unten senden* oder *empfangen*. Sender nehmen

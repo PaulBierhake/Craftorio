@@ -332,7 +332,8 @@ public final class ModLanguageProvider {
             add("craftorio.cave.opened", "A cave entrance has opened! The cave area around chunk %s, %s is being dug out.");
             add("craftorio.cave.error.overworld_only", "Cave entrances only work in the overworld.");
             add("craftorio.cave.error.too_deep", "Build cave entrances on the surface (Y 50 or higher).");
-            add("craftorio.cave.error.no_layer", "There is no cave layer below this spot (area generated before the cave update).");
+            add("craftorio.cave.error.flat_world", "Warning: this is a superflat world without Craftorio cave and mine layers – cave entrances cannot be built here. Create the world with a normal world type.");
+            add("craftorio.cave.error.no_layer", "This spot has no Craftorio cave layer: it is a superflat world or an area generated before the cave update. Use a normal world type (or explore new chunks).");
 
             add("craftorio.drill.status", "Drill: %s/%s field blocks · %s items/s · fuel for %s s");
             add("craftorio.drill.gui_fields", "Field blocks: %s/%s");
@@ -564,7 +565,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.unlock_cave_entrance", "Research oil processing");
             add("craftorio.quest.unlock_cave_entrance.hint", "Oil processing (100 red and green packs, needs fluid handling from the start) unlocks the cave entrance, pumpjack, refinery and chemical plant.");
             add("craftorio.quest.build_cave_entrance", "Build the cave entrance");
-            add("craftorio.quest.build_cave_entrance.hint", "Build it on the surface (y ≥ 50), then deliver the required materials; the shaft drills down into the caves.");
+            add("craftorio.quest.build_cave_entrance.hint", "Build it on the surface (y ≥ 50) of a normal (not superflat) world, then deliver the required materials; the shaft drills down into the caves.");
             add("craftorio.quest.unlock_elevator", "Research cargo elevators");
             add("craftorio.quest.unlock_elevator.hint", "Cargo elevators (50 red packs) carry items between the layers.");
             add("craftorio.quest.unlock_mine_shaft", "Research the mine shaft");
@@ -979,7 +980,9 @@ public final class ModLanguageProvider {
             add("craftorio.cave.opened", "Ein Höhleneingang wurde geöffnet! Der Höhlenbereich um Chunk %s, %s wird ausgehöhlt.");
             add("craftorio.cave.error.overworld_only", "Höhleneingänge gibt es nur in der Oberwelt.");
             add("craftorio.cave.error.too_deep", "Höhleneingänge an der Oberfläche bauen (ab Y 50).");
-            add("craftorio.cave.error.no_layer", "Unter dieser Stelle gibt es keine Höhlenschicht (Gebiet vor dem Höhlen-Update erzeugt).");
+            add("craftorio.cave.error.flat_world", "Warning: this is a superflat world without Craftorio cave and mine layers – cave entrances cannot be built here. Create the world with a normal world type.");
+            add("craftorio.cave.error.flat_world", "Warnung: Das ist eine Superflat-Welt ohne Craftorio-Höhlen- und Minenschichten – hier lassen sich keine Höhleneingänge bauen. Erstelle die Welt mit einem normalen Welttyp.");
+            add("craftorio.cave.error.no_layer", "Hier gibt es keine Craftorio-Höhlenschicht: Superflat-Welt oder ein Gebiet, das vor dem Höhlen-Update erzeugt wurde. Nutze einen normalen Welttyp (oder erkunde neue Chunks).");
 
             add("craftorio.drill.status", "Bohrer: %s/%s Feldblöcke · %s Items/s · Brennstoff für %s s");
             add("craftorio.drill.gui_fields", "Feldblöcke: %s/%s");
@@ -1211,7 +1214,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.unlock_cave_entrance", "Erforsche die Ölverarbeitung");
             add("craftorio.quest.unlock_cave_entrance.hint", "Ölverarbeitung (100 rote und grüne Pakete, braucht Flüssigkeitsverarbeitung von Anfang an) schaltet Höhleneingang, Pumpjack, Raffinerie und Chemiefabrik frei.");
             add("craftorio.quest.build_cave_entrance", "Baue den Höhleneingang");
-            add("craftorio.quest.build_cave_entrance.hint", "Baue ihn an der Oberfläche (y ≥ 50) und liefere die benötigten Materialien; der Schacht bohrt sich in die Höhlen.");
+            add("craftorio.quest.build_cave_entrance.hint", "Baue ihn an der Oberfläche (y ≥ 50) einer normalen (nicht Superflat-)Welt und liefere die benötigten Materialien; der Schacht bohrt sich in die Höhlen.");
             add("craftorio.quest.unlock_elevator", "Erforsche Warenaufzüge");
             add("craftorio.quest.unlock_elevator.hint", "Warenaufzüge (50 rote Pakete) transportieren Items zwischen den Ebenen.");
             add("craftorio.quest.unlock_mine_shaft", "Erforsche den Minenschacht");
