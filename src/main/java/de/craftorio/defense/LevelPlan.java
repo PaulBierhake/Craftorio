@@ -17,7 +17,7 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
     public static final int CRAWLERS_PER_EXTRA_PLAYER = 2;
 
     public enum KeyReward {
-        NONE, BRONZE_SEAL, SILVER_SEAL, GOLD_SEAL, PLATINUM_SEAL
+        NONE, BRONZE_SEAL, SILVER_SEAL, GOLD_SEAL, PLATINUM_SEAL, DIAMOND_SEAL, STAR_SEAL
     }
 
     public static LevelPlan of(int level, int players) {
@@ -57,13 +57,15 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
         return new LevelPlan(level, List.copyOf(waves), health, reward, keyReward(level));
     }
 
-    /** The arena seals: bronze at level 5, silver at 10, gold at 20, platinum at 30 (first research of a new science pack). */
+    /** The arena seals: bronze at level 5, silver at 10, gold at 20, platinum at 30, diamond at 40 and star at 50 (first research of a new science pack). */
     public static KeyReward keyReward(int level) {
         return switch (level) {
             case 5 -> KeyReward.BRONZE_SEAL;
             case 10 -> KeyReward.SILVER_SEAL;
             case 20 -> KeyReward.GOLD_SEAL;
             case 30 -> KeyReward.PLATINUM_SEAL;
+            case 40 -> KeyReward.DIAMOND_SEAL;
+            case 50 -> KeyReward.STAR_SEAL;
             default -> KeyReward.NONE;
         };
     }

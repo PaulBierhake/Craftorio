@@ -172,6 +172,8 @@ public final class ProgressionGameTests {
             case GREEN -> ModItems.GREEN_SCIENCE.get();
             case MILITARY -> ModItems.MILITARY_SCIENCE.get();
             case BLUE -> ModItems.BLUE_SCIENCE.get();
+            case PRODUCTION -> ModItems.PRODUCTION_SCIENCE.get();
+            case UTILITY -> ModItems.UTILITY_SCIENCE.get();
         };
     }
 

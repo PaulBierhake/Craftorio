@@ -37,6 +37,10 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.SILVER_SEAL.get());
         basicItem(ModItems.GOLD_SEAL.get());
         basicItem(ModItems.PLATINUM_SEAL.get());
+        basicItem(ModItems.DIAMOND_SEAL.get());
+        basicItem(ModItems.STAR_SEAL.get());
+        basicItem(ModItems.PRODUCTION_SCIENCE.get());
+        basicItem(ModItems.UTILITY_SCIENCE.get());
         withExistingParent("stone_wall", mcLoc("block/wall_inventory")).texture("wall", modLoc("block/stone_wall"));
         basicItem(ModItems.SULFUR.get());
         basicItem(ModItems.BATTERY.get());

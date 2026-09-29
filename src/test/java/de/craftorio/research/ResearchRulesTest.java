@@ -40,4 +40,12 @@ class ResearchRulesTest {
 
         assertEquals(List.of("d"), kept, "c lost b, d only needs the finished x");
     }
+
+    @Test
+    void everyMiningProductivityLevelAddsTenPercent() {
+        assertEquals(0.0, ResearchRules.miningProductivity(Set.of("craftorio:steel_processing")), 1e-9);
+        assertEquals(0.1, ResearchRules.miningProductivity(Set.of("craftorio:mining_productivity_1")), 1e-9);
+        assertEquals(0.3, ResearchRules.miningProductivity(Set.of("craftorio:mining_productivity_1", "craftorio:mining_productivity_2",
+                "craftorio:mining_productivity_3")), 1e-9);
+    }
 }

@@ -115,6 +115,13 @@ public final class ModRecipeProvider extends RecipeProvider {
                 new SizedIngredient(Ingredient.of(Items.WHEAT, Items.CARROT, Items.POTATO, Items.PUMPKIN, Items.SUGAR_CANE), 10));
         assemble(output, "accumulator", new ItemStack(ModItems.ACCUMULATOR.get()), 200,
                 SizedIngredient.of(Items.IRON_INGOT, 2), SizedIngredient.of(ModItems.BATTERY.get(), 5));
+        // Wiki 1.1: production and utility science packs take 21 s and make three packs
+        assemble(output, "production_science", new ItemStack(ModItems.PRODUCTION_SCIENCE.get(), 3), 420,
+                SizedIngredient.of(ModItems.ELECTRIC_FURNACE.get(), 1), SizedIngredient.of(ModItems.module(de.craftorio.module.ModuleKind.PRODUCTIVITY, 1).get(), 1),
+                SizedIngredient.of(Items.RAIL, 30));
+        assemble(output, "utility_science", new ItemStack(ModItems.UTILITY_SCIENCE.get(), 3), 420,
+                SizedIngredient.of(ModItems.PROCESSING_UNIT.get(), 2), SizedIngredient.of(ModItems.FLYING_ROBOT_FRAME.get(), 1),
+                SizedIngredient.of(ModItems.LOW_DENSITY_STRUCTURE.get(), 3));
         // Modules (wiki 1.1): tier 1 takes 15 s, tier 2 30 s, tier 3 60 s
         for (de.craftorio.module.ModuleKind kind : de.craftorio.module.ModuleKind.values()) {
             assemble(output, kind.id(1), new ItemStack(ModItems.module(kind, 1).get()), 300,

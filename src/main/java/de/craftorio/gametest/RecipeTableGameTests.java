@@ -127,6 +127,8 @@ public final class RecipeTableGameTests {
             new Object[]{"assembling", "speed_module_1", 1, 300, List.of(of(ModItems.ADVANCED_CIRCUIT.get(), 5), of(ModItems.CIRCUIT.get(), 5))},
             new Object[]{"assembling", "efficiency_module_2", 1, 600, List.of(of(ModItems.module(de.craftorio.module.ModuleKind.EFFICIENCY, 1).get(), 4), of(ModItems.ADVANCED_CIRCUIT.get(), 5), of(ModItems.PROCESSING_UNIT.get(), 5))},
             new Object[]{"assembling", "productivity_module_3", 1, 1_200, List.of(of(ModItems.module(de.craftorio.module.ModuleKind.PRODUCTIVITY, 2).get(), 5), of(ModItems.ADVANCED_CIRCUIT.get(), 5), of(ModItems.PROCESSING_UNIT.get(), 5))},
+            new Object[]{"assembling", "production_science", 3, 420, List.of(of(ModItems.ELECTRIC_FURNACE.get(), 1), of(ModItems.module(de.craftorio.module.ModuleKind.PRODUCTIVITY, 1).get(), 1), of(Items.RAIL, 30))},
+            new Object[]{"assembling", "utility_science", 3, 420, List.of(of(ModItems.PROCESSING_UNIT.get(), 2), of(ModItems.FLYING_ROBOT_FRAME.get(), 1), of(ModItems.LOW_DENSITY_STRUCTURE.get(), 3))},
             new Object[]{"smelting", "steel_plate", 1, 320, List.of(of(Items.IRON_INGOT, 5))},
             new Object[]{"smelting", "stone_brick", 1, 64, List.of(of(Items.COBBLESTONE, 2))}
     );
@@ -349,6 +351,8 @@ public final class RecipeTableGameTests {
         var registry = helper.getLevel().registryAccess().registryOrThrow(ModRegistries.RESEARCH);
         var rg = List.of(de.craftorio.research.Research.Pack.RED, de.craftorio.research.Research.Pack.GREEN);
         var rgb = List.of(de.craftorio.research.Research.Pack.RED, de.craftorio.research.Research.Pack.GREEN, de.craftorio.research.Research.Pack.BLUE);
+        var rgbp = List.of(de.craftorio.research.Research.Pack.RED, de.craftorio.research.Research.Pack.GREEN,
+                de.craftorio.research.Research.Pack.BLUE, de.craftorio.research.Research.Pack.PRODUCTION);
         List<Object[]> table = List.of(
                 new Object[]{"advanced_material_processing_2", 250L, 30, rgb},
                 new Object[]{"advanced_oil_processing", 75L, 30, rgb},
@@ -366,6 +370,22 @@ public final class RecipeTableGameTests {
                 new Object[]{"speed_module_2", 75L, 30, rgb},
                 new Object[]{"efficiency_module_2", 75L, 30, rgb},
                 new Object[]{"productivity_module_2", 75L, 30, rgb},
+                new Object[]{"production_science_pack", 100L, 30, rgb},
+                new Object[]{"utility_science_pack", 100L, 30, rgb},
+                new Object[]{"speed_module_3", 300L, 60, rgbp},
+                new Object[]{"efficiency_module_3", 300L, 60, rgbp},
+                new Object[]{"productivity_module_3", 300L, 60, rgbp},
+                new Object[]{"automation_3", 150L, 60, rgbp},
+                new Object[]{"effect_transmission", 75L, 30, rgbp},
+                new Object[]{"logistics_3", 300L, 15, rgbp},
+                new Object[]{"kovarex_enrichment_process", 1_500L, 30, rgbp},
+                new Object[]{"nuclear_fuel_reprocessing", 50L, 30, rgbp},
+                new Object[]{"uranium_ammo", 1_000L, 45, List.of(de.craftorio.research.Research.Pack.RED, de.craftorio.research.Research.Pack.GREEN,
+                        de.craftorio.research.Research.Pack.MILITARY, de.craftorio.research.Research.Pack.BLUE, de.craftorio.research.Research.Pack.UTILITY)},
+                new Object[]{"mining_productivity_1", 250L, 60, rg},
+                new Object[]{"mining_productivity_2", 500L, 60, rgb},
+                new Object[]{"mining_productivity_3", 1_000L, 60, List.of(de.craftorio.research.Research.Pack.RED, de.craftorio.research.Research.Pack.GREEN,
+                        de.craftorio.research.Research.Pack.BLUE, de.craftorio.research.Research.Pack.PRODUCTION, de.craftorio.research.Research.Pack.UTILITY)},
                 new Object[]{"uranium_processing", 200L, 30, rgb},
                 new Object[]{"nuclear_power", 800L, 30, rgb});
         List<String> problems = new ArrayList<>();

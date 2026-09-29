@@ -274,6 +274,16 @@ public final class LaboratoryBlockEntity extends BlockEntity implements MenuProv
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         packs.deserializeNBT(registries, tag.getCompound("packs"));
+        if (packs.getSlots() < Research.Pack.values().length) { // saved before the production and utility packs existed
+            java.util.List<ItemStack> saved = new java.util.ArrayList<>();
+            for (int slot = 0; slot < packs.getSlots(); slot++) {
+                saved.add(packs.getStackInSlot(slot));
+            }
+            packs.setSize(Research.Pack.values().length);
+            for (int slot = 0; slot < saved.size(); slot++) {
+                packs.setStackInSlot(slot, saved.get(slot));
+            }
+        }
         modules.load(tag, registries);
         energy.setEnergy(tag.getInt("energy"));
         ticksLeft = tag.getInt("ticks_left");

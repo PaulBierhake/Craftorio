@@ -42,8 +42,8 @@ public final class LaboratoryScreen extends MachineScreenBase<LaboratoryMenu> {
         }
         int barX = leftPos + LaboratoryMenu.SLOT_X;
         int barY = topPos + 57;
-        graphics.fill(barX, barY, barX + 96, barY + 5, 0xFF373737);
-        graphics.fill(barX + 1, barY + 1, barX + 1 + (int) (94 * menu.progress()), barY + 4, 0xFF5AD05A);
+        graphics.fill(barX, barY, barX + 116, barY + 5, 0xFF373737);
+        graphics.fill(barX + 1, barY + 1, barX + 1 + (int) (114 * menu.progress()), barY + 4, 0xFF5AD05A);
         graphics.drawString(font, Component.translatable("craftorio.lab.status." + menu.status()), leftPos + 8, topPos + 18, 0x404040, false);
     }
 }

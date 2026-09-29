@@ -95,7 +95,11 @@ public final class TeamData extends SavedData {
 
     /** Researches that were renamed between versions. */
     private static String renamed(String id) {
-        return id.equals("electric_smelting") ? "advanced_material_processing_2" : id;
+        return switch (id) {
+            case "electric_smelting" -> "advanced_material_processing_2";
+            case "express_belts" -> "logistics_3";
+            default -> id;
+        };
     }
 
     private static Map<String, Long> readLongs(CompoundTag tag) {

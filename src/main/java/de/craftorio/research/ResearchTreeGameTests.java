@@ -46,7 +46,8 @@ public final class ResearchTreeGameTests {
                     problems.add(target + " is unlocked by more than one research");
                 }
             }
-            if (research.unlocks().isEmpty() && researches.holders().noneMatch(other -> other.value().requires().contains(holder.key().location()))) {
+            // the last mining productivity level only raises the ore yield of the drills
+            if (research.unlocks().isEmpty() && !id.endsWith("mining_productivity_3") && researches.holders().noneMatch(other -> other.value().requires().contains(holder.key().location()))) {
                 problems.add(id + " unlocks nothing and nothing requires it");
             }
         }

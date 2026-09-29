@@ -89,6 +89,8 @@ public final class ModItems {
     public static final DeferredItem<Item> GREEN_SCIENCE = ITEMS.registerSimpleItem("green_science");
     public static final DeferredItem<Item> MILITARY_SCIENCE = ITEMS.registerSimpleItem("military_science");
     public static final DeferredItem<Item> BLUE_SCIENCE = ITEMS.registerSimpleItem("blue_science");
+    public static final DeferredItem<Item> PRODUCTION_SCIENCE = ITEMS.registerSimpleItem("production_science");
+    public static final DeferredItem<Item> UTILITY_SCIENCE = ITEMS.registerSimpleItem("utility_science");
     public static final DeferredItem<BlockItem> ASSEMBLER = ITEMS.registerSimpleBlockItem("assembler", ModBlocks.ASSEMBLER);
 
     public static final DeferredItem<BlockItem> TERMINAL = ITEMS.registerSimpleBlockItem("terminal", ModBlocks.TERMINAL);
@@ -124,6 +126,8 @@ public final class ModItems {
     public static final DeferredItem<KeyMaterialItem> SILVER_SEAL = keyMaterial("silver_seal", 10);
     public static final DeferredItem<KeyMaterialItem> GOLD_SEAL = keyMaterial("gold_seal", 20);
     public static final DeferredItem<KeyMaterialItem> PLATINUM_SEAL = keyMaterial("platinum_seal", 30);
+    public static final DeferredItem<KeyMaterialItem> DIAMOND_SEAL = keyMaterial("diamond_seal", 40);
+    public static final DeferredItem<KeyMaterialItem> STAR_SEAL = keyMaterial("star_seal", 50);
 
     public static final DeferredItem<BlockItem> ELEVATOR = ITEMS.registerSimpleBlockItem("elevator", ModBlocks.ELEVATOR);
     public static final DeferredItem<BlockItem> CAVE_RUBBLE = ITEMS.registerSimpleBlockItem("cave_rubble", ModBlocks.CAVE_RUBBLE);

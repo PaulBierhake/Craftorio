@@ -59,6 +59,8 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider,
     private boolean uraniumBelow;
     private final ModuleState modules;
     private ModuleEffects effects = ModuleEffects.NONE;
+    /** Extra ore from the team's mining productivity researches, refreshed with the field scan. */
+    private double researchBonus;
     private final IItemHandlerModifiable menuSlots = new MenuSlots();
     private ItemStack fuel = ItemStack.EMPTY;
     private ItemStack output = ItemStack.EMPTY;
@@ -148,6 +150,9 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider,
             rescanIn = RESCAN_INTERVAL;
             fieldBlocks = scanFieldBlocks(level, pos, tier.radius());
             uraniumBelow = fieldBlocks.stream().anyMatch(field -> needsAcid(resourceAt(level, field)));
+            researchBonus = level instanceof net.minecraft.server.level.ServerLevel server
+                    ? de.craftorio.protection.BlockOwnership.get(server).owner(server, pos)
+                    .map(team -> de.craftorio.research.ResearchRules.miningProductivity(team.researched())).orElse(0.0) : 0;
         }
         pushOutput(level, pos, state.getValue(DrillBlock.FACING));
         effects = modules.effects(level, pos);
@@ -167,7 +172,7 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider,
                     acid.use(ACID_PER_ORE);
                 }
                 // Productivity gives extra ore without extra acid.
-                int extra = modules.bar().add(effects.productivityBonus());
+                int extra = modules.bar().add(effects.productivityBonus() + researchBonus);
                 addOutput(mined.copyWithCount(Math.min(1 + extra, mined.getMaxStackSize() - (output.isEmpty() ? 0 : output.getCount()))));
                 nextField++;
             }

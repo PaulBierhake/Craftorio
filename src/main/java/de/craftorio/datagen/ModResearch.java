@@ -23,6 +23,8 @@ import java.util.List;
 public final class ModResearch {
     private static final List<Pack> R_G = List.of(Pack.RED, Pack.GREEN);
     private static final List<Pack> R_G_B = List.of(Pack.RED, Pack.GREEN, Pack.BLUE);
+    private static final List<Pack> R_G_B_P = List.of(Pack.RED, Pack.GREEN, Pack.BLUE, Pack.PRODUCTION);
+    private static final List<Pack> R_G_B_P_U = List.of(Pack.RED, Pack.GREEN, Pack.BLUE, Pack.PRODUCTION, Pack.UTILITY);
     private static int order;
 
     private ModResearch() {
@@ -81,24 +83,32 @@ public final class ModResearch {
                 List.of("low_density_structure", "assembling/low_density_structure"));
         add(context, "mine_shaft", 300, 30, R_G_B, List.of("elevators", "chemical_science_pack"), List.of("mine_shaft"), key(ModItems.PLATINUM_SEAL.get()));
         add(context, "deep_mining", 200, 30, R_G_B, List.of("mine_shaft"), List.of("deep_drill"));
-        // Until U11c and U11e replace them: the express belt needs lubricant, the reactor the mine shaft.
-        add(context, "express_belts", 300, 15, R_G_B, List.of("fast_belts", "lubricant"), List.of("assembling/express_belt"));
+        // Purple and yellow science (U11e): each first research hands in the seal of level 40 or 50
+        add(context, "production_science_pack", 100, 30, R_G_B, List.of("productivity_module", "advanced_material_processing_2", "railway"),
+                List.of("assembling/production_science"), key(ModItems.DIAMOND_SEAL.get()));
+        add(context, "utility_science_pack", 100, 30, R_G_B, List.of("robotics", "advanced_electronics_2", "low_density_structure"),
+                List.of("assembling/utility_science"), key(ModItems.STAR_SEAL.get()));
+        add(context, "logistics_3", 300, 15, R_G_B_P, List.of("fast_belts", "lubricant", "production_science_pack"), List.of("assembling/express_belt"));
+        add(context, "mining_productivity_1", 250, 60, R_G, List.of("advanced_electronics"), List.of());
+        add(context, "mining_productivity_2", 500, 60, R_G_B, List.of("mining_productivity_1", "chemical_science_pack"), List.of());
+        add(context, "mining_productivity_3", 1000, 60, R_G_B_P_U, List.of("mining_productivity_2", "production_science_pack", "utility_science_pack"), List.of());
         // Modules (U11d). Production science joins the costs of module 3, automation 3 and effect transmission with U11e.
         add(context, "modules", 100, 30, R_G, List.of("advanced_electronics"), List.of());
         for (String kind : List.of("speed", "efficiency", "productivity")) {
             add(context, kind + "_module", 50, 30, R_G, List.of("modules"), List.of("assembling/" + kind + "_module_1"));
             add(context, kind + "_module_2", 75, 30, R_G_B, List.of("advanced_electronics_2", kind + "_module"), List.of("assembling/" + kind + "_module_2"));
-            add(context, kind + "_module_3", 300, 60, R_G_B, List.of(kind + "_module_2"), List.of("assembling/" + kind + "_module_3"));
+            add(context, kind + "_module_3", 300, 60, R_G_B_P, List.of(kind + "_module_2", "production_science_pack"), List.of("assembling/" + kind + "_module_3"));
         }
-        add(context, "automation_3", 150, 60, R_G_B, List.of("speed_module"), List.of("assembler_3"));
-        add(context, "effect_transmission", 75, 30, R_G_B, List.of("advanced_electronics_2"), List.of("beacon"));
+        add(context, "automation_3", 150, 60, R_G_B_P, List.of("speed_module", "production_science_pack"), List.of("assembler_3"));
+        add(context, "effect_transmission", 75, 30, R_G_B_P, List.of("advanced_electronics_2", "production_science_pack"), List.of("beacon"));
         // Uranium (U11b). Production/utility packs join the costs with U11e; Kovarex and reprocessing still lack the production pack.
         add(context, "uranium_processing", 200, 30, R_G_B, List.of("chemical_science_pack", "concrete", "mine_shaft"),
                 List.of("centrifuge", "centrifuge/uranium_processing", "assembling/uranium_fuel_cell"));
         add(context, "nuclear_power", 800, 30, R_G_B, List.of("uranium_processing"), List.of("reactor", "heat_pipe", "heat_exchanger", "steam_turbine"));
-        add(context, "kovarex_enrichment_process", 1500, 30, R_G_B, List.of("uranium_processing", "nuclear_power"), List.of("centrifuge/kovarex_enrichment"));
-        add(context, "nuclear_fuel_reprocessing", 50, 30, R_G_B, List.of("nuclear_power"), List.of("centrifuge/nuclear_fuel_reprocessing"));
-        add(context, "uranium_ammo", 1000, 45, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY, Pack.BLUE), List.of("uranium_processing", "military_science_pack"),
+        // Wiki 1.1 also asks for rocket fuel before Kovarex; there is no rocket fuel here, so nuclear power takes its place.
+        add(context, "kovarex_enrichment_process", 1500, 30, R_G_B_P, List.of("uranium_processing", "nuclear_power", "production_science_pack"), List.of("centrifuge/kovarex_enrichment"));
+        add(context, "nuclear_fuel_reprocessing", 50, 30, R_G_B_P, List.of("nuclear_power", "production_science_pack"), List.of("centrifuge/nuclear_fuel_reprocessing"));
+        add(context, "uranium_ammo", 1000, 45, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY, Pack.BLUE, Pack.UTILITY), List.of("uranium_processing", "military_science_pack", "utility_science_pack"),
                 List.of("assembling/uranium_magazine"));
         add(context, "electric_energy_accumulators", 150, 30, R_G, List.of("battery", "electric_energy_distribution_1"),
                 List.of("accumulator", "assembling/accumulator"));

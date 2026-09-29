@@ -12,9 +12,9 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 /** The laboratory: one slot per science pack kind. */
 public final class LaboratoryMenu extends MachineMenuBase {
     public static final int DATA_COUNT = 5;
-    public static final int SLOT_X = 26;
+    public static final int SLOT_X = 8;
     public static final int SLOT_Y = 35;
-    public static final int SLOT_STEP = 24;
+    public static final int SLOT_STEP = 20;
 
     private final ContainerData data;
 

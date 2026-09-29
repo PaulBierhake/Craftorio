@@ -776,6 +776,8 @@ public final class TowerDefense extends SavedData {
             case SILVER_SEAL -> new ItemStack(ModItems.SILVER_SEAL.get());
             case GOLD_SEAL -> new ItemStack(ModItems.GOLD_SEAL.get());
             case PLATINUM_SEAL -> new ItemStack(ModItems.PLATINUM_SEAL.get());
+            case DIAMOND_SEAL -> new ItemStack(ModItems.DIAMOND_SEAL.get());
+            case STAR_SEAL -> new ItemStack(ModItems.STAR_SEAL.get());
         };
     }
 

@@ -22,14 +22,16 @@ import java.util.List;
  */
 public record Research(long units, List<Pack> packs, int seconds, List<ResourceLocation> requires,
                        List<ResourceLocation> unlocks, List<SizedIngredient> unlockItems, int order) {
-    public static final int MAX_PACKS = 4;
+    public static final int MAX_PACKS = 6;
 
-    /** The four science pack kinds of the first stage, in the order they are shown. */
+    /** The science pack kinds, in the order they are shown. */
     public enum Pack implements StringRepresentable {
         RED("red", 'R'),
         GREEN("green", 'G'),
         MILITARY("military", 'M'),
-        BLUE("blue", 'B');
+        BLUE("blue", 'B'),
+        PRODUCTION("production", 'P'),
+        UTILITY("utility", 'U');
 
         public static final Codec<Pack> CODEC = StringRepresentable.fromEnum(Pack::values);
 
@@ -46,7 +48,7 @@ public record Research(long units, List<Pack> packs, int seconds, List<ResourceL
             return key;
         }
 
-        /** Short label used in cost lines: R, G, M, B. */
+        /** Short label used in cost lines: R, G, M, B, P, U. */
         public char letter() {
             return letter;
         }
@@ -57,6 +59,8 @@ public record Research(long units, List<Pack> packs, int seconds, List<ResourceL
                 case GREEN -> ModItems.GREEN_SCIENCE.get();
                 case MILITARY -> ModItems.MILITARY_SCIENCE.get();
                 case BLUE -> ModItems.BLUE_SCIENCE.get();
+                case PRODUCTION -> ModItems.PRODUCTION_SCIENCE.get();
+                case UTILITY -> ModItems.UTILITY_SCIENCE.get();
             };
         }
     }

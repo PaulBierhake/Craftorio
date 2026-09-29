@@ -271,7 +271,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran), **U11c** (Kernkraft) und **U11d** (Module).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran), **U11c** (Kernkraft), **U11d** (Module) und **U11e** (Lila und Gelb).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -360,6 +360,10 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Pumpjack). Produktivität gilt nur für Zwischenprodukte. Der *Beacon* gibt die Hälfte der Wirkung seiner Geschwindigkeits- und
   Effizienzmodule an alle Maschinen im 9×9-Bereich weiter. Die *Montagemaschine 3* (Forschung Automatisierung 3) hat Geschwindigkeit 1,25
   und vier Slots.
+- **Lila und Gelb (U11e)**: Das *Produktions-Paket* (Elektroofen, Produktivitätsmodul, 30 Schienen) und das *Nutzlast-Paket* (Prozessoren,
+  Flugroboterrahmen, Leichtbaustrukturen) werden in der Montagemaschine gebaut; ihre Forschungen verlangen das Diamant-Siegel (Arena Level 40)
+  und das Sternen-Siegel (Level 50). Damit sind Modul 3, Montagemaschine 3, Beacons, Kovarex, Wiederaufbereitung, Logistik 3 (Express-Bänder),
+  Uran-Munition und die Bergbauproduktivität 1–3 (+10 % Erz je Stufe) freigeschaltet.
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

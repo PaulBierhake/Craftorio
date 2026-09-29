@@ -19,6 +19,17 @@ public final class ResearchRules {
         LOCKED
     }
 
+    /** Every finished mining productivity research adds 10 % ore to every drill of the team (wiki 1.1: levels 1 to 3). */
+    public static double miningProductivity(Collection<String> researched) {
+        int levels = 0;
+        for (int level = 1; level <= 3; level++) {
+            if (researched.contains("craftorio:mining_productivity_" + level)) {
+                levels++;
+            }
+        }
+        return 0.1 * levels;
+    }
+
     public static Status status(String id, Collection<String> requires, Set<String> researched, List<String> queue) {
         if (researched.contains(id)) {
             return Status.DONE;

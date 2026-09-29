@@ -186,4 +186,26 @@ public final class ModuleGameTests {
             helper.succeed();
         });
     }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void aLabHasSlotsForPurpleAndYellowPacks(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.LABORATORY.get());
+        de.craftorio.research.LaboratoryBlockEntity lab = helper.getBlockEntity(pos);
+        helper.assertValueEqual(lab.packs().getSlots(), de.craftorio.research.Research.Pack.values().length, "one slot per pack kind");
+        helper.assertTrue(lab.packs().insertItem(de.craftorio.research.Research.Pack.PRODUCTION.ordinal(), new ItemStack(ModItems.PRODUCTION_SCIENCE.get(), 3), false).isEmpty(), "purple packs fit");
+        helper.assertTrue(lab.packs().insertItem(de.craftorio.research.Research.Pack.UTILITY.ordinal(), new ItemStack(ModItems.UTILITY_SCIENCE.get(), 3), false).isEmpty(), "yellow packs fit");
+        helper.assertTrue(!lab.packs().insertItem(de.craftorio.research.Research.Pack.PRODUCTION.ordinal(), new ItemStack(ModItems.UTILITY_SCIENCE.get()), false).isEmpty(), "each slot takes its own pack only");
+        helper.assertValueEqual(de.craftorio.research.Research.Pack.PRODUCTION.letter(), 'P', "letter");
+        helper.assertValueEqual(de.craftorio.research.Research.Pack.UTILITY.letter(), 'U', "letter");
+        helper.succeed();
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void theArenaHandsOutTheDiamondSealAtLevelFortyAndTheStarSealAtFifty(GameTestHelper helper) {
+        helper.assertValueEqual(de.craftorio.defense.LevelPlan.keyReward(40), de.craftorio.defense.LevelPlan.KeyReward.DIAMOND_SEAL, "level 40");
+        helper.assertValueEqual(de.craftorio.defense.LevelPlan.keyReward(50), de.craftorio.defense.LevelPlan.KeyReward.STAR_SEAL, "level 50");
+        helper.assertValueEqual(de.craftorio.defense.LevelPlan.keyReward(45), de.craftorio.defense.LevelPlan.KeyReward.NONE, "level 45");
+        helper.succeed();
+    }
 }

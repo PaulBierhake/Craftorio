@@ -716,6 +716,20 @@ Produktivitätsmodule) werden in `Beacons` je Dimension geführt; jede Maschine 
 Tests: `ModuleGameTests` (20 % kürzer, Produktivität abgelehnt und Extra-Zahnrad je 10 Durchläufe, Beacon-Reichweite und -Summe, Slot-Tabelle,
 Montagemaschine 3) und Rezepttabelle.
 
+**Umgesetzt (U11e), gegen das Factorio-1.1-Wiki geprüft.** Pakete: `Research.Pack` hat jetzt `PRODUCTION('P')` und `UTILITY('U')`
+(höchstens sechs Pakete je Forschung), das Labor hat sechs Slots (engerer Abstand, alte Labore werden beim Laden erweitert). **Rezepte laut Wiki**
+(die Skizze oben lag daneben): Produktions-Paket 21 s, 1 Elektroofen + 1 Produktivitätsmodul 1 + 30 Schienen → 3; Nutzlast-Paket 21 s,
+**2 Prozessoren + 1 Flugroboterrahmen + 3 Leichtbaustrukturen** → 3. Forschung: Produktions-Paket 100 × RGB, **30 s** (nicht 5 s;
+Voraussetzungen Produktivitätsmodul, Fortgeschrittene Materialverarbeitung 2, Schienenbau) mit Diamant-Siegel, Nutzlast-Paket 100 × RGB, 30 s (Robotik,
+Fortgeschrittene Elektronik 2, Leichtbaustruktur) mit Sternen-Siegel; die Arena vergibt die Siegel bei Level 40 und 50 (die Levelformel
+kennt keine Obergrenze). Module 3 (300 × RGBP, 60 s), Automatisierung 3, Effektübertragung und Kovarex/Wiederaufbereitung verlangen jetzt das
+Produktions-Paket und Lila in den Kosten; **Uran-Munition 1000 × RGB+M+U, 45 s** (wie im Wiki ohne Lila); Kovarex behält Kernkraft als
+Ersatz für den fehlenden Raketentreibstoff. `express_belts` heißt jetzt **Logistik 3** (300 × RGBP, 15 s; Schmiermittel und Produktions-Paket;
+alte Spielstände werden umbenannt). **Bergbauproduktivität** 1–3 wie im Wiki (250 × RG / 500 × RGB / 1000 × RGBPU, je 60 s, +10 % Erz je Stufe
+für alle Bohrer des Teams, als Extra-Erz über den Produktivitätsbalken); die endlose Fortsetzung (Stufe 4+) entfällt, weil das Wiki sie an das
+Weltraum-Paket knüpft. Tests: Rezepttabelle (Pakete, alle Forschungskosten), `ModuleGameTests` (Lab-Slots, Siegel bei 40/50), `ResearchRulesTest`
+(Bergbauproduktivität), Progressionstest bis Gelb (mit Siegeln).
+
 ### 11.11 Pakete (Reihenfolge, je ein Commit)
 
 | Paket | Inhalt | Akzeptanz |
@@ -724,7 +738,7 @@ Montagemaschine 3) und Rezepttabelle.
 | **U11b – Uran** ✅ | Bohrer mit Flüssigkeitseingang, Uranabbau mit Säure, Säure in die Minen (§11.8), Zentrifuge (Block, Menü), Uranverarbeitung mit Wahrscheinlichkeit, U-235/U-238, Brennstoffzelle, Uran-Magazin, Forschung Uranverarbeitung | GameTests: Bohrer ohne Säure fördert nichts, mit Säure schon; Zentrifuge 10.000 Läufe ≈ 0,7 % U-235 |
 | **U11c – Kernkraft** ✅ | Wärmenetz (`HeatLogic` + Unit-Tests), Kernreaktor mit Steuerung und Nachbarbonus, Wärmerohr, Wärmetauscher, Hochdruckdampf, Dampfturbine, Wiederaufbereitung, alter Reaktor migriert | GameTest: 1 Reaktor + 4 Tauscher + 7 Turbinen versorgen 40 MW Last stabil; Nachbarbonus verdoppelt die Wärme; Zelle hält 200 s |
 | **U11d – Module, Montagemaschine 3, Beacon** ✅ | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |
-| **U11e – Lila und Gelb** | Pakete `PRODUCTION`/`UTILITY` im Enum, Labor und Terminal; Rezepte der Pakete; neue Forschungen aus §11.6; Diamant- und Sternen-Siegel; Kovarex; Module 3; Bergbauproduktivität (optional) | Progressionstest bis Gelb grün (mit Siegeln); GameTest: Labor akzeptiert Lila/Gelb |
+| **U11e – Lila und Gelb** ✅ | Pakete `PRODUCTION`/`UTILITY` im Enum, Labor und Terminal; Rezepte der Pakete; neue Forschungen aus §11.6; Diamant- und Sternen-Siegel; Kovarex; Module 3; Bergbauproduktivität (optional) | Progressionstest bis Gelb grün (mit Siegeln); GameTest: Labor akzeptiert Lila/Gelb |
 | **U11f – TD-Endgame** | Behemoth, Schwarmkönigin (Level 50), Kurve 31–50, Uran-Munition im Einspeiser und in `TowerStats`, Turmstufen 4–5, Siegel-Belohnungen 40/50 | Unit-Test der Level-Kurve; GameTest: Level 50 vergibt das Sternen-Siegel; Uran-Munition wird verbraucht |
 | **U11g – Leitfaden, Handbuch, Balancing** | Leitfaden-Schritte (§11.12), Handbuch-Seiten zu Modulen, Kernkraft und Uran, Verkaufspreise, Zeitmessung um die Meilensteine aus §11.9, README-Abschnitt „Endgame" | Alle Tests grün; Leitfaden bis Gelb durchspielbar (Progressionstest deckt Leitfaden-Reihenfolge ab) |
 
