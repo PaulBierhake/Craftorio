@@ -70,7 +70,7 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
 
     public void setFilter(ItemStack stack) {
         filter = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
-        setChanged();
+        sync(); // the renderer shows the filter
     }
 
     /** Splitter setting: where items that match the filter go. */
@@ -82,7 +82,7 @@ public final class ConveyorBeltBlockEntity extends BlockEntity {
     public SplitterLogic.Output cycleFilterOutput() {
         SplitterLogic.Output[] outputs = SplitterLogic.Output.values();
         filterOutput = outputs[(filterOutput.ordinal() + 1) % outputs.length];
-        setChanged();
+        sync();
         return filterOutput;
     }
 
