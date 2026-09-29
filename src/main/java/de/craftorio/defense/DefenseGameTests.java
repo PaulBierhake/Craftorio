@@ -293,25 +293,22 @@ public final class DefenseGameTests {
         helper.assertValueEqual(queen.phase(), 0, "starts in phase 0");
         int[] others = new int[1];
         helper.runAtTickTime(5, () -> {
-            others[0] = enemies(helper) - 1; // enemies of other tests that happen to be nearby
+            others[0] = run.enemiesLeft(); // the waves that have not spawned; the queen is not part of the run's list, her brood is
             queen.setHealth(queen.getMaxHealth() * 0.6F);
         });
         helper.runAtTickTime(15, () -> {
             helper.assertValueEqual(queen.phase(), 1, "phase 1 below two thirds");
-            helper.assertTrue(enemies(helper) - others[0] >= 1 + 8, "eight crawlers join");
+            helper.assertValueEqual(run.enemiesLeft() - others[0], 8, "eight crawlers join");
             queen.setHealth(queen.getMaxHealth() * 0.3F);
         });
         helper.runAtTickTime(25, () -> {
             helper.assertValueEqual(queen.phase(), 2, "phase 2 below one third");
-            helper.assertTrue(enemies(helper) - others[0] >= 1 + 8 + 12 + 4, "twelve crawlers and four breakers join: " + (enemies(helper) - others[0]));
+            helper.assertValueEqual(run.enemiesLeft() - others[0], 8 + 12 + 4, "twelve crawlers and four breakers join");
             queen.discard();
             helper.succeed();
         });
     }
 
-    private static int enemies(GameTestHelper helper) {
-        return helper.getLevel().getEntitiesOfClass(TdEnemy.class, new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(8, 1, 6))).inflate(40)).size();
-    }
 
     @GameTest(template = LARGE, timeoutTicks = 100, batch = "defense_flame")
     public static void theFeederTakesCrudeOilForFlamethrowerTurrets(GameTestHelper helper) {
