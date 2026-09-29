@@ -81,6 +81,19 @@ public final class ModSellPriceProvider extends DataMapProvider {
         price(prices, ModItems.URANIUM_FUEL_CELL.get(), 2_000);
         price(prices, ModItems.USED_UP_FUEL_CELL.get(), 500);
 
+        // Endgame goods (U11g): every step at least 10 % over its ingredients
+        price(prices, Items.RAIL, 60);
+        price(prices, ModItems.PROCESSING_UNIT.get(), 2_900);
+        price(prices, ModItems.ELECTRIC_ENGINE.get(), 460);
+        price(prices, ModItems.FLYING_ROBOT_FRAME.get(), 1_200);
+        price(prices, ModItems.LOW_DENSITY_STRUCTURE.get(), 900);
+        price(prices, ModItems.CONCRETE.get(), 8);
+        for (de.craftorio.module.ModuleKind kind : de.craftorio.module.ModuleKind.values()) {
+            price(prices, ModItems.module(kind, 1).get(), 2_800);
+            price(prices, ModItems.module(kind, 2).get(), 31_000);
+            price(prices, ModItems.module(kind, 3).get(), 189_000);
+        }
+
         // Storage blocks: a small bonus over their contents
         price(prices, Items.COAL_BLOCK, 100);
         price(prices, Items.IRON_BLOCK, 160);

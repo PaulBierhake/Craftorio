@@ -79,7 +79,28 @@ public final class Quests {
             sell("steel_plate", "craftorio:steel_plate", 64, 500),
             sell("advanced_circuit", "craftorio:advanced_circuit", 8, 1_000),
             earn("earn_1m", 1_000_000, 5_000),
-            tdLevel("td_40", 40, 5_000));
+            // Uranium, nuclear power and modules
+            sell("raw_uranium", "craftorio:raw_uranium", 20, 1_000),
+            unlock("centrifuge", 1_000),
+            build("centrifuge", 1, 1_000),
+            sell("uranium_235", "craftorio:uranium_235", 1, 2_000),
+            unlock("nuclear_power", "craftorio:reactor", 1_500),
+            build("reactor", 1, 2_000),
+            build("heat_exchanger", 4, 1_000),
+            build("steam_turbine", 7, 1_000),
+            unlock("speed_module", "craftorio:assembling/speed_module_1", 500),
+            unlock("productivity_module", "craftorio:assembling/productivity_module_1", 500),
+            tdLevel("td_40", 40, 5_000),
+            // Purple and yellow science, beacons, Kovarex
+            unlock("production_science", "craftorio:assembling/production_science", 3_000),
+            unlock("assembler_3", 2_000),
+            build("assembler_3", 1, 2_000),
+            unlock("beacon", 2_000),
+            build("beacon", 1, 2_000),
+            tdLevel("td_50", 50, 10_000),
+            unlock("utility_science", "craftorio:assembling/utility_science", 5_000),
+            unlock("kovarex", "craftorio:centrifuge/kovarex_enrichment", 5_000),
+            unlock("speed_module_3", "craftorio:assembling/speed_module_3", 5_000));
 
     /** The first quest whose reward has not been collected yet: what the player should do next. */
     public static java.util.Optional<Integer> current(java.util.Set<String> claimed) {

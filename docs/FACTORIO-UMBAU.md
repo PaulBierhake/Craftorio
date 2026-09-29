@@ -751,7 +751,18 @@ weiter Vanilla-Modelle (Behemoth: Zombie-Piglin ×1,7, Königin: Spinne ×2,4).
 | **U11d – Module, Montagemaschine 3, Beacon** ✅ | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |
 | **U11e – Lila und Gelb** ✅ | Pakete `PRODUCTION`/`UTILITY` im Enum, Labor und Terminal; Rezepte der Pakete; neue Forschungen aus §11.6; Diamant- und Sternen-Siegel; Kovarex; Module 3; Bergbauproduktivität (optional) | Progressionstest bis Gelb grün (mit Siegeln); GameTest: Labor akzeptiert Lila/Gelb |
 | **U11f – TD-Endgame** ✅ | Behemoth, Schwarmkönigin (Level 50), Kurve 31–50, Uran-Munition im Einspeiser und in `TowerStats`, Turmstufen 4–5, Siegel-Belohnungen 40/50 | Unit-Test der Level-Kurve; GameTest: Level 50 vergibt das Sternen-Siegel; Uran-Munition wird verbraucht |
-| **U11g – Leitfaden, Handbuch, Balancing** | Leitfaden-Schritte (§11.12), Handbuch-Seiten zu Modulen, Kernkraft und Uran, Verkaufspreise, Zeitmessung um die Meilensteine aus §11.9, README-Abschnitt „Endgame" | Alle Tests grün; Leitfaden bis Gelb durchspielbar (Progressionstest deckt Leitfaden-Reihenfolge ab) |
+| **U11g – Leitfaden, Handbuch, Balancing** ✅ | Leitfaden-Schritte (§11.12), Handbuch-Seiten zu Modulen, Kernkraft und Uran, Verkaufspreise, Zeitmessung um die Meilensteine aus §11.9, README-Abschnitt „Endgame" | Alle Tests grün; Leitfaden bis Gelb durchspielbar (Progressionstest deckt Leitfaden-Reihenfolge ab) |
+
+**Umgesetzt (U11g).** Leitfaden (§11.12, 19 neue Schritte in der Reihenfolge des Spiels, das Handbuch zeigt je Schritt Text, Fortschritt und Rezept):
+Uranerz verkaufen (Säure per Aufzug), Uranverarbeitung erforschen, Zentrifuge bauen, U-235 verkaufen, Kernkraft erforschen, Reaktor, 4 Wärmetauscher und
+7 Turbinen bauen, Geschwindigkeits- und Produktivitätsmodul erforschen, TD-Level 40, Produktions-Paket, Automatisierung 3 samt Montagemaschine 3,
+Effektübertragung samt Beacon, TD-Level 50, Nutzlast-Paket, Kovarex, Geschwindigkeitsmodul 3. Der Test `everyGuideStepPointsAtSomethingRealAndHasTexts`
+prüft, dass jedes Ziel existiert (Bauplan, freischaltbares Rezept, verkäufliches Item) und Titel und Hinweis in beiden Sprachen da sind.
+Der Hinweis zum Minenschacht nennt jetzt die richtigen Pakete (rot, grün und blau). Verkaufspreise: Schiene, Prozessor, Elektromotor, Flugrahmen,
+Leichtbaustruktur, Beton und die neun Module haben Preise mit mindestens 10 % Aufschlag auf die Zutaten (`BalanceGameTests`); Wissenschaftspakete,
+Gebäude und Munition bleiben unverkäuflich. Die **Zeitmessung** braucht nichts Neues: das Terminal speichert die Spielzeit jedes Forschungsabschlusses,
+die Meilensteine aus §11.9 sind die Forschungen `mine_shaft`, `uranium_processing`, `nuclear_power`, `production_science_pack`,
+`utility_science_pack` und `kovarex_enrichment_process`. Mit U11a–g ist der Umbau bis zum Endgame ohne Rakete komplett.
 
 ### 11.12 Leitfaden (Fortsetzung, Entwurf)
 

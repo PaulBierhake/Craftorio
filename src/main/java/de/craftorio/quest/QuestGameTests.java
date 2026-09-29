@@ -32,4 +32,55 @@ public final class QuestGameTests {
         helper.assertFalse(QuestActions.claim(player, index), "only once");
         helper.succeed();
     }
+
+    /** Every step of the guide names something that exists, can be sold, or is unlocked by a research – and has a text in both languages. */
+    @GameTest(template = "empty")
+    public static void everyGuideStepPointsAtSomethingRealAndHasTexts(GameTestHelper helper) throws java.io.IOException {
+        var access = helper.getLevel().registryAccess();
+        var blueprints = access.registryOrThrow(de.craftorio.registry.ModRegistries.BLUEPRINTS);
+        var researches = access.registryOrThrow(de.craftorio.registry.ModRegistries.RESEARCH);
+        java.util.Set<String> unlockable = new java.util.HashSet<>();
+        researches.holders().forEach(holder -> holder.value().unlocks().forEach(id -> unlockable.add(id.toString())));
+        java.util.List<String> problems = new java.util.ArrayList<>();
+        for (Quest quest : Quests.ALL) {
+            switch (quest.kind()) {
+                case UNLOCK -> {
+                    var id = net.minecraft.resources.ResourceLocation.parse(quest.target());
+                    if (!blueprints.containsKey(id) && !unlockable.contains(quest.target())) {
+                        problems.add(quest.id() + ": nothing unlocks " + quest.target());
+                    } else if (!unlockable.contains(quest.target())) {
+                        // a blueprint without a research (the early ones) is bought in the terminal: fine
+                    }
+                }
+                case BUILD -> {
+                    if (!blueprints.containsKey(net.minecraft.resources.ResourceLocation.parse(quest.target()))) {
+                        problems.add(quest.id() + ": no blueprint " + quest.target());
+                    }
+                }
+                case SELL -> {
+                    var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(quest.target()));
+                    if (de.craftorio.economy.Economy.unitPrice(new net.minecraft.world.item.ItemStack(item)) <= 0) {
+                        problems.add(quest.id() + ": " + quest.target() + " can not be sold");
+                    }
+                }
+                default -> {
+                }
+            }
+            if (quest.hasRewardItem() && net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(quest.rewardItem())) == net.minecraft.world.item.Items.AIR) {
+                problems.add(quest.id() + ": unknown reward item " + quest.rewardItem());
+            }
+        }
+        for (String language : java.util.List.of("en_us", "de_de")) {
+            try (var stream = QuestGameTests.class.getResourceAsStream("/assets/craftorio/lang/" + language + ".json")) {
+                var json = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+                for (Quest quest : Quests.ALL) {
+                    if (!json.has("craftorio.quest." + quest.id()) || !json.has("craftorio.quest." + quest.id() + ".hint")) {
+                        problems.add(quest.id() + " has no text in " + language);
+                    }
+                }
+            }
+        }
+        helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+        helper.succeed();
+    }
 }

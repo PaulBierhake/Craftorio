@@ -271,7 +271,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran), **U11c** (Kernkraft), **U11d** (Module) **U11e** (Lila und Gelb) und **U11f** (Tower-Defense-Endgame).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten), **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing), **U10** (Pflanzen) und **U11a–g** (Endgame: Öl-Nachtrag, Uran, Kernkraft, Module, Lila und Gelb, Tower-Defense-Endgame, Leitfaden und Balancing).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -367,8 +367,8 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
 - **Tower-Defense-Endgame (U11f)**: Ab Level 35 kommen *Behemoths* mit Panzerung (8 Punkte je physischem Treffer: erst panzerbrechende oder
   Uran-Magazine, Laser und Flammen wirken), Level 50 endet mit der *Schwarmkönigin*, die in drei Phasen ihre Brut ruft. Das *Uran-Magazin*
   (Faktor 4,8) geht in Geschütztürme und in den Arena-Einspeiser.
-- **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
-  Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
+- **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 80 Schritten durch den Forschungsbaum: von Erz per Hand über erste
+  Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär, Minen, Uran, Kernkraft, Module und das Endgame bis Lila und Gelb. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für
   Tower-Defense-Level und Verkaufsziele (bis Level 10 höchstens 2.000 ¢ insgesamt, ein Unit-Test wacht darüber). Ein GameTest spielt den
   Forschungsbaum durch: jede Forschung muss in irgendeiner Reihenfolge mit den Paketen bezahlbar sein, die die vorher erforschten Rezepte
@@ -380,6 +380,23 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
   Schwerter, Rüstung und Schere bleiben.
+
+### Endgame im Überblick
+
+Das Spiel geht bis Factorio 1.1 „ohne Rakete": kein Raketensilo und kein Weltraum-Paket. Der Weg, jeweils an der Forschung im Terminal
+abzulesen (das Terminal zeigt die Spielzeit jedes Abschlusses):
+
+| Meilenstein | Forschung | Zielzeit (Gesamtspielzeit) |
+|---|---|---|
+| Minenschacht offen (TD-Level 30, Platin-Siegel) | `mine_shaft` | 12–15 h |
+| Uran gefördert und verarbeitet | `uranium_processing` | 14–17 h |
+| Kernkraft läuft | `nuclear_power` | 16–20 h |
+| Lila automatisiert (TD-Level 40, Diamant-Siegel) | `production_science_pack` | 18–24 h |
+| Gelb automatisiert (TD-Level 50, Sternen-Siegel) | `utility_science_pack` | 24–32 h |
+| Kovarex läuft | `kovarex_enrichment_process` | 26–34 h |
+
+Zum Justieren dienen zuerst `pacing.researchCost` und die Tower-Defense-Kurve, nicht einzelne Rezepte. Alle Rezepte, Zeiten und Forschungskosten
+sind gegen das Factorio-1.1-Wiki geprüft und stehen als Testdaten in `RecipeTableGameTests`; Abweichungen stehen in `docs/FACTORIO-UMBAU.md` (§11).
 
 ## Projektstruktur
 
