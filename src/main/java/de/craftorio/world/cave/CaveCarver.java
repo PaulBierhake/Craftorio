@@ -43,6 +43,7 @@ public final class CaveCarver {
                     layer == Layer.CAVES ? OIL_WELLS_MIN + random.nextInt(OIL_WELLS_EXTRA + 1)
                             : FIELD_MIN_SIZE + random.nextInt(FIELD_MAX_SIZE - FIELD_MIN_SIZE + 1), random);
         }
+        CaveDecorator.decorate(level, layer, chunk, shape);
     }
 
     public static Block fill(Layer layer) {
@@ -68,10 +69,17 @@ public final class CaveCarver {
             } else if (y < floor) {
                 target = mines ? Blocks.BLACKSTONE.defaultBlockState() : Blocks.DEEPSLATE.defaultBlockState();
             } else {
-                target = mines ? Blocks.DEEPSLATE.defaultBlockState() : Blocks.STONE.defaultBlockState();
+                target = mines ? Blocks.DEEPSLATE.defaultBlockState() : rockVariant(x, y, z);
             }
             level.setBlock(pos, target, Block.UPDATE_CLIENTS);
         }
+    }
+
+    /** Patches of andesite and tuff in the stone of the cave walls and ceilings. */
+    private static BlockState rockVariant(int x, int y, int z) {
+        long hash = ((x >> 2) * 73_856_093L) ^ ((y >> 2) * 19_349_663L) ^ ((z >> 2) * 83_492_791L);
+        int patch = (int) Math.floorMod(hash >>> 7, 10L);
+        return (patch < 2 ? Blocks.ANDESITE : patch == 2 ? Blocks.TUFF : Blocks.STONE).defaultBlockState();
     }
 
     private static Block randomField(Layer layer, RandomSource random) {

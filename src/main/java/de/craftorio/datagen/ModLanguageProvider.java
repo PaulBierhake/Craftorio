@@ -980,7 +980,6 @@ public final class ModLanguageProvider {
             add("craftorio.cave.opened", "Ein Höhleneingang wurde geöffnet! Der Höhlenbereich um Chunk %s, %s wird ausgehöhlt.");
             add("craftorio.cave.error.overworld_only", "Höhleneingänge gibt es nur in der Oberwelt.");
             add("craftorio.cave.error.too_deep", "Höhleneingänge an der Oberfläche bauen (ab Y 50).");
-            add("craftorio.cave.error.flat_world", "Warning: this is a superflat world without Craftorio cave and mine layers – cave entrances cannot be built here. Create the world with a normal world type.");
             add("craftorio.cave.error.flat_world", "Warnung: Das ist eine Superflat-Welt ohne Craftorio-Höhlen- und Minenschichten – hier lassen sich keine Höhleneingänge bauen. Erstelle die Welt mit einem normalen Welttyp.");
             add("craftorio.cave.error.no_layer", "Hier gibt es keine Craftorio-Höhlenschicht: Superflat-Welt oder ein Gebiet, das vor dem Höhlen-Update erzeugt wurde. Nutze einen normalen Welttyp (oder erkunde neue Chunks).");
 

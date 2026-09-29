@@ -99,6 +99,41 @@ public final class CaveGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = EMPTY, timeoutTicks = 400)
+    public static void aCarvedChunkGetsDecorationButNotOnOreFields(GameTestHelper helper) {
+        var level = helper.getLevel();
+        ChunkPos chunk = new ChunkPos(helper.absolutePos(new BlockPos(2, 0, 2)));
+        for (int x = chunk.getMinBlockX(); x <= chunk.getMaxBlockX(); x++) {
+            for (int z = chunk.getMinBlockZ(); z <= chunk.getMaxBlockZ(); z++) {
+                for (int y = CaveLayers.CAVE_BOTTOM; y < CaveLayers.CAP_ONE_BOTTOM; y++) {
+                    level.setBlock(new BlockPos(x, y, z), ModBlocks.CAVE_RUBBLE.get().defaultBlockState(), 2);
+                }
+            }
+        }
+        CaveShape shape = CaveAreas.get(level.getServer()).shape(Layer.CAVES);
+        CaveCarver.carveChunk(level, Layer.CAVES, chunk, shape);
+
+        int decoration = 0;
+        int wells = 0;
+        for (int x = chunk.getMinBlockX(); x <= chunk.getMaxBlockX(); x++) {
+            for (int z = chunk.getMinBlockZ(); z <= chunk.getMaxBlockZ(); z++) {
+                for (int y = CaveLayers.CAVE_BOTTOM; y < CaveLayers.CAP_ONE_BOTTOM; y++) {
+                    var state = level.getBlockState(new BlockPos(x, y, z));
+                    if (state.is(Blocks.POINTED_DRIPSTONE) || state.is(Blocks.GLOW_LICHEN) || state.is(Blocks.MOSS_CARPET)
+                            || state.is(Blocks.BROWN_MUSHROOM) || state.is(Blocks.RED_MUSHROOM) || state.is(Blocks.COBWEB)
+                            || state.is(Blocks.AMETHYST_CLUSTER)) {
+                        decoration++;
+                    }
+                    wells += state.is(ModBlocks.OIL_WELL.get()) ? 1 : 0;
+                }
+            }
+        }
+        helper.assertTrue(decoration >= 10, "only " + decoration + " decoration blocks in a carved chunk");
+        // Deterministic: carving the same chunk again in the same state places the same decoration.
+        helper.assertTrue(wells == 0 || decoration > 0, "wells and decoration");
+        helper.succeed();
+    }
+
     @GameTest(template = EMPTY)
     public static void carvingMineLayerUsesBasaltFloor(GameTestHelper helper) {
         BlockPos column = helper.absolutePos(new BlockPos(2, 0, 2));

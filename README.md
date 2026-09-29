@@ -180,6 +180,7 @@ und das Handbuch-Ersatzbuch.
   der Generatoren und springt ein, wenn sie nicht reichen. Zinn, Blei, Titan, Gold, Quarz, Diamant, Kristalle und Energiekristalle
   gibt es nicht mehr; Zinn-/Blei-/Titan-Rezepte wurden auf Stahl, Kunststoff und Batterien umgestellt.
 
+- **Höhlen-Deko (E2)**: Beim Aushöhlen bekommt jeder Chunk deterministisch Tropfstein, Leuchtflechten (etwas Licht), Pilze, Moos, Spinnweben und Amethyst; in den Minen Holzstützen. Erzfelder und Ölquellen bleiben frei, die Steinwände haben Andesit- und Tuff-Flecken.
 - **Normale Welt nötig**: Die Schichten erzeugt der Weltgenerator; in Superflat-Welten (Oberfläche y = −60) und in vor dem Höhlen-Update erzeugten Chunks gibt es keine. Der Eingang meldet das beim Setzen, der Server warnt im Log und Operatoren beim Beitritt. Ein eigenes Welt-Preset ist nicht nötig: jeder normale Welttyp enthält die Schichten. Der Eingang hat ein Menü mit Anforderungen, Fortschrittsbalken und Einwurf-Slot (Automatik per Greifarm/Band bleibt).
 - **Warenaufzug** (Bauplan nach dem Höhleneingang, 2 Stück pro Bau): Zwei Aufzüge in derselben Spalte
   (gleiches X/Z) verbinden sich automatisch – auch durch Deckgestein und massiven Fels, bis 256 Blöcke weit.
