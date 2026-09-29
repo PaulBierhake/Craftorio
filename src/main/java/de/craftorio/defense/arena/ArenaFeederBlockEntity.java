@@ -48,7 +48,7 @@ public final class ArenaFeederBlockEntity extends BlockEntity {
     }
 
     public static boolean isAmmo(ItemStack stack) {
-        return stack.is(ModItems.BOLT.get()) || stack.is(ModItems.MAGAZINE.get()) || stack.is(ModItems.AP_MAGAZINE.get());
+        return stack.is(ModItems.BOLT.get()) || de.craftorio.defense.Magazine.of(stack) != null;
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ArenaFeederBlockEntity feeder) {

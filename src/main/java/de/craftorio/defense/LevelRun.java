@@ -147,6 +147,36 @@ public final class LevelRun {
         }
     }
 
+    /** The brood the swarm queen calls when she enters a new phase; they join at her place of the path. */
+    void summon(ServerLevel level, TdEnemy queen, int phase) {
+        List<EnemyType> brood = new ArrayList<>();
+        int crawlers = 8 + 4 * (phase - 1);
+        for (int i = 0; i < crawlers; i++) {
+            brood.add(EnemyType.CRAWLER);
+        }
+        if (phase >= 2) {
+            for (int i = 0; i < 4; i++) {
+                brood.add(EnemyType.BREAKER);
+            }
+        }
+        if (phase >= 3) {
+            brood.add(EnemyType.BEHEMOTH);
+            brood.add(EnemyType.BEHEMOTH);
+            for (int i = 0; i < 4; i++) {
+                brood.add(EnemyType.SPITTER);
+            }
+        }
+        double health = plan.healthMultiplier() * (arena != null ? arena.mutator().healthFactor() : 1);
+        for (EnemyType type : brood) {
+            TdEnemy enemy = ModEntities.entityType(type).create(level);
+            if (enemy != null) {
+                enemy.startAt(this, path, queen.pathIndex(), queen.position(), health);
+                level.addFreshEntity(enemy);
+                alive.add(enemy);
+            }
+        }
+    }
+
     /** The wave that spawns next (or is spawning now). */
     public int upcomingWave() {
         return wave;

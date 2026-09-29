@@ -502,7 +502,7 @@ public final class TowerDefense extends SavedData {
 
     public Component reserves(UUID team) {
         return zone(team).map(zone -> (Component) Component.translatable("craftorio.arena.feeder.status", zone.energy, ENERGY_CAPACITY,
-                        zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.MAGAZINE.get()) + zone.ammo(ModItems.AP_MAGAZINE.get()), zone.fluid))
+                        zone.ammo(ModItems.BOLT.get()), magazines(zone), zone.fluid))
                 .orElse(Component.translatable("craftorio.arena.feeder.no_arena"));
     }
 
@@ -769,6 +769,15 @@ public final class TowerDefense extends SavedData {
         setDirty();
     }
 
+    /** Magazines of every kind in the arena reserve. */
+    private static int magazines(Zone zone) {
+        int total = 0;
+        for (Magazine kind : Magazine.values()) {
+            total += zone.ammo(kind.item());
+        }
+        return total;
+    }
+
     private static ItemStack keyItem(LevelPlan.KeyReward reward) {
         return switch (reward) {
             case NONE -> ItemStack.EMPTY;
@@ -796,7 +805,7 @@ public final class TowerDefense extends SavedData {
         return new TdStatusPayload(true, zone.level, run != null, run == null ? 0 : run.wave(), plan.waves().size(),
                 run == null ? LevelPlan.LIVES : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.repairCost,
                 layout.theme().ordinal(), mutator(zone).ordinal(), zone.lastStars, preview, zone.energy,
-                zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.MAGAZINE.get()) + zone.ammo(ModItems.AP_MAGAZINE.get()), run != null && run.canCallWave(), unsupplied(level, zone));
+                zone.ammo(ModItems.BOLT.get()), magazines(zone), run != null && run.canCallWave(), unsupplied(level, zone));
     }
 
     private int unsupplied(ServerLevel level, Zone zone) {
@@ -854,6 +863,7 @@ public final class TowerDefense extends SavedData {
             entry.putInt("bolts", zone.ammo(ModItems.BOLT.get()));
             entry.putInt("cartridges", zone.ammo(ModItems.MAGAZINE.get()));
             entry.putInt("ap_magazines", zone.ammo(ModItems.AP_MAGAZINE.get()));
+            entry.putInt("uranium_magazines", zone.ammo(ModItems.URANIUM_MAGAZINE.get()));
             entry.putInt("fluid", zone.fluid);
             list.add(entry);
         });
@@ -884,6 +894,7 @@ public final class TowerDefense extends SavedData {
             zone.ammo.put(ModItems.BOLT.get(), entry.getInt("bolts"));
             zone.ammo.put(ModItems.MAGAZINE.get(), entry.getInt("cartridges"));
             zone.ammo.put(ModItems.AP_MAGAZINE.get(), entry.getInt("ap_magazines"));
+            zone.ammo.put(ModItems.URANIUM_MAGAZINE.get(), entry.getInt("uranium_magazines"));
             zone.fluid = entry.getInt("fluid");
             UUID team = entry.getUUID("team");
             data.zones.put(team, zone);

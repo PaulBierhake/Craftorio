@@ -271,7 +271,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran), **U11c** (Kernkraft), **U11d** (Module) und **U11e** (Lila und Gelb).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag), **U11b** (Uran), **U11c** (Kernkraft), **U11d** (Module) **U11e** (Lila und Gelb) und **U11f** (Tower-Defense-Endgame).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -364,6 +364,9 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Flugroboterrahmen, Leichtbaustrukturen) werden in der Montagemaschine gebaut; ihre Forschungen verlangen das Diamant-Siegel (Arena Level 40)
   und das Sternen-Siegel (Level 50). Damit sind Modul 3, Montagemaschine 3, Beacons, Kovarex, Wiederaufbereitung, Logistik 3 (Express-Bänder),
   Uran-Munition und die Bergbauproduktivität 1–3 (+10 % Erz je Stufe) freigeschaltet.
+- **Tower-Defense-Endgame (U11f)**: Ab Level 35 kommen *Behemoths* mit Panzerung (8 Punkte je physischem Treffer: erst panzerbrechende oder
+  Uran-Magazine, Laser und Flammen wirken), Level 50 endet mit der *Schwarmkönigin*, die in drei Phasen ihre Brut ruft. Das *Uran-Magazin*
+  (Faktor 4,8) geht in Geschütztürme und in den Arena-Einspeiser.
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

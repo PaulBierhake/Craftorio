@@ -58,11 +58,11 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     private final EnergyBuffer energy;
     /** Shots left in the magazine that is loaded (guns), and whether it is armour-piercing. */
     private int shotsLeft;
-    private boolean armourPiercing;
+    private Magazine magazine = Magazine.NORMAL;
     private final ItemStackHandler ammo = new ItemStackHandler(1) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return type.usesItemAmmo() && (stack.is(ammoItem()) || (type == TowerType.GUN && stack.is(ModItems.AP_MAGAZINE.get())));
+            return type.usesItemAmmo() && (stack.is(ammoItem()) || (type == TowerType.GUN && Magazine.of(stack) != null));
         }
 
         @Override
@@ -131,8 +131,14 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return shotsLeft;
     }
 
+    /** Is the loaded magazine better than the plain one? */
     public boolean armourPiercing() {
-        return armourPiercing;
+        return magazine != Magazine.NORMAL;
+    }
+
+    /** The kind of the magazine that is loaded (or was loaded last). */
+    public Magazine magazine() {
+        return magazine;
     }
 
     public Item ammoItem() {
@@ -150,7 +156,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (shotsLeft > 0) {
             return false;
         }
-        boolean reserve = zone.ammo(ammoItem()) > 0 || (type == TowerType.GUN && zone.ammo(ModItems.AP_MAGAZINE.get()) > 0);
+        boolean reserve = zone.ammo(ammoItem()) > 0 || (type == TowerType.GUN && java.util.Arrays.stream(Magazine.values()).anyMatch(kind -> zone.ammo(kind.item()) > 0));
         return ammo.getStackInSlot(0).isEmpty() && !reserve;
     }
 
@@ -195,7 +201,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (targets.isEmpty() || !payForShot()) {
             return false;
         }
-        float damage = (float) TowerStats.damage(type, upgradeLevel) * (armourPiercing ? (float) TowerType.AP_FACTOR : 1F);
+        float damage = (float) TowerStats.damage(type, upgradeLevel) * (type == TowerType.GUN ? (float) magazine.factor() : 1F);
         Vec3 from = muzzle;
         for (TdEnemy target : targets) {
             Vec3 to = target.position().add(0, target.getBbHeight() / 2, 0);
@@ -247,14 +253,20 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (shotsLeft <= 0) {
             ItemStack loaded = ammo.getStackInSlot(0);
             if (!loaded.isEmpty()) {
-                armourPiercing = loaded.is(ModItems.AP_MAGAZINE.get());
+                magazine = Magazine.of(loaded);
                 ammo.extractItem(0, 1, false);
-            } else if (drawFromArena(defense -> defense.drawAmmo(Arenas.slotAt(worldPosition), ModItems.AP_MAGAZINE.get()))) {
-                armourPiercing = true;
-            } else if (drawFromArena(defense -> defense.drawAmmo(Arenas.slotAt(worldPosition), ModItems.MAGAZINE.get()))) {
-                armourPiercing = false;
             } else {
-                return false;
+                Magazine drawn = null;
+                for (Magazine kind : Magazine.BEST_FIRST) {
+                    if (drawFromArena(defense -> defense.drawAmmo(Arenas.slotAt(worldPosition), kind.item()))) {
+                        drawn = kind;
+                        break;
+                    }
+                }
+                if (drawn == null) {
+                    return false;
+                }
+                magazine = drawn;
             }
             shotsLeft = TowerType.SHOTS_PER_MAGAZINE;
         }
@@ -401,7 +413,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         tag.putInt("energy", energy.getEnergyStored());
         tag.put("ammo", ammo.serializeNBT(registries));
         tag.putInt("shots_left", shotsLeft);
-        tag.putBoolean("armour_piercing", armourPiercing);
+        tag.putString("magazine", magazine.name());
     }
 
     @Override
@@ -417,6 +429,11 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         energy.setEnergy(tag.getInt("energy"));
         ammo.deserializeNBT(registries, tag.getCompound("ammo"));
         shotsLeft = tag.getInt("shots_left");
-        armourPiercing = tag.getBoolean("armour_piercing");
+        try {
+            magazine = tag.contains("magazine") ? Magazine.valueOf(tag.getString("magazine"))
+                    : tag.getBoolean("armour_piercing") ? Magazine.ARMOUR_PIERCING : Magazine.NORMAL;
+        } catch (IllegalArgumentException unknown) {
+            magazine = Magazine.NORMAL;
+        }
     }
 }

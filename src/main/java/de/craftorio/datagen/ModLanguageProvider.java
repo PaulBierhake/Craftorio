@@ -308,7 +308,7 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.fast_underground_belt.desc", "Fast underground belt: 30 items/s, up to 6 blocks apart.");
             add("craftorio.blueprint.fast_splitter.desc", "Fast splitter: a splitter for fast belts (30 items/s).");
             add("craftorio.blueprint.arena_feeder.desc", "Arena feeder: sends power, ammunition and crude oil from your factory into the arena's supply.");
-            add("craftorio.blueprint.gun_turret.desc", "Gun turret: ten shots per magazine; armour-piercing magazines hit 60 % harder.");
+            add("craftorio.blueprint.gun_turret.desc", "Gun turret: ten shots per magazine; armour-piercing magazines hit 60 % harder, uranium magazines 4.8 times.");
             add("craftorio.blueprint.magazine.desc", "Magazine: 4 iron plates, ammunition for the gun turret.");
             add("craftorio.blueprint.ap_magazine.desc", "Armour-piercing magazine: a magazine, a steel plate and 5 copper plates.");
             add("craftorio.blueprint.grenade.desc", "Grenade: 5 coal and 5 iron plates; an ingredient of the military science pack.");
@@ -446,6 +446,8 @@ public final class ModLanguageProvider {
             add("craftorio.reactor.limit", "New cell below %s °C");
             add(ModBlocks.LASER_TOWER.get(), "Laser Tower");
             add("entity.craftorio.crystal_golem", "Crystal Golem");
+            add("entity.craftorio.behemoth", "Behemoth");
+            add("entity.craftorio.swarm_queen", "Swarm Queen");
             add("craftorio.command.layer_unlocked", "Unlocked %s chunks of the layer (Y %s to %s); they are being dug out.");
             add("craftorio.mine.open", "Mine shaft open – take the scaffolding down into the mine layer.");
             add("craftorio.mine.opened", "A mine shaft has opened! The mine area around chunk %s, %s is being dug out.");
@@ -1049,7 +1051,7 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.fast_underground_belt.desc", "Schnelles Unterflurband: 30 Items/s, bis zu 6 Blöcke Abstand.");
             add("craftorio.blueprint.fast_splitter.desc", "Schneller Splitter: ein Splitter für schnelle Bänder (30 Items/s).");
             add("craftorio.blueprint.arena_feeder.desc", "Arena-Einspeiser: schickt Strom, Munition und Rohöl aus deiner Fabrik in den Arena-Vorrat.");
-            add("craftorio.blueprint.gun_turret.desc", "Geschützturm: zehn Schüsse je Magazin; panzerbrechende Magazine treffen 60 % härter.");
+            add("craftorio.blueprint.gun_turret.desc", "Geschützturm: zehn Schüsse je Magazin; panzerbrechende Magazine treffen 60 % härter, Uran-Magazine 4,8-mal.");
             add("craftorio.blueprint.magazine.desc", "Magazin: 4 Eisenplatten, Munition für den Geschützturm.");
             add("craftorio.blueprint.ap_magazine.desc", "Panzerbrechendes Magazin: ein Magazin, eine Stahlplatte und 5 Kupferplatten.");
             add("craftorio.blueprint.grenade.desc", "Granate: 5 Kohle und 5 Eisenplatten; Zutat des Militärpakets.");
@@ -1187,6 +1189,8 @@ public final class ModLanguageProvider {
             add("craftorio.reactor.limit", "Neue Zelle unter %s °C");
             add(ModBlocks.LASER_TOWER.get(), "Laserturm");
             add("entity.craftorio.crystal_golem", "Kristallgolem");
+            add("entity.craftorio.behemoth", "Behemoth");
+            add("entity.craftorio.swarm_queen", "Schwarmkönigin");
             add("craftorio.command.layer_unlocked", "%s Chunks der Schicht freigeschaltet (Y %s bis %s); sie werden ausgehöhlt.");
             add("craftorio.mine.open", "Minenschacht offen – über das Gerüst hinab in die Minenschicht.");
             add("craftorio.mine.opened", "Ein Minenschacht wurde geöffnet! Der Minenbereich um Chunk %s, %s wird ausgehöhlt.");

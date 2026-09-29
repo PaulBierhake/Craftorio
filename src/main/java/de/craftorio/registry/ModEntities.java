@@ -25,6 +25,8 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<TdEnemy>> SPITTER = enemy("spitter", EnemyType.SPITTER, 0.6F, 1.8F);
     public static final DeferredHolder<EntityType<?>, EntityType<TdEnemy>> BROOD_MOTHER = enemy("brood_mother", EnemyType.BROOD_MOTHER, 1.8F, 1.8F);
     public static final DeferredHolder<EntityType<?>, EntityType<TdEnemy>> CRYSTAL_GOLEM = enemy("crystal_golem", EnemyType.CRYSTAL_GOLEM, 0.8F, 2.1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<TdEnemy>> BEHEMOTH = enemy("behemoth", EnemyType.BEHEMOTH, 1.3F, 2.9F);
+    public static final DeferredHolder<EntityType<?>, EntityType<TdEnemy>> SWARM_QUEEN = enemy("swarm_queen", EnemyType.SWARM_QUEEN, 2.6F, 1.8F);
 
     private ModEntities() {
     }

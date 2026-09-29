@@ -118,6 +118,8 @@ public final class ClientEvents {
             event.registerEntityRenderer(ModEntities.SPITTER.get(), TdEnemyRenderer::spitter);
             event.registerEntityRenderer(ModEntities.BROOD_MOTHER.get(), TdEnemyRenderer::broodMother);
             event.registerEntityRenderer(ModEntities.CRYSTAL_GOLEM.get(), TdEnemyRenderer::crystalGolem);
+            event.registerEntityRenderer(ModEntities.BEHEMOTH.get(), TdEnemyRenderer::behemoth);
+            event.registerEntityRenderer(ModEntities.SWARM_QUEEN.get(), TdEnemyRenderer::swarmQueen);
         }
 
         @SubscribeEvent

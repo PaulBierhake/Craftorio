@@ -3,7 +3,7 @@ package de.craftorio.defense;
 /** Tower base stats; upgrades scale damage and health (see {@link TowerStats}). */
 public enum TowerType {
     CROSSBOW(100, 4, 10, 20, 0, 1, 0),
-    /** Fires magazines: ten shots each, armour-piercing ones hit 60 % harder. */
+    /** Fires magazines: ten shots each, armour-piercing ones hit 60 % harder, uranium ones 4.8 times. */
     GUN(200, 7, 12, 12, 0, 1, 0),
     /** Uses grid power instead of ammunition and jumps to up to three enemies. */
     TESLA(150, 10, 8, 30, 400, 3, 0),
@@ -16,6 +16,8 @@ public enum TowerType {
     public static final int SHOTS_PER_MAGAZINE = 10;
     /** Damage factor of an armour-piercing magazine. */
     public static final double AP_FACTOR = 1.6;
+    /** Damage factor of a uranium magazine (24 against 5 of the plain one in Factorio). */
+    public static final double URANIUM_FACTOR = 4.8;
 
     private final int health;
     private final double damage;

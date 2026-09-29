@@ -146,4 +146,59 @@ class DefenseLogicTest {
         assertTrue(trio.healthMultiplier() > solo.healthMultiplier());
         assertEquals(solo.reward(), trio.reward(), "rewards do not scale – the team shares them");
     }
+
+    @Test
+    void flatArmourTakesPointsOffPhysicalHitsAndKeepsAtLeastATenth() {
+        assertEquals(0.4, EnemyType.BEHEMOTH.damageTaken(4, false), 1e-9);
+        assertEquals(3.2, EnemyType.BEHEMOTH.damageTaken(TowerStats.damage(TowerType.GUN, 1) * TowerType.AP_FACTOR, false), 1e-9);
+        assertEquals(25.6, EnemyType.BEHEMOTH.damageTaken(TowerStats.damage(TowerType.GUN, 1) * TowerType.URANIUM_FACTOR, false), 1e-9);
+        assertEquals(30, EnemyType.BEHEMOTH.damageTaken(30, true), 1e-9, "energy and fire ignore the plating");
+        // the queen has 5 points of plating and takes half of what is left
+        assertEquals(0.5 * (20 - 5), EnemyType.SWARM_QUEEN.damageTaken(20, false), 1e-9);
+        assertEquals(12, EnemyType.CRAWLER.damageTaken(12, false) * 1.0 + 0, 1e-9, "the small ones have no armour");
+    }
+
+    @Test
+    void behemothsComeFromLevelThirtyFiveAndTheQueenLeadsLevelFifty() {
+        assertTrue(LevelPlan.of(34, 1).waves().stream().flatMap(java.util.List::stream).noneMatch(type -> type == EnemyType.BEHEMOTH));
+        assertTrue(LevelPlan.of(35, 1).waves().stream().flatMap(java.util.List::stream).anyMatch(type -> type == EnemyType.BEHEMOTH));
+        assertTrue(LevelPlan.of(49, 1).waves().stream().flatMap(java.util.List::stream).noneMatch(type -> type == EnemyType.SWARM_QUEEN));
+        var last = LevelPlan.of(50, 1).waves().get(LevelPlan.of(50, 1).waves().size() - 1);
+        assertEquals(1, last.stream().filter(type -> type == EnemyType.SWARM_QUEEN).count());
+        assertEquals(1, last.stream().filter(type -> type == EnemyType.BROOD_MOTHER).count());
+    }
+
+    @Test
+    void theSealsOfTheEndgameComeAtLevelFortyAndFifty() {
+        assertEquals(LevelPlan.KeyReward.PLATINUM_SEAL, LevelPlan.of(30, 1).keyReward());
+        assertEquals(LevelPlan.KeyReward.DIAMOND_SEAL, LevelPlan.of(40, 1).keyReward());
+        assertEquals(LevelPlan.KeyReward.STAR_SEAL, LevelPlan.of(50, 1).keyReward());
+        assertEquals(LevelPlan.KeyReward.NONE, LevelPlan.of(41, 1).keyReward());
+    }
+
+    /** Damage per second of a tower of the given level with the given ammunition factor. */
+    private static double dps(TowerType type, int level, double ammunition) {
+        return TowerStats.damage(type, level) * ammunition * type.targets() * 20.0 / type.cooldown();
+    }
+
+    @Test
+    void theCurveOfLevelsThirtyToFiftyMatchesTheReferenceDefences() {
+        // bosses make single levels jump, so compare levels five apart
+        for (int level = 1; level <= 55; level++) {
+            assertTrue(LevelPlan.of(level + 5, 1).totalHealth() > LevelPlan.of(level, 1).totalHealth(), "level " + (level + 5) + " is harder than " + level);
+        }
+        double exposure = 180; // seconds of fire a defence gets on the enemies of one level
+        // Level 40 is doable with ten lasers and ten flamethrowers of upgrade level 2 ...
+        double energy = 10 * dps(TowerType.LASER, 2, 1) + 10 * dps(TowerType.FLAME, 2, 1);
+        double level40 = LevelPlan.of(40, 1).totalHealth();
+        assertTrue(level40 <= energy * exposure, "level 40 " + level40 + " vs " + energy * exposure);
+        assertTrue(level40 >= energy * exposure * 0.5, "and not trivial");
+        // ... level 50 is not, but it is with sixteen uranium gun turrets of level 3 in addition (not with armour-piercing ones).
+        double level50 = LevelPlan.of(50, 1).totalHealth();
+        assertTrue(level50 > energy * exposure, "level 50 needs more");
+        double uranium = energy + 16 * dps(TowerType.GUN, 3, TowerType.URANIUM_FACTOR);
+        double piercing = energy + 16 * dps(TowerType.GUN, 3, TowerType.AP_FACTOR);
+        assertTrue(level50 <= uranium * exposure, "level 50 " + level50 + " vs " + uranium * exposure);
+        assertTrue(level50 > piercing * exposure, "armour-piercing ammunition is not enough: " + piercing * exposure);
+    }
 }

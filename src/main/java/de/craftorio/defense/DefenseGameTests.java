@@ -236,6 +236,83 @@ public final class DefenseGameTests {
         });
     }
 
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void aUraniumMagazineIsLoadedAndFiredAtFullStrength(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(3, 1, 4);
+        helper.setBlock(towerPos, ModBlocks.GUN_TURRET.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        helper.assertTrue(tower.ammo().isItemValid(0, new ItemStack(ModItems.URANIUM_MAGAZINE.get())), "uranium magazines fit");
+        helper.assertTrue(de.craftorio.defense.arena.ArenaFeederBlockEntity.isAmmo(new ItemStack(ModItems.URANIUM_MAGAZINE.get())), "the feeder takes them");
+        tower.ammo().insertItem(0, new ItemStack(ModItems.URANIUM_MAGAZINE.get()), false);
+        TdEnemy target = target(helper);
+        float before = target.getHealth();
+
+        helper.runAtTickTime(20, () -> {
+            helper.assertValueEqual(tower.magazine(), Magazine.URANIUM, "the uranium magazine is loaded");
+            helper.assertTrue(tower.ammo().getStackInSlot(0).isEmpty(), "and taken from the slot");
+            // one shot of 7 damage × 4.8 = 33.6, of which the golem's armour lets 35 % through
+            helper.assertTrue(before - target.getHealth() >= 33.6F * 0.35F - 0.01F, "damage " + (before - target.getHealth()));
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 60)
+    public static void aBehemothsPlatingStopsWeakHitsButNotEnergyOrUranium(GameTestHelper helper) {
+        List<Vec3> path = new ArrayList<>();
+        for (int x = 1; x <= 15; x++) {
+            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        }
+        LevelRun run = new LevelRun(LevelPlan.of(35, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
+        TdEnemy behemoth = ModEntities.BEHEMOTH.get().create(helper.getLevel());
+        behemoth.start(run, path, 1.0);
+        helper.getLevel().addFreshEntity(behemoth);
+        float full = behemoth.getHealth();
+
+        behemoth.hurt(helper.getLevel().damageSources().generic(), 4);
+        helper.assertTrue(Math.abs(full - 0.4F - behemoth.getHealth()) < 0.01F, "a bolt keeps a tenth: " + (full - behemoth.getHealth()));
+        behemoth.invulnerableTime = 0;
+        behemoth.hurt(helper.getLevel().damageSources().generic(), 33.6F);
+        helper.assertTrue(Math.abs(full - 0.4F - 25.6F - behemoth.getHealth()) < 0.02F, "uranium loses 8 points to the plating");
+        behemoth.invulnerableTime = 0;
+        behemoth.hurt(helper.getLevel().damageSources().magic(), 10);
+        helper.assertTrue(Math.abs(full - 36F - behemoth.getHealth()) < 0.02F, "energy passes the plating");
+        behemoth.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void theSwarmQueenCallsHerBroodInThreePhases(GameTestHelper helper) {
+        List<Vec3> path = new ArrayList<>();
+        for (int x = 1; x <= 15; x++) {
+            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        }
+        LevelRun run = new LevelRun(LevelPlan.of(50, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
+        TdEnemy queen = ModEntities.SWARM_QUEEN.get().create(helper.getLevel());
+        queen.start(run, path, 1.0);
+        helper.getLevel().addFreshEntity(queen);
+        helper.assertValueEqual(queen.phase(), 0, "starts in phase 0");
+        int[] others = new int[1];
+        helper.runAtTickTime(5, () -> {
+            others[0] = enemies(helper) - 1; // enemies of other tests that happen to be nearby
+            queen.setHealth(queen.getMaxHealth() * 0.6F);
+        });
+        helper.runAtTickTime(15, () -> {
+            helper.assertValueEqual(queen.phase(), 1, "phase 1 below two thirds");
+            helper.assertTrue(enemies(helper) - others[0] >= 1 + 8, "eight crawlers join");
+            queen.setHealth(queen.getMaxHealth() * 0.3F);
+        });
+        helper.runAtTickTime(25, () -> {
+            helper.assertValueEqual(queen.phase(), 2, "phase 2 below one third");
+            helper.assertTrue(enemies(helper) - others[0] >= 1 + 8 + 12 + 4, "twelve crawlers and four breakers join: " + (enemies(helper) - others[0]));
+            queen.discard();
+            helper.succeed();
+        });
+    }
+
+    private static int enemies(GameTestHelper helper) {
+        return helper.getLevel().getEntitiesOfClass(TdEnemy.class, new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(8, 1, 6))).inflate(40)).size();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 100, batch = "defense_flame")
     public static void theFeederTakesCrudeOilForFlamethrowerTurrets(GameTestHelper helper) {
         Setup setup = buildArena(helper, "FlameTest");

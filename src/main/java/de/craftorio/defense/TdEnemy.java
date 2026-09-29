@@ -29,6 +29,8 @@ public class TdEnemy extends PathfinderMob implements HoglinBase {
     private int pathIndex;
     private int attackCooldown;
     private int attackAnimation;
+    /** The swarm queen's phase: 0 above two thirds of her health, 1 above one third, 2 below; every new phase calls her brood and speeds her up. */
+    private int phase;
 
     public TdEnemy(EntityType<? extends TdEnemy> type, Level level) {
         super(type, level);
@@ -57,6 +59,25 @@ public class TdEnemy extends PathfinderMob implements HoglinBase {
         moveTo(start.x, start.y, start.z, 0, 0);
     }
 
+    /** Joins a level that is already running, at the given place of the path (the brood of the swarm queen). */
+    void startAt(LevelRun run, List<Vec3> path, int index, Vec3 position, double healthMultiplier) {
+        this.run = run;
+        this.path = path;
+        this.pathIndex = Math.min(index, Math.max(0, path.size() - 2));
+        double health = enemyType.health() * healthMultiplier;
+        getAttribute(Attributes.MAX_HEALTH).setBaseValue(health);
+        setHealth((float) health);
+        moveTo(position.x, position.y, position.z, 0, 0);
+    }
+
+    int pathIndex() {
+        return pathIndex;
+    }
+
+    public int phase() {
+        return phase;
+    }
+
     /** Hidden in the forest thicket: towers only see it from close by. */
     public boolean camouflaged() {
         return run != null && run.camouflaged(position());
@@ -81,9 +102,22 @@ public class TdEnemy extends PathfinderMob implements HoglinBase {
             discard(); // left over from an aborted level or a restart
             return;
         }
+        if (enemyType == EnemyType.SWARM_QUEEN) {
+            checkPhase((ServerLevel) level());
+        }
         boolean engaged = attack((ServerLevel) level());
         if (!engaged || !enemyType.stopsToAttack()) {
             walk();
+        }
+    }
+
+    private void checkPhase(ServerLevel level) {
+        double share = getHealth() / getMaxHealth();
+        int wanted = share <= 1.0 / 3 ? 2 : share <= 2.0 / 3 ? 1 : 0;
+        while (phase < wanted) {
+            phase++;
+            run.summon(level, this, phase);
+            level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, getX(), getY() + 1, getZ(), 30, 1.0, 0.8, 1.0, 0.05);
         }
     }
 
@@ -113,7 +147,7 @@ public class TdEnemy extends PathfinderMob implements HoglinBase {
     }
 
     private void walk() {
-        double remaining = enemyType.speed() * run.speedFactor(position());
+        double remaining = enemyType.speed() * run.speedFactor(position()) * (1 + 0.25 * phase);
         Vec3 position = position();
         while (remaining > 0 && pathIndex + 1 < path.size()) {
             Vec3 target = path.get(pathIndex + 1);

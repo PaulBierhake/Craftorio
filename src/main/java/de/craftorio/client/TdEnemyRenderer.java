@@ -48,6 +48,16 @@ public final class TdEnemyRenderer extends MobRenderer<TdEnemy, EntityModel<TdEn
                 ResourceLocation.withDefaultNamespace("textures/entity/piglin/piglin_brute.png"), 1.15F);
     }
 
+    public static TdEnemyRenderer behemoth(EntityRendererProvider.Context context) {
+        return new TdEnemyRenderer(context, new PiglinModel<>(context.bakeLayer(ModelLayers.ZOMBIFIED_PIGLIN)), 0.9F,
+                ResourceLocation.withDefaultNamespace("textures/entity/piglin/zombified_piglin.png"), 1.7F);
+    }
+
+    public static TdEnemyRenderer swarmQueen(EntityRendererProvider.Context context) {
+        return new TdEnemyRenderer(context, new SpiderModel<>(context.bakeLayer(ModelLayers.SPIDER)), 1.2F,
+                ResourceLocation.withDefaultNamespace("textures/entity/spider/spider.png"), 2.4F);
+    }
+
     @Override
     protected void scale(TdEnemy enemy, PoseStack pose, float partialTick) {
         pose.scale(scale, scale, scale);

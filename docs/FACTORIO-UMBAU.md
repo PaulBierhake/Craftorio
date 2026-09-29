@@ -675,7 +675,7 @@ Einzelblock aus der Familie der Chemiefabrik mit zwei Ausgangsslots und Rezepten
 Uran-Magazin: 10 s, 1 panzerbrechendes Magazin + 1 U-238. Forschung (1.1): Uranverarbeitung 200 × RGB (Voraussetzungen wie im Wiki Chemie-Paket
 und Beton, zusätzlich Minenschacht), Kernkraft 800 × RGB, Kovarex 1500 × RGBP (Wiki: zusätzlich Raketentreibstoff, hier entfällt er),
 Wiederaufbereitung 50 × RGBP, Uran-Munition 1000 × RGB+M+U, 45 s (Wiki: ohne Produktion). **Vorläufig** bis U11e: Kovarex, Wiederaufbereitung und
-Uran-Munition kosten noch ohne Lila/Gelb (Uran-Munition mit Blau statt Gelb). Das Uran-Magazin ist noch keine Turmmunition (U11f). Der alte
+Uran-Munition kosten noch ohne Lila/Gelb (Uran-Munition mit Blau statt Gelb). Das Uran-Magazin wird mit U11f Turmmunition. Der alte
 Reaktor verbrennt jetzt die Uran-Brennstoffzelle (200 s) bis zum Kernkraft-Umbau (U11c). Der **Aufzug** transportiert jetzt auch Flüssigkeiten
 (1.000 Einheiten/s, Rohre schließen an allen Seiten an; Sender nehmen aus Rohren, Empfänger geben in Rohre) und bringt so die Säure in die Minen.
 Abweichung von §11.10: NeoForge 21.1 hat kein `MissingMappingsEvent`, `fuel_rod` und `uranium_pellet` werden daher nicht in alten Welten umgeschrieben
@@ -730,6 +730,17 @@ für alle Bohrer des Teams, als Extra-Erz über den Produktivitätsbalken); die 
 Weltraum-Paket knüpft. Tests: Rezepttabelle (Pakete, alle Forschungskosten), `ModuleGameTests` (Lab-Slots, Siegel bei 40/50), `ResearchRulesTest`
 (Bergbauproduktivität), Progressionstest bis Gelb (mit Siegeln).
 
+**Umgesetzt (U11f), gegen das Factorio-1.1-Wiki geprüft.** Uran-Magazin: Der Geschützturm feuert es mit Faktor **4,8** gegenüber dem
+einfachen Magazin (Wiki: 24 gegen 5 Schaden; das panzerbrechende hat 8 = Faktor 1,6), der Einspeiser nimmt es an, die Arena-Reserve führt es mit
+und speichert es (Reihenfolge Uran, panzerbrechend, einfach). **Behemoth** (ab Level 35, 1.200 Leben, 8 Punkte Panzerung je physischem Treffer,
+mindestens ein Zehntel bleibt; Energie und Feuer ignorieren sie) und die **Schwarmkönigin** (Finale bei Level 50, 6.000 Leben, halber physischer
+Schaden nach 5 Punkten Panzerung, ruft in drei Phasen bei 100/66/33 % ihre Brut: 8 Kriecher, dann 12 Kriecher und 4 Brecher, dann zusätzlich
+2 Behemoths und 4 Spucker, und wird je Phase 25 % schneller). Die Level-Formel wächst weiter ohne Obergrenze; Bosse und Behemoth-Einstieg lassen
+einzelne Level springen, der Test vergleicht daher Level im Abstand von fünf. Referenzwerte (Test `DefenseLogicTest`): Level 40 (177.000 Gesamtleben)
+schaffen zehn Laser- und zehn Flammentürme der Stufe 2 in 180 s Feuer, Level 50 (374.000) nicht, wohl aber mit zusätzlich 16 Geschütztürmen der Stufe 3
+mit Uran-Munition, nicht mit panzerbrechender. Turmstufen 4 und 5 sowie die Siegel bei Level 40 und 50 gab es schon (U11e). Die Gegner benutzen
+weiter Vanilla-Modelle (Behemoth: Zombie-Piglin ×1,7, Königin: Spinne ×2,4).
+
 ### 11.11 Pakete (Reihenfolge, je ein Commit)
 
 | Paket | Inhalt | Akzeptanz |
@@ -739,7 +750,7 @@ Weltraum-Paket knüpft. Tests: Rezepttabelle (Pakete, alle Forschungskosten), `M
 | **U11c – Kernkraft** ✅ | Wärmenetz (`HeatLogic` + Unit-Tests), Kernreaktor mit Steuerung und Nachbarbonus, Wärmerohr, Wärmetauscher, Hochdruckdampf, Dampfturbine, Wiederaufbereitung, alter Reaktor migriert | GameTest: 1 Reaktor + 4 Tauscher + 7 Turbinen versorgen 40 MW Last stabil; Nachbarbonus verdoppelt die Wärme; Zelle hält 200 s |
 | **U11d – Module, Montagemaschine 3, Beacon** ✅ | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |
 | **U11e – Lila und Gelb** ✅ | Pakete `PRODUCTION`/`UTILITY` im Enum, Labor und Terminal; Rezepte der Pakete; neue Forschungen aus §11.6; Diamant- und Sternen-Siegel; Kovarex; Module 3; Bergbauproduktivität (optional) | Progressionstest bis Gelb grün (mit Siegeln); GameTest: Labor akzeptiert Lila/Gelb |
-| **U11f – TD-Endgame** | Behemoth, Schwarmkönigin (Level 50), Kurve 31–50, Uran-Munition im Einspeiser und in `TowerStats`, Turmstufen 4–5, Siegel-Belohnungen 40/50 | Unit-Test der Level-Kurve; GameTest: Level 50 vergibt das Sternen-Siegel; Uran-Munition wird verbraucht |
+| **U11f – TD-Endgame** ✅ | Behemoth, Schwarmkönigin (Level 50), Kurve 31–50, Uran-Munition im Einspeiser und in `TowerStats`, Turmstufen 4–5, Siegel-Belohnungen 40/50 | Unit-Test der Level-Kurve; GameTest: Level 50 vergibt das Sternen-Siegel; Uran-Munition wird verbraucht |
 | **U11g – Leitfaden, Handbuch, Balancing** | Leitfaden-Schritte (§11.12), Handbuch-Seiten zu Modulen, Kernkraft und Uran, Verkaufspreise, Zeitmessung um die Meilensteine aus §11.9, README-Abschnitt „Endgame" | Alle Tests grün; Leitfaden bis Gelb durchspielbar (Progressionstest deckt Leitfaden-Reihenfolge ab) |
 
 ### 11.12 Leitfaden (Fortsetzung, Entwurf)

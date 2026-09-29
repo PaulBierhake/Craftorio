@@ -32,8 +32,9 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
             int breakers = level >= 5 ? (level + wave) / 4 : 0;
             int spitters = level >= 10 ? (level + wave) / 5 : 0;
             int golems = level >= 20 ? (level + wave) / 8 : 0;
+            int behemoths = level >= 35 ? (level + wave - 32) / 7 : 0;
             // Interleave so tougher enemies are escorted by crawlers.
-            for (int i = 0; i < Math.max(Math.max(crawlers, golems), Math.max(breakers, spitters)); i++) {
+            for (int i = 0; i < Math.max(Math.max(Math.max(crawlers, golems), Math.max(breakers, spitters)), behemoths); i++) {
                 if (i < crawlers) {
                     enemies.add(EnemyType.CRAWLER);
                 }
@@ -46,9 +47,16 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
                 if (i < golems) {
                     enemies.add(EnemyType.CRYSTAL_GOLEM);
                 }
+                if (i < behemoths) {
+                    enemies.add(EnemyType.BEHEMOTH);
+                }
             }
             if (level % 10 == 0 && wave == waveCount) {
                 enemies.add(EnemyType.BROOD_MOTHER);
+            }
+            // The finale of level 50 (and every fiftieth level after it) is led by the swarm queen.
+            if (level % 50 == 0 && wave == waveCount) {
+                enemies.add(EnemyType.SWARM_QUEEN);
             }
             waves.add(List.copyOf(enemies));
         }
@@ -68,6 +76,11 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
             case 50 -> KeyReward.STAR_SEAL;
             default -> KeyReward.NONE;
         };
+    }
+
+    /** Health of all enemies of the level together, with the level's multiplier. */
+    public double totalHealth() {
+        return waves.stream().flatMap(List::stream).mapToDouble(type -> type.health() * healthMultiplier).sum();
     }
 
     public int enemyCount() {
