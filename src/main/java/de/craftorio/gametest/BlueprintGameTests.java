@@ -73,7 +73,6 @@ public final class BlueprintGameTests {
         team(player, 0);
         player.getInventory().clearContent();
         player.getInventory().add(new ItemStack(Items.IRON_INGOT, 5));
-        player.getInventory().add(new ItemStack(Items.GLASS_PANE));
         player.getInventory().add(new ItemStack(ModItems.CIRCUIT.get(), 2));
 
         helper.assertTrue(BlueprintActions.build(player, index(helper, "terminal"), 1), "terminal blueprint");

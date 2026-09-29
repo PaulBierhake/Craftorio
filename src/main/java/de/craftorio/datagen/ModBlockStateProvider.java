@@ -31,6 +31,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         oreField(ModBlocks.COPPER_ORE_FIELD.get());
         oreField(ModBlocks.COAL_FIELD.get());
         oreField(ModBlocks.STONE_FIELD.get());
+        oreField(ModBlocks.WOOD_FIELD.get());
         oreField(ModBlocks.TIN_ORE_FIELD.get());
         oreField(ModBlocks.LEAD_ORE_FIELD.get());
         oreField(ModBlocks.SULFUR_FIELD.get());

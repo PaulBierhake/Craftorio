@@ -1,0 +1,10 @@
+{
+  "type": "craftorio:ore_field",
+  "config": {
+    "state": {
+      "Name": "craftorio:wood_field"
+    },
+    "min_size": 25,
+    "max_size": 120
+  }
+}

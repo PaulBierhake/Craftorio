@@ -60,6 +60,7 @@ public final class ModBlocks {
     public static final DeferredBlock<OreFieldBlock> IRON_ORE_FIELD = oreField("iron_ore_field", () -> Items.RAW_IRON, MapColor.RAW_IRON);
     public static final DeferredBlock<OreFieldBlock> COPPER_ORE_FIELD = oreField("copper_ore_field", () -> Items.RAW_COPPER, MapColor.COLOR_ORANGE);
     public static final DeferredBlock<OreFieldBlock> COAL_FIELD = oreField("coal_field", () -> Items.COAL, MapColor.COLOR_BLACK);
+    public static final DeferredBlock<OreFieldBlock> WOOD_FIELD = oreField("wood_field", () -> Items.OAK_LOG, MapColor.WOOD);
     public static final DeferredBlock<OreFieldBlock> STONE_FIELD = oreField("stone_field", () -> Items.COBBLESTONE, MapColor.STONE);
 
     public static final DeferredBlock<ElevatorBlock> ELEVATOR = BLOCKS.registerBlock("elevator", ElevatorBlock::new,

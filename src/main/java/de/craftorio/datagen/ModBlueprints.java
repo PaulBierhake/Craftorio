@@ -56,9 +56,9 @@ public final class ModBlueprints {
 
         // Start: trade and defend
         add(context, "trading_post", stack(ModItems.TRADING_POST.get(), 1),
-                SizedIngredient.of(ItemTags.PLANKS, 8), SizedIngredient.of(Items.CHEST, 1), iron(4));
+                SizedIngredient.of(ItemTags.PLANKS, 16), iron(4));
         add(context, "terminal", stack(ModItems.TERMINAL.get(), 1),
-                iron(5), SizedIngredient.of(Items.GLASS_PANE, 1), SizedIngredient.of(ModItems.CIRCUIT.get(), 2));
+                iron(5), SizedIngredient.of(ModItems.CIRCUIT.get(), 2));
         add(context, "arena_gate", stack(ModItems.ARENA_GATE.get(), 1),
                 iron(8), SizedIngredient.of(ModItems.STONE_BRICK.get(), 8), SizedIngredient.of(ModItems.CIRCUIT.get(), 2));
         add(context, "crossbow_tower", stack(ModItems.CROSSBOW_TOWER.get(), 1),
@@ -75,7 +75,7 @@ public final class ModBlueprints {
         // Turrets
         add(context, "arena_feeder", stack(ModItems.ARENA_FEEDER.get(), 1),
                 iron(8), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 4), SizedIngredient.of(ModItems.CIRCUIT.get(), 2),
-                SizedIngredient.of(Items.CHEST, 1));
+                SizedIngredient.of(ItemTags.PLANKS, 8));
         add(context, "gun_turret", stack(ModItems.GUN_TURRET.get(), 1),
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 10), copper(10), iron(20));
         add(context, "cartridge", stack(ModItems.CARTRIDGE.get(), 16), copper(1), iron(1), SizedIngredient.of(Items.COAL, 1));

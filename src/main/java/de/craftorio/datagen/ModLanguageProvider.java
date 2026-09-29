@@ -32,6 +32,7 @@ public final class ModLanguageProvider {
             add(ModBlocks.STEAM_ENGINE.get(), "Steam Engine");
             add(ModBlocks.OFFSHORE_PUMP.get(), "Offshore Pump");
             add(ModBlocks.STONE_FIELD.get(), "Stone Field");
+            add(ModBlocks.WOOD_FIELD.get(), "Wood Field");
             add(ModItems.PIPE.get(), "Pipe");
             add(ModItems.STONE_BRICK.get(), "Stone Brick");
             add(ModBlocks.POWER_POLE.get(), "Power Pole");
@@ -396,7 +397,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.mine_cobblestone", "Mine 20 stone");
             add("craftorio.quest.mine_cobblestone.hint", "Stone fields are big ore fields of cobblestone; you need stone for furnaces and, later, for bricks.");
             add("craftorio.quest.build_stone_furnace", "Build a stone furnace");
-            add("craftorio.quest.build_stone_furnace.hint", "Open the construction workbench (in your starter kit) and build the stone furnace from 5 stone. Put coal into its fuel slot and raw ore into the input: it smelts to plates (ingots).");
+            add("craftorio.quest.build_stone_furnace.hint", "Open the construction workbench (in your starter kit) and build the stone furnace from 5 stone. Put coal into its fuel slot and raw ore into the input: it smelts to plates (ingots). It also makes stone bricks: put in at least 2 stone (2 stone → 1 brick, 3.2 s).");
             add("craftorio.quest.build_burner_drill", "Build a burner drill");
             add("craftorio.quest.build_burner_drill.hint", "3 gears, a stone furnace and 3 iron plates. Put it on an ore field – it mines the 3×3 blocks below and runs on coal (150 kW). Right-click it: coal goes into the fuel slot.");
             add("craftorio.quest.build_conveyor_belt", "Build a conveyor belt");
@@ -408,7 +409,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.build_steam_engine", "Build a steam engine");
             add("craftorio.quest.build_steam_engine.hint", "8 gears, 5 pipes and 10 iron plates. Put it next to the boiler (one boiler runs two engines); each engine makes 900 kW.");
             add("craftorio.quest.build_power_pole", "Build power poles");
-            add("craftorio.quest.build_power_pole.hint", "A log and 2 copper cables make 2 poles. Poles connect generators and machines within their range into one grid.");
+            add("craftorio.quest.build_power_pole.hint", "A log (from a wood field) and 2 copper cables make 2 poles. Poles connect generators and machines within their range into one grid.");
             add("craftorio.quest.build_laboratory", "Build a laboratory");
             add("craftorio.quest.build_laboratory.hint", "10 circuits, 10 gears and 4 belts. The laboratory turns science packs into research; connect it to power.");
             add("craftorio.quest.build_red_science", "Build 10 red science packs");
@@ -416,7 +417,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.build_inserter", "Build an inserter");
             add("craftorio.quest.build_inserter.hint", "1 circuit, 1 gear and 1 iron plate. Inserters move items between belts, machines and chests.");
             add("craftorio.quest.build_trading_post", "Build a trading post");
-            add("craftorio.quest.build_trading_post.hint", "8 planks, a chest and 4 iron plates. Selling at the trading post earns credits – they pay for tower defense upgrades.");
+            add("craftorio.quest.build_trading_post.hint", "16 planks and 4 iron plates. Selling at the trading post earns credits – they pay for tower defense upgrades.");
             add("craftorio.quest.first_sale", "Sell something for the first time");
             add("craftorio.quest.first_sale.hint", "Put ore or plates into the trading post and press Sell.");
             add("craftorio.quest.unlock_assembler", "Research automation");
@@ -424,7 +425,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.build_assembler", "Build an assembling machine");
             add("craftorio.quest.build_assembler.hint", "3 circuits, 5 gears and 9 iron plates. Pick a recipe with the arrows; it crafts with 75 kW at half the speed of a human hand… but never stops.");
             add("craftorio.quest.build_arena_gate", "Build an arena gate");
-            add("craftorio.quest.build_arena_gate.hint", "8 iron plates, 8 stone bricks and 2 circuits. Place it and right-click it: it takes you to your own arena. There, lay a path from the open gate in the west wall to the core in the east wall with the path wand.");
+            add("craftorio.quest.build_arena_gate.hint", "8 iron plates, 8 stone bricks (smelt 16 stone in a stone furnace) and 2 circuits. Place it and right-click it: it takes you to your own arena. There, lay a path from the open gate in the west wall to the core in the east wall with the path wand.");
             add("craftorio.quest.build_crossbow_tower", "Build a crossbow tower");
             add("craftorio.quest.build_crossbow_tower.hint", "12 planks, 6 iron plates and 4 gears. Place it in your arena on open ground next to the path and load it with bolts.");
             add("craftorio.quest.unlock_arena_feeder", "Research turrets");
@@ -439,6 +440,10 @@ public final class ModLanguageProvider {
             add("craftorio.quest.unlock_elevator.hint", "Cargo elevators (50 red packs) carry items between the layers.");
             add("craftorio.quest.unlock_mine_shaft", "Research the mine shaft");
             add("craftorio.quest.unlock_mine_shaft.hint", "Mine shaft (300 red packs, needs the deep core from tower defense level 30) unlocks the way to the mines.");
+            add("craftorio.quest.mine_oak_log", "Mine 10 wood");
+            add("craftorio.quest.mine_oak_log.hint", "Wood fields are ore fields of logs that never run out: mine one by hand or put a drill on it. You need wood for power poles.");
+            add("craftorio.quest.build_terminal", "Build a terminal");
+            add("craftorio.quest.build_terminal.hint", "5 iron plates and 2 circuits. The terminal is where you queue researches, collect guide rewards and control tower defense.");
             add("craftorio.quest.next", "Next");
             add("craftorio.hud.guide", "Guide: %s");
             add("craftorio.hud.guide_done", "Guide: %s ✔ – press G to collect");
@@ -472,6 +477,7 @@ public final class ModLanguageProvider {
             add(ModBlocks.STEAM_ENGINE.get(), "Dampfmaschine");
             add(ModBlocks.OFFSHORE_PUMP.get(), "Offshore-Pumpe");
             add(ModBlocks.STONE_FIELD.get(), "Steinfeld");
+            add(ModBlocks.WOOD_FIELD.get(), "Holzfeld");
             add(ModItems.PIPE.get(), "Rohr");
             add(ModItems.STONE_BRICK.get(), "Steinziegel");
             add(ModBlocks.POWER_POLE.get(), "Strommast");
@@ -836,7 +842,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.mine_cobblestone", "Baue 20 Stein ab");
             add("craftorio.quest.mine_cobblestone.hint", "Steinfelder sind große Erzfelder aus Bruchstein; du brauchst Stein für Öfen und später für Ziegel.");
             add("craftorio.quest.build_stone_furnace", "Baue einen Steinofen");
-            add("craftorio.quest.build_stone_furnace.hint", "Öffne die Konstruktionswerkbank (im Starterpaket) und baue den Steinofen aus 5 Stein. Kohle kommt in den Brennstoffslot, Erz in den Eingang: es wird zu Platten (Barren).");
+            add("craftorio.quest.build_stone_furnace.hint", "Öffne die Konstruktionswerkbank (im Starterpaket) und baue den Steinofen aus 5 Stein. Kohle kommt in den Brennstoffslot, Erz in den Eingang: es wird zu Platten (Barren). Auch Steinziegel entstehen hier: mindestens 2 Stein hineinlegen (2 Stein → 1 Steinziegel, 3,2 s).");
             add("craftorio.quest.build_burner_drill", "Baue einen Brenner-Bohrer");
             add("craftorio.quest.build_burner_drill.hint", "3 Zahnräder, ein Steinofen und 3 Eisenplatten. Setze ihn auf ein Erzfeld – er baut die 3×3 Blöcke darunter ab und läuft mit Kohle (150 kW). Rechtsklick: Kohle kommt in den Brennstoffslot.");
             add("craftorio.quest.build_conveyor_belt", "Baue ein Förderband");
@@ -848,7 +854,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.build_steam_engine", "Baue eine Dampfmaschine");
             add("craftorio.quest.build_steam_engine.hint", "8 Zahnräder, 5 Rohre und 10 Eisenplatten. Stelle sie neben den Kessel (ein Kessel versorgt zwei Maschinen); jede liefert 900 kW.");
             add("craftorio.quest.build_power_pole", "Baue Strommasten");
-            add("craftorio.quest.build_power_pole.hint", "Ein Stamm und 2 Kupferkabel ergeben 2 Masten. Masten verbinden Generatoren und Maschinen in Reichweite zu einem Netz.");
+            add("craftorio.quest.build_power_pole.hint", "Ein Stamm (vom Holzfeld) und 2 Kupferkabel ergeben 2 Masten. Masten verbinden Generatoren und Maschinen in Reichweite zu einem Netz.");
             add("craftorio.quest.build_laboratory", "Baue ein Labor");
             add("craftorio.quest.build_laboratory.hint", "10 Schaltkreise, 10 Zahnräder und 4 Bänder. Das Labor macht aus Wissenschaftspaketen Forschung; schließe es ans Stromnetz an.");
             add("craftorio.quest.build_red_science", "Baue 10 rote Wissenschaftspakete");
@@ -856,7 +862,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.build_inserter", "Baue einen Greifarm");
             add("craftorio.quest.build_inserter.hint", "1 Schaltkreis, 1 Zahnrad und 1 Eisenplatte. Greifarme bewegen Items zwischen Bändern, Maschinen und Kisten.");
             add("craftorio.quest.build_trading_post", "Baue einen Handelsposten");
-            add("craftorio.quest.build_trading_post.hint", "8 Bretter, eine Truhe und 4 Eisenplatten. Verkaufen am Handelsposten bringt Credits – sie bezahlen Upgrades in der Tower Defense.");
+            add("craftorio.quest.build_trading_post.hint", "16 Bretter und 4 Eisenplatten. Verkaufen am Handelsposten bringt Credits – sie bezahlen Upgrades in der Tower Defense.");
             add("craftorio.quest.first_sale", "Verkaufe zum ersten Mal etwas");
             add("craftorio.quest.first_sale.hint", "Lege Erz oder Platten in den Handelsposten und drücke Verkaufen.");
             add("craftorio.quest.unlock_assembler", "Erforsche Automatisierung");
@@ -864,7 +870,7 @@ public final class ModLanguageProvider {
             add("craftorio.quest.build_assembler", "Baue eine Montagemaschine");
             add("craftorio.quest.build_assembler.hint", "3 Schaltkreise, 5 Zahnräder und 9 Eisenplatten. Wähle mit den Pfeilen ein Rezept; sie arbeitet mit 75 kW – langsamer als deine Hand, aber ohne Pause.");
             add("craftorio.quest.build_arena_gate", "Baue ein Arena-Tor");
-            add("craftorio.quest.build_arena_gate.hint", "8 Eisenplatten, 8 Steinziegel und 2 Schaltkreise. Stelle es auf und rechtsklicke: Es bringt dich in deine eigene Arena. Lege dort mit dem Pfadstab einen Weg vom offenen Tor in der Westmauer zum Kern in der Ostmauer.");
+            add("craftorio.quest.build_arena_gate.hint", "8 Eisenplatten, 8 Steinziegel (16 Stein im Steinofen schmelzen) und 2 Schaltkreise. Stelle es auf und rechtsklicke: Es bringt dich in deine eigene Arena. Lege dort mit dem Pfadstab einen Weg vom offenen Tor in der Westmauer zum Kern in der Ostmauer.");
             add("craftorio.quest.build_crossbow_tower", "Baue einen Armbrustturm");
             add("craftorio.quest.build_crossbow_tower.hint", "12 Bretter, 6 Eisenplatten und 4 Zahnräder. Stelle ihn in deiner Arena auf freien Boden neben den Weg und lade ihn mit Bolzen.");
             add("craftorio.quest.unlock_arena_feeder", "Erforsche Geschütztürme");
@@ -879,6 +885,10 @@ public final class ModLanguageProvider {
             add("craftorio.quest.unlock_elevator.hint", "Warenaufzüge (50 rote Pakete) transportieren Items zwischen den Ebenen.");
             add("craftorio.quest.unlock_mine_shaft", "Erforsche den Minenschacht");
             add("craftorio.quest.unlock_mine_shaft.hint", "Minenschacht (300 rote Pakete, braucht den Tiefenkern aus Tower-Defense-Level 30) schaltet den Weg in die Minen frei.");
+            add("craftorio.quest.mine_oak_log", "Baue 10 Holz ab");
+            add("craftorio.quest.mine_oak_log.hint", "Holzfelder sind Erzfelder aus Stämmen, die nie leer werden: von Hand abbauen oder einen Bohrer daraufsetzen. Holz brauchst du für Strommasten.");
+            add("craftorio.quest.build_terminal", "Baue ein Terminal");
+            add("craftorio.quest.build_terminal.hint", "5 Eisenplatten und 2 Schaltkreise. Am Terminal reihst du Forschungen ein, holst Leitfaden-Belohnungen ab und steuerst die Tower Defense.");
             add("craftorio.quest.next", "Als Nächstes");
             add("craftorio.hud.guide", "Leitfaden: %s");
             add("craftorio.hud.guide_done", "Leitfaden: %s ✔ – mit G abholen");

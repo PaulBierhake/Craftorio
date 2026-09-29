@@ -37,6 +37,8 @@ public final class BlueprintActions {
         Blueprints.take(player.getInventory(), blueprint.ingredients(), possible);
         ItemStack result = blueprint.result().copyWithCount(blueprint.result().getCount() * possible);
         player.getInventory().placeItemBackInInventory(result);
+        // Ingredients and result changed while the workbench menu is open: resend the whole inventory.
+        player.inventoryMenu.sendAllDataToRemote();
         TeamData.registry(player.server).recordBuild(team.id(), Blueprints.id(holder), possible);
         return true;
     }

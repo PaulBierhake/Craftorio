@@ -71,7 +71,7 @@ public final class Blueprints {
         }
         inventory.setChanged();
         // While another menu is open the inventory is not synced on its own; push the change now.
-        inventory.player.inventoryMenu.broadcastChanges();
+        inventory.player.inventoryMenu.sendAllDataToRemote();
     }
 
     /** How many times the player could build the blueprint from their inventory, up to {@code limit}. */

@@ -80,7 +80,9 @@ public final class PathWandItem extends Item {
         }
         ArenaLayout layout = defense.layoutAt(slot);
         BlockPos anchor = stack.get(ModDataComponents.PATH_ANCHOR.get());
-        List<BlockPos> line = anchor != null && Arenas.slotAt(anchor) == slot && !anchor.equals(target)
+        // The anchor only counts while its path block still stands (a new map removes all paths).
+        boolean anchorValid = anchor != null && level.getBlockState(anchor).is(ModBlocks.PATH_BLOCK.get());
+        List<BlockPos> line = anchorValid && Arenas.slotAt(anchor) == slot && !anchor.equals(target)
                 && (anchor.getX() == target.getX() || anchor.getZ() == target.getZ())
                 ? line(anchor, target) : List.of(target);
         Result result = lay(level, defense, layout, line);

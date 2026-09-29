@@ -399,7 +399,8 @@ public final class TowerDefense extends SavedData {
         }
         int[] tile = Arenas.tileAt(pos);
         Tile type = layoutAt(Arenas.slotAt(pos)).tile(tile[0], tile[1]);
-        boolean ok = type == Tile.GROUND && pos.getY() == Arenas.BUILD_Y || type == Tile.HIGH && pos.getY() == Arenas.HIGH_Y;
+        // Open ground and rough ground (gravel, moss) take towers; only plateaus need their own height.
+        boolean ok = (type == Tile.GROUND || type == Tile.ROUGH) && pos.getY() == Arenas.BUILD_Y || type == Tile.HIGH && pos.getY() == Arenas.HIGH_Y;
         return ok ? null : "craftorio.arena.error.no_tower_here";
     }
 

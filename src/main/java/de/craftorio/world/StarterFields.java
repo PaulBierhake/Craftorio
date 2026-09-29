@@ -35,6 +35,7 @@ public final class StarterFields {
         place(level, spawn.offset(-14, 0, 16), ModBlocks.COPPER_ORE_FIELD.get(), random);
         place(level, spawn.offset(2, 0, -20), ModBlocks.COAL_FIELD.get(), random);
         place(level, spawn.offset(-22, 0, -8), ModBlocks.STONE_FIELD.get(), random);
+        place(level, spawn.offset(20, 0, -14), ModBlocks.WOOD_FIELD.get(), random);
         state.placed = true;
         state.setDirty();
     }

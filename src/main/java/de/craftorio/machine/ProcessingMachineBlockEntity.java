@@ -143,7 +143,28 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
             }
             setChanged();
         }
+        pushOutput(level, pos, state.getValue(MachineBaseBlock.FACING));
         MachineBaseBlock.setActive(level, pos, state, working);
+    }
+
+    /** Hands finished products to whatever stands in front of the machine (belt, chest, next machine). */
+    private void pushOutput(Level level, BlockPos pos, net.minecraft.core.Direction facing) {
+        ItemStack output = items.getStackInSlot(type.outputSlot());
+        if (output.isEmpty() || !(level instanceof ServerLevel server)) {
+            return;
+        }
+        BlockPos front = pos.relative(facing);
+        if (!BlockOwnership.sameOwner(server, pos, front)) {
+            return;
+        }
+        IItemHandler target = level.getCapability(net.neoforged.neoforge.capabilities.Capabilities.ItemHandler.BLOCK, front, facing.getOpposite());
+        if (target == null) {
+            return;
+        }
+        while (!items.getStackInSlot(type.outputSlot()).isEmpty()
+                && net.neoforged.neoforge.items.ItemHandlerHelper.insertItem(target, items.extractItem(type.outputSlot(), 1, true), false).isEmpty()) {
+            items.extractItem(type.outputSlot(), 1, false);
+        }
     }
 
     /** Pays for one tick of work with fuel or grid power. */

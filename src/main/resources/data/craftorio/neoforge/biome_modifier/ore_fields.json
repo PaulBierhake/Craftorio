@@ -5,7 +5,8 @@
     "craftorio:iron_ore_field",
     "craftorio:copper_ore_field",
     "craftorio:coal_field",
-    "craftorio:stone_field"
+    "craftorio:stone_field",
+    "craftorio:wood_field"
   ],
   "step": "top_layer_modification"
 }

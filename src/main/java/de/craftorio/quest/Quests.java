@@ -12,6 +12,7 @@ public final class Quests {
             // By hand to the first drill and the first power
             mine("raw_iron", "minecraft:raw_iron", 16, 20),
             mine("cobblestone", "minecraft:cobblestone", 20, 20),
+            mine("oak_log", "minecraft:oak_log", 10, 20),
             build("stone_furnace", 1, 20),
             build("burner_drill", 1, 40),
             build("conveyor_belt", 1, 20),
@@ -20,6 +21,7 @@ public final class Quests {
             build("steam_engine", 1, 40),
             build("power_pole", 1, 20),
             // Science and automation
+            build("terminal", 1, 40),
             build("laboratory", 1, 60),
             build("red_science", 10, 60),
             build("inserter", 1, 30),

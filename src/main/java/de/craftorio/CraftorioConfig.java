@@ -38,6 +38,18 @@ public final class CraftorioConfig {
             .comment("Only keep a team's factory loaded while at least one team member is online.")
             .define("chunkloader.onlyWhileOnline", true);
 
+    public static final ModConfigSpec.BooleanValue NO_HUNGER = BUILDER
+            .comment("Players never get hungry.")
+            .define("world.noHunger", true);
+
+    public static final ModConfigSpec.BooleanValue NO_HOSTILE_MOBS = BUILDER
+            .comment("No hostile mobs spawn in the overworld (tower defense enemies are not affected).")
+            .define("world.noHostileMobs", true);
+
+    public static final ModConfigSpec.BooleanValue ETERNAL_DAY = BUILDER
+            .comment("Always day and clear weather in the overworld.")
+            .define("world.eternalDay", true);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private CraftorioConfig() {
