@@ -4,6 +4,11 @@ Stand: Commit `bf2549f` auf `claude/keen-franklin-naz527`. Das Dokument ordnet d
 gefundene Ursache und beschreibt pro Punkt eine umsetzbare Lösung mit Akzeptanzkriterien. Es ist als Arbeitsauftrag
 für eine KI-Coding-Session (z. B. Sonnet) gedacht.
 
+> **Update (Runde 3):** Die Progression wird auf Factorio umgestellt, siehe `docs/FACTORIO-UMBAU.md`. Dadurch
+> gehen **A1, A2, A3, B1, B2 und C1** in den Umbaupaketen U2–U7/U9 auf und werden hier nicht separat umgesetzt.
+> Weiterhin einzeln umzusetzen: **D1–D6 und C2** (Umbaupaket U0, zuerst), **A4, B3, D7, E1–E3**.
+> Entscheidungen aus Abschnitt 4 sind getroffen: E-1 lokal, E-2 Oberwelt (Variante a), E-3 ja, E-4 gemischt, E-5 wie empfohlen.
+
 ---
 
 ## 0. Arbeitsweise (bitte zuerst lesen)

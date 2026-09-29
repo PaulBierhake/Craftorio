@@ -335,6 +335,20 @@ Per `/reload` änderbar:
 | 13 | Spieler im Kampf | Reine Tower Defense (Spieler kämpft nicht mit) |
 | 14 | Kaufen vs. Bauen | Baupläne mit Geld freischalten (Team-Wissen), an gestuften Werkbänken aus Material bauen; kein Shop für fertige Maschinen |
 
+## 14. Entscheidungen Runde 3 – Factorio-Progression
+
+| # | Frage | Entscheidung |
+|---|---|---|
+| 15 | Progression | Rohstoffe, Rezepte, Maschinen, Logistik und Forschungsbaum **1:1 nach Factorio 1.1**, erweitert um Tower Defense und Pflanzen. Details und Umbaupakete: **`docs/FACTORIO-UMBAU.md`** (ersetzt §4 und §5.3) |
+| 16 | Freischalten | Forschung mit Wissenschaftspaketen im Labor statt Baupläne per Credits |
+| 17 | Credits | Hybrid: Verkaufen bringt Credits für die Tower Defense (Upgrades, Reparatur, Extras), nicht für Forschung |
+| 18 | Flüssigkeiten | Ja: Öl, Rohre, Raffinerie, Chemiefabrik |
+| 19 | Spieltempo | Zeiten 1:1 wie Factorio (Bänder sind es bereits); Team-Chunkloader; Feinjustierung nur über Config-Faktoren nach Spieltests |
+| 20 | Ebenen | Bleiben in der Oberwelt; Höhlen = Öl, Minen = Uran |
+| 21 | TD-Schlüssel | Arena-Siegel als Einmal-Schlüssel für neue Wissenschaftsstufen |
+| 22 | Pflanzen | Gewächshaus als Maschine, Bio-Brennstoff |
+| 23 | Offene Punkte aus Testrunde 1 | Lager-Depot lokal, Vanilla-Werkzeugrezepte entfernen, Belohnungen gemischt/klein, intakte Türme werden beim Kartenwechsel geheilt |
+
 ## 13. Umsetzungs-Roadmap
 
 | Meilenstein | Inhalt | Ergebnis |
