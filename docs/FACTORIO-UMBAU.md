@@ -681,9 +681,9 @@ Abgeschlossene Forschungen mit geänderten Kosten bleiben abgeschlossen.
 
 Belohnungen wie bisher klein (Items oder Credits für die TD).
 
-### 11.13 Offene Entscheidungen U11
+### 11.13 Entscheidungen U11 (getroffen: alle wie empfohlen)
 
-| ID | Frage | Empfehlung (gilt, falls nichts anderes entschieden wird) |
+| ID | Frage | Entscheidung |
 |---|---|---|
 | U11-E1 | Gibt es ein Endziel wie die Rakete in Factorio (Raketensilo, Raketenteile, Satellit, Weltraum-Paket)? | Für U11 **nein**; Endziel ist TD-Level 50 (Schwarmkönigin) + Gelb automatisiert. Rakete als mögliches **U12** später. |
 | U11-E2 | Temperatur als echte Fluid-Eigenschaft statt eigenem Hochdruckdampf? | **Nein**, eigenes Fluid (einfacher, reicht für Factorio-Verhältnisse). |
