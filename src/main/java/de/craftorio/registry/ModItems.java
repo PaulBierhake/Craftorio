@@ -82,13 +82,17 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> TESLA_TOWER = ITEMS.registerSimpleBlockItem("tesla_tower", ModBlocks.TESLA_TOWER);
     public static final DeferredItem<BlockItem> LASER_TOWER = ITEMS.registerSimpleBlockItem("laser_tower", ModBlocks.LASER_TOWER);
     public static final DeferredItem<Item> BOLT = ITEMS.registerSimpleItem("bolt");
-    public static final DeferredItem<Item> CARTRIDGE = ITEMS.registerSimpleItem("cartridge");
+    public static final DeferredItem<Item> MAGAZINE = ITEMS.registerSimpleItem("magazine");
+    public static final DeferredItem<Item> AP_MAGAZINE = ITEMS.registerSimpleItem("ap_magazine");
+    public static final DeferredItem<Item> GRENADE = ITEMS.registerSimpleItem("grenade");
+    public static final DeferredItem<BlockItem> STONE_WALL = ITEMS.registerSimpleBlockItem("stone_wall", ModBlocks.STONE_WALL);
+    public static final DeferredItem<BlockItem> FLAMETHROWER_TURRET = ITEMS.registerSimpleBlockItem("flamethrower_turret", ModBlocks.FLAMETHROWER_TURRET);
 
-    // Key materials from tower defense milestones (every 10 levels).
-    public static final DeferredItem<KeyMaterialItem> DRILL_CORE = keyMaterial("drill_core", 10);
-    public static final DeferredItem<KeyMaterialItem> RESONANCE_CRYSTAL = keyMaterial("resonance_crystal", 20);
-    public static final DeferredItem<KeyMaterialItem> DEEP_CORE = keyMaterial("deep_core", 30);
-    public static final DeferredItem<KeyMaterialItem> STAR_SHARD = keyMaterial("star_shard", 40);
+    // Arena seals: rewards for tower defense milestones, needed for the first research of a new science pack.
+    public static final DeferredItem<KeyMaterialItem> BRONZE_SEAL = keyMaterial("bronze_seal", 5);
+    public static final DeferredItem<KeyMaterialItem> SILVER_SEAL = keyMaterial("silver_seal", 10);
+    public static final DeferredItem<KeyMaterialItem> GOLD_SEAL = keyMaterial("gold_seal", 20);
+    public static final DeferredItem<KeyMaterialItem> PLATINUM_SEAL = keyMaterial("platinum_seal", 30);
 
     public static final DeferredItem<BlockItem> ELEVATOR = ITEMS.registerSimpleBlockItem("elevator", ModBlocks.ELEVATOR);
     public static final DeferredItem<BlockItem> CAVE_RUBBLE = ITEMS.registerSimpleBlockItem("cave_rubble", ModBlocks.CAVE_RUBBLE);

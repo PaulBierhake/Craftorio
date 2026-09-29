@@ -110,8 +110,9 @@ und das Handbuch-Ersatzbuch.
 - **Start-Baupläne** (ohne Forschung): Zahnrad, Kupferkabel, Schaltkreis, Rohr, Steinofen, Brenner-Bohrer, Förderband,
   Greifarm, Kessel, Dampfmaschine, Offshore-Pumpe, Strommast, Elektro-Bohrer, Labor, rotes Wissenschaftspaket,
   Handelsposten, Terminal, Arena-Tor, Armbrustturm, Bolzen.
-- **Schlüsselmaterialien** (Bohrkern, Resonanzkristall, Tiefenkern, Sternenerz-Splitter) kommen aus der Tower
-  Defense; sie werden beim ersten Einreihen bestimmter Forschungen abgegeben.
+- **Arena-Siegel** (bronzen ab TD-Level 5, silbern ab 10, golden ab 20, Platin ab 30) kommen aus der Tower Defense; das
+  jeweilige Siegel wird beim ersten Einreihen der ersten Forschung einer neuen Paketstufe abgegeben (Logistik-, Militär-,
+  Chemie-Wissenschaftspaket, Minenschacht).
 - Baupläne sind Datapack-JSON: `data/<namespace>/craftorio/blueprint/*.json` (`result`, `ingredients`, `order`).
 
 ![Terminal](docs/screenshots/m4-terminal.png)
@@ -129,12 +130,13 @@ und das Handbuch-Ersatzbuch.
 - **Weg legen**: mit dem **Pfadstab** vom offenen Tor zum Kern (Klick = Wegstück, nächster Klick in derselben
   Reihe/Spalte = gerade Linie, Schleichen + Klick entfernt). Der Pfadstab lehnt Abzweigungen, Kreuzungen und 2×2-Flächen sofort ab; Schleichen +
   Klick in die Luft zeigt den kürzesten Weg als Partikel. Rechtsklick auf den Kern prüft den Weg.
-- **Türme** frei auf freiem Boden oder Plateaus: **Armbrustturm** (Bolzen), **Geschützturm** (Patronen),
+- **Türme** frei auf freiem Boden oder Plateaus: **Armbrustturm** (Bolzen), **Geschützturm** (Magazine: zehn Schüsse je Magazin, panzerbrechende +60 %),
+  **Flammenwerfer-Turm** (Rohöl aus dem Arena-Vorrat, kurze Reichweite, bis 3 Ziele, Feuer ignoriert die Kristallpanzerung),
   **Tesla-Turm** und **Laserturm** (Strom). GUI mit Lebenspunkten, **Aufrüstung Stufe I–V** und **Zielmodus**
   (Erster/Letzter/Stärkster/Schwächster). Versorgung per Hand oder über den **Arena-Einspeiser** in der Fabrik
   (Strom und Munition per Band/Greifarm → Arena-Vorrat).
   **Wie kommen Strom und Munition in die Arena?** In der Arena kann nichts gebaut werden: Den Einspeiser in der
-  Fabrik ans Stromnetz hängen und mit Bolzen/Patronen füttern. Das Arena-HUD zeigt Vorrat und warnt rot, wenn
+  Fabrik ans Stromnetz hängen und mit Bolzen/Magazinen füttern und Rohöl per Rohr in den Einspeiser leiten. Das Arena-HUD zeigt Vorrat und warnt rot, wenn
   ein Turm keine Versorgung hat; Tooltips der Türme und der Leitfaden-Schritt *Arena-Einspeiser* erklären es.
 - **Level** im Terminal-Tab *Abwehr* starten (optional automatisch weiter): Karte, Regel, Mutator,
   **Wellenvorschau**, Arena-Vorrat; **Welle rufen** schickt die nächste Welle früher (Bonus-Credits).
@@ -143,7 +145,7 @@ und das Handbuch-Ersatzbuch.
 - **Gegner**: Krabbler, Brecher (ab 5), Spucker (ab 10), Kristallgolem (ab 20), Brutmutter (Boss). Sie greifen
   **nur Türme** an – nie die Fabrik oder Spieler.
 - Nach einem Sieg kommen alle Türme mit Stufe, HP und Munition ins **Turmdepot** und die nächste Karte entsteht;
-  Schlüsselmaterialien (alle 10 Level) liegen ebenfalls im Depot. Das Depot ist ein
+  Arena-Siegel liegen ebenfalls im Depot. Das Depot ist ein
   Nur-Entnahme-Inventar (Rechtsklick, *Alles nehmen*); unbeschädigte Türme werden repariert und stapeln. Zerstörte Türme werden zu **Ruinen**
   (Wiederaufbau für Credits, *Alle Türme reparieren* im Terminal).
 - Admin-Befehl: `/craftorio arena route` legt den kürzesten Weg (für Tests).
@@ -159,7 +161,7 @@ und das Handbuch-Ersatzbuch.
 - **Schichten** (nur in neu erzeugten Chunks): Oberfläche ab Y 50, darunter **Deckgestein** (Y 40–49),
   die **Höhlenschicht** (Y 0–39) und eine zweite Deckgesteinsschicht (Y −10 bis −1). Die Höhlenschicht besteht
   zunächst komplett aus unzerstörbarem **Höhlengeröll** – man kann nicht hineingraben.
-- **Höhleneingang** (Forschung *Ölverarbeitung*, braucht den Bohrkern; Material siehe unten): an der Oberfläche aufstellen, dann Material
+- **Höhleneingang** (Forschung *Ölverarbeitung*, Material siehe unten): an der Oberfläche aufstellen, dann Material
   anliefern (128 Bruchstein, 32 Eisenplatten, 16 Zahnräder, 8 Motoren – per Hand, Band oder Greifarm) und mit
   Strom (40 FE/t über einen Strommast) eine Minute bohren lassen.
 - Danach öffnet sich ein **Schacht mit Gerüst** (Schleichen zum Absteigen; oberhalb der Höhlen mit Stein
@@ -190,12 +192,12 @@ und das Handbuch-Ersatzbuch.
 
 - **Minenschicht** (Y −59 bis −11, nur in neu erzeugten Chunks): unter dem zweiten Deckgestein, zunächst
   komplett aus unzerstörbarem **Minengeröll**. Niedrigere Gänge mit vielen Säulen, Basaltboden und Tiefenschiefer.
-- **Minenschacht** (Forschung *Minenschacht*, braucht den Tiefenkern und den Warenaufzug): wird in einem
+- **Minenschacht** (Forschung *Minenschacht*, braucht das Platin-Siegel und den Warenaufzug): wird in einem
   freigeschalteten Bereich der **Höhlenschicht** gebaut (sonst Fehlermeldung), braucht 64 Stahlplatten,
   16 Motoren, 8 Batterien und 8 fortgeschrittene Schaltkreise und bohrt mit **80 FE/t** (kW). Danach führt ein Gerüstschacht durch das Deckgestein in die Minen und 7×7 Chunks werden ausgehöhlt.
 - **Minen-Rohstoff**: **Uran** → Uranpellet (Montage) → **Brennstab** (Montage, mit Stahlplatten).
 - **Maschinen-Stufen**
-  - **Elektrischer Bohrer** (Stufe 2, Freischaltung mit dem Resonanzkristall aus TD-Level 20): 3×3, doppelt so
+  - **Elektrischer Bohrer** (Stufe 2): 3×3, doppelt so
     schnell wie der Brenner-Bohrer, 30 FE/t statt Brennstoff. **Tiefenbohrer** (Stufe 3): **5×5**, 4× schneller
     pro Block (bis 3 Items/s), 80 FE/t. Abbauflächen verschiedener Bohrer dürfen sich weiterhin nicht überlappen.
   - **Schnelles Förderband** (3,75 Blöcke/s, Stufe 2) und **Express-Förderband** (5,625 Blöcke/s, Stufe 3);
@@ -266,7 +268,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) und **U7** (Öl und Höhlen).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen) und **U8** (Militär und Tower Defense).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -283,7 +285,7 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   entgegen (ein Slot je Paketart, auch per Greifarm), verbraucht je Einheit ein Paket jeder benötigten Art und meldet
   den Fortschritt an das Team. Mehrere Labore forschen parallel an derselben Forschung. Es gibt eine Warteschlange
   (Ketten dürfen in einem Zug eingereiht werden); der Fortschritt bleibt beim Umschalten erhalten. Schlüsselmaterial
-  (z. B. Bohrkern) wird einmal beim ersten Einreihen abgegeben. Forschungen sind Datenpakete
+  (ein Arena-Siegel) wird einmal beim ersten Einreihen abgegeben. Forschungen sind Datenpakete
   (`data/<namespace>/craftorio/research/*.json`: `units`, `packs`, `seconds`, `requires`, `unlocks`, `unlock_items`);
   was keine Forschung freischaltet, ist von Anfang an verfügbar. Werkbank-Rezepte **und** Maschinenrezepte (z. B.
   `assembling/motor`) können gesperrt sein; Maschinen prüfen die Forschung des besitzenden Teams. Credits bezahlen
@@ -324,6 +326,13 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Maschinen ab; die *Dampfmaschine* braucht 30 Dampf/s für 900 kW und nur, solange jemand den Strom abnimmt. Rechtsklick auf
   Rohr, Tank und Pumpe zeigt Inhalt und Zustand. Flüssigkeiten leben nur in Behältern (keine Eimer, keine Blöcke in der Welt);
   Rohöl, Schweröl, Leichtöl, Petroleum, Schwefelsäure und Schmiermittel sind schon angelegt und werden mit U7 gebraucht.
+- **Militär (U8)**: *Magazin* (4 Eisenplatten), *panzerbrechendes Magazin* (+1 Stahl, 5 Kupfer), *Granate* (5 Kohle + 5 Eisen),
+  *Steinmauer* (5 Steinziegel) und das **graue Militärpaket** (1 panzerbrechendes Magazin + 1 Granate + 2 Steinmauern → 2, Forschung
+  Militär-Wissenschaftspaket mit dem silbernen Siegel). Neue Forschungen: Militär 2, Steinmauern, Flammenwerfer, Laser (blaues Paket) und
+  Laserturm (rot, grün, Militär). Der **Flammenwerfer-Turm** (30 Stahl, 15 Zahnräder, 10 Rohre, 5 Motoren) verbrennt 6 Rohöl pro Schuss aus
+  dem Arena-Vorrat (bis 20.000), das der Arena-Einspeiser aus angeschlossenen Rohren nimmt. Der Laserturm kostet jetzt 20 Stahl, 20 Schaltkreise und
+  12 Batterien. Der alte Bohrkern, Resonanzkristall, Tiefenkern und Sternenerz-Splitter sind durch die vier Siegel ersetzt. Abweichungen: Der Tesla-Turm
+  bleibt vorerst; der Flammenwerfer nutzt nur Rohöl (Schwer- und Leichtöl folgen mit der fortgeschrittenen Ölverarbeitung).
 - **Steuerungshinweise**: Rechts neben der Hotbar zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
   angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);

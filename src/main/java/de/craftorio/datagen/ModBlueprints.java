@@ -130,7 +130,17 @@ public final class ModBlueprints {
                 SizedIngredient.of(ItemTags.PLANKS, 8));
         add(context, "gun_turret", stack(ModItems.GUN_TURRET.get(), 1),
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 10), copper(10), iron(20));
-        add(context, "cartridge", stack(ModItems.CARTRIDGE.get(), 16), copper(1), iron(1), SizedIngredient.of(Items.COAL, 1));
+        add(context, "magazine", stack(ModItems.MAGAZINE.get(), 1), iron(4));
+        add(context, "ap_magazine", stack(ModItems.AP_MAGAZINE.get(), 1),
+                SizedIngredient.of(ModItems.MAGAZINE.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), copper(5));
+        add(context, "grenade", stack(ModItems.GRENADE.get(), 1), SizedIngredient.of(Items.COAL, 5), iron(5));
+        add(context, "stone_wall", stack(ModItems.STONE_WALL.get(), 1), SizedIngredient.of(ModItems.STONE_BRICK.get(), 5));
+        add(context, "military_science", stack(ModItems.MILITARY_SCIENCE.get(), 2),
+                SizedIngredient.of(ModItems.AP_MAGAZINE.get(), 1), SizedIngredient.of(ModItems.GRENADE.get(), 1),
+                SizedIngredient.of(ModItems.STONE_WALL.get(), 2));
+        add(context, "flamethrower_turret", stack(ModItems.FLAMETHROWER_TURRET.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 30), SizedIngredient.of(ModItems.IRON_GEAR.get(), 15),
+                SizedIngredient.of(ModItems.PIPE.get(), 10), SizedIngredient.of(ModItems.MOTOR.get(), 5));
         add(context, "tesla_tower", stack(ModItems.TESLA_TOWER.get(), 1),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 24), iron(8), SizedIngredient.of(ModItems.CIRCUIT.get(), 4));
 

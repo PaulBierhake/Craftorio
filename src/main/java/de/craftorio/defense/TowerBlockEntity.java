@@ -56,10 +56,13 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     private int cooldown;
     private TargetMode targetMode = TargetMode.FIRST;
     private final EnergyBuffer energy;
+    /** Shots left in the magazine that is loaded (guns), and whether it is armour-piercing. */
+    private int shotsLeft;
+    private boolean armourPiercing;
     private final ItemStackHandler ammo = new ItemStackHandler(1) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.is(ammoItem());
+            return type.usesItemAmmo() && (stack.is(ammoItem()) || (type == TowerType.GUN && stack.is(ModItems.AP_MAGAZINE.get())));
         }
 
         @Override
@@ -123,8 +126,17 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return ammo;
     }
 
+    /** Shots left in the loaded magazine (guns). */
+    public int shotsLeft() {
+        return shotsLeft;
+    }
+
+    public boolean armourPiercing() {
+        return armourPiercing;
+    }
+
     public Item ammoItem() {
-        return type == TowerType.GUN ? ModItems.CARTRIDGE.get() : ModItems.BOLT.get();
+        return type == TowerType.GUN ? ModItems.MAGAZINE.get() : ModItems.BOLT.get();
     }
 
     /** Neither the tower itself nor the arena reserve can supply its next shot. */
@@ -132,7 +144,14 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (type.usesEnergy()) {
             return energy.getEnergyStored() < type.energyPerShot() && zone.energy() < type.energyPerShot();
         }
-        return ammo.getStackInSlot(0).isEmpty() && zone.ammo(ammoItem()) <= 0;
+        if (type.usesFluid()) {
+            return zone.fluid() < type.fluidPerShot();
+        }
+        if (shotsLeft > 0) {
+            return false;
+        }
+        boolean reserve = zone.ammo(ammoItem()) > 0 || (type == TowerType.GUN && zone.ammo(ModItems.AP_MAGAZINE.get()) > 0);
+        return ammo.getStackInSlot(0).isEmpty() && !reserve;
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, TowerBlockEntity tower) {
@@ -176,7 +195,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (targets.isEmpty() || !payForShot()) {
             return false;
         }
-        float damage = (float) TowerStats.damage(type, upgradeLevel);
+        float damage = (float) TowerStats.damage(type, upgradeLevel) * (armourPiercing ? (float) TowerType.AP_FACTOR : 1F);
         Vec3 from = muzzle;
         for (TdEnemy target : targets) {
             Vec3 to = target.position().add(0, target.getBbHeight() / 2, 0);
@@ -185,9 +204,11 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
                 case GUN -> ParticleTypes.SMOKE;
                 case TESLA -> ParticleTypes.ELECTRIC_SPARK;
                 case LASER -> ParticleTypes.END_ROD;
+                case FLAME -> ParticleTypes.FLAME;
             });
             target.invulnerableTime = 0;
-            target.hurt(type.energyWeapon() ? level.damageSources().magic() : level.damageSources().generic(), damage);
+            target.hurt(type.energyWeapon() ? level.damageSources().magic()
+                    : type == TowerType.FLAME ? level.damageSources().inFire() : level.damageSources().generic(), damage);
             if (type == TowerType.TESLA) {
                 from = to; // chain lightning jumps on
             }
@@ -197,6 +218,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             case GUN -> SoundEvents.FIREWORK_ROCKET_BLAST;
             case TESLA -> SoundEvents.BEACON_POWER_SELECT;
             case LASER -> SoundEvents.GUARDIAN_ATTACK;
+            case FLAME -> SoundEvents.FIRECHARGE_USE;
         };
         level.playSound(null, worldPosition, sound, SoundSource.BLOCKS, 0.6F, 1.2F);
         return true;
@@ -207,11 +229,38 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (type.usesEnergy()) {
             return energy.consume(type.energyPerShot()) || drawFromArena(defense -> defense.drawEnergy(Arenas.slotAt(worldPosition), type.energyPerShot()));
         }
+        if (type.usesFluid()) {
+            return drawFromArena(defense -> defense.drawFluid(Arenas.slotAt(worldPosition), type.fluidPerShot()));
+        }
+        if (type == TowerType.GUN) {
+            return shootMagazine();
+        }
         if (!ammo.getStackInSlot(0).isEmpty()) {
             ammo.extractItem(0, 1, false);
             return true;
         }
         return drawFromArena(defense -> defense.drawAmmo(Arenas.slotAt(worldPosition), ammoItem()));
+    }
+
+    /** A gun turret fires ten shots per magazine; it loads the next one from its slot, then from the arena reserve (armour-piercing first). */
+    private boolean shootMagazine() {
+        if (shotsLeft <= 0) {
+            ItemStack loaded = ammo.getStackInSlot(0);
+            if (!loaded.isEmpty()) {
+                armourPiercing = loaded.is(ModItems.AP_MAGAZINE.get());
+                ammo.extractItem(0, 1, false);
+            } else if (drawFromArena(defense -> defense.drawAmmo(Arenas.slotAt(worldPosition), ModItems.AP_MAGAZINE.get()))) {
+                armourPiercing = true;
+            } else if (drawFromArena(defense -> defense.drawAmmo(Arenas.slotAt(worldPosition), ModItems.MAGAZINE.get()))) {
+                armourPiercing = false;
+            } else {
+                return false;
+            }
+            shotsLeft = TowerType.SHOTS_PER_MAGAZINE;
+        }
+        shotsLeft--;
+        setChanged();
+        return true;
     }
 
     private boolean drawFromArena(java.util.function.Predicate<TowerDefense> draw) {
@@ -351,6 +400,8 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         tag.putInt("health", health);
         tag.putInt("energy", energy.getEnergyStored());
         tag.put("ammo", ammo.serializeNBT(registries));
+        tag.putInt("shots_left", shotsLeft);
+        tag.putBoolean("armour_piercing", armourPiercing);
     }
 
     @Override
@@ -365,5 +416,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         health = tag.contains("health") ? tag.getInt("health") : maxHealth();
         energy.setEnergy(tag.getInt("energy"));
         ammo.deserializeNBT(registries, tag.getCompound("ammo"));
+        shotsLeft = tag.getInt("shots_left");
+        armourPiercing = tag.getBoolean("armour_piercing");
     }
 }

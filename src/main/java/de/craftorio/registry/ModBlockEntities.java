@@ -72,7 +72,7 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerBlockEntity>> TOWER = BLOCK_ENTITIES.register("tower",
             () -> BlockEntityType.Builder.of(TowerBlockEntity::new,
                     ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get(),
-                    ModBlocks.LASER_TOWER.get()).build(null));
+                    ModBlocks.LASER_TOWER.get(), ModBlocks.FLAMETHROWER_TURRET.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerRuinBlockEntity>> TOWER_RUIN = BLOCK_ENTITIES.register("tower_ruin",
@@ -158,12 +158,13 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, STEAM_ENGINE.get(), (engine, side) -> engine.steam());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, LABORATORY.get(), (lab, side) -> lab.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LABORATORY.get(), (lab, side) -> lab.energy());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? null : insertOnly(tower.ammo()));
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesItemAmmo() ? insertOnly(tower.ammo()) : null);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELEVATOR.get(), (elevator, side) -> elevator.input());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.materials());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ARENA_FEEDER.get(), (feeder, side) -> feeder.ammoInput());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ARENA_FEEDER.get(), (feeder, side) -> feeder.energy());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ARENA_FEEDER.get(), (feeder, side) -> feeder.oilInput());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? tower.energy() : null);
     }
 

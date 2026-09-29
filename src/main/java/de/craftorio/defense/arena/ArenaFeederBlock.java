@@ -16,10 +16,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Supplies the team's arena from the factory: grid power for energy towers and ammunition (bolts, cartridges)
+ * Supplies the team's arena from the factory: grid power for energy towers and ammunition (bolts, magazines) and crude oil for flamethrower turrets through a pipe
  * delivered by belts or inserters. Right-click shows the arena's reserves.
  */
-public final class ArenaFeederBlock extends BaseEntityBlock {
+public final class ArenaFeederBlock extends BaseEntityBlock implements de.craftorio.fluid.FluidConnector {
     public static final MapCodec<ArenaFeederBlock> CODEC = simpleCodec(ArenaFeederBlock::new);
 
     public ArenaFeederBlock(Properties properties) {
@@ -29,6 +29,11 @@ public final class ArenaFeederBlock extends BaseEntityBlock {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
+    }
+
+    @Override
+    public boolean connectsFluid(BlockState state, net.minecraft.core.Direction face) {
+        return true;
     }
 
     @Override

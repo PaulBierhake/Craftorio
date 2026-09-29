@@ -33,6 +33,7 @@ public final class ResearchGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Team team = TeamData.registry(player.server).ensureTeam(player.getUUID(), "QueueTest");
         player.getInventory().clearContent();
+        player.getInventory().add(new ItemStack(ModItems.BRONZE_SEAL.get())); // the first green science research needs it
 
         helper.assertFalse(ResearchActions.toggle(player, index(helper, "energy_turrets")), "prerequisites are neither done nor queued");
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "turrets")), "queue turrets");
@@ -48,13 +49,13 @@ public final class ResearchGameTests {
         helper.assertFalse(team.researchQueue().contains(Craftorio.id("energy_turrets").toString()), "energy turrets lose their prerequisite");
         helper.assertTrue(team.researchQueue().contains(Craftorio.id("engines").toString()), "engines stay");
 
-        TeamData.registry(player.server).grantResearch(team.id(), Craftorio.id("fluid_handling").toString());
-        helper.assertFalse(ResearchActions.toggle(player, index(helper, "oil_processing")), "needs a drill core");
-        player.getInventory().add(new ItemStack(ModItems.DRILL_CORE.get()));
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "oil_processing")), "queue with drill core");
-        helper.assertValueEqual(player.getInventory().countItem(ModItems.DRILL_CORE.get()), 0, "drill core handed in");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "oil_processing")), "dequeue");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "oil_processing")), "queue again without paying twice");
+        TeamData.registry(player.server).grantResearch(team.id(), Craftorio.id("elevators").toString());
+        helper.assertFalse(ResearchActions.toggle(player, index(helper, "mine_shaft")), "needs a platinum seal");
+        player.getInventory().add(new ItemStack(ModItems.PLATINUM_SEAL.get()));
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "mine_shaft")), "queue with the seal");
+        helper.assertValueEqual(player.getInventory().countItem(ModItems.PLATINUM_SEAL.get()), 0, "seal handed in");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "mine_shaft")), "dequeue");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "mine_shaft")), "queue again without paying twice");
         helper.succeed();
     }
 

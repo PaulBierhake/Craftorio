@@ -17,7 +17,7 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
     public static final int CRAWLERS_PER_EXTRA_PLAYER = 2;
 
     public enum KeyReward {
-        NONE, DRILL_CORE, RESONANCE_CRYSTAL, DEEP_CORE, STAR_SHARD
+        NONE, BRONZE_SEAL, SILVER_SEAL, GOLD_SEAL, PLATINUM_SEAL
     }
 
     public static LevelPlan of(int level, int players) {
@@ -57,16 +57,14 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
         return new LevelPlan(level, List.copyOf(waves), health, reward, keyReward(level));
     }
 
-    /** Every tenth level unlocks the next factory tier; later milestones keep giving star shards. */
+    /** The arena seals: bronze at level 5, silver at 10, gold at 20, platinum at 30 (first research of a new science pack). */
     public static KeyReward keyReward(int level) {
-        if (level % 10 != 0) {
-            return KeyReward.NONE;
-        }
         return switch (level) {
-            case 10 -> KeyReward.DRILL_CORE;
-            case 20 -> KeyReward.RESONANCE_CRYSTAL;
-            case 30 -> KeyReward.DEEP_CORE;
-            default -> KeyReward.STAR_SHARD;
+            case 5 -> KeyReward.BRONZE_SEAL;
+            case 10 -> KeyReward.SILVER_SEAL;
+            case 20 -> KeyReward.GOLD_SEAL;
+            case 30 -> KeyReward.PLATINUM_SEAL;
+            default -> KeyReward.NONE;
         };
     }
 

@@ -25,9 +25,11 @@ class DefenseLogicTest {
         assertEquals(EnemyType.BROOD_MOTHER, tenth.waves().get(tenth.waves().size() - 1).get(tenth.waves().get(tenth.waves().size() - 1).size() - 1));
 
         assertEquals(LevelPlan.KeyReward.NONE, first.keyReward());
-        assertEquals(LevelPlan.KeyReward.DRILL_CORE, tenth.keyReward());
-        assertEquals(LevelPlan.KeyReward.DEEP_CORE, LevelPlan.keyReward(30));
-        assertEquals(LevelPlan.KeyReward.STAR_SHARD, LevelPlan.keyReward(60));
+        assertEquals(LevelPlan.KeyReward.SILVER_SEAL, tenth.keyReward());
+        assertEquals(LevelPlan.KeyReward.PLATINUM_SEAL, LevelPlan.keyReward(30));
+        assertEquals(LevelPlan.KeyReward.BRONZE_SEAL, LevelPlan.keyReward(5));
+        assertEquals(LevelPlan.KeyReward.GOLD_SEAL, LevelPlan.keyReward(20));
+        assertEquals(LevelPlan.KeyReward.NONE, LevelPlan.keyReward(60));
         assertTrue(tenth.reward() > LevelPlan.of(9, 1).reward() + 100, "milestone bonus");
     }
 

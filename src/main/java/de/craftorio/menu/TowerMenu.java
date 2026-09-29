@@ -30,7 +30,7 @@ public final class TowerMenu extends MachineMenuBase {
         super(ModMenus.TOWER.get(), containerId, tower);
         this.tower = tower;
         this.data = data;
-        if (!tower.type().usesEnergy()) {
+        if (tower.type().usesItemAmmo()) {
             addSlot(new SlotItemHandler(tower.ammo(), 0, AMMO_X, AMMO_Y));
         }
         addPlayerInventory(inventory);

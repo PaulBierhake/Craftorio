@@ -15,6 +15,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import de.craftorio.registry.ModFluids;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.Optional;
@@ -24,6 +27,7 @@ public final class ArenaFeederBlockEntity extends BlockEntity {
 
     private final EnergyBuffer energy = new EnergyBuffer(40_000, 2_000, 0, this::setChanged);
     private final IItemHandler ammoInput = new AmmoInput();
+    private final IFluidHandler oilInput = new OilInput();
     private int transferIn;
 
     public ArenaFeederBlockEntity(BlockPos pos, BlockState state) {
@@ -38,8 +42,13 @@ public final class ArenaFeederBlockEntity extends BlockEntity {
         return ammoInput;
     }
 
+    /** Crude oil for the flamethrower turrets goes straight into the team's arena reserve. */
+    public IFluidHandler oilInput() {
+        return oilInput;
+    }
+
     public static boolean isAmmo(ItemStack stack) {
-        return stack.is(ModItems.BOLT.get()) || stack.is(ModItems.CARTRIDGE.get());
+        return stack.is(ModItems.BOLT.get()) || stack.is(ModItems.MAGAZINE.get()) || stack.is(ModItems.AP_MAGAZINE.get());
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ArenaFeederBlockEntity feeder) {
@@ -78,6 +87,48 @@ public final class ArenaFeederBlockEntity extends BlockEntity {
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         energy.setEnergy(tag.getInt("energy"));
+    }
+
+    /** Takes crude oil only; a pipe next to the feeder is enough. */
+    private final class OilInput implements IFluidHandler {
+        @Override
+        public int getTanks() {
+            return 1;
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            return FluidStack.EMPTY;
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return TowerDefense.FLUID_CAPACITY;
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            return stack.getFluid() == ModFluids.CRUDE_OIL.get();
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            if (!isFluidValid(0, resource) || !(level instanceof ServerLevel serverLevel)) {
+                return 0;
+            }
+            return team(serverLevel).map(team -> TowerDefense.get(serverLevel.getServer())
+                    .feedFluid(team.id(), resource.getAmount(), action.simulate())).orElse(0);
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
     }
 
     /** Ammunition goes straight into the team's arena reserve. */

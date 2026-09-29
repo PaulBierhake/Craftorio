@@ -42,8 +42,8 @@ public final class ClientEvents {
             ItemStack stack = event.getItemStack();
             if (stack.getItem() instanceof net.minecraft.world.item.BlockItem block) {
                 if (block.getBlock() instanceof de.craftorio.defense.TowerBlock tower) {
-                    event.getToolTip().add(Component.translatable(tower.towerType().usesEnergy()
-                            ? "craftorio.tooltip.tower.energy" : "craftorio.tooltip.tower.ammo").withStyle(ChatFormatting.AQUA));
+                    event.getToolTip().add(Component.translatable(tower.towerType().usesEnergy() ? "craftorio.tooltip.tower.energy"
+                            : tower.towerType().usesFluid() ? "craftorio.tooltip.tower.fluid" : "craftorio.tooltip.tower.ammo").withStyle(ChatFormatting.AQUA));
                 } else if (block.getBlock() == de.craftorio.registry.ModBlocks.ARENA_FEEDER.get()) {
                     event.getToolTip().add(Component.translatable("craftorio.tooltip.arena_feeder").withStyle(ChatFormatting.AQUA));
                 }

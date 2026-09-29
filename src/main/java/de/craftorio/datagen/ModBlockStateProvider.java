@@ -105,7 +105,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
                 modLoc("block/machine_top"), modLoc("block/arena_feeder_top")));
         simpleBlockWithItem(ModBlocks.ENEMY_PORTAL.get(), models().cubeBottomTop("enemy_portal",
                 modLoc("block/enemy_portal_side"), modLoc("block/enemy_portal_top"), modLoc("block/enemy_portal_top")));
-        for (String name : new String[]{"path_block", "crossbow_tower", "gun_turret", "tesla_tower", "laser_tower", "tower_ruin"}) {
+        for (String name : new String[]{"path_block", "crossbow_tower", "gun_turret", "tesla_tower", "laser_tower", "flamethrower_turret", "tower_ruin"}) {
             ModelFile model = models().getExistingFile(modLoc("block/" + name));
             Block block = switch (name) {
                 case "path_block" -> ModBlocks.PATH_BLOCK.get();
@@ -113,6 +113,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
                 case "gun_turret" -> ModBlocks.GUN_TURRET.get();
                 case "tesla_tower" -> ModBlocks.TESLA_TOWER.get();
                 case "laser_tower" -> ModBlocks.LASER_TOWER.get();
+                case "flamethrower_turret" -> ModBlocks.FLAMETHROWER_TURRET.get();
                 default -> ModBlocks.TOWER_RUIN.get();
             };
             simpleBlock(block, model);
@@ -150,6 +151,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.OIL_REFINERY.get(), "oil_refinery");
         simpleBlockWithItem(ModBlocks.ACCUMULATOR.get(), models().cubeBottomTop("accumulator", modLoc("block/accumulator_side"),
                 modLoc("block/accumulator_top"), modLoc("block/accumulator_top")));
+        wallBlock(ModBlocks.STONE_WALL.get(), modLoc("block/stone_wall"));
         ModelFile solar = models().getExistingFile(modLoc("block/solar_panel"));
         simpleBlock(ModBlocks.SOLAR_PANEL.get(), solar);
         simpleBlockItem(ModBlocks.SOLAR_PANEL.get(), solar);

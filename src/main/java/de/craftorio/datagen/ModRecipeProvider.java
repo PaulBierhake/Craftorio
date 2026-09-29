@@ -99,8 +99,15 @@ public final class ModRecipeProvider extends RecipeProvider {
         // Ammunition for automated tower supply
         assemble(output, "bolt", new ItemStack(ModItems.BOLT.get(), 16), 20,
                 SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.STICK, 2));
-        assemble(output, "cartridge", new ItemStack(ModItems.CARTRIDGE.get(), 16), 30,
-                SizedIngredient.of(Items.COPPER_INGOT, 1), SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.COAL, 1));
+        assemble(output, "magazine", new ItemStack(ModItems.MAGAZINE.get()), 20, SizedIngredient.of(Items.IRON_INGOT, 4));
+        assemble(output, "ap_magazine", new ItemStack(ModItems.AP_MAGAZINE.get()), 60,
+                SizedIngredient.of(ModItems.MAGAZINE.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(Items.COPPER_INGOT, 5));
+        assemble(output, "grenade", new ItemStack(ModItems.GRENADE.get()), 160,
+                SizedIngredient.of(Items.COAL, 5), SizedIngredient.of(Items.IRON_INGOT, 5));
+        assemble(output, "stone_wall", new ItemStack(ModItems.STONE_WALL.get()), 10, SizedIngredient.of(ModItems.STONE_BRICK.get(), 5));
+        assemble(output, "military_science", new ItemStack(ModItems.MILITARY_SCIENCE.get(), 2), 200,
+                SizedIngredient.of(ModItems.AP_MAGAZINE.get(), 1), SizedIngredient.of(ModItems.GRENADE.get(), 1),
+                SizedIngredient.of(ModItems.STONE_WALL.get(), 2));
     }
 
     private static void smelting(RecipeOutput output, String name, ItemStack result, int time, SizedIngredient... ingredients) {

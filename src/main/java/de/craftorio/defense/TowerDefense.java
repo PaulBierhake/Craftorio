@@ -66,6 +66,8 @@ public final class TowerDefense extends SavedData {
     private static final int AUTO_START_DELAY = 100;
     public static final long ENERGY_CAPACITY = 2_000_000;
     public static final int AMMO_CAPACITY = 5_000;
+    /** Units of crude oil the arena reserve holds for flamethrower turrets. */
+    public static final int FLUID_CAPACITY = 20_000;
 
     private final Map<UUID, Zone> zones = new HashMap<>();
     private final Map<Integer, UUID> teamBySlot = new HashMap<>();
@@ -86,6 +88,8 @@ public final class TowerDefense extends SavedData {
         private final List<ItemStack> depot = new ArrayList<>();
         private long energy;
         private final Map<Item, Integer> ammo = new LinkedHashMap<>();
+        /** Crude oil for flamethrower turrets, fed by the arena feeder. */
+        private int fluid;
         private @Nullable ArenaLayout layout;
         private int layoutLevel;
 
@@ -115,6 +119,10 @@ public final class TowerDefense extends SavedData {
 
         public int ammo(Item item) {
             return ammo.getOrDefault(item, 0);
+        }
+
+        public int fluid() {
+            return fluid;
         }
 
         public int depotSize() {
@@ -445,6 +453,31 @@ public final class TowerDefense extends SavedData {
         return Math.max(0, accepted);
     }
 
+    /** Takes crude oil into the team's arena reserve; returns how many units were accepted. */
+    public int feedFluid(UUID team, int amount, boolean simulate) {
+        Zone zone = zones.get(team);
+        if (zone == null || amount <= 0) {
+            return 0;
+        }
+        int accepted = Math.max(0, Math.min(amount, FLUID_CAPACITY - zone.fluid));
+        if (accepted > 0 && !simulate) {
+            zone.fluid += accepted;
+            setDirty();
+        }
+        return accepted;
+    }
+
+    /** Used by flamethrower turrets in the arena. */
+    boolean drawFluid(int slot, int amount) {
+        Zone zone = zoneAt(slot).orElse(null);
+        if (zone == null || zone.fluid < amount) {
+            return false;
+        }
+        zone.fluid -= amount;
+        setDirty();
+        return true;
+    }
+
     /** Used by energy towers in the arena when their own buffer is empty. */
     boolean drawEnergy(int slot, int amount) {
         Zone zone = zoneAt(slot).orElse(null);
@@ -469,7 +502,7 @@ public final class TowerDefense extends SavedData {
 
     public Component reserves(UUID team) {
         return zone(team).map(zone -> (Component) Component.translatable("craftorio.arena.feeder.status", zone.energy, ENERGY_CAPACITY,
-                        zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.CARTRIDGE.get())))
+                        zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.MAGAZINE.get()) + zone.ammo(ModItems.AP_MAGAZINE.get()), zone.fluid))
                 .orElse(Component.translatable("craftorio.arena.feeder.no_arena"));
     }
 
@@ -739,10 +772,10 @@ public final class TowerDefense extends SavedData {
     private static ItemStack keyItem(LevelPlan.KeyReward reward) {
         return switch (reward) {
             case NONE -> ItemStack.EMPTY;
-            case DRILL_CORE -> new ItemStack(ModItems.DRILL_CORE.get());
-            case RESONANCE_CRYSTAL -> new ItemStack(ModItems.RESONANCE_CRYSTAL.get());
-            case DEEP_CORE -> new ItemStack(ModItems.DEEP_CORE.get());
-            case STAR_SHARD -> new ItemStack(ModItems.STAR_SHARD.get());
+            case BRONZE_SEAL -> new ItemStack(ModItems.BRONZE_SEAL.get());
+            case SILVER_SEAL -> new ItemStack(ModItems.SILVER_SEAL.get());
+            case GOLD_SEAL -> new ItemStack(ModItems.GOLD_SEAL.get());
+            case PLATINUM_SEAL -> new ItemStack(ModItems.PLATINUM_SEAL.get());
         };
     }
 
@@ -761,7 +794,7 @@ public final class TowerDefense extends SavedData {
         return new TdStatusPayload(true, zone.level, run != null, run == null ? 0 : run.wave(), plan.waves().size(),
                 run == null ? LevelPlan.LIVES : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.repairCost,
                 layout.theme().ordinal(), mutator(zone).ordinal(), zone.lastStars, preview, zone.energy,
-                zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.CARTRIDGE.get()), run != null && run.canCallWave(), unsupplied(level, zone));
+                zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.MAGAZINE.get()) + zone.ammo(ModItems.AP_MAGAZINE.get()), run != null && run.canCallWave(), unsupplied(level, zone));
     }
 
     private int unsupplied(ServerLevel level, Zone zone) {
@@ -817,7 +850,9 @@ public final class TowerDefense extends SavedData {
             entry.put("depot", depot);
             entry.putLong("energy", zone.energy);
             entry.putInt("bolts", zone.ammo(ModItems.BOLT.get()));
-            entry.putInt("cartridges", zone.ammo(ModItems.CARTRIDGE.get()));
+            entry.putInt("cartridges", zone.ammo(ModItems.MAGAZINE.get()));
+            entry.putInt("ap_magazines", zone.ammo(ModItems.AP_MAGAZINE.get()));
+            entry.putInt("fluid", zone.fluid);
             list.add(entry);
         });
         tag.put("arenas", list);
@@ -845,7 +880,9 @@ public final class TowerDefense extends SavedData {
             }
             zone.energy = entry.getLong("energy");
             zone.ammo.put(ModItems.BOLT.get(), entry.getInt("bolts"));
-            zone.ammo.put(ModItems.CARTRIDGE.get(), entry.getInt("cartridges"));
+            zone.ammo.put(ModItems.MAGAZINE.get(), entry.getInt("cartridges"));
+            zone.ammo.put(ModItems.AP_MAGAZINE.get(), entry.getInt("ap_magazines"));
+            zone.fluid = entry.getInt("fluid");
             UUID team = entry.getUUID("team");
             data.zones.put(team, zone);
             data.teamBySlot.put(zone.slot, team);

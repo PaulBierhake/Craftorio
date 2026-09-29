@@ -187,6 +187,75 @@ public final class DefenseGameTests {
         });
     }
 
+    /** A golem with a thousand times the health: towers keep shooting at it without killing it. */
+    private static TdEnemy target(GameTestHelper helper) {
+        List<Vec3> path = new ArrayList<>();
+        for (int x = 1; x <= 15; x++) {
+            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        }
+        LevelRun run = new LevelRun(LevelPlan.of(20, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
+        TdEnemy golem = ModEntities.CRYSTAL_GOLEM.get().create(helper.getLevel());
+        golem.start(run, path, 1_000.0);
+        helper.getLevel().addFreshEntity(golem);
+        return golem;
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void aGunTurretFiresTenShotsPerMagazine(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(3, 1, 4);
+        helper.setBlock(towerPos, ModBlocks.GUN_TURRET.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        tower.ammo().insertItem(0, new ItemStack(ModItems.MAGAZINE.get(), 2), false);
+        helper.assertTrue(tower.ammo().isItemValid(0, new ItemStack(ModItems.AP_MAGAZINE.get())), "AP magazines fit too");
+        helper.assertFalse(tower.ammo().isItemValid(0, new ItemStack(ModItems.BOLT.get())), "bolts do not");
+        target(helper);
+
+        helper.runAtTickTime(20, () -> {
+            // 10 shots per magazine: the first magazine is loaded, the second one still sits in the slot.
+            helper.assertValueEqual(tower.ammo().getStackInSlot(0).getCount(), 1, "one magazine used so far");
+            helper.assertTrue(tower.shotsLeft() < TowerType.SHOTS_PER_MAGAZINE && tower.shotsLeft() >= 0, "shots left " + tower.shotsLeft());
+            helper.assertFalse(tower.armourPiercing(), "a normal magazine");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void anArmourPiercingMagazineHitsHarder(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(3, 1, 4);
+        helper.setBlock(towerPos, ModBlocks.GUN_TURRET.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        tower.ammo().insertItem(0, new ItemStack(ModItems.AP_MAGAZINE.get()), false);
+        target(helper);
+
+        helper.runAtTickTime(20, () -> {
+            helper.assertTrue(tower.armourPiercing(), "the AP magazine is loaded");
+            helper.assertTrue(tower.ammo().getStackInSlot(0).isEmpty(), "and taken from the slot");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100, batch = "defense_flame")
+    public static void theFeederTakesCrudeOilForFlamethrowerTurrets(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "FlameTest");
+        BlockPos feederPos = new BlockPos(2, 1, 2);
+        helper.setBlock(feederPos, ModBlocks.ARENA_FEEDER.get());
+        de.craftorio.protection.BlockOwnership.get(helper.getLevel()).claim(helper.absolutePos(feederPos), setup.team.id());
+        var oil = helper.getLevel().getCapability(net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK, helper.absolutePos(feederPos), null);
+        helper.assertTrue(oil != null, "the feeder has a fluid input");
+        helper.assertValueEqual(oil.fill(new net.neoforged.neoforge.fluids.FluidStack(net.minecraft.world.level.material.Fluids.WATER, 50),
+                net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE), 0, "water is refused");
+        helper.assertValueEqual(oil.fill(new net.neoforged.neoforge.fluids.FluidStack(de.craftorio.registry.ModFluids.CRUDE_OIL.get(), 50),
+                net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE), 50, "crude oil is taken");
+        helper.assertValueEqual(setup.zone().fluid(), 50, "into the arena reserve");
+
+        TowerBlockEntity tower = new TowerBlockEntity(BlockPos.ZERO, ModBlocks.FLAMETHROWER_TURRET.get().defaultBlockState());
+        helper.assertFalse(tower.lacksSupply(setup.zone()), "50 units are enough for a shot");
+        helper.assertTrue(setup.defense.drawFluid(setup.zone().slot(), TowerType.FLAME.fluidPerShot()), "a shot burns oil");
+        helper.assertValueEqual(setup.zone().fluid(), 50 - TowerType.FLAME.fluidPerShot(), "reserve after the shot");
+        helper.assertFalse(setup.defense.drawFluid(setup.zone().slot(), 1_000), "not more than the reserve holds");
+        helper.succeed();
+    }
+
     private record Setup(ServerPlayer player, Team team, TowerDefense defense) {
         TowerDefense.Zone zone() {
             return defense.zone(team.id()).orElseThrow();

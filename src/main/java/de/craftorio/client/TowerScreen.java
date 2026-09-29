@@ -54,7 +54,7 @@ public final class TowerScreen extends MachineScreenBase<TowerMenu> {
 
     @Override
     protected int machineSlotCount() {
-        return menu.tower().type().usesEnergy() ? 0 : 1;
+        return menu.tower().type().usesItemAmmo() ? 1 : 0;
     }
 
     @Override

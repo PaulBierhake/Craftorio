@@ -35,6 +35,7 @@ public final class Quests {
             build("arena_gate", 1, 100),
             build("crossbow_tower", 1, 100),
             tdLevel("td_1", 1, 200),
+            tdLevel("td_5", 5, 500),
             unlock("arena_feeder", 100),
             build("arena_feeder", 1, 150),
             earn("earn_10k", 10_000, 300),

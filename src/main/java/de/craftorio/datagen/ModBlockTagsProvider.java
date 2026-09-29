@@ -40,6 +40,8 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.PUMPJACK.get(), ModBlocks.CHEMICAL_PLANT.get(), ModBlocks.OIL_REFINERY.get(),
                 ModBlocks.ACCUMULATOR.get());
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.OIL_WELL.get());
+        tag(BlockTags.WALLS).add(ModBlocks.STONE_WALL.get());
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.STONE_WALL.get(), ModBlocks.FLAMETHROWER_TURRET.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get());
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());

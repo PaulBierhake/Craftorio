@@ -143,11 +143,11 @@ public class TdEnemy extends PathfinderMob implements HoglinBase {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        // Only towers (generic = ammunition, magic = energy weapons) and /kill may hurt enemies; players do not fight.
+        // Only towers (generic = ammunition, magic = energy weapons, in fire = flamethrowers) and /kill may hurt enemies; players do not fight.
         if (source.is(DamageTypes.GENERIC)) {
             return super.hurt(source, (float) enemyType.damageTaken(amount, false));
         }
-        if (source.is(DamageTypes.MAGIC) || source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        if (source.is(DamageTypes.MAGIC) || source.is(DamageTypes.IN_FIRE) || source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return super.hurt(source, amount);
         }
         return false;
