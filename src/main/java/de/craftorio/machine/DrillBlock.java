@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * Mines the ore field blocks below it and pushes the output into the block in front. The burner tier burns furnace
  * fuel, higher tiers run on grid power (see {@link DrillTier}).
  */
-public final class DrillBlock extends BaseEntityBlock {
+public final class DrillBlock extends BaseEntityBlock implements de.craftorio.fluid.FluidConnector {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -46,6 +46,12 @@ public final class DrillBlock extends BaseEntityBlock {
 
     public DrillTier tier() {
         return tier;
+    }
+
+    /** Electric and deep drills take sulfuric acid through a pipe on any side but the front. */
+    @Override
+    public boolean connectsFluid(BlockState state, Direction face) {
+        return !tier.usesFuel() && face != state.getValue(FACING);
     }
 
     @Override

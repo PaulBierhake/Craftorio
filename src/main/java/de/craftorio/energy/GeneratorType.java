@@ -8,7 +8,7 @@ public enum GeneratorType {
     /** Endgame power: one fuel rod runs 6000 ticks (5 minutes) at 8000 kW. */
     REACTOR(8_000, 400_000, 16_000);
 
-    public static final int FUEL_ROD_TICKS = 6_000;
+    public static final int FUEL_CELL_TICKS = 4_000;
 
     private final int fePerTick;
     private final int capacity;
@@ -38,7 +38,7 @@ public enum GeneratorType {
             return 0;
         }
         return switch (this) {
-            case REACTOR -> stack.is(ModItems.FUEL_ROD.get()) ? FUEL_ROD_TICKS : 0;
+            case REACTOR -> stack.is(ModItems.URANIUM_FUEL_CELL.get()) ? FUEL_CELL_TICKS : 0;
         };
     }
 }

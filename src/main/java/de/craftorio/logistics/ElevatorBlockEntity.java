@@ -1,5 +1,7 @@
 package de.craftorio.logistics;
 
+import de.craftorio.fluid.FluidBuffer;
+import de.craftorio.fluid.FluidHelper;
 import de.craftorio.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,6 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -22,6 +26,9 @@ public final class ElevatorBlockEntity extends BlockEntity {
     public static final int MAX_DISTANCE = 256;
     private static final int TRANSFER_INTERVAL = 2;
     private static final int ITEMS_PER_TRANSFER = 4;
+    public static final int FLUID_CAPACITY = 1_000;
+    /** Every second tick: 1,000 units per second. */
+    private static final int FLUID_PER_TRANSFER = 100;
 
     /** Items waiting to go up or down (sender) or to be pushed out of the front (receiver). */
     private final ItemStackHandler buffer = new ItemStackHandler(1) {
@@ -31,7 +38,11 @@ public final class ElevatorBlockEntity extends BlockEntity {
         }
     };
     private final IItemHandler input = new Input();
+    /** Fluid waiting to go up or down (sender) or to be pushed into the pipes around (receiver): sulfuric acid, water, lubricant. */
+    private final FluidBuffer fluid = new FluidBuffer(FLUID_CAPACITY, this::setChanged);
+    private final IFluidHandler fluidInput = new FluidInput();
     private int cooldown;
+    private int fluidCooldown;
 
     public ElevatorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ELEVATOR.get(), pos, state);
@@ -43,6 +54,14 @@ public final class ElevatorBlockEntity extends BlockEntity {
 
     public ItemStackHandler buffer() {
         return buffer;
+    }
+
+    public FluidBuffer fluid() {
+        return fluid;
+    }
+
+    public IFluidHandler fluidInput() {
+        return fluidInput;
     }
 
     private ElevatorBlock.Mode mode() {
@@ -69,6 +88,7 @@ public final class ElevatorBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, ElevatorBlockEntity elevator) {
+        elevator.moveFluid(level, pos);
         if (elevator.buffer.getStackInSlot(0).isEmpty() || --elevator.cooldown > 0) {
             return;
         }
@@ -81,6 +101,25 @@ public final class ElevatorBlockEntity extends BlockEntity {
                     .filter(ElevatorBlockEntity.class::isInstance)
                     .map(ElevatorBlockEntity.class::cast)
                     .ifPresent(elevator::sendTo);
+        }
+    }
+
+    /** Fluid travels like items: senders hand it to the next elevator above or below, receivers give it to the pipes around them. */
+    private void moveFluid(Level level, BlockPos pos) {
+        if (fluid.isEmpty() || --fluidCooldown > 0) {
+            return;
+        }
+        fluidCooldown = TRANSFER_INTERVAL;
+        if (mode() == ElevatorBlock.Mode.RECEIVE) {
+            for (Direction direction : Direction.values()) {
+                IFluidHandler neighbour = FluidHelper.neighbour(level, pos, direction);
+                if (neighbour != null && !(level.getBlockEntity(pos.relative(direction)) instanceof ElevatorBlockEntity)) {
+                    FluidHelper.push(fluid, neighbour, FLUID_PER_TRANSFER);
+                }
+            }
+        } else {
+            findPartner(level, pos, mode()).map(level::getBlockEntity).filter(ElevatorBlockEntity.class::isInstance)
+                    .map(ElevatorBlockEntity.class::cast).ifPresent(partner -> FluidHelper.push(fluid, partner.fluid, FLUID_PER_TRANSFER));
         }
     }
 
@@ -114,12 +153,52 @@ public final class ElevatorBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.put("buffer", buffer.serializeNBT(registries));
+        fluid.writeToNBT(registries, tag);
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         buffer.deserializeNBT(registries, tag.getCompound("buffer"));
+        fluid.readFromNBT(registries, tag);
+    }
+
+    /** Senders take any fluid from the pipes; nothing can be drained (receivers push it out themselves). */
+    private final class FluidInput implements IFluidHandler {
+        @Override
+        public int getTanks() {
+            return 1;
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            return fluid.getFluid();
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return FLUID_CAPACITY;
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            return mode() != ElevatorBlock.Mode.RECEIVE;
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            return mode() == ElevatorBlock.Mode.RECEIVE ? 0 : fluid.fill(resource, action);
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
     }
 
     /** Senders accept items; receivers only give them out through their front. */

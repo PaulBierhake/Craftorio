@@ -266,6 +266,62 @@ public final class FluidGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = LARGE, timeoutTicks = 1400)
+    public static void aCentrifugeReprocessesUsedFuelCells(GameTestHelper helper) {
+        FluidMachineBlockEntity centrifuge = machine(helper, new BlockPos(2, 1, 3), ModBlocks.CENTRIFUGE.get(), "centrifuge/nuclear_fuel_reprocessing");
+        centrifuge.items().insertItem(0, new ItemStack(ModItems.USED_UP_FUEL_CELL.get(), 5), false);
+        helper.onEachTick(() -> centrifuge.energy().setEnergy(20_000));
+        helper.assertTrue(centrifuge.fluids().fill(new FluidStack(Fluids.WATER, 100), IFluidHandler.FluidAction.SIMULATE) == 0, "no fluids in a centrifuge");
+
+        // 60 s at speed 1 = 1200 ticks
+        helper.runAtTickTime(1100, () -> helper.assertTrue(centrifuge.items().getStackInSlot(FluidMachineType.SECOND_OUTPUT_SLOT).isEmpty(), "not finished after 55 s"));
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(centrifuge.items().getStackInSlot(FluidMachineType.SECOND_OUTPUT_SLOT).getCount(), 3, "3 uranium-238");
+            helper.assertTrue(centrifuge.items().getStackInSlot(0).isEmpty(), "the cells are used up");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 1400)
+    public static void kovarexTurnsFortyUranium235IntoFortyOne(GameTestHelper helper) {
+        FluidMachineBlockEntity centrifuge = machine(helper, new BlockPos(2, 1, 3), ModBlocks.CENTRIFUGE.get(), "centrifuge/kovarex_enrichment");
+        centrifuge.items().insertItem(0, new ItemStack(ModItems.URANIUM_235.get(), 40), false);
+        centrifuge.items().insertItem(1, new ItemStack(ModItems.URANIUM_238.get(), 5), false);
+        helper.onEachTick(() -> centrifuge.energy().setEnergy(20_000));
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(centrifuge.items().getStackInSlot(FluidMachineType.OUTPUT_SLOT).getCount(), 41, "41 uranium-235");
+            helper.assertValueEqual(centrifuge.items().getStackInSlot(FluidMachineType.SECOND_OUTPUT_SLOT).getCount(), 2, "2 uranium-238");
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 500)
+    public static void aCentrifugeUsesUpTenOreForEveryRun(GameTestHelper helper) {
+        FluidMachineBlockEntity centrifuge = machine(helper, new BlockPos(2, 1, 3), ModBlocks.CENTRIFUGE.get(), "centrifuge/uranium_processing");
+        centrifuge.items().insertItem(0, new ItemStack(ModItems.RAW_URANIUM.get(), 25), false);
+        helper.onEachTick(() -> centrifuge.energy().setEnergy(20_000));
+
+        helper.succeedWhen(() -> helper.assertValueEqual(centrifuge.items().getStackInSlot(0).getCount(), 5, "two runs of 10 ore each in 24 s"));
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void uraniumProcessingGivesAboutSevenPerMilleUranium235(GameTestHelper helper) {
+        var recipe = FluidRecipes.byId(Craftorio.id("centrifuge/uranium_processing")).orElseThrow();
+        helper.assertValueEqual(recipe.ticks(), 240, "12 s");
+        var random = net.minecraft.util.RandomSource.create(42);
+        int runs = 200_000;
+        int u235 = 0;
+        int u238 = 0;
+        for (int i = 0; i < runs; i++) {
+            var made = recipe.rollOutputs(random);
+            u235 += made.get(0).getCount();
+            u238 += made.get(1).getCount();
+        }
+        double share = (double) u235 / runs;
+        helper.assertTrue(share > 0.005 && share < 0.009, "U-235 share " + share);
+        helper.assertTrue(Math.abs((double) u238 / runs - 0.993) < 0.003, "U-238 share " + (double) u238 / runs);
+        helper.succeed();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 200)
     public static void aPumpjackOnAnOilWellFillsTheRefinery(GameTestHelper helper) {
         helper.setBlock(new BlockPos(2, 1, 3), ModBlocks.OIL_WELL.get());

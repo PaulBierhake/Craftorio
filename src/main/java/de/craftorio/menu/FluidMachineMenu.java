@@ -22,7 +22,7 @@ public final class FluidMachineMenu extends MachineMenuBase {
     public static final int BUTTON_NEXT_RECIPE = 1;
     public static final int SLOT_Y = 53;
     /** Left edge of the input slots, the output slot, and the fluid bars (two inputs, one output). */
-    public static final int[] SLOT_X = {44, 62, 106};
+    public static final int[] SLOT_X = {44, 62, 106, 128};
     /** Two input bars, then three thinner output bars in front of the energy bar. */
     public static final int[] BAR_X = {8, 26, 126, 134, 142};
     public static final int[] BAR_WIDTHS = {14, 14, 7, 7, 7};
@@ -44,7 +44,9 @@ public final class FluidMachineMenu extends MachineMenuBase {
         for (int slot = 0; slot < FluidMachineType.INPUT_SLOTS; slot++) {
             addSlot(new SlotItemHandler(machine.items(), slot, SLOT_X[slot], SLOT_Y));
         }
-        addSlot(new SlotItemHandler(machine.items(), FluidMachineType.OUTPUT_SLOT, SLOT_X[2], SLOT_Y));
+        for (int slot = 0; slot < machine.type().outputSlots(); slot++) {
+            addSlot(new SlotItemHandler(machine.items(), FluidMachineType.OUTPUT_SLOT + slot, SLOT_X[2 + slot], SLOT_Y));
+        }
         addPlayerInventory(inventory);
         addDataSlots(data);
     }

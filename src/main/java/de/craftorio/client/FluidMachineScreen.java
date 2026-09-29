@@ -53,7 +53,7 @@ public final class FluidMachineScreen extends MachineScreenBase<FluidMachineMenu
 
     @Override
     protected int machineSlotCount() {
-        return FluidMachineType.INPUT_SLOTS + 1;
+        return FluidMachineType.INPUT_SLOTS + type.outputSlots();
     }
 
     private @Nullable FluidRecipes.Recipe selectedRecipe() {
@@ -89,7 +89,7 @@ public final class FluidMachineScreen extends MachineScreenBase<FluidMachineMenu
                 }
             }
         }
-        for (int tank = 0; tank < FluidMachineMenu.TANKS; tank++) {
+        for (int tank = 0; tank < FluidMachineMenu.TANKS && type.hasFluids(); tank++) {
             renderBar(graphics, tank, recipe);
         }
     }
@@ -113,7 +113,7 @@ public final class FluidMachineScreen extends MachineScreenBase<FluidMachineMenu
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         FluidRecipes.Recipe recipe = selectedRecipe();
-        for (int tank = 0; tank < FluidMachineMenu.TANKS; tank++) {
+        for (int tank = 0; tank < FluidMachineMenu.TANKS && type.hasFluids(); tank++) {
             if (!isHovering(FluidMachineMenu.BAR_X[tank], FluidMachineMenu.BAR_Y, FluidMachineMenu.BAR_WIDTHS[tank], FluidMachineMenu.BAR_HEIGHT, mouseX, mouseY)) {
                 continue;
             }

@@ -28,6 +28,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import de.craftorio.registry.ModFluids;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -115,7 +118,7 @@ public final class AutomationGameTests {
     public static void electricDrillRunsOnGridPower(GameTestHelper helper) {
         for (int x = 1; x <= 3; x++) {
             for (int z = 1; z <= 3; z++) {
-                helper.setBlock(new BlockPos(x, 1, z), ModBlocks.URANIUM_ORE_FIELD.get());
+                helper.setBlock(new BlockPos(x, 1, z), ModBlocks.IRON_ORE_FIELD.get());
             }
         }
         BlockPos drill = new BlockPos(2, 2, 2);
@@ -127,17 +130,67 @@ public final class AutomationGameTests {
         SteamPower.place(helper, new BlockPos(0, 2, 4), Direction.WEST, 8);
         helper.setBlock(new BlockPos(1, 2, 3), ModBlocks.POWER_POLE.get());
 
-        helper.succeedWhen(() -> helper.assertTrue(count(helper, chest, ModItems.RAW_URANIUM.get()) >= 3,
+        helper.succeedWhen(() -> helper.assertTrue(count(helper, chest, Items.RAW_IRON) >= 3,
                 "electric drill output did not reach the chest"));
     }
 
+    /** A 3×3 uranium field with an electric drill at (2,2,2) facing east, a chest in front and grid power. */
+    private static BlockPos uraniumDrill(GameTestHelper helper, net.minecraft.world.level.block.Block drillBlock) {
+        for (int x = 1; x <= 3; x++) {
+            for (int z = 1; z <= 3; z++) {
+                helper.setBlock(new BlockPos(x, 1, z), ModBlocks.URANIUM_ORE_FIELD.get());
+            }
+        }
+        BlockPos drill = new BlockPos(2, 2, 2);
+        helper.setBlock(drill, drillBlock.defaultBlockState().setValue(DrillBlock.FACING, Direction.EAST));
+        helper.setBlock(drill.east(), Blocks.CHEST);
+        if (!((DrillBlock) drillBlock).tier().usesFuel()) {
+            DrillBlockEntity entity = helper.getBlockEntity(drill);
+            helper.onEachTick(() -> entity.energy().setEnergy(entity.energy().getMaxEnergyStored()));
+        }
+        return drill;
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void uraniumIsNotMinedWithoutAcid(GameTestHelper helper) {
+        BlockPos drill = uraniumDrill(helper, ModBlocks.ELECTRIC_DRILL.get());
+        helper.runAtTickTime(150, () -> {
+            helper.assertValueEqual(count(helper, drill.east(), ModItems.RAW_URANIUM.get()), 0, "uranium ore without sulfuric acid");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 700)
+    public static void uraniumIsMinedWithAcidAtHalfSpeedAndUsesUpAcid(GameTestHelper helper) {
+        BlockPos drill = uraniumDrill(helper, ModBlocks.ELECTRIC_DRILL.get());
+        DrillBlockEntity entity = helper.getBlockEntity(drill);
+        helper.assertTrue(entity.fluidHandler().fill(new FluidStack(ModFluids.LUBRICANT.get(), 10), IFluidHandler.FluidAction.SIMULATE) == 0, "only acid goes in");
+        entity.fluidHandler().fill(new FluidStack(ModFluids.SULFURIC_ACID.get(), 100), IFluidHandler.FluidAction.EXECUTE);
+        // A 3x3 field gives 9 x 0.06 = 0.54 items/s for iron; uranium runs at half of that, 0.27/s: 30 s ≈ 8 items.
+        helper.runAtTickTime(600, () -> {
+            int mined = count(helper, drill.east(), ModItems.RAW_URANIUM.get());
+            helper.assertTrue(mined >= 7 && mined <= 9, "mined " + mined + " uranium ore in 30 s, expected about 8");
+            helper.assertValueEqual(entity.acid().getFluidAmount(), 100 - mined, "one acid per ore");
+            helper.succeed();
+        });
+    }
+
     @GameTest(template = EMPTY, timeoutTicks = 100)
-    public static void reactorBurnsFuelRodsOnly(GameTestHelper helper) {
+    public static void theBurnerDrillHasNoFluidInput(GameTestHelper helper) {
+        BlockPos drill = new BlockPos(2, 2, 2);
+        helper.setBlock(drill, ModBlocks.BURNER_DRILL.get());
+        DrillBlockEntity entity = helper.getBlockEntity(drill);
+        helper.assertTrue(entity.fluidHandler() == null, "the burner drill takes no fluids");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 100)
+    public static void reactorBurnsFuelCellsOnly(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.REACTOR.get());
         IItemHandler fuel = handler(helper, pos, Direction.UP);
         helper.assertTrue(fuel.insertItem(0, new ItemStack(Items.COAL), false).getCount() == 1, "reactor rejects coal");
-        fuel.insertItem(0, new ItemStack(ModItems.FUEL_ROD.get()), false);
+        fuel.insertItem(0, new ItemStack(ModItems.URANIUM_FUEL_CELL.get()), false);
         GeneratorBlockEntity reactor = helper.getBlockEntity(pos);
 
         helper.runAtTickTime(50, () -> {

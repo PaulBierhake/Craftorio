@@ -3,7 +3,10 @@ package de.craftorio.machine;
 import de.craftorio.CraftorioConfig;
 import de.craftorio.energy.EnergyBuffer;
 import de.craftorio.energy.Fuel;
+import de.craftorio.fluid.FluidBuffer;
 import de.craftorio.registry.ModBlockEntities;
+import de.craftorio.registry.ModFluids;
+import de.craftorio.registry.ModItems;
 import de.craftorio.world.OreFieldBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import de.craftorio.menu.DrillMenu;
@@ -37,11 +42,19 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
     public static final int FUEL_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
     private static final int RESCAN_INTERVAL = 40;
+    public static final int ACID_CAPACITY = 1_000;
+    /** Wiki 1.1: 10 sulfuric acid per 10 uranium ore, and uranium ore is mined at half the rate of other ores. */
+    public static final int ACID_PER_ORE = 1;
+    public static final int URANIUM_SLOWDOWN = 2;
 
     private final DrillTier tier;
     private final DrillProduction production;
     private final EnergyBuffer energy;
     private final IItemHandler handler = new Handler();
+    /** Sulfuric acid for uranium ore (electric and deep drills only; the burner drill has no fluid input). */
+    private final FluidBuffer acid = new FluidBuffer(ACID_CAPACITY, FluidBuffer.only(ModFluids.SULFURIC_ACID.get()), this::setChanged);
+    private final IFluidHandler acidInput = new AcidInput();
+    private boolean uraniumBelow;
     private final IItemHandlerModifiable menuSlots = new MenuSlots();
     private ItemStack fuel = ItemStack.EMPTY;
     private ItemStack output = ItemStack.EMPTY;
@@ -56,11 +69,13 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
                 case 1 -> burnDuration;
                 case 2 -> fieldBlocks.size();
                 case 3 -> tier.area();
-                case 4 -> (int) Math.round(production.itemsPerSecond(fieldBlocks.size()) * 100);
+                case 4 -> (int) Math.round(production.itemsPerSecond(fieldBlocks.size()) * 100 / (uraniumBelow ? URANIUM_SLOWDOWN : 1));
                 case 5 -> SplitIntData.low(energy.getEnergyStored());
                 case 6 -> SplitIntData.high(energy.getEnergyStored());
                 case 7 -> SplitIntData.low(tier.usesFuel() ? 0 : energy.getMaxEnergyStored());
                 case 8 -> SplitIntData.high(tier.usesFuel() ? 0 : energy.getMaxEnergyStored());
+                case 9 -> acid.getFluidAmount();
+                case 10 -> uraniumBelow ? 1 : 0;
                 default -> 0;
             };
         }
@@ -94,6 +109,19 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
         return tier.usesFuel() ? null : energy;
     }
 
+    public FluidBuffer acid() {
+        return acid;
+    }
+
+    /** Fluid input for the pipes; the burner drill has none. */
+    public @Nullable IFluidHandler fluidHandler() {
+        return tier.usesFuel() ? null : acidInput;
+    }
+
+    private static boolean needsAcid(ItemStack resource) {
+        return resource.is(ModItems.RAW_URANIUM.get());
+    }
+
     public static boolean isFuel(ItemStack stack) {
         return Fuel.isFuel(stack);
     }
@@ -110,16 +138,25 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
         if (--rescanIn <= 0) {
             rescanIn = RESCAN_INTERVAL;
             fieldBlocks = scanFieldBlocks(level, pos, tier.radius());
+            uraniumBelow = fieldBlocks.stream().anyMatch(field -> needsAcid(resourceAt(level, field)));
         }
         pushOutput(level, pos, state.getValue(DrillBlock.FACING));
 
         boolean working = false;
         ItemStack next = nextResource(level);
-        if (!next.isEmpty() && hasRoomFor(next) && powered()) {
+        boolean acidOre = needsAcid(next);
+        if (!next.isEmpty() && hasRoomFor(next) && (!acidOre || acid.getFluidAmount() >= ACID_PER_ORE) && powered()) {
             working = true;
-            int finished = production.tick(fieldBlocks.size());
+            int finished = production.tick(fieldBlocks.size(), acidOre ? URANIUM_SLOWDOWN : 1);
             for (int i = 0; i < finished && hasRoomFor(nextResource(level)); i++) {
-                addOutput(nextResource(level));
+                ItemStack mined = nextResource(level);
+                if (needsAcid(mined)) {
+                    if (acid.getFluidAmount() < ACID_PER_ORE) {
+                        break;
+                    }
+                    acid.use(ACID_PER_ORE);
+                }
+                addOutput(mined);
                 nextField++;
             }
             setChanged();
@@ -157,7 +194,10 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
         if (fieldBlocks.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        BlockPos fieldPos = fieldBlocks.get(Math.floorMod(nextField, fieldBlocks.size()));
+        return resourceAt(level, fieldBlocks.get(Math.floorMod(nextField, fieldBlocks.size())));
+    }
+
+    private static ItemStack resourceAt(Level level, BlockPos fieldPos) {
         return level.getBlockState(fieldPos).getBlock() instanceof OreFieldBlock field ? field.resource() : ItemStack.EMPTY;
     }
 
@@ -206,7 +246,7 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
 
     public Component status() {
         int blocks = fieldBlocks.size();
-        String rate = String.format(Locale.ROOT, "%.2f", production.itemsPerSecond(blocks));
+        String rate = String.format(Locale.ROOT, "%.2f", production.itemsPerSecond(blocks) / (uraniumBelow ? URANIUM_SLOWDOWN : 1));
         if (!tier.usesFuel()) {
             return Component.translatable("craftorio.drill.status_electric", blocks, tier.area(), rate,
                     energy.getEnergyStored(), tier.energyPerTick());
@@ -249,6 +289,7 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
         tag.putDouble("progress", production.progress());
         tag.putInt("next_field", nextField);
         tag.putInt("energy", energy.getEnergyStored());
+        acid.writeToNBT(registries, tag);
     }
 
     @Override
@@ -261,6 +302,45 @@ public final class DrillBlockEntity extends BlockEntity implements MenuProvider 
         production.setProgress(tag.getDouble("progress"));
         nextField = tag.getInt("next_field");
         energy.setEnergy(tag.getInt("energy"));
+        acid.readFromNBT(registries, tag);
+    }
+
+    /** Takes sulfuric acid, nothing else, and gives nothing back. */
+    private final class AcidInput implements IFluidHandler {
+        @Override
+        public int getTanks() {
+            return 1;
+        }
+
+        @Override
+        public FluidStack getFluidInTank(int tank) {
+            return acid.getFluid();
+        }
+
+        @Override
+        public int getTankCapacity(int tank) {
+            return ACID_CAPACITY;
+        }
+
+        @Override
+        public boolean isFluidValid(int tank, FluidStack stack) {
+            return acid.isFluidValid(stack);
+        }
+
+        @Override
+        public int fill(FluidStack resource, FluidAction action) {
+            return acid.fill(resource, action);
+        }
+
+        @Override
+        public FluidStack drain(FluidStack resource, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
+
+        @Override
+        public FluidStack drain(int maxDrain, FluidAction action) {
+            return FluidStack.EMPTY;
+        }
     }
 
     /** Slot 0 accepts fuel only; slot 1 holds mined output and can only be extracted. */

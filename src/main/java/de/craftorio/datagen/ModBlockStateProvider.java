@@ -151,6 +151,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.CHEMICAL_PLANT.get(), "chemical_plant");
         machine(ModBlocks.OIL_REFINERY.get(), "oil_refinery");
         machine(ModBlocks.GREENHOUSE.get(), "greenhouse");
+        machine(ModBlocks.CENTRIFUGE.get(), "centrifuge");
         simpleBlockWithItem(ModBlocks.ACCUMULATOR.get(), models().cubeBottomTop("accumulator", modLoc("block/accumulator_side"),
                 modLoc("block/accumulator_top"), modLoc("block/accumulator_top")));
         wallBlock(ModBlocks.STONE_WALL.get(), modLoc("block/stone_wall"));

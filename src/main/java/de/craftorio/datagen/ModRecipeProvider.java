@@ -116,9 +116,11 @@ public final class ModRecipeProvider extends RecipeProvider {
         assemble(output, "accumulator", new ItemStack(ModItems.ACCUMULATOR.get()), 200,
                 SizedIngredient.of(Items.IRON_INGOT, 2), SizedIngredient.of(ModItems.BATTERY.get(), 5));
         // Mine products
-        assemble(output, "uranium_pellet", new ItemStack(ModItems.URANIUM_PELLET.get()), 40, SizedIngredient.of(ModItems.RAW_URANIUM.get(), 1));
-        assemble(output, "fuel_rod", new ItemStack(ModItems.FUEL_ROD.get()), 100,
-                SizedIngredient.of(ModItems.URANIUM_PELLET.get(), 3), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2));
+        // Wiki 1.1: fuel cells 10 s (10 cells), uranium rounds magazine 10 s
+        assemble(output, "uranium_fuel_cell", new ItemStack(ModItems.URANIUM_FUEL_CELL.get(), 10), 200,
+                SizedIngredient.of(Items.IRON_INGOT, 10), SizedIngredient.of(ModItems.URANIUM_235.get(), 1), SizedIngredient.of(ModItems.URANIUM_238.get(), 19));
+        assemble(output, "uranium_magazine", new ItemStack(ModItems.URANIUM_MAGAZINE.get()), 200,
+                SizedIngredient.of(ModItems.AP_MAGAZINE.get(), 1), SizedIngredient.of(ModItems.URANIUM_238.get(), 1));
         // Ammunition for automated tower supply
         assemble(output, "bolt", new ItemStack(ModItems.BOLT.get(), 16), 20,
                 SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.STICK, 2));

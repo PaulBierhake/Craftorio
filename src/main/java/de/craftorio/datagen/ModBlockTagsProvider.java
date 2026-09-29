@@ -37,7 +37,7 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.STEEL_FURNACE.get(), ModBlocks.ASSEMBLER_2.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.PIPE.get(), ModBlocks.UNDERGROUND_PIPE.get(),
                 ModBlocks.STORAGE_TANK.get(), ModBlocks.FLUID_PUMP.get());
-        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.CONCRETE.get(), ModBlocks.GREENHOUSE.get(), ModBlocks.PUMPJACK.get(), ModBlocks.CHEMICAL_PLANT.get(), ModBlocks.OIL_REFINERY.get(),
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.CONCRETE.get(), ModBlocks.GREENHOUSE.get(), ModBlocks.CENTRIFUGE.get(), ModBlocks.PUMPJACK.get(), ModBlocks.CHEMICAL_PLANT.get(), ModBlocks.OIL_REFINERY.get(),
                 ModBlocks.ACCUMULATOR.get());
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.OIL_WELL.get());
         tag(BlockTags.WALLS).add(ModBlocks.STONE_WALL.get());

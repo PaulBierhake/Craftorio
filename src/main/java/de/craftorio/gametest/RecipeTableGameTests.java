@@ -93,6 +93,7 @@ public final class RecipeTableGameTests {
             new Object[]{"rail", 2, List.of(of(Items.COBBLESTONE, 1), of(ModItems.IRON_STICK.get(), 1), of(ModItems.STEEL_PLATE.get(), 1))},
             new Object[]{"flying_robot_frame", 1, List.of(of(ModItems.ELECTRIC_ENGINE.get(), 1), of(ModItems.BATTERY.get(), 2), of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.CIRCUIT.get(), 3))},
             new Object[]{"low_density_structure", 1, List.of(of(ModItems.STEEL_PLATE.get(), 2), of(Items.COPPER_INGOT, 20), of(ModItems.PLASTIC_BAR.get(), 5))},
+            new Object[]{"centrifuge", 1, List.of(of(ModItems.CONCRETE.get(), 100), of(ModItems.STEEL_PLATE.get(), 50), of(ModItems.ADVANCED_CIRCUIT.get(), 100), of(ModItems.IRON_GEAR.get(), 100))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );
 
@@ -114,6 +115,8 @@ public final class RecipeTableGameTests {
             new Object[]{"assembling", "rail", 2, 10, List.of(of(Items.COBBLESTONE, 1), of(ModItems.IRON_STICK.get(), 1), of(ModItems.STEEL_PLATE.get(), 1))},
             new Object[]{"assembling", "flying_robot_frame", 1, 400, List.of(of(ModItems.ELECTRIC_ENGINE.get(), 1), of(ModItems.BATTERY.get(), 2), of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.CIRCUIT.get(), 3))},
             new Object[]{"assembling", "low_density_structure", 1, 400, List.of(of(ModItems.STEEL_PLATE.get(), 2), of(Items.COPPER_INGOT, 20), of(ModItems.PLASTIC_BAR.get(), 5))},
+            new Object[]{"assembling", "uranium_fuel_cell", 10, 200, List.of(of(Items.IRON_INGOT, 10), of(ModItems.URANIUM_235.get(), 1), of(ModItems.URANIUM_238.get(), 19))},
+            new Object[]{"assembling", "uranium_magazine", 1, 200, List.of(of(ModItems.AP_MAGAZINE.get(), 1), of(ModItems.URANIUM_238.get(), 1))},
             new Object[]{"smelting", "steel_plate", 1, 320, List.of(of(Items.IRON_INGOT, 5))},
             new Object[]{"smelting", "stone_brick", 1, 64, List.of(of(Items.COBBLESTONE, 2))}
     );
@@ -253,6 +256,52 @@ public final class RecipeTableGameTests {
         helper.succeed();
     }
 
+    /** Centrifuge recipes of Factorio 1.1: id, ticks, ingredients, products as item × count × chance × output slot. */
+    @GameTest(template = "empty")
+    public static void centrifugeRecipesMatchTheFactorioTable(GameTestHelper helper) {
+        record Out(net.minecraft.world.item.Item item, int count, double chance, int slot) {
+        }
+        record Row(String id, int ticks, List<Ingredient> in, List<Out> out) {
+        }
+        List<Row> table = List.of(
+                new Row("centrifuge/uranium_processing", 240, List.of(of(ModItems.RAW_URANIUM.get(), 10)),
+                        List.of(new Out(ModItems.URANIUM_235.get(), 1, 0.007, 0), new Out(ModItems.URANIUM_238.get(), 1, 0.993, 1))),
+                new Row("centrifuge/nuclear_fuel_reprocessing", 1_200, List.of(of(ModItems.USED_UP_FUEL_CELL.get(), 5)),
+                        List.of(new Out(ModItems.URANIUM_238.get(), 3, 1, 1))),
+                new Row("centrifuge/kovarex_enrichment", 1_200, List.of(of(ModItems.URANIUM_235.get(), 40), of(ModItems.URANIUM_238.get(), 5)),
+                        List.of(new Out(ModItems.URANIUM_235.get(), 41, 1, 0), new Out(ModItems.URANIUM_238.get(), 2, 1, 1))));
+        List<String> problems = new ArrayList<>();
+        for (Row row : table) {
+            var recipe = de.craftorio.fluid.FluidRecipes.byId(Craftorio.id(row.id())).orElse(null);
+            if (recipe == null) {
+                problems.add(row.id() + " is missing");
+                continue;
+            }
+            if (recipe.machine() != de.craftorio.fluid.FluidMachineType.CENTRIFUGE || recipe.ticks() != row.ticks()) {
+                problems.add(row.id() + " runs " + recipe.ticks() + " ticks in " + recipe.machine());
+            }
+            boolean sameIn = recipe.itemsIn().size() == row.in().size();
+            for (int i = 0; sameIn && i < row.in().size(); i++) {
+                sameIn = recipe.itemsIn().get(i).is(row.in().get(i).item()) && recipe.itemsIn().get(i).getCount() == row.in().get(i).count();
+            }
+            boolean sameOut = recipe.itemsOut().size() == row.out().size();
+            for (int i = 0; sameOut && i < row.out().size(); i++) {
+                var found = recipe.itemsOut().get(i);
+                var wanted = row.out().get(i);
+                sameOut = found.stack().is(wanted.item()) && found.stack().getCount() == wanted.count()
+                        && found.chance() == wanted.chance() && found.slot() == wanted.slot();
+            }
+            if (!sameIn || !sameOut) {
+                problems.add(row.id() + " has other ingredients or products than the table");
+            }
+        }
+        helper.assertValueEqual(de.craftorio.machine.DrillBlockEntity.ACID_PER_ORE, 1, "10 acid per 10 uranium ore");
+        helper.assertValueEqual(de.craftorio.machine.DrillBlockEntity.URANIUM_SLOWDOWN, 2, "uranium ore is mined at half speed");
+        helper.assertValueEqual(de.craftorio.fluid.FluidMachineType.CENTRIFUGE.power(), 350, "centrifuge 350 kW");
+        helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
+        helper.succeed();
+    }
+
     private static boolean sameStacks(List<net.minecraft.world.item.ItemStack> a, List<net.minecraft.world.item.ItemStack> b) {
         if (a.size() != b.size()) {
             return false;
@@ -292,7 +341,9 @@ public final class RecipeTableGameTests {
                 new Object[]{"electric_engine", 50L, 30, rgb},
                 new Object[]{"robotics", 75L, 30, rgb},
                 new Object[]{"advanced_electronics_2", 300L, 30, rgb},
-                new Object[]{"low_density_structure", 300L, 45, rgb});
+                new Object[]{"low_density_structure", 300L, 45, rgb},
+                new Object[]{"uranium_processing", 200L, 30, rgb},
+                new Object[]{"nuclear_power", 800L, 30, rgb});
         List<String> problems = new ArrayList<>();
         for (Object[] row : table) {
             var research = registry.get(Craftorio.id((String) row[0]));

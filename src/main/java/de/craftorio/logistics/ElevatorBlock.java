@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
  * blocks, up to {@link ElevatorBlockEntity#MAX_DISTANCE}). Receivers push arriving items out of their front.
  * Right-click cycles the mode.
  */
-public final class ElevatorBlock extends BaseEntityBlock {
+public final class ElevatorBlock extends BaseEntityBlock implements de.craftorio.fluid.FluidConnector {
     public static final MapCodec<ElevatorBlock> CODEC = simpleCodec(ElevatorBlock::new);
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<Mode> MODE = EnumProperty.create("mode", Mode.class);
@@ -56,6 +56,12 @@ public final class ElevatorBlock extends BaseEntityBlock {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
+    }
+
+    /** Pipes connect on every side: fluids ride the elevator like items. */
+    @Override
+    public boolean connectsFluid(BlockState state, Direction face) {
+        return true;
     }
 
     @Override

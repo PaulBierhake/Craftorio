@@ -271,7 +271,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen) und **U11a** (Öl-Nachtrag).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense), **U9** (Leitfaden und Balancing) **U10** (Pflanzen), **U11a** (Öl-Nachtrag) und **U11b** (Uran).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -347,6 +347,10 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   die Chemiefabrik crackt Schwer- und Leichtöl, macht Schmiermittel und festen Brennstoff. Die Montagemaschine 2 hat einen Flüssigkeitseingang
   für Beton, Prozessor, Elektromotor und Express-Band (Schmiermittel). Neu: Schiene, Flugroboterrahmen, Leichtbaustruktur; Forschung
   „Fortgeschrittene Materialverarbeitung 2" ersetzt „Elektrisches Schmelzen".
+- **Uran (U11b)**: Uranerz aus den Minen braucht *Schwefelsäure* im Elektro- oder Tiefenbohrer (1 je Erz, halbe Abbaurate; der Aufzug
+  befördert jetzt auch Flüssigkeiten, damit die Säure hinunterkommt). Die *Zentrifuge* (Forschung Uranverarbeitung) trennt 10 Erz in 12 s
+  in U-235 (0,7 %) und U-238; daraus werden Uran-Brennstoffzellen (Montagemaschine) und Uran-Magazine. Kovarex-Anreicherung und
+  Wiederaufbereitung verbrauchter Zellen sind eigene Zentrifugenrezepte mit eigener Forschung.
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

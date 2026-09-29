@@ -76,8 +76,10 @@ public final class ModSellPriceProvider extends DataMapProvider {
 
         // Mine layer (diamonds are priced with the raw resources above)
         price(prices, ModItems.RAW_URANIUM.get(), 50);
-        price(prices, ModItems.URANIUM_PELLET.get(), 75);
-        price(prices, ModItems.FUEL_ROD.get(), 600);
+        price(prices, ModItems.URANIUM_238.get(), 600);
+        price(prices, ModItems.URANIUM_235.get(), 6_000);
+        price(prices, ModItems.URANIUM_FUEL_CELL.get(), 2_000);
+        price(prices, ModItems.USED_UP_FUEL_CELL.get(), 500);
 
         // Storage blocks: a small bonus over their contents
         price(prices, Items.COAL_BLOCK, 100);

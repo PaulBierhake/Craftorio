@@ -102,6 +102,9 @@ public final class ModBlueprints {
         add(context, "chemical_plant", stack(ModItems.CHEMICAL_PLANT.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.IRON_GEAR.get(), 5),
                 SizedIngredient.of(ModItems.CIRCUIT.get(), 5), SizedIngredient.of(ModItems.PIPE.get(), 5));
+        add(context, "centrifuge", stack(ModItems.CENTRIFUGE.get(), 1),
+                SizedIngredient.of(ModItems.CONCRETE.get(), 100), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 50),
+                SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 100), SizedIngredient.of(ModItems.IRON_GEAR.get(), 100));
         add(context, "greenhouse", stack(ModItems.GREENHOUSE.get(), 1),
                 iron(15), SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.CIRCUIT.get(), 3),
                 SizedIngredient.of(ModItems.PIPE.get(), 5));

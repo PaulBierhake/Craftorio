@@ -45,8 +45,11 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.BLUE_SCIENCE.get());
         basicItem(ModItems.ADVANCED_CIRCUIT.get());
         basicItem(ModItems.RAW_URANIUM.get());
-        basicItem(ModItems.URANIUM_PELLET.get());
-        basicItem(ModItems.FUEL_ROD.get());
+        basicItem(ModItems.URANIUM_235.get());
+        basicItem(ModItems.URANIUM_238.get());
+        basicItem(ModItems.URANIUM_FUEL_CELL.get());
+        basicItem(ModItems.USED_UP_FUEL_CELL.get());
+        basicItem(ModItems.URANIUM_MAGAZINE.get());
         handheldItem(ModItems.PATH_WAND.get());
         handheldItem(ModItems.STARTER_PICKAXE.get());
         basicItem(ModItems.GUIDE_BOOK.get());

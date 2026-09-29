@@ -17,10 +17,15 @@ public final class DrillProduction {
 
     /** Advances one working tick; returns how many items finished. */
     public int tick(int fieldBlocks) {
+        return tick(fieldBlocks, 1);
+    }
+
+    /** Like {@link #tick(int)} at {@code 1 / slowdown} of the rate: uranium ore is mined at half speed. */
+    public int tick(int fieldBlocks, int slowdown) {
         if (fieldBlocks <= 0) {
             return 0;
         }
-        progress += fieldBlocks * perBlockPerTick;
+        progress += fieldBlocks * perBlockPerTick / slowdown;
         int finished = (int) (progress / ONE_ITEM);
         progress -= finished * ONE_ITEM;
         return finished;

@@ -33,7 +33,7 @@ public final class FluidMachineBlock extends MachineBaseBlock implements FluidCo
 
     @Override
     public boolean connectsFluid(BlockState state, Direction face) {
-        return true;
+        return type.hasFluids();
     }
 
     @Override

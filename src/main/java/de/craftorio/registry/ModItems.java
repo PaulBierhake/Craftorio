@@ -49,6 +49,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> PUMPJACK = ITEMS.registerSimpleBlockItem("pumpjack", ModBlocks.PUMPJACK);
     public static final DeferredItem<BlockItem> CHEMICAL_PLANT = ITEMS.registerSimpleBlockItem("chemical_plant", ModBlocks.CHEMICAL_PLANT);
     public static final DeferredItem<BlockItem> OIL_REFINERY = ITEMS.registerSimpleBlockItem("oil_refinery", ModBlocks.OIL_REFINERY);
+    public static final DeferredItem<BlockItem> CENTRIFUGE = ITEMS.registerSimpleBlockItem("centrifuge", ModBlocks.CENTRIFUGE);
     public static final DeferredItem<BlockItem> GREENHOUSE = ITEMS.registerSimpleBlockItem("greenhouse", ModBlocks.GREENHOUSE);
     public static final DeferredItem<Item> BIO_FUEL = ITEMS.registerItem("bio_fuel", BioFuelItem::new, new Item.Properties());
     public static final DeferredItem<BlockItem> ACCUMULATOR = ITEMS.registerSimpleBlockItem("accumulator", ModBlocks.ACCUMULATOR);
@@ -113,8 +114,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> MINE_SHAFT = ITEMS.registerSimpleBlockItem("mine_shaft", ModBlocks.MINE_SHAFT);
     public static final DeferredItem<BlockItem> URANIUM_ORE_FIELD = ITEMS.registerSimpleBlockItem("uranium_ore_field", ModBlocks.URANIUM_ORE_FIELD);
     public static final DeferredItem<Item> RAW_URANIUM = ITEMS.registerSimpleItem("raw_uranium");
-    public static final DeferredItem<Item> URANIUM_PELLET = ITEMS.registerSimpleItem("uranium_pellet");
-    public static final DeferredItem<Item> FUEL_ROD = ITEMS.registerSimpleItem("fuel_rod");
+    public static final DeferredItem<Item> URANIUM_235 = ITEMS.registerSimpleItem("uranium_235");
+    public static final DeferredItem<Item> URANIUM_238 = ITEMS.registerSimpleItem("uranium_238");
+    public static final DeferredItem<Item> URANIUM_FUEL_CELL = ITEMS.registerSimpleItem("uranium_fuel_cell", new Item.Properties().stacksTo(50));
+    public static final DeferredItem<Item> USED_UP_FUEL_CELL = ITEMS.registerSimpleItem("used_up_fuel_cell", new Item.Properties().stacksTo(50));
+    public static final DeferredItem<Item> URANIUM_MAGAZINE = ITEMS.registerSimpleItem("uranium_magazine");
     public static final DeferredItem<Item> SULFUR = ITEMS.registerSimpleItem("sulfur");
     public static final DeferredItem<Item> BATTERY = ITEMS.registerSimpleItem("battery");
     public static final DeferredItem<Item> ADVANCED_CIRCUIT = ITEMS.registerSimpleItem("advanced_circuit");

@@ -666,12 +666,28 @@ Schiene (2 aus 1 Stein, 1 Stab, 1 Stahl), Flugroboterrahmen (20 s) und Leichtbau
 Vorläufig (bis U11c/U11e): Express-Bänder und Kernkraft haben noch die Übergangsvoraussetzungen in `ModResearch`.
 Tests: `RecipeTableGameTests` (Blueprints, Maschinen-, Fluid-Assembler-, Öl-/Chemie- und Forschungstabelle), `FluidGameTests`.
 
+**Umgesetzt (U11b), gegen das Factorio-1.1-Wiki geprüft.** Uranabbau: 10 Säure je 10 Erz (= 1 je Erz), Abbau mit der halben Rate (0,27/s
+im 3×3-Feld des Elektrobohrers, im Tiefenbohrer entsprechend); Bohrer mit Schwefelsäure-Tank (1.000) und Rohranschluss auf allen Seiten außer vorn,
+der Brennerbohrer hat keinen. Zentrifuge (350 kW, Geschw. 1, Bauplan 100 Beton + 50 Stahl + 100 fortschrittliche Schaltkreise + 100 Zahnräder):
+Einzelblock aus der Familie der Chemiefabrik mit zwei Ausgangsslots und Rezepten `centrifuge/uranium_processing` (12 s, 10 Erz → 0,7 % U-235 /
+99,3 % U-238, jedes Produkt einzeln gewürfelt wie in Factorio), `centrifuge/nuclear_fuel_reprocessing` (60 s, 5 verbrauchte Zellen → 3 U-238) und
+`centrifuge/kovarex_enrichment` (60 s, 40 U-235 + 5 U-238 → 41 U-235 + 2 U-238). Brennstoffzelle: 10 s, 10 Eisen + 1 U-235 + 19 U-238 → 10 Zellen;
+Uran-Magazin: 10 s, 1 panzerbrechendes Magazin + 1 U-238. Forschung (1.1): Uranverarbeitung 200 × RGB (Voraussetzungen wie im Wiki Chemie-Paket
+und Beton, zusätzlich Minenschacht), Kernkraft 800 × RGB, Kovarex 1500 × RGBP (Wiki: zusätzlich Raketentreibstoff, hier entfällt er),
+Wiederaufbereitung 50 × RGBP, Uran-Munition 1000 × RGB+M+U, 45 s (Wiki: ohne Produktion). **Vorläufig** bis U11e: Kovarex, Wiederaufbereitung und
+Uran-Munition kosten noch ohne Lila/Gelb (Uran-Munition mit Blau statt Gelb). Das Uran-Magazin ist noch keine Turmmunition (U11f). Der alte
+Reaktor verbrennt jetzt die Uran-Brennstoffzelle (200 s) bis zum Kernkraft-Umbau (U11c). Der **Aufzug** transportiert jetzt auch Flüssigkeiten
+(1.000 Einheiten/s, Rohre schließen an allen Seiten an; Sender nehmen aus Rohren, Empfänger geben in Rohre) und bringt so die Säure in die Minen.
+Abweichung von §11.10: NeoForge 21.1 hat kein `MissingMappingsEvent`, `fuel_rod` und `uranium_pellet` werden daher nicht in alten Welten umgeschrieben
+(sie verschwinden). Tests: Rezepttabellen-Test (Zentrifuge, Zellen, Magazin, Forschung), GameTests für Bohrer mit/ohne Säure, Zentrifuge, Kovarex,
+Aufzug mit Flüssigkeit und Statistik über 200.000 Läufe.
+
 ### 11.11 Pakete (Reihenfolge, je ein Commit)
 
 | Paket | Inhalt | Akzeptanz |
 |---|---|---|
 | **U11a – Bereinigung und Öl-Nachtrag** ✅ | Forschungskorrekturen (§11.6 oben), mehrere Flüssigkeitsausgänge, fortgeschrittene Ölverarbeitung, Cracking, Schmiermittel, fester Brennstoff, Express-Band mit Schmiermittel, Beton (Item + Block), Schiene, Prozessor, Elektromotor, Flugrahmen, Leichtbaustruktur, Montagemaschine 2 mit Flüssigkeitseingang für Beton/Prozessor | Rezepttabellen-Test um §11.3 erweitert und grün; Progressionstest grün; GameTest: Raffinerie liefert drei Fluide, Cracking wandelt um |
-| **U11b – Uran** | Bohrer mit Flüssigkeitseingang, Uranabbau mit Säure, Säure in die Minen (§11.8), Zentrifuge (Block, Menü), Uranverarbeitung mit Wahrscheinlichkeit, U-235/U-238, Brennstoffzelle, Uran-Magazin, Forschung Uranverarbeitung | GameTests: Bohrer ohne Säure fördert nichts, mit Säure schon; Zentrifuge 10.000 Läufe ≈ 0,7 % U-235 |
+| **U11b – Uran** ✅ | Bohrer mit Flüssigkeitseingang, Uranabbau mit Säure, Säure in die Minen (§11.8), Zentrifuge (Block, Menü), Uranverarbeitung mit Wahrscheinlichkeit, U-235/U-238, Brennstoffzelle, Uran-Magazin, Forschung Uranverarbeitung | GameTests: Bohrer ohne Säure fördert nichts, mit Säure schon; Zentrifuge 10.000 Läufe ≈ 0,7 % U-235 |
 | **U11c – Kernkraft** | Wärmenetz (`HeatLogic` + Unit-Tests), Kernreaktor mit Steuerung und Nachbarbonus, Wärmerohr, Wärmetauscher, Hochdruckdampf, Dampfturbine, Wiederaufbereitung, alter Reaktor migriert | GameTest: 1 Reaktor + 4 Tauscher + 7 Turbinen versorgen 40 MW Last stabil; Nachbarbonus verdoppelt die Wärme; Zelle hält 200 s |
 | **U11d – Module, Montagemaschine 3, Beacon** | `ModuleEffects` + Unit-Tests, Slots in allen Maschinen aus §11.4, Produktivitäts-Tag, Montagemaschine 3, Beacon mit Index, Module 1–3 (Stufe 3 erst nutzbar nach U11e), Anzeige der Effekte im Maschinen-GUI und in Jade | Unit-Tests: Grenzen 20 %, Summe, Produktivitätsbalken; GameTest: Geschwindigkeitsmodul verkürzt Laufzeit um 20 %, Produktivitätsmodul in Gebäude-Rezept abgelehnt, Beacon wirkt mit 50 % |
 | **U11e – Lila und Gelb** | Pakete `PRODUCTION`/`UTILITY` im Enum, Labor und Terminal; Rezepte der Pakete; neue Forschungen aus §11.6; Diamant- und Sternen-Siegel; Kovarex; Module 3; Bergbauproduktivität (optional) | Progressionstest bis Gelb grün (mit Siegeln); GameTest: Labor akzeptiert Lila/Gelb |

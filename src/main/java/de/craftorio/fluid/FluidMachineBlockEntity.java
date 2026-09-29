@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -46,7 +47,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
 
     private final FluidMachineType type;
     private final EnergyBuffer energy = new EnergyBuffer(20_000, 2_000, 0, this::setChanged);
-    private final ItemStackHandler items = new ItemStackHandler(FluidMachineType.INPUT_SLOTS + 1) {
+    private final ItemStackHandler items = new ItemStackHandler(FluidMachineType.ITEM_SLOTS) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             FluidRecipes.Recipe recipe = selected();
@@ -224,9 +225,9 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
                 return false;
             }
         }
-        ItemStack out = recipe.itemOut();
-        if (!out.isEmpty()) {
-            ItemStack have = items.getStackInSlot(FluidMachineType.OUTPUT_SLOT);
+        for (FluidRecipes.ItemOutput output : recipe.itemsOut()) {
+            ItemStack out = output.stack();
+            ItemStack have = items.getStackInSlot(FluidMachineType.OUTPUT_SLOT + output.slot());
             if (!have.isEmpty() && (!ItemStack.isSameItemSameComponents(have, out) || have.getCount() + out.getCount() > have.getMaxStackSize())) {
                 return false;
             }
@@ -248,13 +249,18 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
         for (int i = 0; i < recipe.fluidsIn().size(); i++) {
             tanks[i].use(recipe.fluidsIn().get(i).getAmount());
         }
-        if (!recipe.itemOut().isEmpty()) {
-            ItemStack have = items.getStackInSlot(FluidMachineType.OUTPUT_SLOT);
+        List<ItemStack> made = recipe.rollOutputs(level == null ? RandomSource.create() : level.random);
+        for (int i = 0; i < made.size(); i++) {
+            if (made.get(i).isEmpty()) {
+                continue;
+            }
+            int slot = FluidMachineType.OUTPUT_SLOT + recipe.itemsOut().get(i).slot();
+            ItemStack have = items.getStackInSlot(slot);
             if (have.isEmpty()) {
-                items.setStackInSlot(FluidMachineType.OUTPUT_SLOT, recipe.itemOut().copy());
+                items.setStackInSlot(slot, made.get(i));
             } else {
-                have.grow(recipe.itemOut().getCount());
-                items.setStackInSlot(FluidMachineType.OUTPUT_SLOT, have);
+                have.grow(made.get(i).getCount());
+                items.setStackInSlot(slot, have);
             }
         }
         for (int i = 0; i < recipe.fluidsOut().size(); i++) {
@@ -264,7 +270,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
 
     /** Hands finished items to whatever stands in front of the machine (belt, chest, next machine). */
     private void pushItems(Level level, BlockPos pos, Direction facing) {
-        if (items.getStackInSlot(FluidMachineType.OUTPUT_SLOT).isEmpty() || !(level instanceof ServerLevel server)) {
+        if (!(level instanceof ServerLevel server) || outputEmpty()) {
             return;
         }
         BlockPos front = pos.relative(facing);
@@ -275,10 +281,21 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
         if (target == null) {
             return;
         }
-        while (!items.getStackInSlot(FluidMachineType.OUTPUT_SLOT).isEmpty()
-                && ItemHandlerHelper.insertItem(target, items.extractItem(FluidMachineType.OUTPUT_SLOT, 1, true), false).isEmpty()) {
-            items.extractItem(FluidMachineType.OUTPUT_SLOT, 1, false);
+        for (int slot = FluidMachineType.OUTPUT_SLOT; slot < FluidMachineType.OUTPUT_SLOT + type.outputSlots(); slot++) {
+            while (!items.getStackInSlot(slot).isEmpty()
+                    && ItemHandlerHelper.insertItem(target, items.extractItem(slot, 1, true), false).isEmpty()) {
+                items.extractItem(slot, 1, false);
+            }
         }
+    }
+
+    private boolean outputEmpty() {
+        for (int slot = FluidMachineType.OUTPUT_SLOT; slot < FluidMachineType.OUTPUT_SLOT + type.outputSlots(); slot++) {
+            if (!items.getStackInSlot(slot).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -330,7 +347,7 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
     private final class ItemAutomation implements IItemHandler {
         @Override
         public int getSlots() {
-            return items.getSlots();
+            return FluidMachineType.INPUT_SLOTS + type.outputSlots();
         }
 
         @Override
@@ -345,7 +362,8 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return slot == FluidMachineType.OUTPUT_SLOT ? items.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+            return slot >= FluidMachineType.OUTPUT_SLOT && slot < FluidMachineType.OUTPUT_SLOT + type.outputSlots()
+                    ? items.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
         }
 
         @Override

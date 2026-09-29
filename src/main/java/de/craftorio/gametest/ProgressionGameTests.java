@@ -99,6 +99,7 @@ public final class ProgressionGameTests {
                 case OIL_REFINERY -> ModItems.OIL_REFINERY.get();
                 case CHEMICAL_PLANT -> ModItems.CHEMICAL_PLANT.get();
                 case GREENHOUSE -> ModItems.GREENHOUSE.get();
+                case CENTRIFUGE -> ModItems.CENTRIFUGE.get();
             }));
             recipe.itemsIn().forEach(stack -> ingredients.add(List.of(stack.getItem())));
             recipe.fluidsIn().forEach(fluid -> {
@@ -107,9 +108,7 @@ public final class ProgressionGameTests {
                 }
             });
             List<Item> results = new ArrayList<>();
-            if (!recipe.itemOut().isEmpty()) {
-                results.add(recipe.itemOut().getItem());
-            }
+            recipe.itemsOut().forEach(output -> results.add(output.stack().getItem()));
             recipe.fluidsOut().forEach(fluid -> results.add(fluidStandIn(fluid.getFluid())));
             steps.add(new Step("fluid recipe " + recipe.id(), recipe.id().toString(), ingredients, results));
         }
@@ -137,7 +136,8 @@ public final class ProgressionGameTests {
             if (have.contains(ModItems.CAVE_ENTRANCE.get()) && have.contains(ModItems.PUMPJACK.get())) {
                 changed |= have.add(CRUDE_OIL);
             }
-            if (have.contains(ModItems.MINE_SHAFT.get())) {
+            // Uranium ore needs sulfuric acid in an electric or deep drill.
+            if (have.contains(ModItems.MINE_SHAFT.get()) && have.contains(ACID) && (have.contains(ModItems.ELECTRIC_DRILL.get()) || have.contains(ModItems.DEEP_DRILL.get()))) {
                 changed |= addResources(have, ModBlocks.URANIUM_ORE_FIELD.get());
             }
         }
@@ -207,6 +207,7 @@ public final class ProgressionGameTests {
     }
 
     private static final Item CRUDE_OIL = Items.BLACK_DYE;
+    private static final Item ACID = Items.YELLOW_DYE;
 
     /** Items that stand for fluids while checking what can be made. */
     private static Item fluidStandIn(net.minecraft.world.level.material.Fluid fluid) {

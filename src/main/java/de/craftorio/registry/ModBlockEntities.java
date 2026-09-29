@@ -118,7 +118,7 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.fluid.FluidMachineBlockEntity>> FLUID_MACHINE = BLOCK_ENTITIES.register("fluid_machine",
             () -> BlockEntityType.Builder.of(de.craftorio.fluid.FluidMachineBlockEntity::new, ModBlocks.CHEMICAL_PLANT.get(),
-                    ModBlocks.OIL_REFINERY.get(), ModBlocks.GREENHOUSE.get()).build(null));
+                    ModBlocks.OIL_REFINERY.get(), ModBlocks.GREENHOUSE.get(), ModBlocks.CENTRIFUGE.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.AccumulatorBlockEntity>> ACCUMULATOR = BLOCK_ENTITIES.register("accumulator",
@@ -148,7 +148,8 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, SOLAR_PANEL.get(), (panel, side) -> panel.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, FLUID_MACHINE.get(), (machine, side) -> machine.itemAutomation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, FLUID_MACHINE.get(), (machine, side) -> machine.energy());
-        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FLUID_MACHINE.get(), (machine, side) -> machine.fluids());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, DRILL.get(), (drill, side) -> drill.fluidHandler());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, FLUID_MACHINE.get(), (machine, side) -> machine.type().hasFluids() ? machine.fluids() : null);
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, PUMPJACK.get(), (pumpjack, side) -> pumpjack.energy());
         event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, PUMPJACK.get(), (pumpjack, side) -> pumpjack.handler(side));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, ACCUMULATOR.get(), (accumulator, side) -> accumulator.energy());
@@ -161,6 +162,7 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LABORATORY.get(), (lab, side) -> lab.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesItemAmmo() ? insertOnly(tower.ammo()) : null);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELEVATOR.get(), (elevator, side) -> elevator.input());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ELEVATOR.get(), (elevator, side) -> elevator.fluidInput());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.materials());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ARENA_FEEDER.get(), (feeder, side) -> feeder.ammoInput());

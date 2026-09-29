@@ -11,7 +11,7 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 
 /** Drill GUI: fuel slot (burner tier only) and one output stack, like a furnace. */
 public final class DrillMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 9;
+    public static final int DATA_COUNT = 11;
     public static final int FUEL_X = 44;
     public static final int FUEL_Y = 53;
     public static final int OUTPUT_X = 116;
@@ -61,6 +61,15 @@ public final class DrillMenu extends MachineMenuBase {
 
     public double itemsPerSecond() {
         return data.get(4) / 100.0;
+    }
+
+    public int acid() {
+        return data.get(9);
+    }
+
+    /** Is there uranium ore below? Then the drill needs sulfuric acid. */
+    public boolean needsAcid() {
+        return data.get(10) != 0;
     }
 
     public int energy() {
