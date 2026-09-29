@@ -112,6 +112,7 @@ public final class ClientEvents {
             event.register(ModMenus.TOWER.get(), TowerScreen::new);
             event.register(ModMenus.DEPOT.get(), DepotScreen::new);
             event.register(ModMenus.LABORATORY.get(), LaboratoryScreen::new);
+            event.register(ModMenus.BOILER.get(), BoilerScreen::new);
         }
     }
 }

@@ -36,17 +36,17 @@ public final class ProtectionGameTests {
         UUID ownerTeam = registry.ensureTeam(owner.getUUID(), "Owner").id();
         registry.ensureTeam(stranger.getUUID(), "Stranger");
         BlockPos pos = new BlockPos(2, 1, 2);
-        helper.setBlock(pos, ModBlocks.PRESS.get());
+        helper.setBlock(pos, ModBlocks.STONE_FURNACE.get());
         BlockPos absolute = helper.absolutePos(pos);
         BlockOwnership.get(helper.getLevel()).claim(absolute, ownerTeam);
 
         stranger.gameMode.destroyBlock(absolute);
-        helper.assertBlockPresent(ModBlocks.PRESS.get(), pos);
+        helper.assertBlockPresent(ModBlocks.STONE_FURNACE.get(), pos);
         helper.assertFalse(BlockOwnership.get(helper.getLevel()).mayAccess(helper.getLevel(), absolute,
                 registry.teamOf(stranger.getUUID()).orElseThrow().id()), "stranger may not access");
 
         owner.gameMode.destroyBlock(absolute);
-        helper.assertBlockNotPresent(ModBlocks.PRESS.get(), pos);
+        helper.assertBlockNotPresent(ModBlocks.STONE_FURNACE.get(), pos);
         helper.assertTrue(BlockOwnership.get(helper.getLevel()).owner(helper.getLevel(), absolute).isEmpty(), "claim released");
         helper.succeed();
     }

@@ -9,45 +9,46 @@ import java.util.Optional;
  */
 public final class Quests {
     public static final List<Quest> ALL = List.of(
-            // Surface: by hand to the first drill, then first money and automation
-            mine("raw_iron", "minecraft:raw_iron", 16, 50),
-            build("burner_drill", 1, 100),
-            build("trading_post", 1, 50),
-            earn("first_sale", 1, 100),
-            build("conveyor_belt", 1, 100),
-            sell("raw_iron", "minecraft:raw_iron", 64, 150),
-            build("inserter", 1, 100),
-            // Power and processing
-            unlock("coal_generator", 200),
-            unlock("power_pole", 150),
-            unlock("electric_furnace", 250),
-            unlock("press", 300),
-            sell("iron_plate", "craftorio:iron_plate", 100, 400),
-            earn("earn_10k", 10_000, 1_000),
-            // Tower defense for the first key material
-            build("arena_gate", 1, 200),
-            build("crossbow_tower", 1, 200),
-            build("arena_feeder", 1, 200),
-            tdLevel("td_1", 1, 300),
-            tdLevel("td_10", 10, 2_000),
-            // Tier 2 and the caves
-            unlock("workbench_upgrade_2", 1_500),
-            unlock("assembler", 1_500),
-            sell("motor", "craftorio:motor", 20, 2_000),
-            unlock("cave_entrance", 3_000),
-            build("cave_entrance", 1, 2_000),
-            sell("tin_ingot", "craftorio:tin_ingot", 64, 2_000),
-            sell("battery", "craftorio:battery", 32, 3_000),
-            unlock("elevator", 1_500),
-            tdLevel("td_20", 20, 5_000),
-            // Tier 3 and the mines
-            tdLevel("td_30", 30, 10_000),
-            unlock("workbench_upgrade_3", 5_000),
-            unlock("mine_shaft", 10_000),
-            sell("titanium_plate", "craftorio:titanium_plate", 64, 8_000),
-            sell("energy_crystal", "craftorio:energy_crystal", 8, 15_000),
-            earn("earn_1m", 1_000_000, 50_000),
-            tdLevel("td_40", 40, 50_000));
+            // By hand to the first drill and the first power
+            mine("raw_iron", "minecraft:raw_iron", 16, 20),
+            mine("cobblestone", "minecraft:cobblestone", 20, 20),
+            build("stone_furnace", 1, 20),
+            build("burner_drill", 1, 40),
+            build("conveyor_belt", 1, 20),
+            build("boiler", 1, 30),
+            build("offshore_pump", 1, 30),
+            build("steam_engine", 1, 40),
+            build("power_pole", 1, 20),
+            // Science and automation
+            build("laboratory", 1, 60),
+            build("red_science", 10, 60),
+            build("inserter", 1, 30),
+            unlock("assembler", 100),
+            build("assembler", 1, 100),
+            // Trade, then defend
+            build("trading_post", 1, 40),
+            earn("first_sale", 1, 40),
+            build("arena_gate", 1, 100),
+            build("crossbow_tower", 1, 100),
+            tdLevel("td_1", 1, 200),
+            unlock("arena_feeder", 100),
+            build("arena_feeder", 1, 150),
+            earn("earn_10k", 10_000, 300),
+            tdLevel("td_10", 10, 1_000),
+            // Caves
+            unlock("cave_entrance", 500),
+            build("cave_entrance", 1, 500),
+            sell("tin_ingot", "craftorio:tin_ingot", 64, 1_000),
+            sell("battery", "craftorio:battery", 32, 1_500),
+            unlock("elevator", 300),
+            tdLevel("td_20", 20, 2_500),
+            // Mines
+            tdLevel("td_30", 30, 5_000),
+            unlock("mine_shaft", 3_000),
+            sell("titanium_plate", "craftorio:titanium_plate", 64, 4_000),
+            sell("energy_crystal", "craftorio:energy_crystal", 8, 7_500),
+            earn("earn_1m", 1_000_000, 25_000),
+            tdLevel("td_40", 40, 25_000));
 
     /** The first quest whose reward has not been collected yet: what the player should do next. */
     public static java.util.Optional<Integer> current(java.util.Set<String> claimed) {

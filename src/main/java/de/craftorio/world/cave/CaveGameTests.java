@@ -4,6 +4,7 @@ import de.craftorio.Craftorio;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.Item;
@@ -53,9 +54,8 @@ public final class CaveGameTests {
     public static void entranceNeedsMaterialsAndPowerThenUnlocksArea(GameTestHelper helper) {
         BlockPos entrance = new BlockPos(3, 1, 3);
         helper.setBlock(entrance, ModBlocks.CAVE_ENTRANCE.get());
-        helper.setBlock(new BlockPos(1, 1, 1), ModBlocks.COAL_GENERATOR.get());
+        de.craftorio.gametest.SteamPower.place(helper, new BlockPos(1, 1, 1), Direction.WEST, 16);
         helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.POWER_POLE.get());
-        items(helper, new BlockPos(1, 1, 1)).insertItem(0, new ItemStack(Items.COAL, 16), false);
         CaveEntranceBlockEntity site = helper.getBlockEntity(entrance);
         IItemHandler materials = items(helper, entrance);
 
@@ -108,11 +108,7 @@ public final class CaveGameTests {
         BlockPos shaft = new BlockPos(3, 1, 3);
         helper.setBlock(shaft, ModBlocks.MINE_SHAFT.get());
         helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.POWER_POLE.get());
-        // One coal generator (60 FE/t) is not enough for the shaft's 80 FE/t.
-        for (BlockPos generator : new BlockPos[]{new BlockPos(1, 1, 1), new BlockPos(1, 1, 3)}) {
-            helper.setBlock(generator, ModBlocks.COAL_GENERATOR.get());
-            items(helper, generator).insertItem(0, new ItemStack(Items.COAL, 32), false);
-        }
+        de.craftorio.gametest.SteamPower.place(helper, new BlockPos(1, 1, 1), Direction.WEST, 32);
         CaveEntranceBlockEntity site = helper.getBlockEntity(shaft);
         IItemHandler materials = items(helper, shaft);
 

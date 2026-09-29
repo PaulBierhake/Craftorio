@@ -33,7 +33,7 @@ public final class BalanceGameTests {
         RecipeManager recipes = helper.getLevel().getRecipeManager();
         List<String> problems = new ArrayList<>();
         int checked = 0;
-        for (RecipeType<MachineRecipe> type : List.of(ModRecipes.PRESSING.get(), ModRecipes.ASSEMBLING.get())) {
+        for (RecipeType<MachineRecipe> type : List.of(ModRecipes.SMELTING.get(), ModRecipes.ASSEMBLING.get())) {
             for (RecipeHolder<MachineRecipe> holder : recipes.getAllRecipesFor(type)) {
                 MachineRecipe recipe = holder.value();
                 if (Economy.unitPrice(recipe.result()) == 0) {

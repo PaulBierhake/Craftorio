@@ -37,6 +37,7 @@ public final class ModSellPriceProvider extends DataMapProvider {
         price(prices, Items.LAPIS_LAZULI, 20);
         price(prices, Items.QUARTZ, 20);
         price(prices, Items.CLAY_BALL, 10);
+        price(prices, Items.COBBLESTONE, 4);
         price(prices, Items.DIAMOND, 400);
         price(prices, Items.EMERALD, 300);
 
@@ -49,9 +50,10 @@ public final class ModSellPriceProvider extends DataMapProvider {
         price(prices, Items.IRON_NUGGET, 2);
         price(prices, Items.GOLD_NUGGET, 5);
 
-        // Step 2: pressed
-        price(prices, ModItems.IRON_PLATE.get(), 22);
+        // Step 2: simple parts
         price(prices, ModItems.COPPER_CABLE.get(), 12);
+        price(prices, ModItems.PIPE.get(), 24);
+        price(prices, ModItems.STONE_BRICK.get(), 12);
 
         // Step 3+: assembled
         price(prices, ModItems.IRON_GEAR.get(), 60);

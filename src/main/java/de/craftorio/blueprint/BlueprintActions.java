@@ -16,8 +16,8 @@ public final class BlueprintActions {
     private BlueprintActions() {
     }
 
-    /** Builds a blueprint up to {@code times} times from the player's inventory at a workbench of {@code benchTier}. */
-    public static boolean build(ServerPlayer player, int index, int benchTier, int times) {
+    /** Builds a blueprint up to {@code times} times from the player's inventory. */
+    public static boolean build(ServerPlayer player, int index, int times) {
         List<Holder.Reference<Blueprint>> all = Blueprints.sorted(player.registryAccess());
         if (index < 0 || index >= all.size()) {
             return false;
@@ -27,11 +27,6 @@ public final class BlueprintActions {
         Team team = TeamData.registry(player.server).ensureTeam(player.getUUID(), player.getGameProfile().getName());
         if (!Blueprints.isKnown(player.registryAccess(), team, holder)) {
             player.displayClientMessage(Component.translatable("craftorio.blueprint.locked").withStyle(ChatFormatting.RED), true);
-            return false;
-        }
-        if (blueprint.tier() > benchTier) {
-            player.displayClientMessage(Component.translatable("craftorio.workbench.tier_too_low", blueprint.tier())
-                    .withStyle(ChatFormatting.RED), true);
             return false;
         }
         int possible = Blueprints.craftableTimes(player.getInventory(), blueprint, times);

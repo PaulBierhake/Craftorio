@@ -18,11 +18,10 @@ public final class Blueprints {
     private Blueprints() {
     }
 
-    /** All blueprints by tier, then order, then id – identical on server and client, so an index identifies one. */
+    /** All blueprints by order, then id – identical on server and client, so an index identifies one. */
     public static List<Holder.Reference<Blueprint>> sorted(RegistryAccess access) {
         return access.registryOrThrow(ModRegistries.BLUEPRINTS).holders()
-                .sorted(Comparator.<Holder.Reference<Blueprint>>comparingInt(holder -> holder.value().tier())
-                        .thenComparingInt(holder -> holder.value().order())
+                .sorted(Comparator.<Holder.Reference<Blueprint>>comparingInt(holder -> holder.value().order())
                         .thenComparing(holder -> holder.key().location().toString()))
                 .toList();
     }

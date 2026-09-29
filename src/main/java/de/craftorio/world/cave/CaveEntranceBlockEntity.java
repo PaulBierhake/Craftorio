@@ -45,7 +45,7 @@ public final class CaveEntranceBlockEntity extends BlockEntity {
         Map<Item, Integer> required = new LinkedHashMap<>();
         if (target == Layer.CAVES) {
             required.put(Items.COBBLESTONE, 128);
-            required.put(ModItems.IRON_PLATE.get(), 32);
+            required.put(Items.IRON_INGOT, 32);
             required.put(ModItems.IRON_GEAR.get(), 16);
             required.put(ModItems.MOTOR.get(), 8);
         } else {

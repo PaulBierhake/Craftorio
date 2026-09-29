@@ -25,27 +25,19 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.List;
 
-/** EMI integration: press and assembler recipes and the blueprint tree. Only loaded when EMI is installed. */
+/** EMI integration: assembler recipes and the workbench blueprints. Only loaded when EMI is installed. */
 @EmiEntrypoint
 public final class CraftorioEmiPlugin implements EmiPlugin {
-    static final EmiRecipeCategory PRESSING = new EmiRecipeCategory(Craftorio.id("pressing"), EmiStack.of(ModBlocks.PRESS.get()));
     static final EmiRecipeCategory ASSEMBLING = new EmiRecipeCategory(Craftorio.id("assembling"), EmiStack.of(ModBlocks.ASSEMBLER.get()));
     static final EmiRecipeCategory BLUEPRINT = new EmiRecipeCategory(Craftorio.id("blueprint"), EmiStack.of(ModBlocks.WORKBENCH.get()));
 
     @Override
     public void register(EmiRegistry registry) {
-        registry.addCategory(PRESSING);
         registry.addCategory(ASSEMBLING);
         registry.addCategory(BLUEPRINT);
-        registry.addWorkstation(PRESSING, EmiStack.of(ModBlocks.PRESS.get()));
         registry.addWorkstation(ASSEMBLING, EmiStack.of(ModBlocks.ASSEMBLER.get()));
         registry.addWorkstation(BLUEPRINT, EmiStack.of(ModBlocks.WORKBENCH.get()));
-        registry.addWorkstation(BLUEPRINT, EmiStack.of(ModBlocks.ASSEMBLY_WORKBENCH.get()));
-        registry.addWorkstation(BLUEPRINT, EmiStack.of(ModBlocks.PRECISION_WORKBENCH.get()));
 
-        for (RecipeHolder<MachineRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipes.PRESSING.get())) {
-            registry.addRecipe(new MachineEmiRecipe(PRESSING, holder.id(), holder.value(), gateOf(holder.id())));
-        }
         for (RecipeHolder<MachineRecipe> holder : registry.getRecipeManager().getAllRecipesFor(ModRecipes.ASSEMBLING.get())) {
             registry.addRecipe(new MachineEmiRecipe(ASSEMBLING, holder.id(), holder.value(), gateOf(holder.id())));
         }
@@ -121,7 +113,7 @@ public final class CraftorioEmiPlugin implements EmiPlugin {
             widgets.addTexture(EmiTexture.EMPTY_ARROW, 76, 1);
             widgets.addSlot(outputs.get(0), 104, 0).recipeContext(this);
             Component gate = researchName == null ? Component.translatable("craftorio.emi.free") : Component.translatable("craftorio.emi.research", researchName);
-            widgets.addText(Component.translatable("craftorio.blueprint.tier", blueprint.tier()).append(" · ").append(gate), 0, 24, 0xFF404040, false);
+            widgets.addText(gate, 0, 24, 0xFF404040, false);
         }
     }
 }

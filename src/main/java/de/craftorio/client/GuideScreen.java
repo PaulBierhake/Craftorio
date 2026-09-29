@@ -187,8 +187,8 @@ public final class GuideScreen extends Screen {
         var gate = Researches.gate(minecraft.level.registryAccess(), blueprintId);
         Component where = gate.isPresent()
                 ? Component.translatable("craftorio.guide.research_then_build", Component.translatable("craftorio.research." + gate.get().substring(gate.get().indexOf(':') + 1)),
-                        workbench(blueprint.tier()).getName())
-                : Component.translatable("craftorio.guide.build_at", workbench(blueprint.tier()).getName());
+                        ModBlocks.WORKBENCH.get().getName())
+                : Component.translatable("craftorio.guide.build_at", ModBlocks.WORKBENCH.get().getName());
         for (FormattedCharSequence line : font.split(where, WIDTH - 20)) {
             graphics.drawString(font, line, x, y, 0xFFFFFF, false);
             y += 10;
@@ -203,15 +203,7 @@ public final class GuideScreen extends Screen {
         icon(graphics, blueprint.result(), blueprint.result().getCount(), ix + 14, y);
         y += 24;
         // How to get the place where it is made: the vanilla recipe of the workbench.
-        ResourceLocation station = blueprint.tier() == 1 ? Craftorio.id("workbench") : null;
-        if (station != null) {
-            renderCrafting(graphics, station, x, y);
-        } else {
-            for (FormattedCharSequence line : font.split(Component.translatable("craftorio.guide.upgrade_bench", blueprint.tier()), WIDTH - 20)) {
-                graphics.drawString(font, line, x, y, GRAY, false);
-                y += 10;
-            }
-        }
+        renderCrafting(graphics, Craftorio.id("workbench"), x, y);
     }
 
     private void renderCrafting(GuiGraphics graphics, ResourceLocation id, int x, int y) {
@@ -255,10 +247,10 @@ public final class GuideScreen extends Screen {
             return;
         }
         RecipeManager recipes = minecraft.level.getRecipeManager();
-        for (RecipeType<MachineRecipe> type : List.of(ModRecipes.PRESSING.get(), ModRecipes.ASSEMBLING.get())) {
+        for (RecipeType<MachineRecipe> type : List.of(ModRecipes.ASSEMBLING.get())) {
             for (RecipeHolder<MachineRecipe> holder : recipes.getAllRecipesFor(type)) {
                 if (holder.value().result().is(item)) {
-                    Block machine = type == ModRecipes.PRESSING.get() ? ModBlocks.PRESS.get() : ModBlocks.ASSEMBLER.get();
+                    Block machine = ModBlocks.ASSEMBLER.get();
                     graphics.drawString(font, Component.translatable("craftorio.guide.made_in", machine.getName()), x, y, 0xFFFFFF, false);
                     int ix = x;
                     for (SizedIngredient ingredient : holder.value().ingredients()) {
@@ -294,14 +286,6 @@ public final class GuideScreen extends Screen {
 
     private @Nullable Blueprint blueprint(String id) {
         return minecraft.level.registryAccess().registryOrThrow(ModRegistries.BLUEPRINTS).get(ResourceLocation.parse(id));
-    }
-
-    private static Block workbench(int tier) {
-        return switch (tier) {
-            case 1 -> ModBlocks.WORKBENCH.get();
-            case 2 -> ModBlocks.ASSEMBLY_WORKBENCH.get();
-            default -> ModBlocks.PRECISION_WORKBENCH.get();
-        };
     }
 
     private static ItemStack first(Ingredient ingredient) {

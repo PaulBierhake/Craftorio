@@ -47,12 +47,12 @@ public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingM
 
     @Override
     protected int capacity() {
-        return MachineType.ENERGY_CAPACITY;
+        return type.usesFuel() ? 0 : MachineType.ENERGY_CAPACITY;
     }
 
     @Override
     protected int machineSlotCount() {
-        return type.inputSlots() + 1;
+        return type.slotCount();
     }
 
     @Override
@@ -67,6 +67,15 @@ public final class ProcessingMachineScreen extends MachineScreenBase<ProcessingM
         }
         if (type == MachineType.ASSEMBLER) {
             renderRecipe(graphics);
+        }
+        if (type.usesFuel()) {
+            int flame = (int) (13 * menu.burnFraction());
+            int x = leftPos + ProcessingMachineMenu.FUEL_X + 1;
+            int y = topPos + ProcessingMachineMenu.FUEL_Y - 16;
+            graphics.fill(x, y, x + 14, y + 13, 0xFF373737);
+            if (flame > 0) {
+                graphics.fillGradient(x + 1, y + 13 - flame, x + 13, y + 13, 0xFFFFD54F, 0xFFE0801F);
+            }
         }
     }
 

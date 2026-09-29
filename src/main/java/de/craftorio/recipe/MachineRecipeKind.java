@@ -5,14 +5,16 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
 public enum MachineRecipeKind {
-    PRESSING,
+    /** Counted ingredients smelted in the stone furnace and the electric furnace (steel, stone bricks). */
+    SMELTING,
+    /** Crafted in the assembling machine. */
     ASSEMBLING;
 
     public RecipeType<MachineRecipe> type() {
-        return this == PRESSING ? ModRecipes.PRESSING.get() : ModRecipes.ASSEMBLING.get();
+        return this == SMELTING ? ModRecipes.SMELTING.get() : ModRecipes.ASSEMBLING.get();
     }
 
     public RecipeSerializer<MachineRecipe> serializer() {
-        return this == PRESSING ? ModRecipes.PRESSING_SERIALIZER.get() : ModRecipes.ASSEMBLING_SERIALIZER.get();
+        return this == SMELTING ? ModRecipes.SMELTING_SERIALIZER.get() : ModRecipes.ASSEMBLING_SERIALIZER.get();
     }
 }

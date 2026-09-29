@@ -31,25 +31,21 @@ public final class WorkbenchScreen extends BlueprintListScreen<WorkbenchMenu> {
     protected void renderRow(GuiGraphics graphics, int index, Holder.Reference<Blueprint> holder, int x, int y, int mouseX, int mouseY) {
         Blueprint blueprint = holder.value();
         boolean unlocked = Blueprints.isKnown(minecraft.level.registryAccess(), ClientTeamState.researched(), holder);
-        boolean tierOk = blueprint.tier() <= menu.tier();
         Inventory inventory = minecraft.player.getInventory();
-        boolean canBuild = unlocked && tierOk && Blueprints.craftableTimes(inventory, blueprint, 1) > 0;
+        boolean canBuild = unlocked && Blueprints.craftableTimes(inventory, blueprint, 1) > 0;
 
-        renderRowBackground(graphics, x, y, canBuild ? 0xFF22382A : unlocked && tierOk ? 0xFF2E2E40 : 0xFF28282C);
+        renderRowBackground(graphics, x, y, canBuild ? 0xFF22382A : unlocked ? 0xFF2E2E40 : 0xFF28282C);
         graphics.renderItem(blueprint.result(), x + 3, y + 3);
         graphics.renderItemDecorations(font, blueprint.result(), x + 3, y + 3);
         graphics.drawString(font, font.plainSubstrByWidth(blueprint.result().getHoverName().getString(), 76), x + 24, y + 3,
-                unlocked && tierOk ? 0xFFFFFF : GRAY, false);
+                unlocked ? 0xFFFFFF : GRAY, false);
 
         Component status;
         int statusColor = GRAY;
         if (!unlocked) {
             status = Component.translatable("craftorio.workbench.locked");
-        } else if (!tierOk) {
-            status = Component.translatable("craftorio.workbench.needs_tier", blueprint.tier());
-            statusColor = RED;
         } else {
-            status = Component.translatable("craftorio.blueprint.tier", blueprint.tier());
+            status = canBuild ? Component.translatable("craftorio.workbench.can_build") : Component.translatable("craftorio.workbench.missing");
         }
         graphics.drawString(font, font.plainSubstrByWidth(status.getString(), 78), x + 24, y + 13, statusColor, false);
 
@@ -65,7 +61,7 @@ public final class WorkbenchScreen extends BlueprintListScreen<WorkbenchMenu> {
             graphics.pose().popPose();
             iconX += 20;
         }
-        if (unlocked && tierOk) {
+        if (unlocked) {
             // Without enough material the button tells what is missing instead of doing nothing.
             renderButton(graphics, Component.translatable(canBuild ? "craftorio.workbench.build" : "craftorio.workbench.missing_button"),
                     x, y, true, mouseX, mouseY);
@@ -77,7 +73,7 @@ public final class WorkbenchScreen extends BlueprintListScreen<WorkbenchMenu> {
         Blueprint blueprint = holder.value();
         Inventory inventory = minecraft.player.getInventory();
         boolean unlocked = Blueprints.isKnown(minecraft.level.registryAccess(), ClientTeamState.researched(), holder);
-        if (!unlocked || blueprint.tier() > menu.tier() || Blueprints.craftableTimes(inventory, blueprint, 1) > 0) {
+        if (!unlocked || Blueprints.craftableTimes(inventory, blueprint, 1) > 0) {
             sendButton(WorkbenchMenu.buttonId(index, shift));
             return;
         }

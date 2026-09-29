@@ -22,10 +22,10 @@ public final class QuestGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         TeamRegistry registry = TeamData.registry(player.server);
         Team team = registry.ensureTeam(player.getUUID(), "QuestTest");
-        int index = Quests.ALL.indexOf(Quests.byId("sell_raw_iron").orElseThrow());
+        int index = Quests.ALL.indexOf(Quests.byId("sell_tin_ingot").orElseThrow());
 
         helper.assertFalse(QuestActions.claim(player, index), "not reached yet");
-        registry.recordSale(team.id(), "minecraft:raw_iron", 64, 640);
+        registry.recordSale(team.id(), "craftorio:tin_ingot", 64, 1_500);
         long before = team.balance();
         helper.assertTrue(QuestActions.claim(player, index), "reward collected");
         helper.assertValueEqual(team.balance(), before + Quests.ALL.get(index).reward(), "reward paid");

@@ -17,7 +17,7 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.List;
 
-/** Recipe for the press and the assembler: counted ingredients, one result, a processing time in ticks. */
+/** Recipe for furnaces (counted smelting) and the assembling machine: counted ingredients, one result, the crafting time in ticks at speed 1 (Factorio seconds × 20). */
 public record MachineRecipe(MachineRecipeKind kind, List<SizedIngredient> ingredients, ItemStack result, int time)
         implements Recipe<RecipeInput> {
 

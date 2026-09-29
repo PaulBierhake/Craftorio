@@ -1,5 +1,6 @@
 package de.craftorio.defense;
 
+import net.minecraft.world.item.Items;
 import de.craftorio.blueprint.Blueprints;
 import de.craftorio.economy.Credits;
 import de.craftorio.energy.EnergyBuffer;
@@ -267,7 +268,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
 
     public List<SizedIngredient> upgradeMaterials(int toLevel) {
         Item material = switch (TowerStats.upgradeMaterial(toLevel)) {
-            case IRON_PLATE -> ModItems.IRON_PLATE.get();
+            case IRON_PLATE -> Items.IRON_INGOT;
             case COPPER_CABLE -> ModItems.COPPER_CABLE.get();
             case IRON_GEAR -> ModItems.IRON_GEAR.get();
             case MOTOR -> ModItems.MOTOR.get();

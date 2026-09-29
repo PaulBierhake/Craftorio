@@ -1,5 +1,6 @@
 package de.craftorio.datagen;
 
+import net.minecraft.world.item.Items;
 import de.craftorio.Craftorio;
 import de.craftorio.registry.ModItems;
 import net.minecraft.data.PackOutput;
@@ -13,13 +14,12 @@ public final class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        basicItem(ModItems.IRON_PLATE.get());
         basicItem(ModItems.COPPER_CABLE.get());
         basicItem(ModItems.IRON_GEAR.get());
         basicItem(ModItems.CIRCUIT.get());
         basicItem(ModItems.MOTOR.get());
-        basicItem(ModItems.WORKBENCH_UPGRADE_2.get());
-        basicItem(ModItems.WORKBENCH_UPGRADE_3.get());
+        basicItem(ModItems.PIPE.get());
+        basicItem(ModItems.STONE_BRICK.get());
         basicItem(ModItems.DRILL_CORE.get());
         basicItem(ModItems.RESONANCE_CRYSTAL.get());
         basicItem(ModItems.DEEP_CORE.get());

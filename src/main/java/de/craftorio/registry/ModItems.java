@@ -4,7 +4,6 @@ import de.craftorio.defense.arena.PathWandItem;
 
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.KeyMaterialItem;
-import de.craftorio.blueprint.WorkbenchUpgradeItem;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.PickaxeItem;
@@ -30,11 +29,13 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> FAST_BELT = ITEMS.registerSimpleBlockItem("fast_belt", ModBlocks.FAST_BELT);
     public static final DeferredItem<BlockItem> EXPRESS_BELT = ITEMS.registerSimpleBlockItem("express_belt", ModBlocks.EXPRESS_BELT);
     public static final DeferredItem<BlockItem> INSERTER = ITEMS.registerSimpleBlockItem("inserter", ModBlocks.INSERTER);
-    public static final DeferredItem<BlockItem> COAL_GENERATOR = ITEMS.registerSimpleBlockItem("coal_generator", ModBlocks.COAL_GENERATOR);
+    public static final DeferredItem<BlockItem> BOILER = ITEMS.registerSimpleBlockItem("boiler", ModBlocks.BOILER);
+    public static final DeferredItem<BlockItem> STEAM_ENGINE = ITEMS.registerSimpleBlockItem("steam_engine", ModBlocks.STEAM_ENGINE);
+    public static final DeferredItem<BlockItem> OFFSHORE_PUMP = ITEMS.registerSimpleBlockItem("offshore_pump", ModBlocks.OFFSHORE_PUMP);
     public static final DeferredItem<BlockItem> REACTOR = ITEMS.registerSimpleBlockItem("reactor", ModBlocks.REACTOR);
     public static final DeferredItem<BlockItem> POWER_POLE = ITEMS.registerSimpleBlockItem("power_pole", ModBlocks.POWER_POLE);
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE = ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);
-    public static final DeferredItem<BlockItem> PRESS = ITEMS.registerSimpleBlockItem("press", ModBlocks.PRESS);
+    public static final DeferredItem<BlockItem> STONE_FURNACE = ITEMS.registerSimpleBlockItem("stone_furnace", ModBlocks.STONE_FURNACE);
     public static final DeferredItem<BlockItem> LABORATORY = ITEMS.registerSimpleBlockItem("laboratory", ModBlocks.LABORATORY);
     public static final DeferredItem<Item> RED_SCIENCE = ITEMS.registerSimpleItem("red_science");
     public static final DeferredItem<Item> GREEN_SCIENCE = ITEMS.registerSimpleItem("green_science");
@@ -44,13 +45,6 @@ public final class ModItems {
 
     public static final DeferredItem<BlockItem> TERMINAL = ITEMS.registerSimpleBlockItem("terminal", ModBlocks.TERMINAL);
     public static final DeferredItem<BlockItem> WORKBENCH = ITEMS.registerSimpleBlockItem("workbench", ModBlocks.WORKBENCH);
-    public static final DeferredItem<BlockItem> ASSEMBLY_WORKBENCH = ITEMS.registerSimpleBlockItem("assembly_workbench", ModBlocks.ASSEMBLY_WORKBENCH);
-    public static final DeferredItem<BlockItem> PRECISION_WORKBENCH = ITEMS.registerSimpleBlockItem("precision_workbench", ModBlocks.PRECISION_WORKBENCH);
-
-    public static final DeferredItem<WorkbenchUpgradeItem> WORKBENCH_UPGRADE_2 = ITEMS.registerItem("workbench_upgrade_2",
-            properties -> new WorkbenchUpgradeItem(2, properties), new Item.Properties().stacksTo(16));
-    public static final DeferredItem<WorkbenchUpgradeItem> WORKBENCH_UPGRADE_3 = ITEMS.registerItem("workbench_upgrade_3",
-            properties -> new WorkbenchUpgradeItem(3, properties), new Item.Properties().stacksTo(16));
 
     public static final DeferredItem<BlockItem> ARENA_GATE = ITEMS.registerSimpleBlockItem("arena_gate", ModBlocks.ARENA_GATE);
     public static final DeferredItem<BlockItem> ARENA_FEEDER = ITEMS.registerSimpleBlockItem("arena_feeder", ModBlocks.ARENA_FEEDER);
@@ -82,6 +76,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ELEVATOR = ITEMS.registerSimpleBlockItem("elevator", ModBlocks.ELEVATOR);
     public static final DeferredItem<BlockItem> CAVE_RUBBLE = ITEMS.registerSimpleBlockItem("cave_rubble", ModBlocks.CAVE_RUBBLE);
     public static final DeferredItem<BlockItem> CAVE_ENTRANCE = ITEMS.registerSimpleBlockItem("cave_entrance", ModBlocks.CAVE_ENTRANCE);
+    public static final DeferredItem<BlockItem> STONE_FIELD = ITEMS.registerSimpleBlockItem("stone_field", ModBlocks.STONE_FIELD);
     public static final DeferredItem<BlockItem> TIN_ORE_FIELD = ITEMS.registerSimpleBlockItem("tin_ore_field", ModBlocks.TIN_ORE_FIELD);
     public static final DeferredItem<BlockItem> LEAD_ORE_FIELD = ITEMS.registerSimpleBlockItem("lead_ore_field", ModBlocks.LEAD_ORE_FIELD);
     public static final DeferredItem<BlockItem> SULFUR_FIELD = ITEMS.registerSimpleBlockItem("sulfur_field", ModBlocks.SULFUR_FIELD);
@@ -112,7 +107,8 @@ public final class ModItems {
     public static final DeferredItem<Item> ADVANCED_CIRCUIT = ITEMS.registerSimpleItem("advanced_circuit");
 
     // Intermediate products; each processing step is worth more than its inputs.
-    public static final DeferredItem<Item> IRON_PLATE = ITEMS.registerSimpleItem("iron_plate");
+    public static final DeferredItem<Item> PIPE = ITEMS.registerSimpleItem("pipe");
+    public static final DeferredItem<Item> STONE_BRICK = ITEMS.registerSimpleItem("stone_brick");
     public static final DeferredItem<Item> COPPER_CABLE = ITEMS.registerSimpleItem("copper_cable");
     public static final DeferredItem<Item> IRON_GEAR = ITEMS.registerSimpleItem("iron_gear");
     public static final DeferredItem<Item> CIRCUIT = ITEMS.registerSimpleItem("circuit");

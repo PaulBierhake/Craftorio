@@ -39,7 +39,9 @@ public final class FoundationGameTests {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Team team = TeamData.registry(player.server).ensureTeam(player.getUUID(), "ChunkTeam");
         BlockOwnership ownership = BlockOwnership.get(helper.getLevel());
-        BlockPos base = helper.absolutePos(new BlockPos(0, 1, 0));
+        BlockPos origin = helper.absolutePos(new BlockPos(0, 1, 0));
+        // Chunk aligned, so the offsets below always land in three chunks.
+        BlockPos base = new BlockPos((origin.getX() >> 4) << 4, origin.getY(), (origin.getZ() >> 4) << 4);
         List<BlockPos> claimed = List.of(base, base.offset(16, 0, 0), base.offset(32, 0, 0), base.offset(33, 0, 1));
         claimed.forEach(pos -> ownership.claim(pos, team.id()));
 

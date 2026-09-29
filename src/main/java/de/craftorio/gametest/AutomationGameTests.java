@@ -124,9 +124,8 @@ public final class AutomationGameTests {
         helper.setBlock(chest, Blocks.CHEST);
         helper.assertTrue(handler(helper, drill, Direction.UP).insertItem(0, new ItemStack(Items.COAL), true).getCount() == 1,
                 "electric drills take no fuel");
-        helper.setBlock(new BlockPos(0, 2, 4), ModBlocks.COAL_GENERATOR.get());
+        SteamPower.place(helper, new BlockPos(0, 2, 4), Direction.WEST, 8);
         helper.setBlock(new BlockPos(1, 2, 3), ModBlocks.POWER_POLE.get());
-        handler(helper, new BlockPos(0, 2, 4), Direction.UP).insertItem(0, new ItemStack(Items.COAL, 8), false);
 
         helper.succeedWhen(() -> helper.assertTrue(count(helper, chest, ModItems.RAW_TITANIUM.get()) >= 3,
                 "electric drill output did not reach the chest"));

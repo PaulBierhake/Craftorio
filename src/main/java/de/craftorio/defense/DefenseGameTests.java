@@ -1,5 +1,6 @@
 package de.craftorio.defense;
 
+import net.minecraft.world.item.Items;
 import de.craftorio.Craftorio;
 import de.craftorio.defense.arena.ArenaLayout;
 import de.craftorio.defense.arena.Arenas;
@@ -129,7 +130,7 @@ public final class DefenseGameTests {
         TowerBlockEntity tower = helper.getBlockEntity(pos);
 
         helper.assertFalse(tower.upgrade(player), "no iron plates yet");
-        player.getInventory().add(new ItemStack(ModItems.IRON_PLATE.get(), 8));
+        player.getInventory().add(new ItemStack(Items.IRON_INGOT, 8));
         helper.assertTrue(tower.upgrade(player), "upgrade to level 2");
         helper.assertValueEqual(tower.upgradeLevel(), 2, "level");
         helper.assertValueEqual(team.balance(), 50L, "credits left");

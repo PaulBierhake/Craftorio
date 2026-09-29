@@ -17,27 +17,20 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
-/** Builds unlocked blueprints up to its {@link #tier()} from the player's inventory. */
+/** Hand crafting: builds the blueprints a team knows from the player's inventory, at once. */
 public final class WorkbenchBlock extends Block {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
-    private final int tier;
-    private final MapCodec<WorkbenchBlock> codec;
+    public static final MapCodec<WorkbenchBlock> CODEC = simpleCodec(WorkbenchBlock::new);
 
-    public WorkbenchBlock(int tier, Properties properties) {
+    public WorkbenchBlock(Properties properties) {
         super(properties);
-        this.tier = tier;
-        this.codec = simpleCodec(p -> new WorkbenchBlock(tier, p));
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-
-    public int tier() {
-        return tier;
     }
 
     @Override
     protected MapCodec<? extends Block> codec() {
-        return codec;
+        return CODEC;
     }
 
     @Override
@@ -53,11 +46,8 @@ public final class WorkbenchBlock extends Block {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(new SimpleMenuProvider((id, inventory, p) -> new WorkbenchMenu(id, inventory, pos, tier), getName()),
-                    buf -> {
-                        buf.writeBlockPos(pos);
-                        buf.writeVarInt(tier);
-                    });
+            serverPlayer.openMenu(new SimpleMenuProvider((id, inventory, p) -> new WorkbenchMenu(id, inventory, pos), getName()),
+                    buf -> buf.writeBlockPos(pos));
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

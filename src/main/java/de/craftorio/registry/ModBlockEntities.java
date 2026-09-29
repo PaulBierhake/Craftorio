@@ -49,8 +49,8 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(InserterBlockEntity::new, ModBlocks.INSERTER.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorBlockEntity>> GENERATOR = BLOCK_ENTITIES.register("coal_generator",
-            () -> BlockEntityType.Builder.of(GeneratorBlockEntity::new, ModBlocks.COAL_GENERATOR.get(), ModBlocks.REACTOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneratorBlockEntity>> GENERATOR = BLOCK_ENTITIES.register("generator",
+            () -> BlockEntityType.Builder.of(GeneratorBlockEntity::new, ModBlocks.REACTOR.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PowerPoleBlockEntity>> POWER_POLE = BLOCK_ENTITIES.register("power_pole",
@@ -59,7 +59,7 @@ public final class ModBlockEntities {
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ProcessingMachineBlockEntity>> MACHINE = BLOCK_ENTITIES.register("machine",
             () -> BlockEntityType.Builder.of(ProcessingMachineBlockEntity::new,
-                    ModBlocks.ELECTRIC_FURNACE.get(), ModBlocks.PRESS.get(), ModBlocks.ASSEMBLER.get()).build(null));
+                    ModBlocks.STONE_FURNACE.get(), ModBlocks.ELECTRIC_FURNACE.get(), ModBlocks.ASSEMBLER.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerBlockEntity>> TOWER = BLOCK_ENTITIES.register("tower",
@@ -87,6 +87,14 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaboratoryBlockEntity>> LABORATORY = BLOCK_ENTITIES.register("laboratory",
             () -> BlockEntityType.Builder.of(LaboratoryBlockEntity::new, ModBlocks.LABORATORY.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.BoilerBlockEntity>> BOILER = BLOCK_ENTITIES.register("boiler",
+            () -> BlockEntityType.Builder.of(de.craftorio.energy.BoilerBlockEntity::new, ModBlocks.BOILER.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.SteamEngineBlockEntity>> STEAM_ENGINE = BLOCK_ENTITIES.register("steam_engine",
+            () -> BlockEntityType.Builder.of(de.craftorio.energy.SteamEngineBlockEntity::new, ModBlocks.STEAM_ENGINE.get()).build(null));
+
     private ModBlockEntities() {
     }
 
@@ -100,7 +108,9 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, GENERATOR.get(), (generator, side) -> insertOnly(generator.fuel()));
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, GENERATOR.get(), (generator, side) -> generator.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.automation());
-        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.energy());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.type().usesFuel() ? null : machine.energy());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, BOILER.get(), (boiler, side) -> insertOnly(boiler.fuel()));
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, STEAM_ENGINE.get(), (engine, side) -> engine.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, LABORATORY.get(), (lab, side) -> lab.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LABORATORY.get(), (lab, side) -> lab.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? null : insertOnly(tower.ammo()));

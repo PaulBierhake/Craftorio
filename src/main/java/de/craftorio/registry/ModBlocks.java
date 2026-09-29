@@ -60,6 +60,7 @@ public final class ModBlocks {
     public static final DeferredBlock<OreFieldBlock> IRON_ORE_FIELD = oreField("iron_ore_field", () -> Items.RAW_IRON, MapColor.RAW_IRON);
     public static final DeferredBlock<OreFieldBlock> COPPER_ORE_FIELD = oreField("copper_ore_field", () -> Items.RAW_COPPER, MapColor.COLOR_ORANGE);
     public static final DeferredBlock<OreFieldBlock> COAL_FIELD = oreField("coal_field", () -> Items.COAL, MapColor.COLOR_BLACK);
+    public static final DeferredBlock<OreFieldBlock> STONE_FIELD = oreField("stone_field", () -> Items.COBBLESTONE, MapColor.STONE);
 
     public static final DeferredBlock<ElevatorBlock> ELEVATOR = BLOCKS.registerBlock("elevator", ElevatorBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F).requiresCorrectToolForDrops().sound(SoundType.METAL));
@@ -116,9 +117,14 @@ public final class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.METAL));
 
-    public static final DeferredBlock<GeneratorBlock> COAL_GENERATOR = BLOCKS.registerBlock("coal_generator",
-            properties -> new GeneratorBlock(GeneratorType.COAL, properties),
+    public static final DeferredBlock<de.craftorio.energy.BoilerBlock> BOILER = BLOCKS.registerBlock("boiler",
+            de.craftorio.energy.BoilerBlock::new,
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 12 : 0));
+    public static final DeferredBlock<de.craftorio.energy.SteamEngineBlock> STEAM_ENGINE = BLOCKS.registerBlock("steam_engine",
+            de.craftorio.energy.SteamEngineBlock::new,
+            machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 4 : 0));
+    public static final DeferredBlock<de.craftorio.energy.OffshorePumpBlock> OFFSHORE_PUMP = BLOCKS.registerBlock("offshore_pump",
+            de.craftorio.energy.OffshorePumpBlock::new, machineProperties().noOcclusion());
     public static final DeferredBlock<GeneratorBlock> REACTOR = BLOCKS.registerBlock("reactor",
             properties -> new GeneratorBlock(GeneratorType.REACTOR, properties),
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 15 : 4));
@@ -131,7 +137,7 @@ public final class ModBlocks {
                     .sound(SoundType.WOOD));
 
     public static final DeferredBlock<ProcessingMachineBlock> ELECTRIC_FURNACE = machine("electric_furnace", MachineType.ELECTRIC_FURNACE);
-    public static final DeferredBlock<ProcessingMachineBlock> PRESS = machine("press", MachineType.PRESS);
+    public static final DeferredBlock<ProcessingMachineBlock> STONE_FURNACE = machine("stone_furnace", MachineType.STONE_FURNACE);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
 
     public static final DeferredBlock<de.craftorio.research.LaboratoryBlock> LABORATORY = BLOCKS.registerBlock("laboratory",
@@ -140,9 +146,8 @@ public final class ModBlocks {
     public static final DeferredBlock<TerminalBlock> TERMINAL = BLOCKS.registerBlock("terminal", TerminalBlock::new,
             machineProperties().lightLevel(state -> 7));
 
-    public static final DeferredBlock<WorkbenchBlock> WORKBENCH = workbench("workbench", 1);
-    public static final DeferredBlock<WorkbenchBlock> ASSEMBLY_WORKBENCH = workbench("assembly_workbench", 2);
-    public static final DeferredBlock<WorkbenchBlock> PRECISION_WORKBENCH = workbench("precision_workbench", 3);
+    public static final DeferredBlock<WorkbenchBlock> WORKBENCH = BLOCKS.registerBlock("workbench", WorkbenchBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(SoundType.WOOD));
 
     public static final DeferredBlock<ZoneBlocks.Core> ZONE_CORE = BLOCKS.registerBlock("zone_core", ZoneBlocks.Core::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(-1.0F, 3_600_000.0F).lightLevel(state -> 12)
@@ -197,20 +202,6 @@ public final class ModBlocks {
         // Towers are only broken deliberately; enemies damage their hit points, never the block.
         return BLOCKS.registerBlock(name, properties -> new TowerBlock(type, properties),
                 BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2.5F, 1200.0F).noOcclusion().sound(sound));
-    }
-
-    /** The workbench block of a tier (1–3). */
-    public static DeferredBlock<WorkbenchBlock> workbench(int tier) {
-        return switch (tier) {
-            case 1 -> WORKBENCH;
-            case 2 -> ASSEMBLY_WORKBENCH;
-            default -> PRECISION_WORKBENCH;
-        };
-    }
-
-    private static DeferredBlock<WorkbenchBlock> workbench(String name, int tier) {
-        return BLOCKS.registerBlock(name, properties -> new WorkbenchBlock(tier, properties),
-                BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F).sound(tier == 1 ? SoundType.WOOD : SoundType.METAL));
     }
 
     private static BlockBehaviour.Properties machineProperties() {

@@ -30,6 +30,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         oreField(ModBlocks.IRON_ORE_FIELD.get());
         oreField(ModBlocks.COPPER_ORE_FIELD.get());
         oreField(ModBlocks.COAL_FIELD.get());
+        oreField(ModBlocks.STONE_FIELD.get());
         oreField(ModBlocks.TIN_ORE_FIELD.get());
         oreField(ModBlocks.LEAD_ORE_FIELD.get());
         oreField(ModBlocks.SULFUR_FIELD.get());
@@ -74,15 +75,16 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         horizontalBlock(ModBlocks.INSERTER.get(), inserter);
         simpleBlockItem(ModBlocks.INSERTER.get(), inserter);
 
-        machine(ModBlocks.COAL_GENERATOR.get(), "coal_generator");
+        machine(ModBlocks.BOILER.get(), "boiler");
+        machine(ModBlocks.STEAM_ENGINE.get(), "steam_engine");
+        simpleBlockWithItem(ModBlocks.OFFSHORE_PUMP.get(), models().cubeBottomTop("offshore_pump", modLoc("block/offshore_pump_side"),
+                modLoc("block/machine_top"), modLoc("block/offshore_pump_top")));
         machine(ModBlocks.REACTOR.get(), "reactor");
         machine(ModBlocks.ELECTRIC_FURNACE.get(), "electric_furnace");
-        machine(ModBlocks.PRESS.get(), "press");
+        machine(ModBlocks.STONE_FURNACE.get(), "stone_furnace");
         machine(ModBlocks.ASSEMBLER.get(), "assembler");
         machine(ModBlocks.LABORATORY.get(), "laboratory");
         workbench(ModBlocks.WORKBENCH.get(), "workbench");
-        workbench(ModBlocks.ASSEMBLY_WORKBENCH.get(), "assembly_workbench");
-        workbench(ModBlocks.PRECISION_WORKBENCH.get(), "precision_workbench");
         ModelFile terminal = models().orientable("terminal", modLoc("block/machine_side"), modLoc("block/terminal_front"), modLoc("block/machine_top"));
         horizontalBlock(ModBlocks.TERMINAL.get(), terminal);
         simpleBlockItem(ModBlocks.TERMINAL.get(), terminal);

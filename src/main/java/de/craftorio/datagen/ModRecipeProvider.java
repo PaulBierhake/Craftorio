@@ -37,7 +37,7 @@ public final class ModRecipeProvider extends RecipeProvider {
         smelt(output, ModItems.RAW_LEAD.get(), ModItems.LEAD_INGOT.get(), "lead_ingot");
         smelt(output, ModItems.RAW_TITANIUM.get(), ModItems.TITANIUM_INGOT.get(), "titanium_ingot");
 
-        // The only vanilla recipes: everything else is unlocked as a blueprint and built at the workbench.
+        // The only vanilla recipes: everything else is a blueprint built at the workbench.
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.WORKBENCH.get())
                 .pattern("III")
                 .pattern("PTP")
@@ -54,16 +54,6 @@ public final class ModRecipeProvider extends RecipeProvider {
                 .requires(Items.IRON_INGOT)
                 .unlockedBy("has_book", has(Items.BOOK))
                 .save(output);
-
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TERMINAL.get())
-                .pattern("IGI")
-                .pattern("IRI")
-                .pattern("III")
-                .define('I', Items.IRON_INGOT)
-                .define('G', Items.GLASS_PANE)
-                .define('R', Items.REDSTONE)
-                .unlockedBy("has_iron", has(Items.IRON_INGOT))
-                .save(output);
     }
 
     private static void smelt(RecipeOutput output, ItemLike raw, ItemLike ingot, String name) {
@@ -73,15 +63,20 @@ public final class ModRecipeProvider extends RecipeProvider {
     }
 
     private static void machineRecipes(RecipeOutput output) {
-        press(output, "iron_plate", Items.IRON_INGOT, new ItemStack(ModItems.IRON_PLATE.get()));
-        press(output, "copper_cable", Items.COPPER_INGOT, new ItemStack(ModItems.COPPER_CABLE.get(), 2));
+        // Furnace recipes with counted ingredients; times are Factorio seconds × 20 at speed 1.
+        smelting(output, "stone_brick", new ItemStack(ModItems.STONE_BRICK.get()), 64, SizedIngredient.of(Items.COBBLESTONE, 2));
 
-        assemble(output, "iron_gear", new ItemStack(ModItems.IRON_GEAR.get()), 20,
-                SizedIngredient.of(ModItems.IRON_PLATE.get(), 2));
-        assemble(output, "circuit", new ItemStack(ModItems.CIRCUIT.get()), 40,
-                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 3), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1));
-        assemble(output, "motor", new ItemStack(ModItems.MOTOR.get()), 80,
-                SizedIngredient.of(ModItems.IRON_GEAR.get(), 2), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1),
+        // Assembler: Factorio recipes (the assembling machine 1 has speed 0.5, so it takes twice as long).
+        assemble(output, "iron_gear", new ItemStack(ModItems.IRON_GEAR.get()), 10, SizedIngredient.of(Items.IRON_INGOT, 2));
+        assemble(output, "copper_cable", new ItemStack(ModItems.COPPER_CABLE.get(), 2), 10, SizedIngredient.of(Items.COPPER_INGOT, 1));
+        assemble(output, "circuit", new ItemStack(ModItems.CIRCUIT.get()), 10,
+                SizedIngredient.of(ModItems.COPPER_CABLE.get(), 3), SizedIngredient.of(Items.IRON_INGOT, 1));
+        assemble(output, "pipe", new ItemStack(ModItems.PIPE.get()), 10, SizedIngredient.of(Items.IRON_INGOT, 1));
+        assemble(output, "red_science", new ItemStack(ModItems.RED_SCIENCE.get()), 100,
+                SizedIngredient.of(Items.COPPER_INGOT, 1), SizedIngredient.of(ModItems.IRON_GEAR.get(), 1));
+        // Bridge until steel (engine unit: 1 steel + 1 gear + 2 pipes, 10 s)
+        assemble(output, "motor", new ItemStack(ModItems.MOTOR.get()), 200,
+                SizedIngredient.of(ModItems.IRON_GEAR.get(), 2), SizedIngredient.of(Items.IRON_INGOT, 1),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
         // Cave products
         assemble(output, "battery", new ItemStack(ModItems.BATTERY.get()), 60,
@@ -91,8 +86,8 @@ public final class ModRecipeProvider extends RecipeProvider {
                 SizedIngredient.of(ModItems.CIRCUIT.get(), 2), SizedIngredient.of(ModItems.TIN_INGOT.get(), 2),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 2));
         // Mine products
-        press(output, "titanium_plate", ModItems.TITANIUM_INGOT.get(), new ItemStack(ModItems.TITANIUM_PLATE.get()));
-        press(output, "uranium_pellet", ModItems.RAW_URANIUM.get(), new ItemStack(ModItems.URANIUM_PELLET.get()));
+        assemble(output, "titanium_plate", new ItemStack(ModItems.TITANIUM_PLATE.get()), 40, SizedIngredient.of(ModItems.TITANIUM_INGOT.get(), 1));
+        assemble(output, "uranium_pellet", new ItemStack(ModItems.URANIUM_PELLET.get()), 40, SizedIngredient.of(ModItems.RAW_URANIUM.get(), 1));
         assemble(output, "energy_crystal", new ItemStack(ModItems.ENERGY_CRYSTAL.get()), 120,
                 SizedIngredient.of(ModItems.CRYSTAL_SHARD.get(), 4), SizedIngredient.of(ModItems.ADVANCED_CIRCUIT.get(), 1),
                 SizedIngredient.of(ModItems.BATTERY.get(), 1));
@@ -100,14 +95,14 @@ public final class ModRecipeProvider extends RecipeProvider {
                 SizedIngredient.of(ModItems.URANIUM_PELLET.get(), 3), SizedIngredient.of(ModItems.TITANIUM_PLATE.get(), 2));
         // Ammunition for automated tower supply
         assemble(output, "bolt", new ItemStack(ModItems.BOLT.get(), 16), 20,
-                SizedIngredient.of(ModItems.IRON_PLATE.get(), 1), SizedIngredient.of(Items.STICK, 2));
+                SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.STICK, 2));
         assemble(output, "cartridge", new ItemStack(ModItems.CARTRIDGE.get(), 16), 30,
-                SizedIngredient.of(Items.COPPER_INGOT, 1), SizedIngredient.of(ModItems.IRON_PLATE.get(), 1), SizedIngredient.of(Items.COAL, 1));
+                SizedIngredient.of(Items.COPPER_INGOT, 1), SizedIngredient.of(Items.IRON_INGOT, 1), SizedIngredient.of(Items.COAL, 1));
     }
 
-    private static void press(RecipeOutput output, String name, ItemLike input, ItemStack result) {
-        output.accept(Craftorio.id("pressing/" + name),
-                new MachineRecipe(MachineRecipeKind.PRESSING, List.of(SizedIngredient.of(input, 1)), result, 40), null);
+    private static void smelting(RecipeOutput output, String name, ItemStack result, int time, SizedIngredient... ingredients) {
+        output.accept(Craftorio.id("smelting/" + name),
+                new MachineRecipe(MachineRecipeKind.SMELTING, List.of(ingredients), result, time), null);
     }
 
     private static void assemble(RecipeOutput output, String name, ItemStack result, int time, SizedIngredient... ingredients) {

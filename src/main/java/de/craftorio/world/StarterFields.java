@@ -14,7 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
-/** Guarantees one small field of each basic resource near spawn, so every world can start automating. */
+/** Guarantees one small field of each basic resource (iron, copper, coal, stone) near spawn, so every world can start automating. */
 @EventBusSubscriber(modid = Craftorio.MOD_ID)
 public final class StarterFields {
     private static final int SIZE = 30;
@@ -34,6 +34,7 @@ public final class StarterFields {
         place(level, spawn.offset(18, 0, 4), ModBlocks.IRON_ORE_FIELD.get(), random);
         place(level, spawn.offset(-14, 0, 16), ModBlocks.COPPER_ORE_FIELD.get(), random);
         place(level, spawn.offset(2, 0, -20), ModBlocks.COAL_FIELD.get(), random);
+        place(level, spawn.offset(-22, 0, -8), ModBlocks.STONE_FIELD.get(), random);
         state.placed = true;
         state.setDirty();
     }

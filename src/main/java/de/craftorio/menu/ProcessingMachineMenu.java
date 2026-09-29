@@ -11,7 +11,9 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class ProcessingMachineMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 5;
+    public static final int DATA_COUNT = 7;
+    public static final int FUEL_X = 56;
+    public static final int FUEL_Y = 59;
     public static final int BUTTON_PREVIOUS_RECIPE = 0;
     public static final int BUTTON_NEXT_RECIPE = 1;
 
@@ -32,6 +34,9 @@ public final class ProcessingMachineMenu extends MachineMenuBase {
             addSlot(new SlotItemHandler(machine.items(), slot, inputX(type, slot), inputY(type)));
         }
         addSlot(new SlotItemHandler(machine.items(), type.outputSlot(), outputX(type), inputY(type)));
+        if (type.usesFuel()) {
+            addSlot(new SlotItemHandler(machine.items(), type.fuelSlot(), FUEL_X, FUEL_Y));
+        }
         addPlayerInventory(inventory);
         addDataSlots(data);
     }
@@ -59,6 +64,12 @@ public final class ProcessingMachineMenu extends MachineMenuBase {
     public float progress() {
         int time = data.get(3);
         return time <= 0 ? 0 : Math.min(1F, (float) data.get(2) / time);
+    }
+
+    /** Remaining burn time of the current fuel item, 0 to 1 (fuel machines only). */
+    public float burnFraction() {
+        int total = data.get(6);
+        return total <= 0 ? 0 : Math.min(1F, (float) data.get(5) / total);
     }
 
     /** Index into {@link ProcessingMachineBlockEntity#assemblerRecipes}, or -1. */

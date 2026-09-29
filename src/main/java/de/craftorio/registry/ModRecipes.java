@@ -16,13 +16,13 @@ public final class ModRecipes {
     public static final DeferredRegister<RecipeType<?>> TYPES = DeferredRegister.create(Registries.RECIPE_TYPE, Craftorio.MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, Craftorio.MOD_ID);
 
-    public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> PRESSING =
-            TYPES.register("pressing", () -> RecipeType.simple(Craftorio.id("pressing")));
+    public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> SMELTING =
+            TYPES.register("smelting", () -> RecipeType.simple(Craftorio.id("smelting")));
     public static final DeferredHolder<RecipeType<?>, RecipeType<MachineRecipe>> ASSEMBLING =
             TYPES.register("assembling", () -> RecipeType.simple(Craftorio.id("assembling")));
 
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<MachineRecipe>> PRESSING_SERIALIZER =
-            SERIALIZERS.register("pressing", () -> serializer(MachineRecipeKind.PRESSING));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<MachineRecipe>> SMELTING_SERIALIZER =
+            SERIALIZERS.register("smelting", () -> serializer(MachineRecipeKind.SMELTING));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<MachineRecipe>> ASSEMBLING_SERIALIZER =
             SERIALIZERS.register("assembling", () -> serializer(MachineRecipeKind.ASSEMBLING));
 

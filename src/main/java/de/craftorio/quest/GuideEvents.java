@@ -32,9 +32,9 @@ public final class GuideEvents {
                 player.getPersistentData().put(Player.PERSISTED_NBT_TAG, persisted);
                 player.getInventory().placeItemBackInInventory(new ItemStack(ModItems.GUIDE_BOOK.get()));
                 if (CraftorioConfig.STARTER_KIT.get()) {
-                    // Iron and stone come from the starter pickaxe; gold is scarce early on, coal fuels furnace and first drill.
+                    // Iron, copper and stone come from the starter pickaxe; coal fuels the first furnace and drill.
                     for (ItemStack stack : List.of(new ItemStack(ModItems.STARTER_PICKAXE.get()), new ItemStack(ModItems.WORKBENCH.get()),
-                            new ItemStack(Items.GOLD_INGOT, 1), new ItemStack(Items.CHEST, 1), new ItemStack(Items.COAL, 16))) {
+                            new ItemStack(Items.COAL, 16))) {
                         player.getInventory().placeItemBackInInventory(stack);
                     }
                     player.sendSystemMessage(Component.translatable("craftorio.starter_kit").withStyle(ChatFormatting.GOLD));

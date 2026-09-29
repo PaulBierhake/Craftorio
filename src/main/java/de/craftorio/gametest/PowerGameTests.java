@@ -5,6 +5,7 @@ import de.craftorio.machine.ProcessingMachineBlockEntity;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.item.Item;
@@ -26,14 +27,12 @@ public final class PowerGameTests {
     private PowerGameTests() {
     }
 
-    /** Generator and machine next to one pole; returns the machine position. */
+    /** Steam engine and machine next to one pole; returns the machine position. */
     private static BlockPos poweredMachine(GameTestHelper helper, Block machine) {
-        BlockPos generator = new BlockPos(1, 1, 1);
-        helper.setBlock(generator, ModBlocks.COAL_GENERATOR.get());
+        SteamPower.place(helper, new BlockPos(1, 1, 1), Direction.WEST, 4);
         helper.setBlock(new BlockPos(2, 1, 2), ModBlocks.POWER_POLE.get());
         BlockPos machinePos = new BlockPos(3, 1, 1);
         helper.setBlock(machinePos, machine);
-        items(helper, generator).insertItem(0, new ItemStack(Items.COAL, 4), false);
         return machinePos;
     }
 
@@ -46,12 +45,33 @@ public final class PowerGameTests {
     }
 
     @GameTest(template = EMPTY, timeoutTicks = 200)
-    public static void pressMakesPlatesAndCables(GameTestHelper helper) {
-        BlockPos press = poweredMachine(helper, ModBlocks.PRESS.get());
-        items(helper, press).insertItem(0, new ItemStack(Items.COPPER_INGOT, 1), false);
+    public static void stoneFurnaceBurnsFuelAndSmeltsAtFactorioSpeed(GameTestHelper helper) {
+        BlockPos furnace = new BlockPos(2, 1, 2);
+        helper.setBlock(furnace, ModBlocks.STONE_FURNACE.get());
+        IItemHandler handler = items(helper, furnace);
+        helper.assertTrue(!handler.insertItem(0, new ItemStack(Items.DIRT), true).isEmpty(), "furnace must refuse dirt");
+        handler.insertItem(0, new ItemStack(Items.RAW_IRON, 2), false);
+        ProcessingMachineBlockEntity machine = helper.getBlockEntity(furnace);
+        helper.assertTrue(machine.items().insertItem(machine.type().fuelSlot(), new ItemStack(Items.COAL), false).isEmpty(), "coal goes into the fuel slot");
 
-        helper.assertTrue(!items(helper, press).insertItem(0, new ItemStack(Items.DIRT), true).isEmpty(), "press must refuse dirt");
-        helper.succeedWhen(() -> helper.assertValueEqual(output(helper, press, ModItems.COPPER_CABLE.get()), 2, "cables from one ingot"));
+        // 3.2 s per plate: one after 64 ticks, both after 128.
+        helper.runAtTickTime(50, () -> helper.assertValueEqual(output(helper, furnace, Items.IRON_INGOT), 0, "no plate before 3.2 s"));
+        helper.runAtTickTime(75, () -> helper.assertValueEqual(output(helper, furnace, Items.IRON_INGOT), 1, "first plate"));
+        helper.runAtTickTime(140, () -> {
+            helper.assertValueEqual(output(helper, furnace, Items.IRON_INGOT), 2, "second plate");
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 200)
+    public static void furnaceMakesStoneBricksFromTwoStones(GameTestHelper helper) {
+        BlockPos furnace = new BlockPos(2, 1, 2);
+        helper.setBlock(furnace, ModBlocks.STONE_FURNACE.get());
+        ProcessingMachineBlockEntity machine = helper.getBlockEntity(furnace);
+        machine.items().insertItem(machine.type().fuelSlot(), new ItemStack(Items.COAL), false);
+        items(helper, furnace).insertItem(0, new ItemStack(Items.COBBLESTONE, 5), false);
+
+        helper.succeedWhen(() -> helper.assertValueEqual(output(helper, furnace, ModItems.STONE_BRICK.get()), 2, "two bricks from four stones"));
     }
 
     @GameTest(template = EMPTY, timeoutTicks = 200)
@@ -60,22 +80,22 @@ public final class PowerGameTests {
         ProcessingMachineBlockEntity machine = helper.getBlockEntity(assembler);
         IItemHandler handler = items(helper, assembler);
 
-        helper.assertTrue(!handler.insertItem(0, new ItemStack(ModItems.IRON_PLATE.get()), true).isEmpty(), "no recipe selected yet");
+        helper.assertTrue(!handler.insertItem(0, new ItemStack(Items.IRON_INGOT), true).isEmpty(), "no recipe selected yet");
         machine.setSelectedRecipe(Craftorio.id("assembling/iron_gear"));
         helper.assertTrue(!handler.insertItem(0, new ItemStack(ModItems.COPPER_CABLE.get()), true).isEmpty(), "cable is no gear ingredient");
-        handler.insertItem(0, new ItemStack(ModItems.IRON_PLATE.get(), 4), false);
+        handler.insertItem(0, new ItemStack(Items.IRON_INGOT, 4), false);
 
         helper.succeedWhen(() -> helper.assertValueEqual(output(helper, assembler, ModItems.IRON_GEAR.get()), 2, "gears"));
     }
 
     @GameTest(template = EMPTY, timeoutTicks = 100)
     public static void machineWithoutPowerDoesNothing(GameTestHelper helper) {
-        BlockPos press = new BlockPos(2, 1, 2);
-        helper.setBlock(press, ModBlocks.PRESS.get());
-        items(helper, press).insertItem(0, new ItemStack(Items.IRON_INGOT), false);
+        BlockPos furnace = new BlockPos(2, 1, 2);
+        helper.setBlock(furnace, ModBlocks.ELECTRIC_FURNACE.get());
+        items(helper, furnace).insertItem(0, new ItemStack(Items.RAW_IRON), false);
 
         helper.runAtTickTime(80, () -> {
-            helper.assertValueEqual(output(helper, press, ModItems.IRON_PLATE.get()), 0, "plates without power");
+            helper.assertValueEqual(output(helper, furnace, Items.IRON_INGOT), 0, "plates without power");
             helper.succeed();
         });
     }
@@ -98,15 +118,13 @@ public final class PowerGameTests {
         });
     }
 
-    /** Generator with a pole at one end, pole and press 14 blocks away at the other end. */
+    /** Steam engine with a pole at one end, pole and furnace 14 blocks away at the other end. */
     private static BlockPos distantMachine(GameTestHelper helper) {
-        BlockPos generator = new BlockPos(0, 1, 8);
-        helper.setBlock(generator, ModBlocks.COAL_GENERATOR.get());
-        items(helper, generator).insertItem(0, new ItemStack(Items.COAL, 2), false);
+        SteamPower.place(helper, new BlockPos(0, 1, 8), Direction.NORTH, 2);
         helper.setBlock(new BlockPos(1, 1, 8), ModBlocks.POWER_POLE.get());
         helper.setBlock(new BlockPos(15, 1, 8), ModBlocks.POWER_POLE.get());
         BlockPos machine = new BlockPos(15, 1, 9);
-        helper.setBlock(machine, ModBlocks.PRESS.get());
+        helper.setBlock(machine, ModBlocks.ELECTRIC_FURNACE.get());
         return machine;
     }
 

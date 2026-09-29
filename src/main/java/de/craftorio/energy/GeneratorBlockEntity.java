@@ -68,7 +68,7 @@ public final class GeneratorBlockEntity extends BlockEntity implements PowerSour
 
     public GeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.GENERATOR.get(), pos, state);
-        this.type = state.getBlock() instanceof GeneratorBlock block ? block.type() : GeneratorType.COAL;
+        this.type = state.getBlock() instanceof GeneratorBlock block ? block.type() : GeneratorType.REACTOR;
         this.energy = new EnergyBuffer(type.capacity(), 0, type.maxOutput(), this::setChanged);
     }
 

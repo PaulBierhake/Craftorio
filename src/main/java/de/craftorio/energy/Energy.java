@@ -7,6 +7,8 @@ package de.craftorio.energy;
 public final class Energy {
     public static final int FE_PER_KJ = 20;
     public static final int FE_PER_MJ = 1_000 * FE_PER_KJ;
+    /** One steam engine, as in Factorio; a boiler (1.8 MW) feeds two of them. */
+    public static final int STEAM_ENGINE_KW = 900;
 
     private Energy() {
     }

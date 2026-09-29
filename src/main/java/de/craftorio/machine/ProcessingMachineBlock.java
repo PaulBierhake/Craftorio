@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-/** Electric furnace, press or assembler; runs on grid power. */
+/** Stone furnace (fuel), electric furnace or assembler (grid power). */
 public final class ProcessingMachineBlock extends MachineBaseBlock {
     private final MachineType machineType;
     private final MapCodec<ProcessingMachineBlock> codec;

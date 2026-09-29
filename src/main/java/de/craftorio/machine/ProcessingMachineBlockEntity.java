@@ -3,6 +3,7 @@ package de.craftorio.machine;
 import de.craftorio.CraftorioConfig;
 import de.craftorio.client.ClientTeamState;
 import de.craftorio.energy.EnergyBuffer;
+import de.craftorio.energy.Fuel;
 import de.craftorio.menu.ProcessingMachineMenu;
 import de.craftorio.menu.SplitIntData;
 import de.craftorio.recipe.MachineRecipe;
@@ -46,6 +47,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     private final IItemHandler automation;
     private int progress;
     private int recipeTime;
+    private int burnTicks;
+    private int burnTotal;
     private @Nullable ResourceLocation selectedRecipe;
 
     private final ContainerData data = new ContainerData() {
@@ -57,6 +60,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                 case 2 -> progress;
                 case 3 -> recipeTime;
                 case 4 -> selectedRecipeIndex();
+                case 5 -> burnTicks;
+                case 6 -> burnTotal;
                 default -> 0;
             };
         }
@@ -74,9 +79,12 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
     public ProcessingMachineBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.MACHINE.get(), pos, state);
         this.type = ((ProcessingMachineBlock) state.getBlock()).machineType();
-        this.items = new ItemStackHandler(type.inputSlots() + 1) {
+        this.items = new ItemStackHandler(type.slotCount()) {
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
+                if (type.usesFuel() && slot == type.fuelSlot()) {
+                    return Fuel.isFuel(stack);
+                }
                 return slot < type.inputSlots() && accepts(slot, stack);
             }
 
@@ -119,9 +127,9 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         boolean working = false;
         if (job == null) {
             progress = 0;
-        } else if (canOutput(job.result()) && energy.consume(type.energyPerTick())) {
+        } else if (canOutput(job.result()) && drawPower()) {
             working = true;
-            recipeTime = CraftorioConfig.craftingTicks(job.time());
+            recipeTime = CraftorioConfig.craftingTicks(type.ticks(job.time()));
             if (++progress >= recipeTime) {
                 progress = 0;
                 consume(job.ingredients());
@@ -138,28 +146,51 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         MachineBaseBlock.setActive(level, pos, state, working);
     }
 
+    /** Pays for one tick of work with fuel or grid power. */
+    private boolean drawPower() {
+        if (!type.usesFuel()) {
+            return energy.consume(type.energyPerTick());
+        }
+        if (burnTicks <= 0) {
+            ItemStack fuel = items.getStackInSlot(type.fuelSlot());
+            int ticks = Fuel.burnTicks(fuel, type.energyPerTick());
+            if (ticks <= 0) {
+                return false;
+            }
+            burnTicks = burnTotal = ticks;
+            ItemStack remainder = fuel.getCraftingRemainingItem();
+            fuel.shrink(1);
+            items.setStackInSlot(type.fuelSlot(), fuel.isEmpty() ? remainder : fuel);
+        }
+        burnTicks--;
+        return true;
+    }
+
     private record Job(List<SizedIngredient> ingredients, ItemStack result, int time) {
     }
 
     private @Nullable Job findJob(Level level) {
         RecipeInput input = inputs();
         return switch (type) {
-            case ELECTRIC_FURNACE -> {
+            case ELECTRIC_FURNACE, STONE_FURNACE -> {
                 ItemStack stack = items.getStackInSlot(0);
                 if (stack.isEmpty()) {
                     yield null;
                 }
                 SingleRecipeInput single = new SingleRecipeInput(stack);
-                yield level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, single, level)
+                Job smelting = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, single, level)
                         .map(recipe -> new Job(List.of(new SizedIngredient(Ingredient.of(stack.getItem()), 1)),
-                                recipe.value().assemble(single, level.registryAccess()), MachineType.SMELTING_TIME))
+                                recipe.value().assemble(single, level.registryAccess()), MachineType.smeltingTicks(recipe.value().getCookingTime())))
+                        .orElse(null);
+                if (smelting != null) {
+                    yield smelting;
+                }
+                yield level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.SMELTING.type()).stream()
+                        .filter(recipe -> knows(level, recipe.id()) && recipe.value().matches(input, level))
+                        .findFirst()
+                        .map(recipe -> new Job(recipe.value().ingredients(), recipe.value().result(), recipe.value().time()))
                         .orElse(null);
             }
-            case PRESS -> level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.PRESSING.type()).stream()
-                    .filter(recipe -> knows(level, recipe.id()) && recipe.value().matches(input, level))
-                    .findFirst()
-                    .map(recipe -> new Job(recipe.value().ingredients(), recipe.value().result(), recipe.value().time()))
-                    .orElse(null);
             case ASSEMBLER -> {
                 MachineRecipe recipe = selectedAssemblerRecipe(level);
                 yield recipe != null && recipe.matches(input, level) ? new Job(recipe.ingredients(), recipe.result(), recipe.time()) : null;
@@ -207,8 +238,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
             return true;
         }
         return switch (type) {
-            case ELECTRIC_FURNACE -> level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level).isPresent();
-            case PRESS -> level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.PRESSING.type()).stream()
+            case ELECTRIC_FURNACE, STONE_FURNACE -> level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level).isPresent()
+                    || level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.SMELTING.type()).stream()
                     .filter(recipe -> knows(level, recipe.id()))
                     .anyMatch(recipe -> recipe.value().ingredients().stream().anyMatch(ingredient -> ingredient.ingredient().test(stack)));
             case ASSEMBLER -> {
@@ -314,6 +345,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         super.saveAdditional(tag, registries);
         tag.put("items", items.serializeNBT(registries));
         tag.putInt("energy", energy.getEnergyStored());
+        tag.putInt("burn_ticks", burnTicks);
+        tag.putInt("burn_total", burnTotal);
         tag.putInt("progress", progress);
         if (selectedRecipe != null) {
             tag.putString("recipe", selectedRecipe.toString());
@@ -326,6 +359,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         items.deserializeNBT(registries, tag.getCompound("items"));
         energy.setEnergy(tag.getInt("energy"));
         progress = tag.getInt("progress");
+        burnTicks = tag.getInt("burn_ticks");
+        burnTotal = tag.getInt("burn_total");
         selectedRecipe = tag.contains("recipe") ? ResourceLocation.tryParse(tag.getString("recipe")) : null;
     }
 
@@ -342,7 +377,8 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-            return slot < type.inputSlots() ? items.insertItem(slot, stack, simulate) : stack;
+            boolean fuelSlot = type.usesFuel() && slot == type.fuelSlot();
+            return slot < type.inputSlots() || fuelSlot ? items.insertItem(slot, stack, simulate) : stack;
         }
 
         @Override

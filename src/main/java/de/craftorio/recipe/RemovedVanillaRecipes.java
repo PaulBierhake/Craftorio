@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  * Pickaxes, axes, shovels and hoes cannot be crafted any more: the starter pickaxe is enough, everything else
- * comes from the mod's own progression. Removed after the recipes are loaded, because NeoForge itself ships some of
+ * comes from the mod's own progression. Smelting cobblestone to stone is gone too: stone bricks take its place. Removed after the recipes are loaded, because NeoForge itself ships some of
  * these recipe files and a data file of this mod could not override them.
  */
 @EventBusSubscriber(modid = Craftorio.MOD_ID)
@@ -31,6 +31,8 @@ public final class RemovedVanillaRecipes {
             }
             names.add(ResourceLocation.withDefaultNamespace("netherite_" + tool + "_smithing"));
         }
+        // Stone is made from stone bricks' raw material only by the mod's 2:1 furnace recipe.
+        names.add(ResourceLocation.withDefaultNamespace("stone"));
         return names;
     }
 

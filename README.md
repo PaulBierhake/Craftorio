@@ -75,46 +75,44 @@ Verlässt das letzte Mitglied ein Team, wird es aufgelöst und sein Guthaben wan
 
 ### M3 – Verarbeitung & Energie
 
-- **Kohle-Generator**: verbrennt Brennstoff zu Strom (60 FE/t, Puffer 20.000 FE) – nur solange Platz im Puffer ist.
+- **Kessel + Dampfmaschine + Offshore-Pumpe** (ersetzen den Kohle-Generator): Der Kessel (Brennstoffslot, 1,8 MW) braucht
+  eine Offshore-Pumpe direkt neben sich, die selbst am Ufer (Wasserquelle daneben oder darunter) steht. Bis zu zwei
+  **Dampfmaschinen** direkt am Kessel liefern je 900 kW. Der Kessel verbrennt Brennstoff nur bei Bedarf; 1 Kohle (4 MJ)
+  versorgt zwei Maschinen 2,2 s. Das Wasser kommt bis zum Flüssigkeitsnetz (U6) direkt aus der Pumpe.
 - **Strommast**: verbindet sich automatisch mit Masten im Umkreis von 8 Blöcken (sichtbare Kupferkabel) und
   versorgt alle Maschinen und Generatoren im Umkreis von 2 Blöcken. Rechtsklick zeigt die Netzauslastung.
   Bei Strommangel wird die Energie anteilig verteilt – alle Maschinen werden gleich langsamer.
   Das Netz arbeitet mit Forge Energy (FE) und versorgt auch FE-Maschinen anderer Mods.
-- **Elektro-Schmelzofen** (Vanilla-Schmelzrezepte, 80 Ticks, 20 FE/t), **Presse** (15 FE/t) und
-  **Montagemaschine** (25 FE/t, Rezept per Pfeiltasten in der GUI wählen; jeder Eingangsslot nimmt genau
-  seine Zutat an). Alle Maschinen haben eine GUI und arbeiten mit Bändern und Greifarmen zusammen.
-- **Zwischenprodukte** mit Wertschöpfung (Preise ×10 skaliert):
-
-| Kette | Preis |
-|---|---|
-| Rohes Eisen → Eisenbarren → Eisenplatte | 10 → 16 → 22 ¢ |
-| Kupferbarren → 2 Kupferkabel | 16 → 2 × 12 ¢ |
-| 2 Eisenplatten → Zahnrad | 44 → 60 ¢ |
-| 3 Kabel + 1 Platte → Schaltkreis | 58 → 85 ¢ |
-| 2 Zahnräder + 1 Platte + 2 Kabel → Motor | 166 → 240 ¢ |
-
-- Maschinenrezepte sind Datapack-JSON (`craftorio:pressing`, `craftorio:assembling`).
+- **Steinofen** (Brennstoff, 90 kW, Geschwindigkeit 1: eine Platte in 3,2 s), **Elektro-Schmelzofen** (180 kW,
+  Geschwindigkeit 2) und **Montagemaschine 1** (75 kW, Geschwindigkeit 0,5, Rezept per Pfeiltasten in der GUI wählen;
+  jeder Eingangsslot nimmt genau seine Zutat an). Öfen schmelzen die Vanilla-Rezepte und Rezepte mit Mengen
+  (2 Stein → 1 Steinziegel, `craftorio:smelting`). Alle Maschinen haben eine GUI und arbeiten mit Bändern und Greifarmen zusammen.
+- **Zwischenprodukte** nach Factorio: Eisenplatte = Eisenbarren, Kupferplatte = Kupferbarren. Zahnrad (2 Eisen),
+  Kupferkabel (1 Kupfer → 2), Schaltkreis (1 Eisen + 3 Kabel) und Rohr (1 Eisen) entstehen von Hand an der Werkbank
+  (sofort) oder in der Montagemaschine (0,5 s bei Geschwindigkeit 1).
+- Maschinenrezepte sind Datapack-JSON (`craftorio:smelting`, `craftorio:assembling`; Zeit in Ticks bei
+  Geschwindigkeit 1 = Factorio-Sekunden × 20).
 
 ![Stromnetz](docs/screenshots/m3-stromnetz.png)
 ![Montagemaschine](docs/screenshots/m3-montagemaschine.png)
 
-### M4 – Terminal, Baupläne & Werkbänke
+### M4 – Terminal, Werkbank & Baupläne
 
-Craftorio-Maschinen entstehen in zwei Schritten: **Bauplan im Terminal freischalten** (Credits, ab Stufe 2 plus
-Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezepte gibt es nur noch für
-**Konstruktionswerkbank** und **Terminal**.
+Craftorio-Maschinen entstehen **an der Werkbank aus Rohstoffen** (Handarbeit, sofort). Welche Rezepte ein Team
+kennt, bestimmt die **Forschung** (siehe unten). Vanilla-Rezepte gibt es nur noch für die **Konstruktionswerkbank**
+und das Handbuch-Ersatzbuch.
 
-- **Terminal**: Bauplan-Baum mit Voraussetzungen, Preisen und Materiallisten (Tooltip); Tab **Statistik** mit
-  Einnahmen, Ausgaben, Einnahmen der letzten 10 Minuten und den meistverkauften Waren.
-- **Werkbänke**: Konstruktionswerkbank (Stufe 1) → Montagewerkbank (2) → Präzisionswerkbank (3). Aufgerüstet wird
-  am Platz per Rechtsklick mit dem **Aufrüstsatz**. Jede Werkbank baut alle Baupläne ihrer Stufe und darunter aus dem
-  Spielerinventar (Klick = 1, Shift-Klick = 10); fehlendes Material ist rot markiert.
-- **Baupläne sind Team-Wissen**: Beim Beitritt zu einem Team wandern sie mit, beim Austritt behält man eine Kopie.
-- **Start-Baupläne** (gratis): Handelsposten, Brenner-Bohrer, Förderband, Greifarm.
-- **Schlüsselmaterialien** (Bohrkern, Resonanzkristall, Tiefenkern, Sternenerz-Splitter) kommen ab M5 aus der
-  Tower Defense; bis dahin per `/give`.
-- Baupläne sind Datapack-JSON: `data/<namespace>/craftorio/blueprint/*.json`
-  (`result`, `ingredients`, `tier`, `cost`, `unlock_items`, `requires`, `order`).
+- **Terminal** (an der Werkbank gebaut): Tab **Forschung**, Tab **Statistik** mit Einnahmen, Ausgaben, Einnahmen der
+  letzten 10 Minuten, den meistverkauften Waren und den Abschlusszeiten der Forschungen, Abwehr und Leitfaden.
+- **Werkbank**: eine einzige, ohne Stufen. Sie baut alle Baupläne, die das Team kennt, aus dem Spielerinventar
+  (Klick = 1, Shift-Klick = 10); fehlendes Material ist rot markiert.
+- **Wissen ist Team-Wissen**: Beim Beitritt zu einem Team wandert es mit, beim Austritt behält man eine Kopie.
+- **Start-Baupläne** (ohne Forschung): Zahnrad, Kupferkabel, Schaltkreis, Rohr, Steinofen, Brenner-Bohrer, Förderband,
+  Greifarm, Kessel, Dampfmaschine, Offshore-Pumpe, Strommast, Elektro-Bohrer, Labor, rotes Wissenschaftspaket,
+  Handelsposten, Terminal, Arena-Tor, Armbrustturm, Bolzen.
+- **Schlüsselmaterialien** (Bohrkern, Resonanzkristall, Tiefenkern, Sternenerz-Splitter) kommen aus der Tower
+  Defense; sie werden beim ersten Einreihen bestimmter Forschungen abgegeben.
+- Baupläne sind Datapack-JSON: `data/<namespace>/craftorio/blueprint/*.json` (`result`, `ingredients`, `order`).
 
 ![Terminal](docs/screenshots/m4-terminal.png)
 ![Werkbank](docs/screenshots/m4-werkbank.png)
@@ -161,7 +159,7 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 - **Schichten** (nur in neu erzeugten Chunks): Oberfläche ab Y 50, darunter **Deckgestein** (Y 40–49),
   die **Höhlenschicht** (Y 0–39) und eine zweite Deckgesteinsschicht (Y −10 bis −1). Die Höhlenschicht besteht
   zunächst komplett aus unzerstörbarem **Höhlengeröll** – man kann nicht hineingraben.
-- **Höhleneingang** (Bauplan Stufe 2, braucht die Montagemaschine): an der Oberfläche aufstellen, dann Material
+- **Höhleneingang** (Forschung *Höhlenzugang*, braucht Motoren und den Bohrkern): an der Oberfläche aufstellen, dann Material
   anliefern (128 Bruchstein, 32 Eisenplatten, 16 Zahnräder, 8 Motoren – per Hand, Band oder Greifarm) und mit
   Strom (40 FE/t über einen Strommast) eine Minute bohren lassen.
 - Danach öffnet sich ein **Schacht mit Gerüst** (Schleichen zum Absteigen; oberhalb der Höhlen mit Stein
@@ -183,12 +181,11 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 
 - **Minenschicht** (Y −59 bis −11, nur in neu erzeugten Chunks): unter dem zweiten Deckgestein, zunächst
   komplett aus unzerstörbarem **Minengeröll**. Niedrigere Gänge mit vielen Säulen, Basaltboden und Tiefenschiefer.
-- **Minenschacht** (Bauplan Stufe 3 – Präzisionswerkbank, braucht den Warenaufzug): wird in einem
+- **Minenschacht** (Forschung *Minenschacht*, braucht den Tiefenkern und den Warenaufzug): wird in einem
   freigeschalteten Bereich der **Höhlenschicht** gebaut (sonst Fehlermeldung), braucht 64 Bleibarren,
-  16 Motoren, 8 Batterien und 8 fortgeschrittene Schaltkreise und bohrt mit **80 FE/t** (ein Kohlegenerator
-  reicht nicht). Danach führt ein Gerüstschacht durch das Deckgestein in die Minen und 7×7 Chunks werden ausgehöhlt.
-- **Minen-Rohstoffe**: **Diamant, Titan, Uran, Kristall**. Titan → Titanbarren (Ofen) → Titanplatte (Presse);
-  Uran → Uranpellet (Presse) → **Brennstab** (Montage, mit Titanplatten); Kristallsplitter → **Energiekristall**.
+  16 Motoren, 8 Batterien und 8 fortgeschrittene Schaltkreise und bohrt mit **80 FE/t** (kW). Danach führt ein Gerüstschacht durch das Deckgestein in die Minen und 7×7 Chunks werden ausgehöhlt.
+- **Minen-Rohstoffe**: **Diamant, Titan, Uran, Kristall**. Titan → Titanbarren (Ofen) → Titanplatte (Montage);
+  Uran → Uranpellet (Montage) → **Brennstab** (Montage, mit Titanplatten); Kristallsplitter → **Energiekristall**.
 - **Maschinen-Stufen**
   - **Elektrischer Bohrer** (Stufe 2, Freischaltung mit dem Resonanzkristall aus TD-Level 20): 3×3, doppelt so
     schnell wie der Brenner-Bohrer, 30 FE/t statt Brennstoff. **Tiefenbohrer** (Stufe 3): **5×5**, 4× schneller
@@ -211,13 +208,12 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 
 - **Craftorio-Handbuch**: Jeder Spieler bekommt es beim ersten Betreten (Ersatz: Buch + Eisenbarren, oder
   `/craftorio guide`); öffnen per Rechtsklick oder jederzeit mit **G**. Es schlägt den aktuellen Leitfaden-Schritt
-  auf und zeigt, **wie man ihn schafft**: Bauplan-Material mit Symbolen und Werkbank-Stufe, das Crafting-Raster
-  von Konstruktionswerkbank bzw. Terminal, Kaufpreis, oder bei Verkaufszielen die Quelle (Erzfeld, Ofen, Presse,
-  Montage). Mit den Pfeilen blättert man durch alle Schritte. Ist ein Ziel erreicht, wird der mittlere Button zu
+  auf und zeigt, **wie man ihn schafft**: Bauplan-Material mit Symbolen, die zugehörige Forschung, das Crafting-Raster
+  der Konstruktionswerkbank, oder bei Verkaufszielen die Quelle (Erzfeld, Ofen, Montage). Mit den Pfeilen blättert man durch alle Schritte. Ist ein Ziel erreicht, wird der mittlere Button zu
   **„Belohnung abholen"** – ein Terminal braucht man dafür nicht.
 
 - **Starter-Kit** (Server-Config `economy.starterKit`, Standard an): Beim ersten Betreten gibt es zusätzlich die
-  unzerstörbare **Starter-Spitzhacke**, eine Konstruktionswerkbank, 1 Goldbarren, 1 Truhe und 16 Kohle.
+  unzerstörbare **Starter-Spitzhacke**, eine Konstruktionswerkbank und 16 Kohle.
 - **Einstieg wie in Factorio – ohne Werkzeuge bauen zu müssen**: Mit der Starter-Spitzhacke baut man Erzfelder
   (das Feld bleibt stehen) und Stein von Hand ab, stellt einen Ofen her und schmilzt das erste Eisen. Der Leitfaden
   beginnt mit *16 Eisenerz per Hand abbauen* → *Brenner-Bohrer* → *Handelsposten* → *erster Verkauf*.
@@ -246,10 +242,9 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
   gehen seine Blöcke **und seine TD-Zone** an das neue Team über. Operatoren im Kreativmodus dürfen alles.
 - **Skalierung**: Pro zusätzlichem Teammitglied online kommen je Welle 2 Krabbler mehr (zusätzlich zu +35 %
   Gegner-HP); die Belohnung bleibt gleich.
-- **Balancing-Test**: Ein GameTest prüft, dass jede Presse-/Montagestufe mindestens 10 % Wert schafft und kein
+- **Balancing-Test**: Ein GameTest prüft, dass jede Montagestufe und jedes Ofenrezept mit Mengen mindestens 10 % Wert schafft und kein
   Schmelzrezept Wert vernichtet.
-- **EMI** (optional): Kategorien *Pressen*, *Montage* und *Bauplan (Werkbank)* mit Stufe, Preis und
-  Schlüsselmaterialien. **Jade** (optional): Besitzer-Team, Bohrer-Rate, Maschinenfortschritt, Turm-HP/Munition,
+- **EMI** (optional): Kategorien *Montage* und *Bauplan (Werkbank)* mit der nötigen Forschung. **Jade** (optional): Besitzer-Team, Bohrer-Rate, Maschinenfortschritt, Turm-HP/Munition,
   Ruinen-Kosten, Baustellen- und Aufzugsstatus sowie Ertrag und Wert von Erzfeldern.
   Im Dev-Client mit `./gradlew runClient -Pcompat` laden.
   **Empfehlung für Spieler:** EMI (für 1.21.1/NeoForge, z. B. von Modrinth) einfach zusätzlich in den
@@ -263,9 +258,9 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen) und **U2** (Forschungssystem).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem) und **U3** (Rot).
 
-- **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Kohle-Generator 900 kW (wie eine Dampfmaschine), Elektro-Ofen
+- **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
 - **Brennwerte** wie in Factorio: Kohle 4 MJ, Holz 2 MJ; Brenner-Bohrer und Generatoren rechnen die Brenndauer aus
   Brennwert und Leistung.
@@ -286,6 +281,12 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen) und **U2** (F
   `assembling/motor`) können gesperrt sein; Maschinen prüfen die Forschung des besitzenden Teams. Credits bezahlen
   keine Forschung mehr. Die Zeitpunkte der Abschlüsse stehen im Statistik-Tab. Der Baum deckt vorerst nur den
   heutigen Inhalt ab (mit rotem Paket) und wächst mit den folgenden Paketen.
+- **Rot (U3)**: Steinfeld als vierter Rohstoff, Steinofen, Kessel/Dampfmaschine/Offshore-Pumpe, Labor, Montagemaschine 1;
+  Rezepte und Zeiten nach Factorio 1.1 (durch `RecipeTableGameTests` gegen die Tabelle aus dem Umbau-Dokument
+  geprüft); Presse, Eisenplatten-Item, Kohle-Generator und die Werkbank-Stufen mit Aufrüstsätzen entfallen. Kein
+  Rezept braucht mehr Gold oder Redstone; `ProgressionGameTests` stellt sicher, dass jedes Rezept aus dem
+  Handabbau heraus herstellbar ist. Abweichungen: Kisten sind vorerst die Vanilla-Truhe, Brenner-Greifarm und
+  Greifarm-Varianten folgen mit U4 (Logistik), Flüssigkeiten mit U6.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
   Schwerter, Rüstung und Schere bleiben.
 
@@ -305,9 +306,10 @@ src/main/java/de/craftorio/
 │   └── cave/               Höhlen-/Minenschicht, Form (reine Logik mit Unit-Tests), Eingänge/Schächte, Aushöhlen
 ├── machine/                Bohrer-Stufen (Abbaufläche, Produktionsrate), Verarbeitungsmaschinen
 ├── logistics/              Förderband-Stufen (BeltLane = reine Spur-Logik mit Unit-Tests), Greifarm, Warenaufzug
-├── energy/                 Kohlegenerator/Reaktor, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
-├── recipe/                 Maschinenrezepte (Presse, Montage)
-├── blueprint/              Baupläne, Freischalt-Regeln, Terminal, Werkbänke
+├── energy/                 Kessel/Dampfmaschine/Offshore-Pumpe, Reaktor, Strommast, Stromnetz (Verteilung als reine Logik mit Unit-Tests)
+├── recipe/                 Maschinenrezepte (Ofen mit Mengen, Montage)
+├── blueprint/              Baupläne (Werkbank-Rezepte), Terminal, Werkbank
+├── research/               Forschung: Datenmodell, Regeln (rein), Labor, Aktionen
 ├── defense/                Tower Defense: Level-Ablauf, Gegner, Türme (LevelPlan/PathTracer/TowerStats = reine Logik)
 │   └── arena/              Arena-Dimension, Kartengenerator mit Themen (reine Logik), Bau, Regeln, Pfadstab, Einspeiser
 ├── menu/                   Container-Menüs der Maschinen

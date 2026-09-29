@@ -26,16 +26,16 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.BURNER_DRILL.get());
         dropSelf(ModBlocks.CONVEYOR_BELT.get());
         dropSelf(ModBlocks.INSERTER.get());
-        dropSelf(ModBlocks.COAL_GENERATOR.get());
+        dropSelf(ModBlocks.BOILER.get());
+        dropSelf(ModBlocks.STEAM_ENGINE.get());
+        dropSelf(ModBlocks.OFFSHORE_PUMP.get());
         dropSelf(ModBlocks.POWER_POLE.get());
         dropSelf(ModBlocks.ELECTRIC_FURNACE.get());
-        dropSelf(ModBlocks.PRESS.get());
+        dropSelf(ModBlocks.STONE_FURNACE.get());
         dropSelf(ModBlocks.ASSEMBLER.get());
         dropSelf(ModBlocks.LABORATORY.get());
         dropSelf(ModBlocks.TERMINAL.get());
         dropSelf(ModBlocks.WORKBENCH.get());
-        dropSelf(ModBlocks.ASSEMBLY_WORKBENCH.get());
-        dropSelf(ModBlocks.PRECISION_WORKBENCH.get());
         dropSelf(ModBlocks.ARENA_GATE.get());
         dropSelf(ModBlocks.ARENA_FEEDER.get());
         add(ModBlocks.PATH_BLOCK.get(), noDrop()); // laid with the path wand

@@ -15,20 +15,14 @@ public final class WorkbenchMenu extends AbstractContainerMenu {
     public static final int BULK_AMOUNT = 10;
 
     private final BlockPos pos;
-    private final int tier;
 
     public WorkbenchMenu(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, inventory, buf.readBlockPos(), buf.readVarInt());
+        this(containerId, inventory, buf.readBlockPos());
     }
 
-    public WorkbenchMenu(int containerId, Inventory inventory, BlockPos pos, int tier) {
+    public WorkbenchMenu(int containerId, Inventory inventory, BlockPos pos) {
         super(ModMenus.WORKBENCH.get(), containerId);
         this.pos = pos;
-        this.tier = tier;
-    }
-
-    public int tier() {
-        return tier;
     }
 
     public static int buttonId(int blueprintIndex, boolean bulk) {
@@ -38,7 +32,7 @@ public final class WorkbenchMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         return player instanceof ServerPlayer serverPlayer
-                && BlueprintActions.build(serverPlayer, id / 2, tier, id % 2 == 1 ? BULK_AMOUNT : 1);
+                && BlueprintActions.build(serverPlayer, id / 2, id % 2 == 1 ? BULK_AMOUNT : 1);
     }
 
     @Override

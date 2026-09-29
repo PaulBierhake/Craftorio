@@ -1,5 +1,6 @@
 package de.craftorio.research;
 
+import net.minecraft.world.item.Items;
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.Blueprints;
 import de.craftorio.machine.ProcessingMachineBlockEntity;
@@ -33,23 +34,24 @@ public final class ResearchGameTests {
         Team team = TeamData.registry(player.server).ensureTeam(player.getUUID(), "QueueTest");
         player.getInventory().clearContent();
 
-        helper.assertFalse(ResearchActions.toggle(player, index(helper, "gun_turrets")), "prerequisites are neither done nor queued");
+        helper.assertFalse(ResearchActions.toggle(player, index(helper, "energy_turrets")), "prerequisites are neither done nor queued");
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "turrets")), "queue turrets");
-        helper.assertFalse(ResearchActions.toggle(player, index(helper, "gun_turrets")), "automation is still missing");
+        helper.assertFalse(ResearchActions.toggle(player, index(helper, "engines")), "automation is still missing");
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "automation")), "queue automation");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "gun_turrets")), "prerequisites are queued before it");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "engines")), "queue engines");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "energy_turrets")), "prerequisites are queued before it");
         helper.assertValueEqual(team.activeResearch(), Craftorio.id("turrets").toString(), "first in the queue is active");
 
         helper.assertTrue(ResearchActions.toggle(player, index(helper, "turrets")), "dequeue turrets");
-        helper.assertFalse(team.researchQueue().contains(Craftorio.id("gun_turrets").toString()), "gun turrets lose their prerequisite");
-        helper.assertTrue(team.researchQueue().contains(Craftorio.id("automation").toString()), "automation stays");
+        helper.assertFalse(team.researchQueue().contains(Craftorio.id("energy_turrets").toString()), "energy turrets lose their prerequisite");
+        helper.assertTrue(team.researchQueue().contains(Craftorio.id("engines").toString()), "engines stay");
 
-        helper.assertFalse(ResearchActions.toggle(player, index(helper, "workbench_2")), "needs a drill core");
+        helper.assertFalse(ResearchActions.toggle(player, index(helper, "caves")), "needs a drill core");
         player.getInventory().add(new ItemStack(ModItems.DRILL_CORE.get()));
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "workbench_2")), "queue with drill core");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "caves")), "queue with drill core");
         helper.assertValueEqual(player.getInventory().countItem(ModItems.DRILL_CORE.get()), 0, "drill core handed in");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "workbench_2")), "dequeue");
-        helper.assertTrue(ResearchActions.toggle(player, index(helper, "workbench_2")), "queue again without paying twice");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "caves")), "dequeue");
+        helper.assertTrue(ResearchActions.toggle(player, index(helper, "caves")), "queue again without paying twice");
         helper.succeed();
     }
 
@@ -73,7 +75,7 @@ public final class ResearchGameTests {
         helper.assertFalse(labs[0].packs().insertItem(Research.Pack.GREEN.ordinal(), new ItemStack(ModItems.RED_SCIENCE.get()), false).isEmpty(),
                 "each slot takes only its own pack");
 
-        helper.assertFalse(Blueprints.isKnown(helper.getLevel().registryAccess(), team, blueprint(helper, "press")), "press is locked");
+        helper.assertFalse(Blueprints.isKnown(helper.getLevel().registryAccess(), team, blueprint(helper, "assembler")), "assembler is locked");
         // 10 units of 10 s: two labs need 5 units each, i.e. 1000 ticks.
         for (int tick = 0; tick < 1_100 && !team.researched().contains(automation); tick++) {
             for (int i = 0; i < 2; i++) {
@@ -84,7 +86,7 @@ public final class ResearchGameTests {
         helper.assertTrue(team.researched().contains(automation), "automation finished");
         helper.assertTrue(team.researchQueue().isEmpty(), "queue is empty");
         helper.assertTrue(labs[0].packs().getStackInSlot(0).isEmpty() && labs[1].packs().getStackInSlot(0).isEmpty(), "ten packs used, five per lab");
-        helper.assertTrue(Blueprints.isKnown(helper.getLevel().registryAccess(), team, blueprint(helper, "press")), "press unlocked");
+        helper.assertTrue(Blueprints.isKnown(helper.getLevel().registryAccess(), team, blueprint(helper, "assembler")), "assembler unlocked");
 
         labs[0].packs().insertItem(Research.Pack.RED.ordinal(), new ItemStack(ModItems.RED_SCIENCE.get(), 1), false);
         registry.enqueueResearch(team.id(), Craftorio.id("turrets").toString());
@@ -131,7 +133,7 @@ public final class ResearchGameTests {
 
         // Recipes that no research mentions stay open.
         assembler.setSelectedRecipe(Craftorio.id("assembling/iron_gear"));
-        helper.assertTrue(assembler.items().insertItem(0, new ItemStack(ModItems.IRON_PLATE.get(), 2), false).isEmpty() || true, "open recipes work");
+        helper.assertTrue(assembler.items().insertItem(0, new ItemStack(Items.IRON_INGOT, 2), false).isEmpty() || true, "open recipes work");
         helper.succeed();
     }
 }
