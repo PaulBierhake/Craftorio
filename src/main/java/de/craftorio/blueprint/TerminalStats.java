@@ -9,8 +9,18 @@ import java.util.Comparator;
 import java.util.List;
 
 /** Snapshot of a team's statistics, sent when the terminal opens. */
-public record TerminalStats(long totalEarned, long totalSpent, long earnedLastTenMinutes, List<Row> topSales) {
-    public static final int TOP_ROWS = 7;
+public record TerminalStats(long totalEarned, long totalSpent, long earnedLastTenMinutes, List<Row> topSales,
+                            List<Finished> researched) {
+    public static final int TOP_ROWS = 4;
+    public static final int FINISHED_ROWS = 4;
+
+    /** A finished research with the game time in ticks it was finished at. */
+    public record Finished(String research, long tick) {
+        static final StreamCodec<RegistryFriendlyByteBuf, Finished> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8, Finished::research,
+                ByteBufCodecs.VAR_LONG, Finished::tick,
+                Finished::new);
+    }
 
     public record Row(String item, long count, long credits) {
         static final StreamCodec<RegistryFriendlyByteBuf, Row> STREAM_CODEC = StreamCodec.composite(
@@ -25,6 +35,7 @@ public record TerminalStats(long totalEarned, long totalSpent, long earnedLastTe
             ByteBufCodecs.VAR_LONG, TerminalStats::totalSpent,
             ByteBufCodecs.VAR_LONG, TerminalStats::earnedLastTenMinutes,
             Row.STREAM_CODEC.apply(ByteBufCodecs.list()), TerminalStats::topSales,
+            Finished.STREAM_CODEC.apply(ByteBufCodecs.list()), TerminalStats::researched,
             TerminalStats::new);
 
     /** @param questProgress progress of every quest in guide order */
@@ -34,6 +45,11 @@ public record TerminalStats(long totalEarned, long totalSpent, long earnedLastTe
                 .sorted(Comparator.comparingLong(Row::credits).reversed())
                 .limit(TOP_ROWS)
                 .toList();
-        return new TerminalStats(team.totalEarned(), team.totalSpent(), team.earnedInLastMinutes(currentMinute, 10), rows);
+        List<Finished> finished = team.researchTimes().entrySet().stream()
+                .map(entry -> new Finished(entry.getKey(), entry.getValue()))
+                .sorted(Comparator.comparingLong(Finished::tick).reversed())
+                .limit(FINISHED_ROWS)
+                .toList();
+        return new TerminalStats(team.totalEarned(), team.totalSpent(), team.earnedInLastMinutes(currentMinute, 10), rows, finished);
     }
 }

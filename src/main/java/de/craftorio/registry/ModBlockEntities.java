@@ -9,6 +9,7 @@ import de.craftorio.defense.TowerRuinBlockEntity;
 import de.craftorio.energy.GeneratorBlockEntity;
 import de.craftorio.energy.PowerPoleBlockEntity;
 import de.craftorio.machine.ProcessingMachineBlockEntity;
+import de.craftorio.research.LaboratoryBlockEntity;
 import de.craftorio.world.cave.CaveEntranceBlockEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -82,6 +83,10 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ArenaFeederBlockEntity>> ARENA_FEEDER = BLOCK_ENTITIES.register("arena_feeder",
             () -> BlockEntityType.Builder.of(ArenaFeederBlockEntity::new, ModBlocks.ARENA_FEEDER.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaboratoryBlockEntity>> LABORATORY = BLOCK_ENTITIES.register("laboratory",
+            () -> BlockEntityType.Builder.of(LaboratoryBlockEntity::new, ModBlocks.LABORATORY.get()).build(null));
+
     private ModBlockEntities() {
     }
 
@@ -96,6 +101,8 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, GENERATOR.get(), (generator, side) -> generator.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, MACHINE.get(), (machine, side) -> machine.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, MACHINE.get(), (machine, side) -> machine.energy());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, LABORATORY.get(), (lab, side) -> lab.automation());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LABORATORY.get(), (lab, side) -> lab.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, TOWER.get(), (tower, side) -> tower.type().usesEnergy() ? null : insertOnly(tower.ammo()));
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ELEVATOR.get(), (elevator, side) -> elevator.input());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CAVE_ENTRANCE.get(), (site, side) -> site.materials());

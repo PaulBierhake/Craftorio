@@ -22,7 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
-/** Unlocking in the terminal, building at workbenches, upgrading workbenches. */
+/** Building at workbenches, upgrading workbenches. */
 @GameTestHolder(Craftorio.MOD_ID)
 @PrefixGameTestTemplate(false)
 @SuppressWarnings("removal") // makeMockServerPlayerInLevel is the only way to get a player in 1.21.1 game tests
@@ -30,34 +30,6 @@ public final class BlueprintGameTests {
     private static final String EMPTY = "empty";
 
     private BlueprintGameTests() {
-    }
-
-    @GameTest(template = EMPTY)
-    public static void unlockingNeedsPrerequisitesAndCosts(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Team team = team(player, 1000);
-
-        helper.assertFalse(BlueprintActions.unlock(player, index(helper, "press")), "press needs the generator first");
-        helper.assertTrue(BlueprintActions.unlock(player, index(helper, "coal_generator")), "generator unlock");
-        helper.assertTrue(BlueprintActions.unlock(player, index(helper, "press")), "press unlock");
-        helper.assertValueEqual(team.balance(), 1000L - 250 - 400, "balance after two blueprints");
-        helper.assertValueEqual(team.totalSpent(), 650L, "spent");
-        helper.assertTrue(BlueprintActions.unlock(player, index(helper, "electric_furnace")), "furnace for 300 of the 350 left");
-        helper.assertFalse(BlueprintActions.unlock(player, index(helper, "power_pole")), "only 50 credits left for a 100 credit pole");
-        helper.succeed();
-    }
-
-    @GameTest(template = EMPTY)
-    public static void keyMaterialIsConsumedOnUnlock(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        Team team = team(player, 5000);
-        TeamData.registry(player.server).unlock(team.id(), Craftorio.id("press").toString());
-
-        helper.assertFalse(BlueprintActions.unlock(player, index(helper, "workbench_upgrade_2")), "needs a drill core");
-        player.getInventory().add(new ItemStack(ModItems.DRILL_CORE.get()));
-        helper.assertTrue(BlueprintActions.unlock(player, index(helper, "workbench_upgrade_2")), "unlock with drill core");
-        helper.assertValueEqual(count(player, ModItems.DRILL_CORE.get()), 0, "drill cores left");
-        helper.succeed();
     }
 
     @GameTest(template = EMPTY)
@@ -83,13 +55,12 @@ public final class BlueprintGameTests {
         helper.assertValueEqual(count(player, Items.IRON_INGOT), 14, "iron left");
 
         player.getInventory().add(new ItemStack(Items.COPPER_INGOT, 4));
-        player.getInventory().add(new ItemStack(Items.FURNACE));
-        player.getInventory().add(new ItemStack(Items.REDSTONE, 2));
-        helper.assertFalse(BlueprintActions.build(player, index(helper, "coal_generator"), 1, 1), "generator is not unlocked");
-        TeamData.registry(player.server).unlock(team.id(), Craftorio.id("coal_generator").toString());
-        helper.assertTrue(BlueprintActions.build(player, index(helper, "coal_generator"), 1, 1), "generator after unlock");
-        helper.assertValueEqual(count(player, ModItems.COAL_GENERATOR.get()), 1, "generators built");
-        helper.assertFalse(BlueprintActions.build(player, index(helper, "coal_generator"), 1, 1), "materials used up");
+        player.getInventory().add(new ItemStack(Items.PISTON));
+        helper.assertFalse(BlueprintActions.build(player, index(helper, "press"), 1, 1), "press needs the research");
+        TeamData.registry(player.server).grantResearch(team.id(), Craftorio.id("automation").toString());
+        helper.assertTrue(BlueprintActions.build(player, index(helper, "press"), 1, 1), "press after the research");
+        helper.assertValueEqual(count(player, ModItems.PRESS.get()), 1, "presses built");
+        helper.assertFalse(BlueprintActions.build(player, index(helper, "press"), 1, 1), "materials used up");
         helper.succeed();
     }
 
@@ -97,7 +68,7 @@ public final class BlueprintGameTests {
     public static void higherTierBlueprintsNeedUpgradedWorkbench(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         Team team = team(player, 0);
-        TeamData.registry(player.server).unlock(team.id(), Craftorio.id("assembler").toString());
+        TeamData.registry(player.server).grantResearch(team.id(), Craftorio.id("assembling").toString());
         player.getInventory().add(new ItemStack(ModItems.IRON_PLATE.get(), 12));
         player.getInventory().add(new ItemStack(ModItems.COPPER_CABLE.get(), 8));
         player.getInventory().add(new ItemStack(Items.GOLD_INGOT, 2));

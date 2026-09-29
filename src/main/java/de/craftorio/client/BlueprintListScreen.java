@@ -105,12 +105,6 @@ public abstract class BlueprintListScreen<M extends AbstractContainerMenu> exten
         for (SizedIngredient ingredient : blueprint.ingredients()) {
             lines.add(Component.literal(ingredient.count() + "× ").append(firstItem(ingredient).getHoverName()));
         }
-        if (!blueprint.unlockItems().isEmpty()) {
-            lines.add(Component.translatable("craftorio.blueprint.unlock_items").withColor(GRAY));
-            for (SizedIngredient ingredient : blueprint.unlockItems()) {
-                lines.add(Component.literal(ingredient.count() + "× ").append(firstItem(ingredient).getHoverName()));
-            }
-        }
         return lines;
     }
 

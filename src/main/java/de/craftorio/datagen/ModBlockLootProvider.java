@@ -31,6 +31,7 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.ELECTRIC_FURNACE.get());
         dropSelf(ModBlocks.PRESS.get());
         dropSelf(ModBlocks.ASSEMBLER.get());
+        dropSelf(ModBlocks.LABORATORY.get());
         dropSelf(ModBlocks.TERMINAL.get());
         dropSelf(ModBlocks.WORKBENCH.get());
         dropSelf(ModBlocks.ASSEMBLY_WORKBENCH.get());

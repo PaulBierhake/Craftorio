@@ -1,6 +1,5 @@
 package de.craftorio.blueprint;
 
-import de.craftorio.economy.Credits;
 import de.craftorio.team.Team;
 import de.craftorio.team.TeamData;
 import de.craftorio.team.TeamRegistry;
@@ -12,34 +11,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-/** Server-side unlocking (terminal) and building (workbench). Results are shown to the player. */
+/** Server-side building at the workbench. Results are shown to the player. */
 public final class BlueprintActions {
     private BlueprintActions() {
-    }
-
-    public static boolean unlock(ServerPlayer player, int index) {
-        List<Holder.Reference<Blueprint>> all = Blueprints.sorted(player.registryAccess());
-        if (index < 0 || index >= all.size()) {
-            return false;
-        }
-        Holder.Reference<Blueprint> holder = all.get(index);
-        Blueprint blueprint = holder.value();
-        TeamRegistry registry = TeamData.registry(player.server);
-        Team team = registry.ensureTeam(player.getUUID(), player.getGameProfile().getName());
-        UnlockRules.Status status = Blueprints.status(holder, team.unlocked(), team.balance(), player.getInventory());
-        if (status != UnlockRules.Status.AVAILABLE) {
-            player.displayClientMessage(Component.translatable("craftorio.blueprint.status." + status.name().toLowerCase())
-                    .withStyle(ChatFormatting.RED), true);
-            return false;
-        }
-        if (!TeamData.maySpend(player) || !registry.withdraw(team.id(), blueprint.cost())) {
-            return false;
-        }
-        Blueprints.take(player.getInventory(), blueprint.unlockItems(), 1);
-        registry.unlock(team.id(), Blueprints.id(holder));
-        player.displayClientMessage(Component.translatable("craftorio.blueprint.unlocked",
-                blueprint.result().getHoverName(), Credits.format(blueprint.cost())).withStyle(ChatFormatting.GREEN), true);
-        return true;
     }
 
     /** Builds a blueprint up to {@code times} times from the player's inventory at a workbench of {@code benchTier}. */
@@ -51,7 +25,7 @@ public final class BlueprintActions {
         Holder.Reference<Blueprint> holder = all.get(index);
         Blueprint blueprint = holder.value();
         Team team = TeamData.registry(player.server).ensureTeam(player.getUUID(), player.getGameProfile().getName());
-        if (!Blueprints.isUnlocked(holder, team)) {
+        if (!Blueprints.isKnown(player.registryAccess(), team, holder)) {
             player.displayClientMessage(Component.translatable("craftorio.blueprint.locked").withStyle(ChatFormatting.RED), true);
             return false;
         }

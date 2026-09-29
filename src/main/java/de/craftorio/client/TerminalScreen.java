@@ -3,7 +3,9 @@ package de.craftorio.client;
 import de.craftorio.blueprint.Blueprint;
 import de.craftorio.blueprint.Blueprints;
 import de.craftorio.blueprint.TerminalStats;
-import de.craftorio.blueprint.UnlockRules;
+import de.craftorio.research.Research;
+import de.craftorio.research.ResearchRules;
+import de.craftorio.research.Researches;
 import de.craftorio.defense.EnemyType;
 import de.craftorio.defense.LevelPlan;
 import de.craftorio.defense.arena.ArenaTheme;
@@ -27,14 +29,15 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
-    private enum Tab { BLUEPRINTS, DEFENSE, STATS, QUESTS }
+    private enum Tab { RESEARCH, DEFENSE, STATS, QUESTS }
 
-    private Tab tab = Tab.BLUEPRINTS;
+    private Tab tab = Tab.RESEARCH;
     private Button startButton;
     private Button autoButton;
     private Button repairButton;
     private Button callButton;
     private int questScroll;
+    private int researchScroll;
 
     public TerminalScreen(TerminalMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -47,7 +50,7 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     @Override
     protected void init() {
         super.init();
-        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.blueprints"), button -> tab = Tab.BLUEPRINTS)
+        addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.research"), button -> tab = Tab.RESEARCH)
                 .bounds(leftPos + 8, topPos + 17, 58, 14).build());
         addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.defense"), button -> tab = Tab.DEFENSE)
                 .bounds(leftPos + 68, topPos + 17, 60, 14).build());
@@ -67,7 +70,7 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
 
     @Override
     protected boolean showList() {
-        return tab == Tab.BLUEPRINTS;
+        return false;
     }
 
     @Override
@@ -85,77 +88,127 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         repairButton.setMessage(Component.translatable("craftorio.td.button.repair", Credits.format(td.repairCost())));
     }
 
+    /** The terminal has no blueprint list; its research rows are drawn by {@link #renderResearch}. */
     @Override
     protected void renderRow(GuiGraphics graphics, int index, Holder.Reference<Blueprint> holder, int x, int y, int mouseX, int mouseY) {
-        Blueprint blueprint = holder.value();
-        UnlockRules.Status status = Blueprints.status(holder, ClientTeamState.unlocked(), ClientTeamState.balance(), minecraft.player.getInventory());
-        int background = switch (status) {
-            case UNLOCKED -> 0xFF22382A;
-            case AVAILABLE -> 0xFF2E2E40;
-            default -> 0xFF28282C;
-        };
-        renderRowBackground(graphics, x, y, background);
-        graphics.renderItem(blueprint.result(), x + 3, y + 3);
-        graphics.renderItemDecorations(font, blueprint.result(), x + 3, y + 3);
-        graphics.drawString(font, font.plainSubstrByWidth(blueprint.result().getHoverName().getString(), 120), x + 24, y + 3, 0xFFFFFF, false);
-        int textRight = x + BUTTON_X - 4;
-        if (status != UnlockRules.Status.UNLOCKED) {
-            int iconX = x + BUTTON_X - 4;
-            String cost = blueprint.cost() > 0 ? Credits.format(blueprint.cost()) : "";
-            iconX -= font.width(cost);
-            textRight = iconX - 18 * blueprint.unlockItems().size() - 4;
-            graphics.drawString(font, cost, iconX, y + 8, status == UnlockRules.Status.NOT_ENOUGH_CREDITS ? RED : GOLD, false);
-            for (SizedIngredient key : blueprint.unlockItems()) {
-                iconX -= 18;
-                graphics.renderItem(firstItem(key), iconX, y + 3);
+    }
+
+    @Override
+    protected void clickRow(int index, Holder.Reference<Blueprint> blueprint, boolean shift) {
+    }
+
+    private List<Holder.Reference<Research>> researches() {
+        return minecraft == null || minecraft.level == null ? List.of() : Researches.sorted(minecraft.level.registryAccess());
+    }
+
+    private ResearchRules.Status researchStatus(Holder.Reference<Research> holder) {
+        return ResearchRules.status(Researches.id(holder), Researches.requires(holder.value()), ClientTeamState.researched(),
+                ClientTeamState.researchQueue());
+    }
+
+    private static Component researchName(String id) {
+        return Component.translatable("craftorio.research." + id.substring(id.indexOf(':') + 1));
+    }
+
+    private void renderResearch(GuiGraphics graphics, int mouseX, int mouseY) {
+        List<Holder.Reference<Research>> all = researches();
+        researchScroll = Math.max(0, Math.min(researchScroll, Math.max(0, all.size() - VISIBLE_ROWS)));
+        double costFactor = 1.0;
+        Holder.Reference<Research> hovered = null;
+        for (int row = 0; row < VISIBLE_ROWS && researchScroll + row < all.size(); row++) {
+            Holder.Reference<Research> holder = all.get(researchScroll + row);
+            Research research = holder.value();
+            String id = Researches.id(holder);
+            ResearchRules.Status status = researchStatus(holder);
+            int x = leftPos + LIST_LEFT;
+            int y = topPos + LIST_TOP + row * ROW_HEIGHT;
+            renderRowBackground(graphics, x, y, switch (status) {
+                case DONE -> 0xFF22382A;
+                case ACTIVE -> 0xFF3A3420;
+                case QUEUED -> 0xFF2A2E40;
+                case AVAILABLE -> 0xFF2E2E40;
+                case LOCKED -> 0xFF28282C;
+            });
+            if (status == ResearchRules.Status.ACTIVE) {
+                graphics.renderOutline(x, y, LIST_WIDTH - 6, ROW_HEIGHT - 2, 0xFFFFD54F);
+                long total = Math.max(1, research.units(costFactor));
+                int width = (int) ((LIST_WIDTH - 8) * Math.min(1.0, (double) ClientTeamState.activeProgress() / total));
+                graphics.fill(x + 1, y + ROW_HEIGHT - 5, x + 1 + width, y + ROW_HEIGHT - 3, 0xFF5AD05A);
             }
-            renderButton(graphics, Component.translatable("craftorio.terminal.unlock"), x, y, status == UnlockRules.Status.AVAILABLE, mouseX, mouseY);
+            graphics.renderItem(new ItemStack(research.packs().get(research.packs().size() - 1).item()), x + 3, y + 3);
+            graphics.drawString(font, font.plainSubstrByWidth(researchName(id).getString(), BUTTON_X - 30), x + 22, y + 3,
+                    status == ResearchRules.Status.LOCKED ? GRAY : 0xFFFFFF, false);
+            String detail = switch (status) {
+                case DONE -> Component.translatable("craftorio.research.status.done").getString();
+                case ACTIVE -> Component.translatable("craftorio.research.status.active", ClientTeamState.activeProgress(),
+                        research.units(costFactor)).getString();
+                case QUEUED -> Component.translatable("craftorio.research.status.queued", ClientTeamState.researchQueue().indexOf(id) + 1).getString();
+                case AVAILABLE -> research.costLine(costFactor);
+                case LOCKED -> Component.translatable("craftorio.research.status.locked", missingPrerequisite(research)).getString();
+            };
+            graphics.drawString(font, font.plainSubstrByWidth(detail, BUTTON_X - 30), x + 22, y + 13,
+                    status == ResearchRules.Status.DONE ? GREEN : status == ResearchRules.Status.LOCKED ? GRAY : 0xC8C8D8, false);
+            boolean queueable = ResearchRules.canQueue(id, Researches.requires(research), ClientTeamState.researched(), ClientTeamState.researchQueue());
+            if (status == ResearchRules.Status.ACTIVE || status == ResearchRules.Status.QUEUED) {
+                renderButton(graphics, Component.translatable("craftorio.research.remove"), x, y, true, mouseX, mouseY);
+            } else if (queueable) {
+                renderButton(graphics, Component.translatable("craftorio.research.queue"), x, y, true, mouseX, mouseY);
+            }
+            if (mouseX >= x && mouseX < x + BUTTON_X - 4 && mouseY >= y && mouseY < y + ROW_HEIGHT - 2) {
+                hovered = holder;
+            }
         }
-        String line = statusLine(holder, status).getString();
-        graphics.drawString(font, font.plainSubstrByWidth(line, textRight - x - 24), x + 24, y + 13, statusColor(status), false);
+        if (all.size() > VISIBLE_ROWS) {
+            int trackTop = topPos + LIST_TOP;
+            int trackHeight = VISIBLE_ROWS * ROW_HEIGHT - 2;
+            int thumb = Math.max(10, trackHeight * VISIBLE_ROWS / all.size());
+            int thumbY = trackTop + (trackHeight - thumb) * researchScroll / (all.size() - VISIBLE_ROWS);
+            graphics.fill(leftPos + imageWidth - 6, thumbY, leftPos + imageWidth - 3, thumbY + thumb, 0xFF8A8A9A);
+        }
+        if (hovered != null) {
+            graphics.renderComponentTooltip(font, researchTooltip(hovered.value(), costFactor), mouseX, mouseY);
+        }
     }
 
-    private Component statusLine(Holder.Reference<Blueprint> holder, UnlockRules.Status status) {
-        Component tier = Component.translatable("craftorio.blueprint.tier", holder.value().tier());
-        Component detail = switch (status) {
-            case UNLOCKED -> Component.translatable("craftorio.blueprint.status.unlocked");
-            case MISSING_PREREQUISITE -> Component.translatable("craftorio.blueprint.requires", missingPrerequisite(holder.value()));
-            case MISSING_KEY_ITEMS -> Component.translatable("craftorio.blueprint.status.missing_key_items");
-            case NOT_ENOUGH_CREDITS -> Component.translatable("craftorio.blueprint.status.not_enough_credits");
-            case AVAILABLE -> Component.translatable("craftorio.blueprint.status.available");
-        };
-        return tier.copy().append(" · ").append(detail);
-    }
-
-    private Component missingPrerequisite(Blueprint blueprint) {
-        var registry = minecraft.level.registryAccess().registryOrThrow(ModRegistries.BLUEPRINTS);
-        for (ResourceLocation required : blueprint.requires()) {
-            if (!ClientTeamState.unlocked().contains(required.toString())) {
-                Blueprint other = registry.get(ResourceKey.create(ModRegistries.BLUEPRINTS, required));
-                return other == null ? Component.literal(required.toString()) : other.result().getHoverName();
+    private Component missingPrerequisite(Research research) {
+        for (String required : Researches.requires(research)) {
+            if (!ClientTeamState.researched().contains(required)) {
+                return researchName(required);
             }
         }
         return Component.empty();
     }
 
-    private static int statusColor(UnlockRules.Status status) {
-        return switch (status) {
-            case UNLOCKED -> GREEN;
-            case AVAILABLE -> 0xFFFFFF;
-            case NOT_ENOUGH_CREDITS -> RED;
-            default -> GRAY;
-        };
-    }
-
-    @Override
-    protected void clickRow(int index, Holder.Reference<Blueprint> blueprint, boolean shift) {
-        sendButton(index);
+    private List<Component> researchTooltip(Research research, double costFactor) {
+        List<Component> lines = new java.util.ArrayList<>();
+        lines.add(Component.translatable("craftorio.research.cost", research.costLine(costFactor)).withColor(GOLD));
+        if (!research.requires().isEmpty()) {
+            lines.add(Component.translatable("craftorio.research.requires").withColor(GRAY));
+            for (ResourceLocation required : research.requires()) {
+                lines.add(Component.literal(" ").append(researchName(required.toString())));
+            }
+        }
+        lines.add(Component.translatable("craftorio.research.unlocks").withColor(GRAY));
+        var blueprints = minecraft.level.registryAccess().registryOrThrow(ModRegistries.BLUEPRINTS);
+        for (ResourceLocation unlocked : research.unlocks()) {
+            Blueprint blueprint = blueprints.get(unlocked);
+            lines.add(Component.literal(" ").append(blueprint != null ? blueprint.result().getHoverName() : Component.literal(unlocked.getPath())));
+        }
+        if (!research.unlockItems().isEmpty()) {
+            lines.add(Component.translatable("craftorio.research.key_items").withColor(0xD68CFF));
+            for (SizedIngredient key : research.unlockItems()) {
+                lines.add(Component.literal(" " + key.count() + "× ").append(firstItem(key).getHoverName()));
+            }
+        }
+        return lines;
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (tab == Tab.STATS) {
+        if (tab == Tab.RESEARCH) {
+            renderResearch(graphics, mouseX, mouseY);
+        } else if (tab == Tab.STATS) {
             renderStats(graphics);
         } else if (tab == Tab.DEFENSE) {
             renderDefense(graphics);
@@ -229,11 +282,27 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             questScroll -= (int) Math.signum(scrollY);
             return true;
         }
+        if (tab == Tab.RESEARCH) {
+            researchScroll -= (int) Math.signum(scrollY);
+            return true;
+        }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (tab == Tab.RESEARCH && button == 0) {
+            int row = (int) (mouseY - topPos - LIST_TOP) / ROW_HEIGHT;
+            double localX = mouseX - leftPos - LIST_LEFT;
+            double localY = mouseY - topPos - LIST_TOP - row * ROW_HEIGHT;
+            int index = researchScroll + row;
+            List<Holder.Reference<Research>> all = researches();
+            if (mouseY >= topPos + LIST_TOP && row >= 0 && row < VISIBLE_ROWS && index < all.size()
+                    && localX >= BUTTON_X && localX < BUTTON_X + BUTTON_WIDTH && localY >= 3 && localY < 19) {
+                sendButton(index);
+                return true;
+            }
+        }
         if (tab == Tab.QUESTS && button == 0) {
             int row = (int) (mouseY - topPos - LIST_TOP) / ROW_HEIGHT;
             double localX = mouseX - leftPos - LIST_LEFT;
@@ -314,6 +383,20 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             graphics.drawString(font, credits, leftPos + imageWidth - 12 - font.width(credits), rowY, GOLD, false);
             rowY += 17;
         }
+        rowY += 4;
+        graphics.drawString(font, Component.translatable("craftorio.terminal.stats.research"), x, rowY - 8, GRAY, false);
+        for (TerminalStats.Finished finished : stats.researched()) {
+            graphics.drawString(font, font.plainSubstrByWidth(researchName(finished.research()).getString(), 130), x, rowY + 4, 0xFFFFFF, false);
+            String time = playTime(finished.tick());
+            graphics.drawString(font, time, leftPos + imageWidth - 12 - font.width(time), rowY + 4, GRAY, false);
+            rowY += 11;
+        }
+    }
+
+    /** Game time in ticks as hours and minutes since the world was created, e.g. "2:05 h". */
+    static String playTime(long ticks) {
+        long minutes = ticks / 1200;
+        return String.format(java.util.Locale.ROOT, "%d:%02d h", minutes / 60, minutes % 60);
     }
 
     private void line(GuiGraphics graphics, String key, String value, int x, int y) {

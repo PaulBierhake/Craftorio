@@ -263,7 +263,7 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort) und **U1** (Grundlagen).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen) und **U2** (Forschungssystem).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Kohle-Generator 900 kW (wie eine Dampfmaschine), Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -275,6 +275,17 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort) und **U1** (Grundlagen).
 - **Team-Chunkloader**: Die Chunks mit den meisten Maschinen eines Teams bleiben geladen (`chunkloader.chunksPerTeam`,
   Standard 64; `chunkloader.onlyWhileOnline`, Standard an), damit die Fabrik weiterläuft, während das Team in der
   Arena ist. Die Tickets werden alle 5 Sekunden abgeglichen und nach einem Neustart neu gesetzt.
+- **Forschung statt Baupläne kaufen**: Neue Rezepte werden im Terminal-Tab *Forschung* freigeschaltet. Jede Forschung
+  kostet *Einheiten × Wissenschaftspakete* mit einer Zeit pro Einheit; ein **Labor** (Block, 60 kW) nimmt die Pakete
+  entgegen (ein Slot je Paketart, auch per Greifarm), verbraucht je Einheit ein Paket jeder benötigten Art und meldet
+  den Fortschritt an das Team. Mehrere Labore forschen parallel an derselben Forschung. Es gibt eine Warteschlange
+  (Ketten dürfen in einem Zug eingereiht werden); der Fortschritt bleibt beim Umschalten erhalten. Schlüsselmaterial
+  (z. B. Bohrkern) wird einmal beim ersten Einreihen abgegeben. Forschungen sind Datenpakete
+  (`data/<namespace>/craftorio/research/*.json`: `units`, `packs`, `seconds`, `requires`, `unlocks`, `unlock_items`);
+  was keine Forschung freischaltet, ist von Anfang an verfügbar. Werkbank-Rezepte **und** Maschinenrezepte (z. B.
+  `assembling/motor`) können gesperrt sein; Maschinen prüfen die Forschung des besitzenden Teams. Credits bezahlen
+  keine Forschung mehr. Die Zeitpunkte der Abschlüsse stehen im Statistik-Tab. Der Baum deckt vorerst nur den
+  heutigen Inhalt ab (mit rotem Paket) und wächst mit den folgenden Paketen.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
   Schwerter, Rüstung und Schere bleiben.
 

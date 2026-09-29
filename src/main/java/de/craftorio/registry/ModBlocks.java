@@ -134,6 +134,9 @@ public final class ModBlocks {
     public static final DeferredBlock<ProcessingMachineBlock> PRESS = machine("press", MachineType.PRESS);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
 
+    public static final DeferredBlock<de.craftorio.research.LaboratoryBlock> LABORATORY = BLOCKS.registerBlock("laboratory",
+            de.craftorio.research.LaboratoryBlock::new, machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 10 : 0));
+
     public static final DeferredBlock<TerminalBlock> TERMINAL = BLOCKS.registerBlock("terminal", TerminalBlock::new,
             machineProperties().lightLevel(state -> 7));
 

@@ -1,17 +1,21 @@
 package de.craftorio.machine;
 
 import de.craftorio.CraftorioConfig;
+import de.craftorio.client.ClientTeamState;
 import de.craftorio.energy.EnergyBuffer;
 import de.craftorio.menu.ProcessingMachineMenu;
 import de.craftorio.menu.SplitIntData;
 import de.craftorio.recipe.MachineRecipe;
+import de.craftorio.protection.BlockOwnership;
 import de.craftorio.recipe.MachineRecipeKind;
+import de.craftorio.research.Researches;
 import de.craftorio.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -151,7 +155,9 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
                                 recipe.value().assemble(single, level.registryAccess()), MachineType.SMELTING_TIME))
                         .orElse(null);
             }
-            case PRESS -> level.getRecipeManager().getRecipeFor(MachineRecipeKind.PRESSING.type(), input, level)
+            case PRESS -> level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.PRESSING.type()).stream()
+                    .filter(recipe -> knows(level, recipe.id()) && recipe.value().matches(input, level))
+                    .findFirst()
                     .map(recipe -> new Job(recipe.value().ingredients(), recipe.value().result(), recipe.value().time()))
                     .orElse(null);
             case ASSEMBLER -> {
@@ -203,6 +209,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         return switch (type) {
             case ELECTRIC_FURNACE -> level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level).isPresent();
             case PRESS -> level.getRecipeManager().getAllRecipesFor(MachineRecipeKind.PRESSING.type()).stream()
+                    .filter(recipe -> knows(level, recipe.id()))
                     .anyMatch(recipe -> recipe.value().ingredients().stream().anyMatch(ingredient -> ingredient.ingredient().test(stack)));
             case ASSEMBLER -> {
                 MachineRecipe recipe = selectedAssemblerRecipe(level);
@@ -223,6 +230,7 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
             return null;
         }
         return level.getRecipeManager().byKey(selectedRecipe)
+                .filter(holder -> knows(level, holder.id()))
                 .map(RecipeHolder::value)
                 .filter(recipe -> recipe instanceof MachineRecipe machine && machine.kind() == MachineRecipeKind.ASSEMBLING)
                 .map(MachineRecipe.class::cast)
@@ -255,7 +263,25 @@ public final class ProcessingMachineBlockEntity extends BlockEntity implements M
         if (selectedRecipeIndex() < 0 && direction < 0) {
             index = recipes.size() - 1;
         }
-        setSelectedRecipe(recipes.get(index).id());
+        // Skip recipes the owning team has not researched yet.
+        for (int tried = 0; tried < recipes.size() && !knows(level, recipes.get(index).id()); tried++) {
+            index = Math.floorMod(index + direction, recipes.size());
+        }
+        if (knows(level, recipes.get(index).id())) {
+            setSelectedRecipe(recipes.get(index).id());
+        }
+    }
+
+    /**
+     * May this machine use the recipe? Recipes that no research unlocks are open to everybody; otherwise the team
+     * owning the machine needs the research. Machines without an owner (e.g. in tests) know every recipe.
+     */
+    private boolean knows(Level level, ResourceLocation recipe) {
+        if (level.isClientSide) {
+            return Researches.knows(level.registryAccess(), ClientTeamState.researched(), recipe.toString());
+        }
+        return BlockOwnership.get((ServerLevel) level).owner((ServerLevel) level, worldPosition)
+                .map(team -> Researches.knows(level.registryAccess(), team.researched(), recipe.toString())).orElse(true);
     }
 
     public void setSelectedRecipe(@Nullable ResourceLocation id) {

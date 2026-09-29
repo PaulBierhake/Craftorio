@@ -32,6 +32,8 @@ public final class ModMenus {
     public static final DeferredHolder<MenuType<?>, MenuType<TowerMenu>> TOWER =
             MENUS.register("tower", () -> IMenuTypeExtension.create(TowerMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.LaboratoryMenu>> LABORATORY =
+            MENUS.register("laboratory", () -> IMenuTypeExtension.create(de.craftorio.menu.LaboratoryMenu::new));
     public static final DeferredHolder<MenuType<?>, MenuType<de.craftorio.menu.DepotMenu>> DEPOT =
             MENUS.register("depot", () -> new MenuType<>(de.craftorio.menu.DepotMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS));
 

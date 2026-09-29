@@ -145,32 +145,32 @@ class TeamRegistryTest {
     }
 
     @Test
-    void blueprintsAndStatisticsMoveWithDissolvedTeam() {
+    void researchAndStatisticsMoveWithDissolvedTeam() {
         Team factory = registry.create(alice, "Factory");
         Team solo = registry.ensureTeam(bob, "Bob");
-        registry.unlock(solo.id(), "craftorio:press");
+        registry.grantResearch(solo.id(), "craftorio:automation");
         registry.recordSale(solo.id(), "minecraft:iron_ingot", 5, 80);
 
         registry.invite(alice, bob);
         registry.join(bob, "Factory");
 
-        assertTrue(factory.unlocked().contains("craftorio:press"));
+        assertTrue(factory.researched().contains("craftorio:automation"));
         assertEquals(80, factory.totalEarned());
         assertEquals(new Team.Sales(5, 80), factory.sales().get("minecraft:iron_ingot"));
     }
 
     @Test
-    void leavingKeepsACopyOfBlueprintsButNoCredits() {
+    void leavingKeepsACopyOfResearchButNoCredits() {
         Team factory = registry.create(alice, "Factory");
-        registry.unlock(factory.id(), "craftorio:press");
+        registry.grantResearch(factory.id(), "craftorio:automation");
         registry.deposit(factory.id(), 100);
         registry.invite(alice, bob);
         registry.join(bob, "Factory");
 
         Team solo = registry.leave(bob, "Bob");
 
-        assertTrue(solo.unlocked().contains("craftorio:press"));
-        assertTrue(factory.unlocked().contains("craftorio:press"));
+        assertTrue(solo.researched().contains("craftorio:automation"));
+        assertTrue(factory.researched().contains("craftorio:automation"));
         assertEquals(0, solo.balance());
     }
 
@@ -244,5 +244,52 @@ class TeamRegistryTest {
         assertEquals(factory, registry.resolve(solo.id()).orElseThrow());
         assertEquals(factory, registry.resolve(factory.id()).orElseThrow());
         assertTrue(registry.resolve(UUID.randomUUID()).isEmpty());
+    }
+
+    @Test
+    void researchesQueueProgressAndFinish() {
+        Team team = registry.create(alice, "Lab");
+        assertTrue(registry.enqueueResearch(team.id(), "craftorio:a"));
+        assertTrue(registry.enqueueResearch(team.id(), "craftorio:b"));
+        assertFalse(registry.enqueueResearch(team.id(), "craftorio:a"), "already queued");
+        assertEquals("craftorio:a", team.activeResearch());
+
+        assertFalse(registry.addResearchUnits(team.id(), "craftorio:a", 4, 10));
+        assertEquals(4, team.researchProgress("craftorio:a"));
+        assertTrue(registry.addResearchUnits(team.id(), "craftorio:a", 6, 10), "finished");
+        assertTrue(team.researched().contains("craftorio:a"));
+        assertEquals("craftorio:b", team.activeResearch(), "the queue moves on");
+        assertEquals(0, team.researchProgress("craftorio:a"));
+        assertFalse(registry.enqueueResearch(team.id(), "craftorio:a"), "finished researches are not queued again");
+
+        assertTrue(registry.dequeueResearch(team.id(), "craftorio:b"));
+        assertEquals(null, team.activeResearch());
+    }
+
+    @Test
+    void finishingRecordsTheGameTime() {
+        long[] now = {0};
+        TeamRegistry timed = new TeamRegistry(() -> 0, () -> now[0]);
+        Team team = timed.create(alice, "Timed");
+        now[0] = 12_345;
+        timed.grantResearch(team.id(), "craftorio:a");
+
+        assertEquals(12_345, team.researchedAt("craftorio:a"));
+        assertEquals(-1, team.researchedAt("craftorio:b"));
+    }
+
+    @Test
+    void mergedTeamsKeepTheirQueuedResearchOnce() {
+        Team factory = registry.create(alice, "Factory");
+        Team solo = registry.ensureTeam(bob, "Bob");
+        registry.enqueueResearch(factory.id(), "craftorio:a");
+        registry.enqueueResearch(solo.id(), "craftorio:a");
+        registry.enqueueResearch(solo.id(), "craftorio:b");
+        registry.addResearchUnits(solo.id(), "craftorio:a", 3, 10);
+        registry.invite(alice, bob);
+        registry.join(bob, "Factory");
+
+        assertEquals(List.of("craftorio:a", "craftorio:b"), factory.researchQueue());
+        assertEquals(3, factory.researchProgress("craftorio:a"));
     }
 }

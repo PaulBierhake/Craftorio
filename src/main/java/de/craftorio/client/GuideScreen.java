@@ -3,6 +3,7 @@ package de.craftorio.client;
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.Blueprint;
 import de.craftorio.economy.Credits;
+import de.craftorio.research.Researches;
 import de.craftorio.economy.Economy;
 import de.craftorio.network.ClaimQuestPayload;
 import de.craftorio.quest.Quest;
@@ -168,7 +169,7 @@ public final class GuideScreen extends Screen {
                 if (blueprint == null) {
                     return;
                 }
-                renderBlueprint(graphics, blueprint, quest.kind() == Quest.Kind.UNLOCK, x, y);
+                renderBlueprint(graphics, quest.target(), blueprint, quest.kind() == Quest.Kind.UNLOCK, x, y);
             }
             case MINE, SELL -> renderSource(graphics, BuiltInRegistries.ITEM.get(ResourceLocation.parse(quest.target())), x, y);
             default -> {
@@ -182,9 +183,11 @@ public final class GuideScreen extends Screen {
         }
     }
 
-    private void renderBlueprint(GuiGraphics graphics, Blueprint blueprint, boolean unlock, int x, int y) {
-        Component cost = blueprint.cost() > 0 ? Component.literal(Credits.format(blueprint.cost())) : Component.translatable("craftorio.emi.free");
-        Component where = unlock ? Component.translatable("craftorio.guide.buy_in_terminal", cost)
+    private void renderBlueprint(GuiGraphics graphics, String blueprintId, Blueprint blueprint, boolean unlock, int x, int y) {
+        var gate = Researches.gate(minecraft.level.registryAccess(), blueprintId);
+        Component where = gate.isPresent()
+                ? Component.translatable("craftorio.guide.research_then_build", Component.translatable("craftorio.research." + gate.get().substring(gate.get().indexOf(':') + 1)),
+                        workbench(blueprint.tier()).getName())
                 : Component.translatable("craftorio.guide.build_at", workbench(blueprint.tier()).getName());
         for (FormattedCharSequence line : font.split(where, WIDTH - 20)) {
             graphics.drawString(font, line, x, y, 0xFFFFFF, false);
@@ -198,18 +201,9 @@ public final class GuideScreen extends Screen {
         }
         graphics.drawString(font, "→", ix + 2, y + 4, 0xFFFFFF, false);
         icon(graphics, blueprint.result(), blueprint.result().getCount(), ix + 14, y);
-        if (!blueprint.unlockItems().isEmpty()) {
-            int kx = ix + 44;
-            graphics.drawString(font, Component.translatable("craftorio.guide.key"), kx, y + 4, 0xD68CFF, false);
-            kx += font.width(Component.translatable("craftorio.guide.key")) + 4;
-            for (SizedIngredient key : blueprint.unlockItems()) {
-                icon(graphics, first(key.ingredient()), key.count(), kx, y);
-                kx += 20;
-            }
-        }
         y += 24;
-        // How to get the place where it is made or bought: the vanilla recipe of workbench or terminal.
-        ResourceLocation station = unlock ? Craftorio.id("terminal") : blueprint.tier() == 1 ? Craftorio.id("workbench") : null;
+        // How to get the place where it is made: the vanilla recipe of the workbench.
+        ResourceLocation station = blueprint.tier() == 1 ? Craftorio.id("workbench") : null;
         if (station != null) {
             renderCrafting(graphics, station, x, y);
         } else {

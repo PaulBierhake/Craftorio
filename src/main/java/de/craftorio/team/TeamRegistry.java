@@ -136,7 +136,7 @@ public final class TeamRegistry {
         }
         removeMember(player);
         Team team = newTeam(uniqueName(playerName), 0);
-        team.mutableUnlocked().addAll(current.unlocked());
+        team.mutableResearched().putAll(current.researchTimes());
         addMember(team, player);
         return team;
     }
@@ -235,15 +235,71 @@ public final class TeamRegistry {
         changeListener.accept(team);
     }
 
-    public boolean isUnlocked(UUID teamId, String blueprint) {
-        return team(teamId).map(team -> team.unlocked().contains(blueprint)).orElse(false);
+    public boolean hasResearched(UUID teamId, String research) {
+        return team(teamId).map(team -> team.researched().contains(research)).orElse(false);
     }
 
-    public void unlock(UUID teamId, String blueprint) {
+    /** Finishes a research at once (tests, migration); also removes it from the queue. */
+    public void grantResearch(UUID teamId, String research) {
         Team team = requireTeam(teamId);
-        if (team.mutableUnlocked().add(blueprint)) {
+        complete(team, research);
+        changeListener.accept(team);
+    }
+
+    /** Puts a research at the end of the queue; false if it is finished or already queued. */
+    public boolean enqueueResearch(UUID teamId, String research) {
+        Team team = requireTeam(teamId);
+        if (team.researched().contains(research) || team.researchQueue().contains(research)) {
+            return false;
+        }
+        team.mutableResearchQueue().add(research);
+        changeListener.accept(team);
+        return true;
+    }
+
+    public boolean dequeueResearch(UUID teamId, String research) {
+        Team team = requireTeam(teamId);
+        if (!team.mutableResearchQueue().remove(research)) {
+            return false;
+        }
+        changeListener.accept(team);
+        return true;
+    }
+
+    /** Remembers that the key items of a research were handed in, so re-queueing it costs nothing more. */
+    public void markKeyItemsPaid(UUID teamId, String research) {
+        Team team = requireTeam(teamId);
+        if (team.mutableResearchKeys().add(research)) {
             changeListener.accept(team);
         }
+    }
+
+    /**
+     * Adds finished units to a research the team is working on.
+     *
+     * @param needed units the research costs in total
+     * @return true if this finished the research
+     */
+    public boolean addResearchUnits(UUID teamId, String research, long units, long needed) {
+        Team team = requireTeam(teamId);
+        if (team.researched().contains(research) || units <= 0) {
+            return false;
+        }
+        long total = saturatedAdd(team.researchProgress(research), units);
+        boolean done = total >= needed;
+        if (done) {
+            complete(team, research);
+        } else {
+            team.mutableResearchProgress().put(research, total);
+        }
+        changeListener.accept(team);
+        return done;
+    }
+
+    private void complete(Team team, String research) {
+        team.mutableResearched().putIfAbsent(research, gameTime.getAsLong());
+        team.mutableResearchQueue().remove(research);
+        team.mutableResearchProgress().remove(research);
     }
 
     public void setBalance(UUID teamId, long balance) {
@@ -254,10 +310,10 @@ public final class TeamRegistry {
 
     /** Re-adds a team loaded from disk without notifying the change listener. */
     public Team restore(UUID id, String name, long balance, Collection<UUID> members) {
-        return restore(id, name, balance, members, List.of(), 0, 0, Map.of());
+        return restore(id, name, balance, members, Map.of(), 0, 0, Map.of());
     }
 
-    public Team restore(UUID id, String name, long balance, Collection<UUID> members, Collection<String> unlocked,
+    public Team restore(UUID id, String name, long balance, Collection<UUID> members, Map<String, Long> researched,
                         long totalEarned, long totalSpent, Map<String, Team.Sales> sales) {
         Team team = new Team(id, name, balance);
         teams.put(id, team);
@@ -265,9 +321,17 @@ public final class TeamRegistry {
             team.mutableMembers().add(member);
             teamByPlayer.put(member, id);
         }
-        team.mutableUnlocked().addAll(unlocked);
+        team.mutableResearched().putAll(researched);
         team.restoreStats(totalEarned, totalSpent, sales);
         return team;
+    }
+
+    /** Restores the research queue, progress and paid key items of a team loaded from disk. */
+    public void restoreResearch(UUID id, Collection<String> queue, Map<String, Long> progress, Collection<String> keysPaid) {
+        Team team = requireTeam(id);
+        team.mutableResearchQueue().addAll(queue);
+        team.mutableResearchProgress().putAll(progress);
+        team.mutableResearchKeys().addAll(keysPaid);
     }
 
     /** Restores the settings and quest progress of a team loaded from disk. */

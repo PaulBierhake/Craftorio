@@ -309,7 +309,7 @@ Jedes Paket ist ein eigener Commit und für sich spielbar. Tests und README wie 
 |---|---|---|
 | **U0 – Arena-Fehler** ✅ | Backlog-Paket 1 und 2 (D1–D6, C2); unabhängig vom Umbau, zuerst | – |
 | **U1 – Grundlagen** ✅ | Tempo-Faktoren (§2), Energie-Einheit 1 kW = 1 FE/t, Team-Chunkloader, Brennwerte nach Factorio, Vanilla-Werkzeugrezepte entfernen | – |
-| **U2 – Forschungssystem** | Registry `craftorio:research`, Labor (Block, Menü, Paketverbrauch, Parallelbetrieb), Terminal-Tab Forschung mit Baum, Warteschlange und Fortschritt, Team-Wissen = Forschungen, Rezeptsperre für Werkbank und Maschinen, Migration der Baupläne, EMI-Anzeige gesperrter Rezepte | A1, A3 |
+| **U2 – Forschungssystem** ✅ | Registry `craftorio:research`, Labor (Block, Menü, Paketverbrauch, Parallelbetrieb), Terminal-Tab Forschung mit Baum, Warteschlange und Fortschritt, Team-Wissen = Forschungen, Rezeptsperre für Werkbank und Maschinen, Migration der Baupläne (alte `unlocked`-Einträge werden verworfen, neue Welt empfohlen), EMI-Anzeige gesperrter Rezepte | A1, A3 |
 | **U3 – Rot** | Items und Rezepte aus §4.1–4.3 bis Rot: Steinofen, Stein-Erzfeld, Zahnrad, Kabel, Schaltkreis, Rohr, Brenner-Greifarm, Kisten, Kessel, Dampfmaschine, Offshore-Pumpe (ohne Flüssigkeitsnetz: Kessel mit Wasser direkt aus der Pumpe, siehe U6), Labor, Rotes Paket, Montagemaschine 1; Handarbeit an der Werkbank; Presse entfernen | A1 |
 | **U4 – Logistik** | Unterflurband, Splitter mit Priorität und Filter, langer, schneller und Filter-Greifarm, Bandstufen nach §4.3, steigende Bänder (Backlog B2) | B1, B2 |
 | **U5 – Grün und Stahl** | Grünes Paket, Stahl, Stahlofen, mittlerer Strommast, Montagemaschine 2, Motor, Solarpanel (Tag/Nacht) | A1 |

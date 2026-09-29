@@ -1,6 +1,6 @@
 package de.craftorio.menu;
 
-import de.craftorio.blueprint.BlueprintActions;
+import de.craftorio.research.ResearchActions;
 import de.craftorio.blueprint.TerminalStats;
 import de.craftorio.quest.QuestActions;
 import de.craftorio.defense.TowerDefense;
@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.UUID;
 
-/** No slots; button ids below {@link #TD_START} are indexes into {@link de.craftorio.blueprint.Blueprints#sorted}. */
+/** No slots; button ids below {@link #TD_START} are indexes into {@link de.craftorio.research.Researches#sorted} (queue or dequeue). */
 public final class TerminalMenu extends AbstractContainerMenu {
     public static final int TD_START = 10_000;
     public static final int TD_TOGGLE_AUTO = 10_001;
@@ -48,7 +48,7 @@ public final class TerminalMenu extends AbstractContainerMenu {
             return false;
         }
         if (id < TD_START) {
-            return BlueprintActions.unlock(serverPlayer, id);
+            return ResearchActions.toggle(serverPlayer, id);
         }
         if (id >= QUEST_CLAIM) {
             return QuestActions.claim(serverPlayer, id - QUEST_CLAIM);

@@ -1,6 +1,7 @@
 package de.craftorio.blueprint;
 
 import de.craftorio.registry.ModRegistries;
+import de.craftorio.research.Researches;
 import de.craftorio.team.Team;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -30,15 +31,13 @@ public final class Blueprints {
         return holder.key().location().toString();
     }
 
-    public static UnlockRules.Status status(Holder.Reference<Blueprint> holder, Set<String> unlocked, long balance, Inventory inventory) {
-        Blueprint blueprint = holder.value();
-        return UnlockRules.check(id(holder), blueprint.isFree(), unlocked,
-                blueprint.requires().stream().map(Object::toString).toList(),
-                balance, blueprint.cost(), hasAll(inventory, blueprint.unlockItems(), 1));
+    /** Is the blueprint available to a team with these finished researches? */
+    public static boolean isKnown(RegistryAccess access, Set<String> researched, Holder.Reference<Blueprint> holder) {
+        return Researches.knows(access, researched, id(holder));
     }
 
-    public static boolean isUnlocked(Holder.Reference<Blueprint> holder, Team team) {
-        return holder.value().isFree() || team.unlocked().contains(id(holder));
+    public static boolean isKnown(RegistryAccess access, Team team, Holder.Reference<Blueprint> holder) {
+        return isKnown(access, team.researched(), holder);
     }
 
     /** Matching items in the player's main inventory and hotbar. */

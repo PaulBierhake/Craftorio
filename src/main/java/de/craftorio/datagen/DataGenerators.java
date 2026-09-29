@@ -38,7 +38,8 @@ public final class DataGenerators {
 
         generator.addProvider(event.includeServer(), new ModBlockTagsProvider(output, lookup, fileHelper));
         generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(output, lookup,
-                new RegistrySetBuilder().add(ModRegistries.BLUEPRINTS, ModBlueprints::bootstrap), Set.of(Craftorio.MOD_ID)));
+                new RegistrySetBuilder().add(ModRegistries.BLUEPRINTS, ModBlueprints::bootstrap)
+                        .add(ModRegistries.RESEARCH, ModResearch::bootstrap), Set.of(Craftorio.MOD_ID)));
         generator.addProvider(event.includeServer(), new ModSellPriceProvider(output, lookup));
         generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
         generator.addProvider(event.includeServer(), new LootTableProvider(output, Set.of(),

@@ -22,7 +22,10 @@ public final class QuestActions {
         Map<String, Long> sold = new HashMap<>();
         team.sales().forEach((item, sales) -> sold.put(item, sales.count()));
         int tdLevels = TowerDefense.get(server).zone(team.id()).map(zone -> zone.level() - 1).orElse(0);
-        return new Quest.Progress(team.totalEarned(), sold, team.unlocked(), team.built(), tdLevels);
+        // "Unlocked" goals mean the blueprint is available: free from the start or researched.
+        java.util.Set<String> known = de.craftorio.research.Researches.knownOf(server.registryAccess(), team.researched(),
+                Quests.ALL.stream().filter(quest -> quest.kind() == Quest.Kind.UNLOCK).map(Quest::target).toList());
+        return new Quest.Progress(team.totalEarned(), sold, known, team.built(), tdLevels);
     }
 
     /** Progress of every quest in {@link Quests#ALL} order. */

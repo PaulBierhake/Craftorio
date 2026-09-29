@@ -79,6 +79,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.ELECTRIC_FURNACE.get(), "electric_furnace");
         machine(ModBlocks.PRESS.get(), "press");
         machine(ModBlocks.ASSEMBLER.get(), "assembler");
+        machine(ModBlocks.LABORATORY.get(), "laboratory");
         workbench(ModBlocks.WORKBENCH.get(), "workbench");
         workbench(ModBlocks.ASSEMBLY_WORKBENCH.get(), "assembly_workbench");
         workbench(ModBlocks.PRECISION_WORKBENCH.get(), "precision_workbench");

@@ -1,15 +1,18 @@
 package de.craftorio.team;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/** A group of players sharing one credit account and one set of unlocked blueprints. Every player belongs to exactly one team. */
+/** A group of players sharing one credit account and one set of finished researches. Every player belongs to exactly one team. */
 public final class Team {
     /** Earnings are bucketed per in-game minute for the "last minutes" statistic. */
     static final int EARNING_BUCKETS = 10;
@@ -19,7 +22,13 @@ public final class Team {
     private final Set<UUID> members = new LinkedHashSet<>();
     // Pending invites are not persisted; they expire on server restart.
     private final Set<UUID> invites = new HashSet<>();
-    private final Set<String> unlocked = new LinkedHashSet<>();
+    /** Finished researches with the game time (ticks) they were finished at. */
+    private final Map<String, Long> researched = new LinkedHashMap<>();
+    private final List<String> researchQueue = new ArrayList<>();
+    /** Units already researched of researches that are not finished yet. */
+    private final Map<String, Long> researchProgress = new HashMap<>();
+    /** Researches whose key items (arena seals) were already handed in. */
+    private final Set<String> researchKeys = new LinkedHashSet<>();
     private final Set<String> claimedQuests = new LinkedHashSet<>();
     private final Map<String, Long> built = new HashMap<>();
     private final Map<String, Sales> sales = new HashMap<>();
@@ -93,9 +102,41 @@ public final class Team {
         return invites.contains(player);
     }
 
-    /** Ids of blueprints bought by this team (free starter blueprints are not listed). */
-    public Set<String> unlocked() {
-        return Collections.unmodifiableSet(unlocked);
+    /** Ids of the researches this team has finished; the team's knowledge. */
+    public Set<String> researched() {
+        return Collections.unmodifiableSet(researched.keySet());
+    }
+
+    /** Game time in ticks at which the research was finished, or -1. */
+    public long researchedAt(String research) {
+        return researched.getOrDefault(research, -1L);
+    }
+
+    public Map<String, Long> researchTimes() {
+        return Collections.unmodifiableMap(researched);
+    }
+
+    /** Queued researches; the first one is being researched. */
+    public List<String> researchQueue() {
+        return Collections.unmodifiableList(researchQueue);
+    }
+
+    /** The research the labs work on, or null. */
+    public String activeResearch() {
+        return researchQueue.isEmpty() ? null : researchQueue.get(0);
+    }
+
+    /** Units done of a research that is not finished yet. */
+    public long researchProgress(String research) {
+        return researchProgress.getOrDefault(research, 0L);
+    }
+
+    public Set<String> researchKeys() {
+        return Collections.unmodifiableSet(researchKeys);
+    }
+
+    public boolean keyItemsPaid(String research) {
+        return researchKeys.contains(research);
     }
 
     public long totalEarned() {
@@ -133,8 +174,20 @@ public final class Team {
         return invites;
     }
 
-    Set<String> mutableUnlocked() {
-        return unlocked;
+    Map<String, Long> mutableResearched() {
+        return researched;
+    }
+
+    List<String> mutableResearchQueue() {
+        return researchQueue;
+    }
+
+    Map<String, Long> mutableResearchProgress() {
+        return researchProgress;
+    }
+
+    Set<String> mutableResearchKeys() {
+        return researchKeys;
     }
 
     Map<String, Long> mutableBuilt() {
@@ -181,7 +234,11 @@ public final class Team {
 
     /** Takes over the knowledge and history of a team that was dissolved into this one. */
     void absorb(Team other) {
-        unlocked.addAll(other.unlocked);
+        other.researched.forEach((id, tick) -> researched.merge(id, tick, Math::min));
+        other.researchProgress.forEach((id, units) -> researchProgress.merge(id, units, Math::max));
+        other.researchQueue.stream().filter(id -> !researched.containsKey(id) && !researchQueue.contains(id)).forEach(researchQueue::add);
+        researchKeys.addAll(other.researchKeys);
+        researchQueue.removeIf(researched::containsKey);
         claimedQuests.addAll(other.claimedQuests);
         other.built.forEach((id, count) -> built.merge(id, count, TeamRegistry::saturatedAdd));
         other.sales.forEach((item, stat) -> sales.merge(item, stat, (a, b) -> a.plus(b.count(), b.credits())));

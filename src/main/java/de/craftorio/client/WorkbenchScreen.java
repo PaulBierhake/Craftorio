@@ -30,7 +30,7 @@ public final class WorkbenchScreen extends BlueprintListScreen<WorkbenchMenu> {
     @Override
     protected void renderRow(GuiGraphics graphics, int index, Holder.Reference<Blueprint> holder, int x, int y, int mouseX, int mouseY) {
         Blueprint blueprint = holder.value();
-        boolean unlocked = blueprint.isFree() || ClientTeamState.unlocked().contains(Blueprints.id(holder));
+        boolean unlocked = Blueprints.isKnown(minecraft.level.registryAccess(), ClientTeamState.researched(), holder);
         boolean tierOk = blueprint.tier() <= menu.tier();
         Inventory inventory = minecraft.player.getInventory();
         boolean canBuild = unlocked && tierOk && Blueprints.craftableTimes(inventory, blueprint, 1) > 0;
@@ -76,7 +76,7 @@ public final class WorkbenchScreen extends BlueprintListScreen<WorkbenchMenu> {
     protected void clickRow(int index, Holder.Reference<Blueprint> holder, boolean shift) {
         Blueprint blueprint = holder.value();
         Inventory inventory = minecraft.player.getInventory();
-        boolean unlocked = blueprint.isFree() || ClientTeamState.unlocked().contains(Blueprints.id(holder));
+        boolean unlocked = Blueprints.isKnown(minecraft.level.registryAccess(), ClientTeamState.researched(), holder);
         if (!unlocked || blueprint.tier() > menu.tier() || Blueprints.craftableTimes(inventory, blueprint, 1) > 0) {
             sendButton(WorkbenchMenu.buttonId(index, shift));
             return;

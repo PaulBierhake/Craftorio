@@ -35,6 +35,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> POWER_POLE = ITEMS.registerSimpleBlockItem("power_pole", ModBlocks.POWER_POLE);
     public static final DeferredItem<BlockItem> ELECTRIC_FURNACE = ITEMS.registerSimpleBlockItem("electric_furnace", ModBlocks.ELECTRIC_FURNACE);
     public static final DeferredItem<BlockItem> PRESS = ITEMS.registerSimpleBlockItem("press", ModBlocks.PRESS);
+    public static final DeferredItem<BlockItem> LABORATORY = ITEMS.registerSimpleBlockItem("laboratory", ModBlocks.LABORATORY);
+    public static final DeferredItem<Item> RED_SCIENCE = ITEMS.registerSimpleItem("red_science");
+    public static final DeferredItem<Item> GREEN_SCIENCE = ITEMS.registerSimpleItem("green_science");
+    public static final DeferredItem<Item> MILITARY_SCIENCE = ITEMS.registerSimpleItem("military_science");
+    public static final DeferredItem<Item> BLUE_SCIENCE = ITEMS.registerSimpleItem("blue_science");
     public static final DeferredItem<BlockItem> ASSEMBLER = ITEMS.registerSimpleBlockItem("assembler", ModBlocks.ASSEMBLER);
 
     public static final DeferredItem<BlockItem> TERMINAL = ITEMS.registerSimpleBlockItem("terminal", ModBlocks.TERMINAL);

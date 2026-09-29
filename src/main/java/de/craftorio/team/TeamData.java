@@ -88,8 +88,9 @@ public final class TeamData extends SavedData {
         if (!player.connection.hasChannel(TeamSyncPayload.TYPE)) {
             return;
         }
-        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance(), List.copyOf(team.unlocked()), List.copyOf(team.claimedQuests()),
-                QuestActions.progressList(player.server, team)));
+        PacketDistributor.sendToPlayer(player, new TeamSyncPayload(team.name(), team.balance(), List.copyOf(team.researched()), List.copyOf(team.claimedQuests()),
+                QuestActions.progressList(player.server, team), List.copyOf(team.researchQueue()),
+                team.activeResearch() == null ? 0 : team.researchProgress(team.activeResearch())));
     }
 
     private static Map<String, Long> readLongs(CompoundTag tag) {
@@ -109,9 +110,18 @@ public final class TeamData extends SavedData {
             ListTag members = new ListTag();
             team.members().forEach(member -> members.add(NbtUtils.createUUID(member)));
             entry.put("members", members);
-            ListTag unlocked = new ListTag();
-            team.unlocked().forEach(id -> unlocked.add(StringTag.valueOf(id)));
-            entry.put("unlocked", unlocked);
+            CompoundTag researched = new CompoundTag();
+            team.researchTimes().forEach(researched::putLong);
+            entry.put("researched", researched);
+            ListTag queue = new ListTag();
+            team.researchQueue().forEach(id -> queue.add(StringTag.valueOf(id)));
+            entry.put("research_queue", queue);
+            CompoundTag progress = new CompoundTag();
+            team.researchQueue().forEach(id -> progress.putLong(id, team.researchProgress(id)));
+            entry.put("research_progress", progress);
+            ListTag keys = new ListTag();
+            team.researchKeys().forEach(id -> keys.add(StringTag.valueOf(id)));
+            entry.put("research_keys", keys);
             entry.putLong("total_earned", team.totalEarned());
             entry.putLong("total_spent", team.totalSpent());
             CompoundTag sales = new CompoundTag();
@@ -146,7 +156,7 @@ public final class TeamData extends SavedData {
             for (Tag member : entry.getList("members", Tag.TAG_INT_ARRAY)) {
                 members.add(UUIDUtil.uuidFromIntArray(((IntArrayTag) member).getAsIntArray()));
             }
-            List<String> unlocked = entry.getList("unlocked", Tag.TAG_STRING).stream().map(Tag::getAsString).toList();
+            Map<String, Long> researched = readLongs(entry.getCompound("researched"));
             Map<String, Team.Sales> sales = new HashMap<>();
             CompoundTag salesTag = entry.getCompound("sales");
             for (String item : salesTag.getAllKeys()) {
@@ -154,7 +164,11 @@ public final class TeamData extends SavedData {
                 sales.put(item, new Team.Sales(saleTag.getLong("count"), saleTag.getLong("credits")));
             }
             data.registry.restore(entry.getUUID("id"), entry.getString("name"), entry.getLong("balance"), members,
-                    unlocked, entry.getLong("total_earned"), entry.getLong("total_spent"), sales);
+                    researched, entry.getLong("total_earned"), entry.getLong("total_spent"), sales);
+            data.registry.restoreResearch(entry.getUUID("id"),
+                    entry.getList("research_queue", Tag.TAG_STRING).stream().map(Tag::getAsString).toList(),
+                    readLongs(entry.getCompound("research_progress")),
+                    entry.getList("research_keys", Tag.TAG_STRING).stream().map(Tag::getAsString).toList());
             data.registry.restoreSettings(entry.getUUID("id"),
                     !entry.contains("members_can_spend") || entry.getBoolean("members_can_spend"),
                     entry.getList("claimed_quests", Tag.TAG_STRING).stream().map(Tag::getAsString).toList(),
