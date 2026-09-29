@@ -7,9 +7,23 @@ import java.util.Set;
  * One step of the guide: a goal measured on the team's progress and a credit reward that can be collected once
  * the goal is reached. Pure data so the guide can be unit tested.
  *
+ * @param rewardItem optional item paid out with the credits (id, empty for none), {@code rewardCount} of it
  * @param target item id for {@link Kind#SELL} and {@link Kind#MINE}, blueprint id for {@link Kind#UNLOCK} and {@link Kind#BUILD}, unused otherwise
  */
-public record Quest(String id, Kind kind, String target, long amount, long reward) {
+public record Quest(String id, Kind kind, String target, long amount, long reward, String rewardItem, int rewardCount) {
+    public Quest(String id, Kind kind, String target, long amount, long reward) {
+        this(id, kind, target, amount, reward, "", 0);
+    }
+
+    /** The same goal with an item as (additional) reward: {@code rewardItem} is an item id such as {@code craftorio:iron_gear}. */
+    public Quest withItem(String item, int count) {
+        return new Quest(id, kind, target, amount, reward, item, count);
+    }
+
+    public boolean hasRewardItem() {
+        return !rewardItem.isEmpty() && rewardCount > 0;
+    }
+
     /** Hand-mined resources are counted in the team's build statistics under this prefix plus the item id. */
     public static final String MINED_PREFIX = "mined:";
 

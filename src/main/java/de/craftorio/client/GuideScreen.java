@@ -139,7 +139,7 @@ public final class GuideScreen extends Screen {
                 ? Credits.formatNumber(Math.min(progress, quest.amount())) + " / " + Credits.formatNumber(quest.amount())
                 : Component.translatable(done ? "craftorio.quest.ready" : "craftorio.quest.open").getString();
         graphics.drawString(font, Component.translatable("craftorio.guide.progress", goal), x, y, done ? GREEN : GRAY, false);
-        String reward = Component.translatable("craftorio.guide.reward", Credits.format(quest.reward())).getString();
+        String reward = Component.translatable("craftorio.guide.reward", de.craftorio.quest.QuestActions.rewardText(quest)).getString();
         graphics.drawString(font, reward, left + WIDTH - 10 - font.width(reward), y, GOLD, false);
         y += 14;
         graphics.fill(x, y, left + WIDTH - 10, y + 1, 0xFF4A4A5A);

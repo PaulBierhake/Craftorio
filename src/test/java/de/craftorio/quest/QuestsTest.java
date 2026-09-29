@@ -32,12 +32,39 @@ class QuestsTest {
         Set<String> ids = new HashSet<>();
         for (Quest quest : Quests.ALL) {
             assertTrue(ids.add(quest.id()), "duplicate " + quest.id());
-            assertTrue(quest.amount() > 0 && quest.reward() > 0, quest.id());
+            assertTrue(quest.amount() > 0 && (quest.reward() > 0 || quest.hasRewardItem()), quest.id());
         }
         Quest first = Quests.ALL.get(0);
         Quest last = Quests.ALL.get(Quests.ALL.size() - 1);
-        assertTrue(last.reward() > first.reward());
+        assertTrue(last.reward() > first.reward() || first.hasRewardItem());
         assertFalse(first.done(new Quest.Progress(0, Map.of(), Set.of(), Map.of(), 0)));
+    }
+
+    @Test
+    void earlyRewardsAreSmallAndOftenItems() {
+        long credits = 0;
+        int items = 0;
+        for (Quest quest : Quests.ALL) {
+            if (quest.id().equals("td_10")) {
+                break;
+            }
+            credits += quest.reward();
+            items += quest.hasRewardItem() ? 1 : 0;
+            if (quest.kind() != Quest.Kind.TD_LEVEL && quest.kind() != Quest.Kind.SELL) {
+                assertTrue(quest.reward() <= 150, quest.id() + " pays too much");
+            }
+        }
+        assertTrue(credits <= 2_000, "credits before level 10: " + credits);
+        assertTrue(items >= 20, "item rewards: " + items);
+    }
+
+    @Test
+    void rewardItemsAreNamedByIdAndHaveACount() {
+        for (Quest quest : Quests.ALL) {
+            if (quest.hasRewardItem()) {
+                assertTrue(quest.rewardItem().contains(":") && quest.rewardCount() > 0, quest.id());
+            }
+        }
     }
 
     @Test

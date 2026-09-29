@@ -268,7 +268,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen) und **U8** (Militär und Tower Defense).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl), **U6** (Flüssigkeiten) **U7** (Öl und Höhlen), **U8** (Militär und Tower Defense) und **U9** (Leitfaden und Balancing).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -333,6 +333,14 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   dem Arena-Vorrat (bis 20.000), das der Arena-Einspeiser aus angeschlossenen Rohren nimmt. Der Laserturm kostet jetzt 20 Stahl, 20 Schaltkreise und
   12 Batterien. Der alte Bohrkern, Resonanzkristall, Tiefenkern und Sternenerz-Splitter sind durch die vier Siegel ersetzt. Abweichungen: Der Tesla-Turm
   bleibt vorerst; der Flammenwerfer nutzt nur Rohöl (Schwer- und Leichtöl folgen mit der fortgeschrittenen Ölverarbeitung).
+- **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 60 Schritten durch den Forschungsbaum: von Erz per Hand über erste
+  Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär und Minen. Belohnungen
+  sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für
+  Tower-Defense-Level und Verkaufsziele (bis Level 10 höchstens 2.000 ¢ insgesamt, ein Unit-Test wacht darüber). Ein GameTest spielt den
+  Forschungsbaum durch: jede Forschung muss in irgendeiner Reihenfolge mit den Paketen bezahlbar sein, die die vorher erforschten Rezepte
+  ermöglichen (Arena-Siegel als gegeben), und jedes Rezept muss herstellbar sein. Das Terminal zeigt in der Statistik, wann (Weltzeit) welche
+  Forschung fertig wurde; Richtwerte für Spieltests: rote Pakete automatisiert 30–60 min, grüne 2–3 h, Öl 5–7 h, blaue 8–12 h. Weichen
+  sie deutlich ab, zuerst `pacing.researchCost` in der Server-Config anpassen, nicht einzelne Rezepte.
 - **Steuerungshinweise**: Rechts neben der Hotbar zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
   angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);

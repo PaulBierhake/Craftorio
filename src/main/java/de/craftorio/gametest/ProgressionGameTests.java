@@ -6,6 +6,8 @@ import de.craftorio.blueprint.KeyMaterialItem;
 import de.craftorio.fluid.FluidMachineType;
 import de.craftorio.fluid.FluidRecipes;
 import de.craftorio.recipe.MachineRecipe;
+import de.craftorio.research.Research;
+import de.craftorio.research.Researches;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModFluids;
 import de.craftorio.registry.ModItems;
@@ -46,27 +48,23 @@ public final class ProgressionGameTests {
     private ProgressionGameTests() {
     }
 
-    /** One recipe as ingredients (any matching item will do) and results. */
-    private record Step(String name, List<List<Item>> ingredients, List<Item> results) {
+    /** One recipe as ingredients (any matching item will do) and results; {@code unlockId} is what a research names to unlock it. */
+    private record Step(String name, String unlockId, List<List<Item>> ingredients, List<Item> results) {
     }
 
-    @GameTest(template = "empty")
-    public static void everyBlueprintAndMachineRecipeIsObtainable(GameTestHelper helper) {
+    private static List<Step> steps(GameTestHelper helper) {
         var access = helper.getLevel().registryAccess();
         var recipes = helper.getLevel().getRecipeManager();
         List<Step> steps = new ArrayList<>();
-        List<String> blueprintNames = new ArrayList<>();
-        Set<Item> blueprintResults = new HashSet<>();
         for (Holder.Reference<Blueprint> holder : access.registryOrThrow(ModRegistries.BLUEPRINTS).holders().toList()) {
             Blueprint blueprint = holder.value();
-            steps.add(new Step("blueprint " + holder.key().location(), sized(blueprint.ingredients()), List.of(blueprint.result().getItem())));
-            blueprintNames.add(holder.key().location().toString());
-            blueprintResults.add(blueprint.result().getItem());
+            steps.add(new Step("blueprint " + holder.key().location(), holder.key().location().toString(),
+                    sized(blueprint.ingredients()), List.of(blueprint.result().getItem())));
         }
         for (RecipeType<MachineRecipe> type : List.of(ModRecipes.SMELTING.get(), ModRecipes.ASSEMBLING.get())) {
             for (RecipeHolder<MachineRecipe> holder : recipes.getAllRecipesFor(type)) {
-                steps.add(new Step("machine recipe " + holder.id(), sized(holder.value().ingredients()), List.of(holder.value().result().getItem())));
-                blueprintResults.add(holder.value().result().getItem());
+                steps.add(new Step("machine recipe " + holder.id(), holder.id().toString(), sized(holder.value().ingredients()),
+                        List.of(holder.value().result().getItem())));
             }
         }
         for (RecipeHolder<? extends Recipe<?>> holder : recipes.getRecipes()) {
@@ -80,11 +78,10 @@ public final class ProgressionGameTests {
                 }
                 ItemStack result = recipe.getResultItem(access);
                 if (!result.isEmpty()) {
-                    steps.add(new Step("vanilla " + holder.id(), ingredients, List.of(result.getItem())));
+                    steps.add(new Step("vanilla " + holder.id(), null, ingredients, List.of(result.getItem())));
                 }
             }
         }
-
         // Fluid recipes: items in, items out; the fluids are stand-in items (water is always there).
         for (FluidRecipes.Recipe recipe : FluidRecipes.all()) {
             List<List<Item>> ingredients = new ArrayList<>();
@@ -102,39 +99,41 @@ public final class ProgressionGameTests {
             if (!recipe.fluidOut().isEmpty()) {
                 results.add(fluidStandIn(recipe.fluidOut().getFluid()));
             }
-            steps.add(new Step("fluid recipe " + recipe.id(), ingredients, results));
+            steps.add(new Step("fluid recipe " + recipe.id(), recipe.id().toString(), ingredients, results));
         }
+        return steps;
+    }
 
-        // Hand-mined and surface materials, and the key materials of the arena (tower defense).
+    /** Everything that can be made from hand-mined materials and the arena seals with the steps {@code allowed}. */
+    private static Set<Item> closure(List<Step> steps, java.util.function.Predicate<Step> allowed) {
         Set<Item> have = new HashSet<>(List.of(Items.RAW_IRON, Items.RAW_COPPER, Items.COAL, Items.COBBLESTONE, Items.SAND, Items.CLAY_BALL));
         BuiltInRegistries.ITEM.stream().filter(item -> item.getDefaultInstance().is(ItemTags.LOGS)).forEach(have::add);
         BuiltInRegistries.ITEM.stream().filter(item -> item instanceof KeyMaterialItem).forEach(have::add);
-
-        boolean cavesOpen = false;
-        boolean minesOpen = false;
         boolean changed = true;
         while (changed) {
             changed = false;
             for (Step step : steps) {
-                if (step.ingredients().stream().allMatch(options -> options.stream().anyMatch(have::contains))) {
+                if (allowed.test(step) && step.ingredients().stream().allMatch(options -> options.stream().anyMatch(have::contains))) {
                     for (Item result : step.results()) {
                         changed |= have.add(result);
                     }
                 }
             }
-            if (!cavesOpen && have.contains(ModItems.CAVE_ENTRANCE.get())) {
-                cavesOpen = true;
-                // The caves hold oil wells: crude oil is there once a pumpjack stands on one.
-                if (have.contains(ModItems.PUMPJACK.get())) {
-                    changed |= have.add(CRUDE_OIL);
-                }
+            // The caves hold oil wells: crude oil is there once the entrance is built and a pumpjack stands on a well.
+            if (have.contains(ModItems.CAVE_ENTRANCE.get()) && have.contains(ModItems.PUMPJACK.get())) {
+                changed |= have.add(CRUDE_OIL);
             }
-            if (!minesOpen && have.contains(ModItems.MINE_SHAFT.get())) {
-                minesOpen = true;
+            if (have.contains(ModItems.MINE_SHAFT.get())) {
                 changed |= addResources(have, ModBlocks.URANIUM_ORE_FIELD.get());
             }
         }
+        return have;
+    }
 
+    @GameTest(template = "empty")
+    public static void everyBlueprintAndMachineRecipeIsObtainable(GameTestHelper helper) {
+        List<Step> steps = steps(helper);
+        Set<Item> have = closure(steps, step -> true);
         List<String> problems = new ArrayList<>();
         for (Step step : steps) {
             if (!step.name().startsWith("vanilla") && step.results().stream().noneMatch(have::contains)) {
@@ -147,9 +146,49 @@ public final class ProgressionGameTests {
                 problems.add(step.name() + " needs " + missing);
             }
         }
-        helper.assertTrue(cavesOpen, "the cave entrance can not be built");
-        helper.assertTrue(minesOpen, "the mine shaft can not be built");
+        helper.assertTrue(have.contains(ModItems.CAVE_ENTRANCE.get()), "the cave entrance can not be built");
+        helper.assertTrue(have.contains(ModItems.MINE_SHAFT.get()), "the mine shaft can not be built");
         helper.assertTrue(problems.isEmpty(), "not obtainable: " + String.join("; ", problems));
+        helper.succeed();
+    }
+
+    private static Item pack(Research.Pack pack) {
+        return switch (pack) {
+            case RED -> ModItems.RED_SCIENCE.get();
+            case GREEN -> ModItems.GREEN_SCIENCE.get();
+            case MILITARY -> ModItems.MILITARY_SCIENCE.get();
+            case BLUE -> ModItems.BLUE_SCIENCE.get();
+        };
+    }
+
+    /**
+     * Research in some order: a research can be done once its prerequisites are finished and every science pack it
+     * costs can be made with what the finished researches unlocked (the arena seals are taken as given). Every research
+     * must get its turn; recipes that a research unlocks are only usable afterwards.
+     */
+    @GameTest(template = "empty")
+    public static void everyResearchCanBePaidWithWhatIsUnlockedBefore(GameTestHelper helper) {
+        var access = helper.getLevel().registryAccess();
+        List<Step> steps = steps(helper);
+        List<Holder.Reference<Research>> open = new ArrayList<>(Researches.sorted(access));
+        Set<String> done = new HashSet<>();
+        List<String> order = new ArrayList<>();
+        boolean progress = true;
+        while (progress && !open.isEmpty()) {
+            progress = false;
+            Set<Item> have = closure(steps, step -> step.unlockId() == null || Researches.knows(access, done, step.unlockId()));
+            for (var holder : new ArrayList<>(open)) {
+                Research research = holder.value();
+                if (done.containsAll(Researches.requires(research)) && research.packs().stream().allMatch(kind -> have.contains(pack(kind)))) {
+                    done.add(Researches.id(holder));
+                    order.add(Researches.id(holder));
+                    open.remove(holder);
+                    progress = true;
+                }
+            }
+        }
+        List<String> stuck = open.stream().map(holder -> Researches.id(holder) + " (" + holder.value().costLine(1.0) + ")").toList();
+        helper.assertTrue(stuck.isEmpty(), "can never be researched: " + stuck + "; done in this order: " + order);
         helper.succeed();
     }
 

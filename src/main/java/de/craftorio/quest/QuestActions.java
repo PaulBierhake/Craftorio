@@ -34,6 +34,23 @@ public final class QuestActions {
         return Quests.ALL.stream().map(quest -> quest.progress(progress)).toList();
     }
 
+    /** "8× Coal", "50 ¢" or both, for the guide and the chat message. */
+    public static Component rewardText(Quest quest) {
+        var parts = new java.util.ArrayList<Component>();
+        if (quest.reward() > 0) {
+            parts.add(Component.literal(de.craftorio.economy.Credits.format(quest.reward())));
+        }
+        if (quest.hasRewardItem()) {
+            var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(quest.rewardItem()));
+            parts.add(Component.literal(quest.rewardCount() + "× ").append(item.getDescription()));
+        }
+        var text = Component.empty();
+        for (int i = 0; i < parts.size(); i++) {
+            text.append(i == 0 ? parts.get(i) : Component.literal(" + ").append(parts.get(i)));
+        }
+        return text;
+    }
+
     public static boolean claim(ServerPlayer player, int index) {
         if (index < 0 || index >= Quests.ALL.size()) {
             return false;
@@ -47,8 +64,12 @@ public final class QuestActions {
         if (!TeamData.registry(player.server).claimQuest(team.id(), quest.id(), quest.reward())) {
             return false;
         }
+        if (quest.hasRewardItem()) {
+            var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(quest.rewardItem()));
+            player.getInventory().placeItemBackInInventory(new net.minecraft.world.item.ItemStack(item, quest.rewardCount()));
+        }
         player.displayClientMessage(Component.translatable("craftorio.quest.claimed", Component.translatable("craftorio.quest." + quest.id()),
-                Credits.format(quest.reward())).withStyle(ChatFormatting.GREEN), true);
+                rewardText(quest)).withStyle(ChatFormatting.GREEN), true);
         return true;
     }
 }

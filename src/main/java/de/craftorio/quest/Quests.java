@@ -10,50 +10,72 @@ import java.util.Optional;
 public final class Quests {
     public static final List<Quest> ALL = List.of(
             // By hand to the first drill and the first power
-            mine("raw_iron", "minecraft:raw_iron", 16, 20),
-            mine("cobblestone", "minecraft:cobblestone", 20, 20),
-            mine("oak_log", "minecraft:oak_log", 10, 20),
-            build("stone_furnace", 1, 20),
-            build("burner_drill", 1, 40),
-            build("conveyor_belt", 1, 20),
-            build("boiler", 1, 30),
-            build("offshore_pump", 1, 30),
-            build("steam_engine", 1, 40),
-            build("power_pole", 1, 20),
+            mine("raw_iron", "minecraft:raw_iron", 16, 0).withItem("minecraft:coal", 8),
+            mine("cobblestone", "minecraft:cobblestone", 20, 10),
+            mine("raw_copper", "minecraft:raw_copper", 16, 0).withItem("minecraft:coal", 8),
+            mine("oak_log", "minecraft:oak_log", 10, 10),
+            build("stone_furnace", 1, 0).withItem("craftorio:iron_gear", 3),
+            build("burner_drill", 1, 0).withItem("minecraft:coal", 16),
+            build("conveyor_belt", 1, 0).withItem("craftorio:conveyor_belt", 8),
+            build("inserter", 1, 0).withItem("craftorio:circuit", 2),
+            build("boiler", 1, 0).withItem("craftorio:pipe", 4),
+            build("offshore_pump", 1, 10),
+            build("steam_engine", 1, 0).withItem("craftorio:iron_gear", 4),
+            build("power_pole", 1, 0).withItem("craftorio:copper_cable", 4),
             // Science and automation
-            build("terminal", 1, 40),
-            build("laboratory", 1, 60),
-            build("red_science", 10, 60),
-            build("inserter", 1, 30),
-            unlock("underground_belt", 60),
-            build("splitter", 1, 60),
-            unlock("assembler", 100),
-            build("assembler", 1, 100),
+            build("laboratory", 1, 0).withItem("craftorio:red_science", 5),
+            build("red_science", 10, 0).withItem("craftorio:circuit", 5),
+            unlock("assembler", 0).withItem("craftorio:iron_gear", 10),
+            build("assembler", 1, 0).withItem("craftorio:circuit", 5),
+            build("terminal", 1, 10),
+            unlock("underground_belt", 0).withItem("craftorio:conveyor_belt", 8),
+            build("splitter", 1, 0).withItem("craftorio:circuit", 3),
             // Trade, then defend
-            build("trading_post", 1, 40),
-            earn("first_sale", 1, 40),
-            build("arena_gate", 1, 100),
-            build("crossbow_tower", 1, 100),
-            tdLevel("td_1", 1, 200),
-            tdLevel("td_5", 5, 500),
-            unlock("arena_feeder", 100),
-            build("arena_feeder", 1, 150),
-            earn("earn_10k", 10_000, 300),
-            tdLevel("td_10", 10, 1_000),
-            // Caves
-            unlock("cave_entrance", 500),
-            build("cave_entrance", 1, 500),
-            sell("plastic_bar", "craftorio:plastic_bar", 64, 1_000),
-            sell("battery", "craftorio:battery", 32, 1_500),
-            unlock("elevator", 300),
-            tdLevel("td_20", 20, 2_500),
+            build("trading_post", 1, 20),
+            earn("first_sale", 1, 20),
+            build("arena_gate", 1, 50),
+            build("crossbow_tower", 1, 0).withItem("craftorio:bolt", 32),
+            tdLevel("td_1", 1, 100),
+            unlock("gun_turret", 0).withItem("craftorio:magazine", 10),
+            unlock("arena_feeder", 30),
+            build("arena_feeder", 1, 60),
+            tdLevel("td_5", 5, 200),
+            earn("earn_10k", 10_000, 100),
+            // Green science and steel
+            unlock("green_science", 0).withItem("craftorio:red_science", 10),
+            build("green_science", 10, 0).withItem("craftorio:circuit", 5),
+            unlock("steel", "craftorio:smelting/steel_plate", 0).withItem("minecraft:iron_ingot", 10),
+            unlock("engine", "craftorio:assembling/motor", 0).withItem("craftorio:iron_gear", 10),
+            unlock("assembler_2", 0).withItem("craftorio:steel_plate", 2),
+            unlock("medium_power_pole", 0).withItem("craftorio:steel_plate", 2),
+            unlock("solar_panel", 50),
+            // Fluids and oil
+            unlock("fluid_pump", 0).withItem("craftorio:pipe", 10),
+            unlock("cave_entrance", 100).withItem("craftorio:pipe", 10),
+            build("cave_entrance", 1, 150),
+            build("pumpjack", 1, 50),
+            build("oil_refinery", 1, 50),
+            build("chemical_plant", 1, 50),
+            unlock("plastics", "craftorio:chem/plastic_bar", 50),
+            sell("plastic_bar", "craftorio:plastic_bar", 64, 200),
+            unlock("battery", "craftorio:chem/battery", 50),
+            sell("battery", "craftorio:battery", 32, 300),
+            unlock("advanced_circuit", "craftorio:assembling/advanced_circuit", 50),
+            unlock("accumulator", 50),
+            tdLevel("td_10", 10, 500),
+            // Military and blue science
+            unlock("military_science", 100),
+            unlock("flamethrower_turret", 100),
+            unlock("chemical_science", 200),
+            tdLevel("td_20", 20, 1_000),
+            unlock("elevator", 100),
             // Mines
-            tdLevel("td_30", 30, 5_000),
-            unlock("mine_shaft", 3_000),
-            sell("steel_plate", "craftorio:steel_plate", 64, 4_000),
-            sell("advanced_circuit", "craftorio:advanced_circuit", 8, 7_500),
-            earn("earn_1m", 1_000_000, 25_000),
-            tdLevel("td_40", 40, 25_000));
+            tdLevel("td_30", 30, 2_000),
+            unlock("mine_shaft", 500),
+            sell("steel_plate", "craftorio:steel_plate", 64, 500),
+            sell("advanced_circuit", "craftorio:advanced_circuit", 8, 1_000),
+            earn("earn_1m", 1_000_000, 5_000),
+            tdLevel("td_40", 40, 5_000));
 
     /** The first quest whose reward has not been collected yet: what the player should do next. */
     public static java.util.Optional<Integer> current(java.util.Set<String> claimed) {
@@ -86,6 +108,11 @@ public final class Quests {
 
     private static Quest unlock(String blueprint, long reward) {
         return new Quest("unlock_" + blueprint, Quest.Kind.UNLOCK, "craftorio:" + blueprint, 1, reward);
+    }
+
+    /** A research goal named by what it unlocks: a recipe id that has no blueprint of its own. */
+    private static Quest unlock(String id, String unlockable, long reward) {
+        return new Quest("unlock_" + id, Quest.Kind.UNLOCK, unlockable, 1, reward);
     }
 
     private static Quest build(String blueprint, long times, long reward) {
