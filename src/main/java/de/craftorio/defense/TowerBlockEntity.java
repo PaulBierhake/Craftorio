@@ -126,6 +126,14 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return type == TowerType.GUN ? ModItems.CARTRIDGE.get() : ModItems.BOLT.get();
     }
 
+    /** Neither the tower itself nor the arena reserve can supply its next shot. */
+    public boolean lacksSupply(TowerDefense.Zone zone) {
+        if (type.usesEnergy()) {
+            return energy.getEnergyStored() < type.energyPerShot() && zone.energy() < type.energyPerShot();
+        }
+        return ammo.getStackInSlot(0).isEmpty() && zone.ammo(ammoItem()) <= 0;
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, TowerBlockEntity tower) {
         if (tower.cooldown > 0) {
             tower.cooldown--;
@@ -329,7 +337,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-        components.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel, health));
+        if (!TowerStats.isPristine(type, upgradeLevel, health)) {
+            components.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel, health));
+        }
     }
 
     @Override

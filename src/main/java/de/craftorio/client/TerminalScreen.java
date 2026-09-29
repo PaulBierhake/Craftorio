@@ -38,6 +38,10 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
 
     public TerminalScreen(TerminalMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
+        // The arena console shares this menu and opens at the Defense tab.
+        if (inventory.player.level().dimension() == de.craftorio.defense.arena.Arenas.DIMENSION) {
+            tab = Tab.DEFENSE;
+        }
     }
 
     @Override

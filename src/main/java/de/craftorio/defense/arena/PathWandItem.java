@@ -5,7 +5,12 @@ import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -19,6 +24,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -29,6 +36,23 @@ import java.util.List;
 public final class PathWandItem extends Item {
     public PathWandItem(Properties properties) {
         super(properties);
+    }
+
+    /** Sneak-click into the air shows the shortest possible way from the gate to the core as particles. */
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (world instanceof ServerLevel level && player instanceof ServerPlayer serverPlayer && player.isShiftKeyDown()) {
+            int slot = Arenas.slotAt(player.blockPosition());
+            if (slot >= 0 && TowerDefense.get(level.getServer()).zoneAt(slot).isPresent()) {
+                for (int[] tile : TowerDefense.get(level.getServer()).layoutAt(slot).route()) {
+                    BlockPos pos = Arenas.field(slot, tile[0], tile[1], Arenas.BUILD_Y);
+                    level.sendParticles(serverPlayer, ParticleTypes.HAPPY_VILLAGER, true, pos.getX() + 0.5, pos.getY() + 0.4, pos.getZ() + 0.5, 3, 0.2, 0.1, 0.2, 0);
+                }
+                serverPlayer.displayClientMessage(Component.translatable("craftorio.arena.path.route_hint"), true);
+            }
+        }
+        return InteractionResultHolder.sidedSuccess(stack, world.isClientSide);
     }
 
     @Override
@@ -59,6 +83,23 @@ public final class PathWandItem extends Item {
         List<BlockPos> line = anchor != null && Arenas.slotAt(anchor) == slot && !anchor.equals(target)
                 && (anchor.getX() == target.getX() || anchor.getZ() == target.getZ())
                 ? line(anchor, target) : List.of(target);
+        Result result = lay(level, defense, layout, line);
+        if (result.error() != null) {
+            player.displayClientMessage(Component.translatable(result.error()).withStyle(ChatFormatting.RED), true);
+        }
+        if (result.placed() > 0) {
+            level.playSound(null, target, SoundEvents.GRAVEL_PLACE, SoundSource.BLOCKS, 0.8F, 1.0F);
+        }
+        stack.set(ModDataComponents.PATH_ANCHOR.get(), target);
+        return InteractionResult.CONSUME;
+    }
+
+    /** How many blocks of a line were set, and why it stopped early (a language key) or null. */
+    public record Result(int placed, @Nullable String error) {
+    }
+
+    /** Sets path blocks along the line; stops at the first block that is not allowed. */
+    public static Result lay(ServerLevel level, TowerDefense defense, ArenaLayout layout, List<BlockPos> line) {
         int placed = 0;
         for (BlockPos pos : line) {
             int[] at = Arenas.tileAt(pos);
@@ -66,18 +107,16 @@ public final class PathWandItem extends Item {
             if (current.is(ModBlocks.PATH_BLOCK.get())) {
                 continue;
             }
-            if (!layout.tile(at[0], at[1]).allowsPath() || !(current.isAir() || current.canBeReplaced())) {
-                player.displayClientMessage(Component.translatable("craftorio.arena.path.blocked").withStyle(ChatFormatting.RED), true);
-                break;
+            if (at == null || !layout.tile(at[0], at[1]).allowsPath() || !(current.isAir() || current.canBeReplaced())) {
+                return new Result(placed, "craftorio.arena.path.blocked");
+            }
+            if (defense.pathBranches(level, pos)) {
+                return new Result(placed, "craftorio.arena.path.branch");
             }
             level.setBlock(pos, ModBlocks.PATH_BLOCK.get().defaultBlockState(), Block.UPDATE_ALL);
             placed++;
         }
-        if (placed > 0) {
-            level.playSound(null, target, SoundEvents.GRAVEL_PLACE, SoundSource.BLOCKS, 0.8F, 1.0F);
-        }
-        stack.set(ModDataComponents.PATH_ANCHOR.get(), target);
-        return InteractionResult.CONSUME;
+        return new Result(placed, null);
     }
 
     /** Blocks from just after {@code from} up to and including {@code to}, along one axis. */

@@ -1,6 +1,7 @@
 package de.craftorio.defense.arena;
 
 import com.mojang.serialization.MapCodec;
+import de.craftorio.blueprint.TerminalBlock;
 import de.craftorio.defense.TowerDefense;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -93,7 +94,29 @@ public final class ArenaBlocks {
         @Override
         protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
             if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
-                TowerDefense.get(serverLevel.getServer()).takeDepot(serverPlayer);
+                TowerDefense.get(serverLevel.getServer()).openDepot(serverPlayer);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+    }
+
+    /** On the stands; opens the terminal at the Defense tab so waves can be started without leaving the arena. */
+    public static final class Console extends Block {
+        public static final MapCodec<Console> CODEC = simpleCodec(Console::new);
+
+        public Console(Properties properties) {
+            super(properties);
+        }
+
+        @Override
+        protected MapCodec<? extends Block> codec() {
+            return CODEC;
+        }
+
+        @Override
+        protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+            if (level instanceof ServerLevel && player instanceof ServerPlayer serverPlayer) {
+                TerminalBlock.open(serverPlayer, pos, getName());
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

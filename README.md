@@ -122,17 +122,22 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 ### M5 – Tower Defense (Arena)
 
 - **Arena**: Das **Arena-Tor** (Gratis-Bauplan) in der Oberwelt aufstellen und rechtsklicken – es führt in die
-  eigene Arena (eigene Dimension, ein Stadion pro Team). Auf der Tribüne: **Ausgang** und **Turmdepot**.
+  eigene Arena (eigene Dimension, ein Stadion pro Team). Auf der Tribüne: **Ausgang**, **Turmdepot** und das **Arena-Pult**
+  (öffnet das Terminal im Tab *Abwehr*: Level starten, Welle rufen, Auto-Modus – ohne die Arena zu verlassen).
 - **Jedes Level eine neue Karte** (41×41) mit Thema und Regel: **Wald** (Tarnung im Dickicht), **Berge**
   (Plateaus +30 % Reichweite, Geröll bremst), **Feuer** (Lavaschlote verbrennen Gegner), **Wasser** (Fluss mit
-  Furten, Flachwasser bremst) und jedes 10. Level das **Kolosseum** (Boss). Eines von drei Toren in der Westmauer ist
+  Furten aus Trittsteinen, Flachwasser bremst) und jedes 10. Level das **Kolosseum** (Boss). Eines von drei Toren in der Westmauer ist
   offen, der Kern sitzt in der Ostmauer.
 - **Weg legen**: mit dem **Pfadstab** vom offenen Tor zum Kern (Klick = Wegstück, nächster Klick in derselben
-  Reihe/Spalte = gerade Linie, Schleichen + Klick entfernt). Rechtsklick auf den Kern prüft den Weg.
+  Reihe/Spalte = gerade Linie, Schleichen + Klick entfernt). Der Pfadstab lehnt Abzweigungen, Kreuzungen und 2×2-Flächen sofort ab; Schleichen +
+  Klick in die Luft zeigt den kürzesten Weg als Partikel. Rechtsklick auf den Kern prüft den Weg.
 - **Türme** frei auf freiem Boden oder Plateaus: **Armbrustturm** (Bolzen), **Geschützturm** (Patronen),
   **Tesla-Turm** und **Laserturm** (Strom). GUI mit Lebenspunkten, **Aufrüstung Stufe I–V** und **Zielmodus**
   (Erster/Letzter/Stärkster/Schwächster). Versorgung per Hand oder über den **Arena-Einspeiser** in der Fabrik
   (Strom und Munition per Band/Greifarm → Arena-Vorrat).
+  **Wie kommen Strom und Munition in die Arena?** In der Arena kann nichts gebaut werden: Den Einspeiser in der
+  Fabrik ans Stromnetz hängen und mit Bolzen/Patronen füttern. Das Arena-HUD zeigt Vorrat und warnt rot, wenn
+  ein Turm keine Versorgung hat; Tooltips der Türme und der Leitfaden-Schritt *Arena-Einspeiser* erklären es.
 - **Level** im Terminal-Tab *Abwehr* starten (optional automatisch weiter): Karte, Regel, Mutator,
   **Wellenvorschau**, Arena-Vorrat; **Welle rufen** schickt die nächste Welle früher (Bonus-Credits).
   10 Leben; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); ab Level 6 zufällige **Mutatoren**
@@ -140,7 +145,8 @@ Schlüsselmaterial) und **an der Werkbank aus Rohstoffen bauen**. Vanilla-Rezept
 - **Gegner**: Krabbler, Brecher (ab 5), Spucker (ab 10), Kristallgolem (ab 20), Brutmutter (Boss). Sie greifen
   **nur Türme** an – nie die Fabrik oder Spieler.
 - Nach einem Sieg kommen alle Türme mit Stufe, HP und Munition ins **Turmdepot** und die nächste Karte entsteht;
-  Schlüsselmaterialien (alle 10 Level) liegen ebenfalls im Depot. Zerstörte Türme werden zu **Ruinen**
+  Schlüsselmaterialien (alle 10 Level) liegen ebenfalls im Depot. Das Depot ist ein
+  Nur-Entnahme-Inventar (Rechtsklick, *Alles nehmen*); unbeschädigte Türme werden repariert und stapeln. Zerstörte Türme werden zu **Ruinen**
   (Wiederaufbau für Credits, *Alle Türme reparieren* im Terminal).
 - Admin-Befehl: `/craftorio arena route` legt den kürzesten Weg (für Tests).
 

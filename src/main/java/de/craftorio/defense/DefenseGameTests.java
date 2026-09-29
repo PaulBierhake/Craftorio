@@ -240,4 +240,156 @@ public final class DefenseGameTests {
         helper.assertTrue(defense.zone(solo.id()).isEmpty(), "old team has no arena left");
         helper.succeed();
     }
+
+    @GameTest(template = EMPTY, timeoutTicks = 1200, batch = "defense_maps")
+    public static void everyMapHasAPathThatCanBeLaidWithThePathWand(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        TeamRegistry registry = TeamData.registry(player.server);
+        Team team = registry.ensureTeam(player.getUUID(), "MapTest");
+        TowerDefense defense = TowerDefense.get(player.server);
+        TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
+        ServerLevel arena = TowerDefense.arena(player.server);
+        java.util.Set<de.craftorio.defense.arena.ArenaTheme> themes = java.util.EnumSet.noneOf(de.craftorio.defense.arena.ArenaTheme.class);
+        for (int level = 1; level <= 40; level++) {
+            defense.jumpToLevel(arena, zone, level);
+            ArenaLayout layout = defense.layout(zone);
+            themes.add(layout.theme());
+            List<BlockPos> route = new ArrayList<>();
+            for (int[] tile : layout.route()) {
+                route.add(Arenas.field(zone.slot(), tile[0], tile[1], Arenas.BUILD_Y));
+            }
+            de.craftorio.defense.arena.PathWandItem.Result result = de.craftorio.defense.arena.PathWandItem.lay(arena, defense, layout, route);
+            helper.assertTrue(result.error() == null && result.placed() == route.size(),
+                    "level " + level + " (" + layout.theme() + "): path stopped after " + result.placed() + "/" + route.size() + " " + result.error());
+            TowerDefense.PathCheck check = defense.checkPath(arena, zone);
+            helper.assertTrue(check.path() != null, "level " + level + " (" + layout.theme() + "): " + check.message().getString());
+        }
+        helper.assertTrue(themes.size() == de.craftorio.defense.arena.ArenaTheme.values().length, "not every theme was tested: " + themes);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 600, batch = "defense_maps")
+    public static void rebuildingMapsLeavesNoDroppedItems(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        TeamRegistry registry = TeamData.registry(player.server);
+        Team team = registry.ensureTeam(player.getUUID(), "DropTest");
+        TowerDefense defense = TowerDefense.get(player.server);
+        TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
+        ServerLevel arena = TowerDefense.arena(player.server);
+        BlockPos min = TowerDefense.arenaMin(zone.slot());
+        BlockPos max = TowerDefense.arenaMax(zone.slot());
+        for (int level = 1; level <= 8; level++) {
+            defense.jumpToLevel(arena, zone, level);
+            var items = arena.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, net.minecraft.world.phys.AABB.encapsulatingFullBlocks(min, max.offset(1, 1, 1)));
+            helper.assertTrue(items.isEmpty(), "dropped items after building level " + level + ": " + items.size());
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void pathWandRefusesBranches(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        TeamRegistry registry = TeamData.registry(player.server);
+        Team team = registry.ensureTeam(player.getUUID(), "BranchTest");
+        TowerDefense defense = TowerDefense.get(player.server);
+        TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
+        ServerLevel arena = TowerDefense.arena(player.server);
+        ArenaLayout layout = defense.layout(zone);
+        List<BlockPos> route = new ArrayList<>();
+        for (int[] tile : layout.route().subList(0, 8)) {
+            route.add(Arenas.field(zone.slot(), tile[0], tile[1], Arenas.BUILD_Y));
+        }
+        helper.assertTrue(de.craftorio.defense.arena.PathWandItem.lay(arena, defense, layout, route).error() == null, "straight path");
+        // Next to the first block (which already touches the portal) a side block would make a junction.
+        BlockPos first = route.get(0);
+        for (BlockPos side : new BlockPos[]{first.north(), first.south()}) {
+            if (!route.contains(side)) {
+                helper.assertTrue(defense.pathBranches(arena, side), "junction next to the first block at " + side);
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void towersFromTheDepotStackWithNewOnes(GameTestHelper helper) {
+        ItemStack fresh = new ItemStack(ModBlocks.CROSSBOW_TOWER.get());
+        ItemStack packed = TowerDefense.towerItem(TowerType.CROSSBOW, 1, TowerStats.maxHealth(TowerType.CROSSBOW, 1));
+        helper.assertTrue(ItemStack.isSameItemSameComponents(fresh, packed), "unupgraded intact towers stack");
+        helper.assertFalse(ItemStack.isSameItemSameComponents(fresh, TowerDefense.towerItem(TowerType.CROSSBOW, 2, 200)), "upgraded towers do not");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void depotIsATakeOnlyInventory(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        TeamRegistry registry = TeamData.registry(player.server);
+        Team team = registry.ensureTeam(player.getUUID(), "DepotTest");
+        TowerDefense defense = TowerDefense.get(player.server);
+        TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
+        int before = zone.depotSize();
+        for (int i = 0; i < 3; i++) {
+            TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.CROSSBOW, 1, TowerStats.maxHealth(TowerType.CROSSBOW, 1)));
+        }
+        TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.GUN, 3, 50));
+        helper.assertValueEqual(zone.depotSize(), before + 2, "three equal towers share a stack");
+
+        var view = defense.depotView(zone);
+        var menu = new de.craftorio.menu.DepotMenu(1, player.getInventory(), view);
+        int crossbowSlot = -1;
+        for (int i = 0; i < view.getContainerSize(); i++) {
+            if (view.getItem(i).is(ModBlocks.CROSSBOW_TOWER.get().asItem()) && view.getItem(i).getCount() == 3) {
+                crossbowSlot = i;
+            }
+        }
+        helper.assertTrue(crossbowSlot >= 0, "stack of three towers in the depot");
+        menu.clicked(crossbowSlot, 1, net.minecraft.world.inventory.ClickType.PICKUP, player); // right-click: half the stack
+        helper.assertValueEqual(menu.getCarried().getCount(), 2, "picked up");
+        helper.assertValueEqual(view.getItem(crossbowSlot).getCount(), 1, "one stays");
+        int emptySlot = view.getContainerSize() - 1;
+        menu.clicked(emptySlot, 0, net.minecraft.world.inventory.ClickType.PICKUP, player); // nothing can be put in
+        helper.assertTrue(view.getItem(emptySlot).isEmpty(), "nothing put in");
+        helper.assertValueEqual(menu.getCarried().getCount(), 2, "still carried");
+        player.getInventory().add(menu.getCarried());
+        menu.setCarried(ItemStack.EMPTY);
+
+        int inventoryBefore = countAll(player);
+        menu.clickMenuButton(player, de.craftorio.menu.DepotMenu.TAKE_ALL);
+        helper.assertTrue(countAll(player) > inventoryBefore, "take all gives the towers");
+        menu.removed(player);
+        helper.assertValueEqual(zone.depotSize(), before, "empty entries are dropped when closed");
+        helper.succeed();
+    }
+
+    private static int countAll(ServerPlayer player) {
+        int count = 0;
+        for (ItemStack stack : player.getInventory().items) {
+            count += stack.getCount();
+        }
+        return count;
+    }
+
+    @GameTest(template = EMPTY)
+    public static void arenaConsoleControlsTheLevel(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        TeamRegistry registry = TeamData.registry(player.server);
+        Team team = registry.ensureTeam(player.getUUID(), "ConsoleTest");
+        TowerDefense defense = TowerDefense.get(player.server);
+        TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
+        ServerLevel arena = TowerDefense.arena(player.server);
+        BlockPos console = Arenas.console(zone.slot());
+        helper.assertTrue(arena.getBlockState(console).is(ModBlocks.ARENA_CONSOLE.get()), "console stands on the stands");
+        helper.assertTrue(!console.equals(Arenas.exit(zone.slot())) && !console.equals(Arenas.depot(zone.slot())), "own position");
+
+        arena.setBlock(console, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+        defense.ensureArena(player.server, team.id());
+        helper.assertTrue(arena.getBlockState(console).is(ModBlocks.ARENA_CONSOLE.get()), "existing arenas get the console back");
+
+        var menu = new de.craftorio.menu.TerminalMenu(1, player.getInventory(), console,
+                de.craftorio.blueprint.TerminalStats.of(team, registry.currentMinute()));
+        boolean auto = zone.auto();
+        helper.assertTrue(menu.clickMenuButton(player, de.craftorio.menu.TerminalMenu.TD_TOGGLE_AUTO), "button handled");
+        helper.assertTrue(zone.auto() != auto, "auto mode toggled from the console menu");
+        menu.clickMenuButton(player, de.craftorio.menu.TerminalMenu.TD_TOGGLE_AUTO);
+        helper.succeed();
+    }
 }

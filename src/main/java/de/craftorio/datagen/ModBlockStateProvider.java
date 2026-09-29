@@ -98,6 +98,8 @@ public final class ModBlockStateProvider extends BlockStateProvider {
             simpleBlockWithItem(block, models().cubeBottomTop(name, modLoc("block/" + name + "_side"),
                     modLoc("block/" + name + "_top"), modLoc("block/" + name + "_top")));
         }
+        simpleBlockWithItem(ModBlocks.ARENA_CONSOLE.get(), models().cubeBottomTop("arena_console", modLoc("block/terminal_front"),
+                modLoc("block/machine_top"), modLoc("block/machine_top")));
         simpleBlockWithItem(ModBlocks.ARENA_FEEDER.get(), models().cubeBottomTop("arena_feeder", modLoc("block/arena_feeder_front"),
                 modLoc("block/machine_top"), modLoc("block/arena_feeder_top")));
         simpleBlockWithItem(ModBlocks.ENEMY_PORTAL.get(), models().cubeBottomTop("enemy_portal",

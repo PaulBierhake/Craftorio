@@ -14,12 +14,13 @@ import java.util.List;
  *
  * @param preview     the next wave as pairs (enemy type ordinal, count)
  * @param canCallWave the next wave can be called early right now
+ * @param unsupplied  towers in the arena that can not fire because neither they nor the arena reserve hold ammunition or energy
  */
 public record TdStatusPayload(boolean hasZone, int level, boolean running, int wave, int waves, int lives,
                               int enemiesLeft, boolean auto, long repairCost, int theme, int mutator, int lastStars,
-                              List<Integer> preview, long energy, int bolts, int cartridges, boolean canCallWave)
+                              List<Integer> preview, long energy, int bolts, int cartridges, boolean canCallWave, int unsupplied)
         implements CustomPacketPayload {
-    public static final TdStatusPayload NONE = new TdStatusPayload(false, 1, false, 0, 0, 0, 0, false, 0, 0, 0, 0, List.of(), 0, 0, 0, false);
+    public static final TdStatusPayload NONE = new TdStatusPayload(false, 1, false, 0, 0, 0, 0, false, 0, 0, 0, 0, List.of(), 0, 0, 0, false, 0);
     public static final Type<TdStatusPayload> TYPE = new Type<>(Craftorio.id("td_status"));
 
     public static final StreamCodec<ByteBuf, TdStatusPayload> STREAM_CODEC = StreamCodec.of(
@@ -43,6 +44,7 @@ public record TdStatusPayload(boolean hasZone, int level, boolean running, int w
                 out.writeVarInt(payload.bolts);
                 out.writeVarInt(payload.cartridges);
                 out.writeBoolean(payload.canCallWave);
+                out.writeVarInt(payload.unsupplied);
             },
             buf -> {
                 FriendlyByteBuf in = new FriendlyByteBuf(buf);
@@ -64,7 +66,7 @@ public record TdStatusPayload(boolean hasZone, int level, boolean running, int w
                     preview.add(in.readVarInt());
                 }
                 return new TdStatusPayload(hasZone, level, running, wave, waves, lives, enemiesLeft, auto, repairCost, theme, mutator,
-                        lastStars, List.copyOf(preview), in.readVarLong(), in.readVarInt(), in.readVarInt(), in.readBoolean());
+                        lastStars, List.copyOf(preview), in.readVarLong(), in.readVarInt(), in.readVarInt(), in.readBoolean(), in.readVarInt());
             });
 
     @Override

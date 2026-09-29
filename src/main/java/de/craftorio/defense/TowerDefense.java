@@ -37,6 +37,12 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
+import de.craftorio.menu.DepotMenu;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -155,6 +161,12 @@ public final class TowerDefense extends SavedData {
         return zone.layout;
     }
 
+    /** Test hook: jumps the zone to another level and rebuilds its map. */
+    void jumpToLevel(ServerLevel level, Zone zone, int newLevel) {
+        zone.level = newLevel;
+        ArenaBuilder.buildField(level, zone.slot, layout(zone), arenaSeed(zone) + zone.level);
+    }
+
     public ArenaLayout layoutAt(int slot) {
         return zoneAt(slot).map(this::layout).orElseGet(() -> ArenaLayout.generate(slot, 1));
     }
@@ -208,6 +220,9 @@ public final class TowerDefense extends SavedData {
             zone.built = true;
             setDirty();
         }
+        if (arena != null) {
+            ArenaBuilder.addConsole(arena, zone.slot);
+        }
         return zone;
     }
 
@@ -246,8 +261,8 @@ public final class TowerDefense extends SavedData {
         player.teleportTo(overworld, pos.x, pos.y, pos.z, player.getYRot(), player.getXRot());
     }
 
-    /** Hands out the packed-up towers and rewards waiting in the depot. */
-    public void takeDepot(ServerPlayer player) {
+    /** Opens the take-only tower depot of the player's own arena. */
+    public void openDepot(ServerPlayer player) {
         int slot = Arenas.slotAt(player.blockPosition());
         Zone zone = zones.get(teamOf(player).id());
         if (zone == null || zone.slot != slot) {
@@ -258,11 +273,96 @@ public final class TowerDefense extends SavedData {
             player.displayClientMessage(Component.translatable("craftorio.arena.depot.empty"), true);
             return;
         }
-        int count = zone.depot.size();
-        zone.depot.forEach(stack -> player.getInventory().placeItemBackInInventory(stack));
-        zone.depot.clear();
-        setDirty();
-        player.displayClientMessage(Component.translatable("craftorio.arena.depot.taken", count).withStyle(ChatFormatting.GREEN), true);
+        player.openMenu(new SimpleMenuProvider((id, inventory, ignored) -> new DepotMenu(id, inventory, depotView(zone)),
+                Component.translatable("block.craftorio.tower_depot")));
+    }
+
+    /** The depot as a container: only removing is possible; empty entries are dropped when it is closed. */
+    public Container depotView(Zone zone) {
+        return new Container() {
+            @Override
+            public int getContainerSize() {
+                return DepotMenu.SLOTS;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return zone.depot.stream().allMatch(ItemStack::isEmpty);
+            }
+
+            @Override
+            public ItemStack getItem(int index) {
+                return index < zone.depot.size() ? zone.depot.get(index) : ItemStack.EMPTY;
+            }
+
+            @Override
+            public ItemStack removeItem(int index, int count) {
+                if (index >= zone.depot.size()) {
+                    return ItemStack.EMPTY;
+                }
+                ItemStack removed = ContainerHelper.removeItem(zone.depot, index, count);
+                setChanged();
+                return removed;
+            }
+
+            @Override
+            public ItemStack removeItemNoUpdate(int index) {
+                if (index >= zone.depot.size()) {
+                    return ItemStack.EMPTY;
+                }
+                return ContainerHelper.takeItem(zone.depot, index);
+            }
+
+            @Override
+            public void setItem(int index, ItemStack stack) {
+                while (zone.depot.size() <= index) {
+                    zone.depot.add(ItemStack.EMPTY);
+                }
+                zone.depot.set(index, stack);
+                setChanged();
+            }
+
+            @Override
+            public void setChanged() {
+                TowerDefense.this.setDirty();
+            }
+
+            @Override
+            public boolean stillValid(Player player) {
+                return Arenas.slotAt(player.blockPosition()) == zone.slot;
+            }
+
+            @Override
+            public boolean canPlaceItem(int index, ItemStack stack) {
+                return false;
+            }
+
+            @Override
+            public void stopOpen(Player player) {
+                zone.depot.removeIf(ItemStack::isEmpty);
+                setChanged();
+            }
+
+            @Override
+            public void clearContent() {
+                zone.depot.clear();
+            }
+        };
+    }
+
+    /** Adds to the depot, merging with stacks of the same item and components. */
+    static void addToDepot(Zone zone, ItemStack stack) {
+        ItemStack rest = stack.copy();
+        for (ItemStack present : zone.depot) {
+            if (!present.isEmpty() && ItemStack.isSameItemSameComponents(present, rest)) {
+                int moved = Math.min(rest.getCount(), present.getMaxStackSize() - present.getCount());
+                present.grow(moved);
+                rest.shrink(moved);
+            }
+        }
+        if (!rest.isEmpty()) {
+            zone.depot.add(rest);
+        }
     }
 
     // --- arena rules
@@ -275,6 +375,20 @@ public final class TowerDefense extends SavedData {
         }
         Zone zone = zoneAt(Arenas.slotAt(pos)).orElseThrow();
         return zone.run != null ? "craftorio.td.error.running" : null;
+    }
+
+    /** The path block at (or about to be at) this position would create a branch or a 2×2 area. */
+    public boolean pathBranches(ServerLevel level, BlockPos pos) {
+        int slot = Arenas.slotAt(pos);
+        Optional<Zone> zone = zoneAt(slot);
+        if (zone.isEmpty()) {
+            return false;
+        }
+        BlockPos portal = Arenas.gate(slot, layoutAt(slot).spawnRow());
+        BlockPos core = zone.get().core();
+        return !PathTracer.allowsBlock(pos.getX(), pos.getY(), pos.getZ(),
+                (x, y, z) -> Arenas.slotAt(new BlockPos(x, y, z)) == slot && level.getBlockState(new BlockPos(x, y, z)).is(ModBlocks.PATH_BLOCK.get()),
+                (x, y, z) -> new BlockPos(x, y, z).equals(portal) || new BlockPos(x, y, z).equals(core));
     }
 
     /** Why a tower may not stand at this position, or null. */
@@ -518,21 +632,25 @@ public final class TowerDefense extends SavedData {
             if (blockEntity instanceof TowerBlockEntity tower) {
                 ItemStack ammo = tower.ammo().getStackInSlot(0).copy();
                 tower.ammo().setStackInSlot(0, ItemStack.EMPTY);
-                zone.depot.add(towerItem(tower.type(), tower.upgradeLevel(), tower.health()));
+                // Intact towers are repaired for the new map, so unupgraded ones stack with freshly built towers.
+                addToDepot(zone, towerItem(tower.type(), tower.upgradeLevel(), tower.maxHealth()));
                 if (!ammo.isEmpty()) {
-                    zone.depot.add(ammo);
+                    addToDepot(zone, ammo);
                 }
             } else if (blockEntity instanceof TowerRuinBlockEntity ruin) {
-                zone.depot.add(towerItem(ruin.towerType(), ruin.upgradeLevel(), 0));
+                addToDepot(zone, towerItem(ruin.towerType(), ruin.upgradeLevel(), 0));
             }
         }
         ArenaBuilder.buildField(level, zone.slot, layout(zone), arenaSeed(zone) + zone.level);
         setDirty();
     }
 
+    /** A tower item; the state component is only set when it differs from a freshly built tower, so those stack. */
     public static ItemStack towerItem(TowerType type, int upgradeLevel, int health) {
         ItemStack stack = new ItemStack(ModBlocks.tower(type).get());
-        stack.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel, health));
+        if (!TowerStats.isPristine(type, upgradeLevel, health)) {
+            stack.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel, health));
+        }
         return stack;
     }
 
@@ -571,7 +689,7 @@ public final class TowerDefense extends SavedData {
             }
             if (sendStatus) {
                 zone.repairCost = zone.run == null ? repairCost(level, zone.slot) : zone.repairCost;
-                TdStatusPayload status = status(zone);
+                TdStatusPayload status = status(level, zone);
                 online.forEach(player -> send(player, status));
             }
         }
@@ -597,7 +715,7 @@ public final class TowerDefense extends SavedData {
             TeamData.registry(server).deposit(team, total);
             ItemStack key = keyItem(plan.keyReward());
             if (!key.isEmpty()) {
-                zone.depot.add(key);
+                addToDepot(zone, key);
                 broadcast(server, team, Component.translatable("craftorio.td.key_reward", key.getHoverName()).withStyle(ChatFormatting.LIGHT_PURPLE));
             }
             broadcast(server, team, Component.translatable("craftorio.td.won_stars", plan.level(), "★".repeat(stars) + "☆".repeat(3 - stars),
@@ -627,7 +745,7 @@ public final class TowerDefense extends SavedData {
         };
     }
 
-    private TdStatusPayload status(Zone zone) {
+    private TdStatusPayload status(ServerLevel level, Zone zone) {
         LevelRun run = zone.run;
         LevelPlan plan = run != null ? run.plan() : LevelPlan.of(zone.level, 1);
         int previewWave = run == null ? 0 : run.upcomingWave();
@@ -642,7 +760,17 @@ public final class TowerDefense extends SavedData {
         return new TdStatusPayload(true, zone.level, run != null, run == null ? 0 : run.wave(), plan.waves().size(),
                 run == null ? LevelPlan.LIVES : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.repairCost,
                 layout.theme().ordinal(), mutator(zone).ordinal(), zone.lastStars, preview, zone.energy,
-                zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.CARTRIDGE.get()), run != null && run.canCallWave());
+                zone.ammo(ModItems.BOLT.get()), zone.ammo(ModItems.CARTRIDGE.get()), run != null && run.canCallWave(), unsupplied(level, zone));
+    }
+
+    private int unsupplied(ServerLevel level, Zone zone) {
+        int count = 0;
+        for (BlockEntity blockEntity : blockEntitiesInArena(level, zone.slot)) {
+            if (blockEntity instanceof TowerBlockEntity tower && tower.lacksSupply(zone)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static void send(ServerPlayer player, TdStatusPayload payload) {

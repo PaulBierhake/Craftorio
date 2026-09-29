@@ -27,6 +27,7 @@ public final class Quests {
             // Tower defense for the first key material
             build("arena_gate", 1, 200),
             build("crossbow_tower", 1, 200),
+            build("arena_feeder", 1, 200),
             tdLevel("td_1", 1, 300),
             tdLevel("td_10", 10, 2_000),
             // Tier 2 and the caves

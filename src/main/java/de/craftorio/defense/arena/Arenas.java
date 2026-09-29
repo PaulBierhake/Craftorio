@@ -82,4 +82,9 @@ public final class Arenas {
     public static BlockPos depot(int slot) {
         return field(slot, ArenaLayout.SIZE / 2 + 2, ArenaLayout.SIZE + STAND_ROWS, FLOOR_Y + STAND_ROWS + 1);
     }
+
+    /** The arena console next to exit and depot: opens the terminal's Defense tab. */
+    public static BlockPos console(int slot) {
+        return field(slot, ArenaLayout.SIZE / 2 + 4, ArenaLayout.SIZE + STAND_ROWS, FLOOR_Y + STAND_ROWS + 1);
+    }
 }

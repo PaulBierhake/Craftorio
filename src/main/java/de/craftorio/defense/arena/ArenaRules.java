@@ -58,7 +58,10 @@ public final class ArenaRules {
         int[] tile = Arenas.tileAt(pos);
         boolean ok = pos.getY() == Arenas.BUILD_Y
                 && TowerDefense.get(level.getServer()).layoutAt(Arenas.slotAt(pos)).tile(tile[0], tile[1]).allowsPath();
-        return ok ? null : "craftorio.arena.path.blocked";
+        if (!ok) {
+            return "craftorio.arena.path.blocked";
+        }
+        return TowerDefense.get(level.getServer()).pathBranches(level, pos) ? "craftorio.arena.path.branch" : null;
     }
 
     @SubscribeEvent

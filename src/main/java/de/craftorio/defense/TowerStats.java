@@ -40,6 +40,11 @@ public final class TowerStats {
         };
     }
 
+    /** A tower of level 1 with full health, like a freshly built one. */
+    public static boolean isPristine(TowerType type, int level, int health) {
+        return level <= 1 && health >= maxHealth(type, 1);
+    }
+
     public static long repairCost(int health, int maxHealth) {
         return Math.max(0, maxHealth - health);
     }

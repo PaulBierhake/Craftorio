@@ -1,6 +1,7 @@
 package de.craftorio.client;
 
 import de.craftorio.defense.LevelPlan;
+import de.craftorio.defense.arena.Arenas;
 import de.craftorio.economy.Credits;
 import de.craftorio.network.TdStatusPayload;
 import net.minecraft.network.chat.Component;
@@ -39,7 +40,25 @@ public final class CreditsHud {
                     td.lives(), LevelPlan.LIVES, td.enemiesLeft()), 6, y, td.lives() <= 5 ? 0xFF6B6B : 0xFFFFFF, true);
             y += 11;
         }
+        if (td.hasZone() && minecraft.level != null && minecraft.level.dimension() == Arenas.DIMENSION) {
+            y = renderSupply(graphics, minecraft, td, y);
+        }
         renderGuide(graphics, minecraft, y);
+    }
+
+    /** In the arena: what the arena feeder in the factory has delivered, and a warning for towers without supply. */
+    private static int renderSupply(GuiGraphics graphics, Minecraft minecraft, TdStatusPayload td, int y) {
+        graphics.drawString(minecraft.font, Component.translatable("craftorio.hud.supply", Credits.formatNumber(td.energy()),
+                td.bolts(), td.cartridges()), 6, y, 0x9AD8FF, true);
+        y += 11;
+        if (td.unsupplied() > 0) {
+            for (FormattedCharSequence part : minecraft.font.split(Component.translatable("craftorio.hud.unsupplied", td.unsupplied()), GUIDE_WIDTH)) {
+                graphics.drawString(minecraft.font, part, 6, y, 0xFF6B6B, true);
+                y += 10;
+            }
+            y += 1;
+        }
+        return y;
     }
 
     /** The guide's current step, so the player always knows what to do next. */

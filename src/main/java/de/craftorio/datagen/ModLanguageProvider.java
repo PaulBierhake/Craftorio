@@ -276,6 +276,13 @@ public final class ModLanguageProvider {
             add("craftorio.guide.earn", "Sell processed goods: the more processing steps, the higher the price. The terminal's statistics show what pays best.");
             add("craftorio.guide.defense", "Tower defense: go through your arena gate, lay a path with the path wand from the open gate to the core, place towers next to it and start the level in the terminal (Defense tab).");
             add("craftorio.hud.guide_key", "[%s] handbook");
+            add("craftorio.hud.supply", "Arena supply: %s FE · %s bolts · %s cartridges");
+            add("craftorio.hud.unsupplied", "%s tower(s) without supply! Build an arena feeder in your factory.");
+            add("craftorio.tooltip.tower.energy", "Runs on power: supplied through the arena feeder in your factory.");
+            add("craftorio.tooltip.tower.ammo", "Load it by hand or supply ammunition through the arena feeder in your factory.");
+            add("craftorio.tooltip.arena_feeder", "Built in your factory: feeds power and ammunition into the arena, where the towers draw from it.");
+            add("craftorio.quest.build_arena_feeder", "Build an arena feeder");
+            add("craftorio.quest.build_arena_feeder.hint", "Nothing can be built inside the arena, so towers get power and ammunition from the outside: place the arena feeder in your factory, connect it to the power grid and feed it bolts and cartridges by belt or inserter. The arena HUD shows what has arrived.");
             add("craftorio.arena.error.overworld_only", "Arena gates only work in the overworld.");
             add("craftorio.arena.error.not_arena", "Only in your arena.");
             add("craftorio.arena.error.outside_field", "Only inside the arena field.");
@@ -283,7 +290,9 @@ public final class ModLanguageProvider {
             add("craftorio.arena.error.no_tower_here", "Towers only stand on open ground or on a plateau – not on the path, trees, rock, water or lava.");
             add("craftorio.arena.error.no_building", "The arena cannot be changed – lay the path with the path wand and place towers.");
             add("craftorio.arena.path.blocked", "The path cannot go there.");
-            add("craftorio.arena.path_wand.tooltip", "Click the arena floor to lay path; the next click in the same row or column draws a straight line. Sneak-click removes path or starts a new line.");
+            add("craftorio.arena.path.route_hint", "The green particles show the shortest way from the gate to the core.");
+            add("craftorio.arena.path.branch", "The path must stay a single line: no branches, junctions or 2x2 areas.");
+            add("craftorio.arena.path_wand.tooltip", "Click the arena floor to lay path; the next click in the same row or column draws a straight line. Sneak-click removes path or starts a new line; sneak-click into the air shows the shortest way.");
             add("craftorio.arena.welcome", "Arena · level %s · map: %s – %s");
             add("craftorio.arena.new_map", "The arena has changed: new map %s. Your towers are waiting in the tower depot – lay a new path!");
             add("craftorio.arena.old_core", "Defense zones are now arenas – build an arena gate (free blueprint) and step through.");
@@ -301,6 +310,7 @@ public final class ModLanguageProvider {
             add("craftorio.arena.mutator.haste", "Mutator Forced march: enemies are 30 % faster (+25 % reward).");
             add("craftorio.arena.mutator.hardened", "Mutator Hardened: enemies have 35 % more health (+30 % reward).");
             add("craftorio.arena.depot.empty", "The tower depot is empty.");
+            add("craftorio.arena.depot.take_all", "Take all");
             add("craftorio.arena.depot.taken", "Took %s stacks from the tower depot.");
             add("craftorio.arena.feeder.status", "Arena reserve: %s / %s FE · %s bolts · %s cartridges");
             add("craftorio.arena.feeder.no_owner", "This feeder belongs to no team.");
@@ -328,6 +338,7 @@ public final class ModLanguageProvider {
             add(ModBlocks.ARENA_GATE.get(), "Arena Gate");
             add(ModBlocks.ARENA_EXIT.get(), "Arena Exit");
             add(ModBlocks.TOWER_DEPOT.get(), "Tower Depot");
+            add(ModBlocks.ARENA_CONSOLE.get(), "Arena Console");
             add(ModBlocks.ARENA_FEEDER.get(), "Arena Feeder");
             add(ModItems.PATH_WAND.get(), "Path Wand");
             add("craftorio.quest.build_trading_post", "Build a trading post");
@@ -672,6 +683,13 @@ public final class ModLanguageProvider {
             add("craftorio.guide.earn", "Verkaufe verarbeitete Waren: je mehr Verarbeitungsschritte, desto höher der Preis. Die Statistik im Terminal zeigt, was sich am meisten lohnt.");
             add("craftorio.guide.defense", "Tower Defense: geh durch dein Arena-Tor, lege mit dem Pfadstab einen Weg vom offenen Tor zum Kern, stelle Türme daneben und starte das Level im Terminal (Tab Abwehr).");
             add("craftorio.hud.guide_key", "[%s] Handbuch");
+            add("craftorio.hud.supply", "Arena-Versorgung: %s FE · %s Bolzen · %s Patronen");
+            add("craftorio.hud.unsupplied", "%s Turm/Türme ohne Versorgung! Baue einen Arena-Einspeiser in deiner Fabrik.");
+            add("craftorio.tooltip.tower.energy", "Läuft mit Strom: Versorgung über den Arena-Einspeiser in deiner Fabrik.");
+            add("craftorio.tooltip.tower.ammo", "Von Hand laden oder Munition über den Arena-Einspeiser in deiner Fabrik liefern.");
+            add("craftorio.tooltip.arena_feeder", "Steht in deiner Fabrik: speist Strom und Munition in die Arena ein, aus der die Türme sich bedienen.");
+            add("craftorio.quest.build_arena_feeder", "Baue einen Arena-Einspeiser");
+            add("craftorio.quest.build_arena_feeder.hint", "In der Arena kann nichts gebaut werden, daher kommen Strom und Munition von außen: Stelle den Arena-Einspeiser in deiner Fabrik auf, verbinde ihn mit dem Stromnetz und führe Bolzen und Patronen per Band oder Greifarm zu. Das Arena-HUD zeigt, was angekommen ist.");
             add("craftorio.arena.error.overworld_only", "Arena-Tore funktionieren nur in der Oberwelt.");
             add("craftorio.arena.error.not_arena", "Nur in deiner Arena.");
             add("craftorio.arena.error.outside_field", "Nur innerhalb des Arenafelds.");
@@ -679,7 +697,9 @@ public final class ModLanguageProvider {
             add("craftorio.arena.error.no_tower_here", "Türme stehen nur auf freiem Boden oder auf einem Plateau – nicht auf dem Weg, Bäumen, Fels, Wasser oder Lava.");
             add("craftorio.arena.error.no_building", "Die Arena lässt sich nicht verändern – lege den Weg mit dem Pfadstab und stelle Türme auf.");
             add("craftorio.arena.path.blocked", "Dort kann der Weg nicht entlangführen.");
-            add("craftorio.arena.path_wand.tooltip", "Klick auf den Arenaboden legt Weg; der nächste Klick in derselben Reihe oder Spalte zieht eine gerade Linie. Schleichen + Klick entfernt Weg oder beginnt eine neue Linie.");
+            add("craftorio.arena.path.route_hint", "Die grünen Partikel zeigen den kürzesten Weg vom Tor zum Kern.");
+            add("craftorio.arena.path.branch", "Der Weg muss eine einzelne Linie bleiben: keine Abzweigungen, Kreuzungen oder 2x2-Flächen.");
+            add("craftorio.arena.path_wand.tooltip", "Klick auf den Arenaboden legt Weg; der nächste Klick in derselben Reihe oder Spalte zieht eine gerade Linie. Schleichen + Klick entfernt Weg oder beginnt eine neue Linie; Schleichen + Klick in die Luft zeigt den kürzesten Weg.");
             add("craftorio.arena.welcome", "Arena · Level %s · Karte: %s – %s");
             add("craftorio.arena.new_map", "Die Arena hat sich verändert: neue Karte %s. Deine Türme warten im Turmdepot – lege einen neuen Weg!");
             add("craftorio.arena.old_core", "Verteidigungszonen sind jetzt Arenen – baue ein Arena-Tor (Gratis-Bauplan) und geh hindurch.");
@@ -697,6 +717,7 @@ public final class ModLanguageProvider {
             add("craftorio.arena.mutator.haste", "Mutator Eilmarsch: Gegner sind 30 % schneller (+25 % Belohnung).");
             add("craftorio.arena.mutator.hardened", "Mutator Gehärtet: Gegner haben 35 % mehr Leben (+30 % Belohnung).");
             add("craftorio.arena.depot.empty", "Das Turmdepot ist leer.");
+            add("craftorio.arena.depot.take_all", "Alles nehmen");
             add("craftorio.arena.depot.taken", "%s Stapel aus dem Turmdepot genommen.");
             add("craftorio.arena.feeder.status", "Arena-Vorrat: %s / %s FE · %s Bolzen · %s Patronen");
             add("craftorio.arena.feeder.no_owner", "Dieser Einspeiser gehört keinem Team.");
@@ -724,6 +745,7 @@ public final class ModLanguageProvider {
             add(ModBlocks.ARENA_GATE.get(), "Arena-Tor");
             add(ModBlocks.ARENA_EXIT.get(), "Arena-Ausgang");
             add(ModBlocks.TOWER_DEPOT.get(), "Turmdepot");
+            add(ModBlocks.ARENA_CONSOLE.get(), "Arena-Pult");
             add(ModBlocks.ARENA_FEEDER.get(), "Arena-Einspeiser");
             add(ModItems.PATH_WAND.get(), "Pfadstab");
             add("craftorio.quest.build_trading_post", "Baue einen Handelsposten");

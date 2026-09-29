@@ -168,6 +168,9 @@ public final class ModBlocks {
     public static final DeferredBlock<ArenaBlocks.Depot> TOWER_DEPOT = BLOCKS.registerBlock("tower_depot", ArenaBlocks.Depot::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(-1.0F, 3_600_000.0F).noLootTable()
                     .pushReaction(PushReaction.BLOCK).sound(SoundType.WOOD));
+    public static final DeferredBlock<ArenaBlocks.Console> ARENA_CONSOLE = BLOCKS.registerBlock("arena_console", ArenaBlocks.Console::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(-1.0F, 3_600_000.0F).noLootTable()
+                    .pushReaction(PushReaction.BLOCK).sound(SoundType.METAL));
     public static final DeferredBlock<ArenaFeederBlock> ARENA_FEEDER = BLOCKS.registerBlock("arena_feeder", ArenaFeederBlock::new,
             machineProperties());
 

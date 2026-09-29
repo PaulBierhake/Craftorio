@@ -68,6 +68,26 @@ public final class PathTracer {
         }
     }
 
+    /**
+     * May a path block be set here? No path block may end up with more than two path neighbours (portal and core
+     * count as neighbours), which rules out branches, junctions and 2×2 areas before the level is started.
+     *
+     * @param isPath     is there a path block at these coordinates (the new block itself may or may not be set yet)
+     * @param isEndpoint is this the enemy portal or the core
+     */
+    public static boolean allowsBlock(int x, int y, int z, Grid isPath, Grid isEndpoint) {
+        Grid after = (px, py, pz) -> px == x && py == y && pz == z || isPath.test(px, py, pz) || isEndpoint.test(px, py, pz);
+        if (neighbours(new int[]{x, y, z}, after, Set.of()).size() > 2) {
+            return false;
+        }
+        for (int[] near : neighbours(new int[]{x, y, z}, isPath, Set.of())) {
+            if (neighbours(near, after, Set.of()).size() > 2) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static List<int[]> neighbours(int[] from, Grid isPath, Set<Long> visited) {
         List<int[]> found = new ArrayList<>();
         for (int[] step : HORIZONTAL) {

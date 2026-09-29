@@ -40,6 +40,14 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void onTooltip(ItemTooltipEvent event) {
             ItemStack stack = event.getItemStack();
+            if (stack.getItem() instanceof net.minecraft.world.item.BlockItem block) {
+                if (block.getBlock() instanceof de.craftorio.defense.TowerBlock tower) {
+                    event.getToolTip().add(Component.translatable(tower.towerType().usesEnergy()
+                            ? "craftorio.tooltip.tower.energy" : "craftorio.tooltip.tower.ammo").withStyle(ChatFormatting.AQUA));
+                } else if (block.getBlock() == de.craftorio.registry.ModBlocks.ARENA_FEEDER.get()) {
+                    event.getToolTip().add(Component.translatable("craftorio.tooltip.arena_feeder").withStyle(ChatFormatting.AQUA));
+                }
+            }
             long unit = Economy.unitPrice(stack);
             if (unit == 0) {
                 return;
@@ -102,6 +110,7 @@ public final class ClientEvents {
             event.register(ModMenus.TERMINAL.get(), TerminalScreen::new);
             event.register(ModMenus.WORKBENCH.get(), WorkbenchScreen::new);
             event.register(ModMenus.TOWER.get(), TowerScreen::new);
+            event.register(ModMenus.DEPOT.get(), DepotScreen::new);
         }
     }
 }

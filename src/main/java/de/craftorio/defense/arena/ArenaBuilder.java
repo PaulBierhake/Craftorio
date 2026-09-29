@@ -3,16 +3,18 @@ package de.craftorio.defense.arena;
 import de.craftorio.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Random;
 
 /** Builds the fixed frame of an arena (base, walls, gates, core, stands) and the themed field of a level. */
 public final class ArenaBuilder {
-    private static final int FLAGS = Block.UPDATE_CLIENTS;
+    private static final int FLAGS = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
 
     private ArenaBuilder() {
     }
@@ -29,7 +31,7 @@ public final class ArenaBuilder {
                 set(level, Arenas.field(slot, x, z, Arenas.FLOOR_Y - 1), base);
                 boolean inField = x >= 0 && z >= 0 && x < size && z < size;
                 boolean ring = !inField && x >= -1 && x <= size && z >= -1 && z <= size;
-                for (int y = Arenas.FLOOR_Y; y <= Arenas.WALL_TOP + 2; y++) {
+                for (int y = Arenas.WALL_TOP + 2; y >= Arenas.FLOOR_Y; y--) {
                     if (!inField) {
                         set(level, Arenas.field(slot, x, z, y), Blocks.AIR.defaultBlockState());
                     }
@@ -59,6 +61,12 @@ public final class ArenaBuilder {
         set(level, Arenas.core(slot).above(2), Blocks.AIR.defaultBlockState());
         set(level, Arenas.exit(slot), ModBlocks.ARENA_EXIT.get().defaultBlockState());
         set(level, Arenas.depot(slot), ModBlocks.TOWER_DEPOT.get().defaultBlockState());
+        set(level, Arenas.console(slot), ModBlocks.ARENA_CONSOLE.get().defaultBlockState());
+    }
+
+    /** Arenas built before the console existed get it the next time their team enters. */
+    public static void addConsole(ServerLevel level, int slot) {
+        set(level, Arenas.console(slot), ModBlocks.ARENA_CONSOLE.get().defaultBlockState());
     }
 
     public static void openGate(ServerLevel level, int slot, int row) {
@@ -85,12 +93,23 @@ public final class ArenaBuilder {
         }
         for (int x = 0; x < ArenaLayout.SIZE; x++) {
             for (int z = 0; z < ArenaLayout.SIZE; z++) {
-                for (int y = Arenas.FLOOR_Y; y <= Arenas.WALL_TOP + 2; y++) {
+                // Top to bottom, so plants never lose their support first and drop as items.
+                for (int y = Arenas.WALL_TOP + 2; y >= Arenas.FLOOR_Y; y--) {
                     set(level, Arenas.field(slot, x, z, y), Blocks.AIR.defaultBlockState());
                 }
                 set(level, Arenas.field(slot, x, z, Arenas.FLOOR_Y - 1), ModBlocks.ARENA_BASE.get().defaultBlockState());
                 buildTile(level, slot, x, z, layout, random);
             }
+        }
+        removeItems(level, slot);
+    }
+
+    /** Safety net: whatever dropped while the map was rebuilt disappears. */
+    private static void removeItems(ServerLevel level, int slot) {
+        AABB box = new AABB(Arenas.field(slot, Arenas.MIN_X, Arenas.MIN_Z, Arenas.FLOOR_Y - 1).getCenter(),
+                Arenas.field(slot, Arenas.MAX_X, Arenas.MAX_Z, Arenas.WALL_TOP + 3).getCenter()).inflate(1);
+        for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, box)) {
+            item.discard();
         }
     }
 
@@ -103,11 +122,12 @@ public final class ArenaBuilder {
                 switch (tile) {
                     case GROUND -> {
                         set(level, floor, Blocks.GRASS_BLOCK.defaultBlockState());
+                        // Only plants that can be replaced (grass, fern): flowers would block paths and towers.
                         int roll = random.nextInt(20);
                         if (roll < 3) {
                             set(level, floor.above(), Blocks.SHORT_GRASS.defaultBlockState());
                         } else if (roll == 3) {
-                            set(level, floor.above(), random.nextBoolean() ? Blocks.DANDELION.defaultBlockState() : Blocks.POPPY.defaultBlockState());
+                            set(level, floor.above(), Blocks.FERN.defaultBlockState());
                         }
                     }
                     case ROUGH -> {
@@ -168,10 +188,8 @@ public final class ArenaBuilder {
             case WATER -> {
                 switch (tile) {
                     case GROUND -> set(level, floor, (shore(layout, x, z) ? Blocks.SAND : Blocks.GRASS_BLOCK).defaultBlockState());
-                    case ROUGH -> {
-                        set(level, floor.below(), Blocks.SAND.defaultBlockState());
-                        set(level, floor, Blocks.WATER.defaultBlockState());
-                    }
+                    // Fords are stepping stones, clearly different from the open water (deep tiles) around them.
+                    case ROUGH -> set(level, floor, ((x + z) % 2 == 0 ? Blocks.MOSSY_COBBLESTONE : Blocks.MOSSY_STONE_BRICKS).defaultBlockState());
                     default -> {
                         set(level, floor.below(), Blocks.DARK_PRISMARINE.defaultBlockState());
                         set(level, floor, Blocks.WATER.defaultBlockState());

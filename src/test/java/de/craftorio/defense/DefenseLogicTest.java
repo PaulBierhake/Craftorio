@@ -67,6 +67,47 @@ class DefenseLogicTest {
         assertEquals(PathTracer.Error.NO_START, trace(Set.of(), 26).error());
     }
 
+    /** Portal at x=0, core at x=coreX, all at y=64 and z=0 unless a block says otherwise. */
+    private static boolean allows(Set<List<Integer>> blocks, int x, int z) {
+        return PathTracer.allowsBlock(x, 64, z, (px, py, pz) -> blocks.contains(List.of(px, py, pz)),
+                (px, py, pz) -> py == 64 && pz == 0 && (px == 0 || px == 30));
+    }
+
+    @Test
+    void pathBlocksMayNotBranchOrFormAreas() {
+        Set<List<Integer>> line = new HashSet<>();
+        for (int x = 1; x <= 10; x++) {
+            line.add(List.of(x, 64, 0));
+        }
+        assertTrue(allows(line, 11, 0), "straight");
+        assertTrue(allows(line, 10, 1), "turn at the end");
+        assertFalse(allows(line, 5, 1), "T junction");
+        assertFalse(allows(line, 1, 1), "side of the first block (portal is a neighbour)");
+
+        line.add(List.of(10, 64, 1));
+        assertFalse(allows(line, 9, 1), "2x2 area");
+        assertTrue(allows(line, 10, 2), "curve goes on");
+        assertTrue(allows(line, 10, 1) || line.contains(List.of(10, 64, 1)));
+
+        Set<List<Integer>> near = new HashSet<>();
+        for (int x = 20; x <= 29; x++) {
+            near.add(List.of(x, 64, 0));
+        }
+        assertFalse(allows(near, 29, 1), "next to the core");
+        assertTrue(allows(near, 19, 0));
+        // A block one level up still counts as the neighbour in its column.
+        assertFalse(allows(Set.of(List.of(4, 65, 0), List.of(5, 64, 1), List.of(5, 64, -1)), 5, 0));
+    }
+
+    @Test
+    void towerItemsOfLevelOneAtFullHealthStackWithNewOnes() {
+        int full = TowerStats.maxHealth(TowerType.GUN, 1);
+        assertTrue(TowerStats.isPristine(TowerType.GUN, 1, full));
+        assertFalse(TowerStats.isPristine(TowerType.GUN, 1, full - 1));
+        assertFalse(TowerStats.isPristine(TowerType.GUN, 2, TowerStats.maxHealth(TowerType.GUN, 2)));
+        assertFalse(TowerStats.isPristine(TowerType.GUN, 1, 0), "ruins are not pristine");
+    }
+
     @Test
     void upgradesRaiseDamageAndHealth() {
         assertEquals(4, TowerStats.damage(TowerType.CROSSBOW, 1), 1e-9);
