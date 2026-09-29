@@ -72,6 +72,9 @@ public final class RecipeTableGameTests {
             new Object[]{"assembler_2", 1, List.of(of(ModItems.STEEL_PLATE.get(), 2), of(ModItems.CIRCUIT.get(), 3), of(ModItems.IRON_GEAR.get(), 5), of(ModItems.ASSEMBLER.get(), 1))},
             new Object[]{"steel_furnace", 1, List.of(of(ModItems.STEEL_PLATE.get(), 6), of(ModItems.STONE_BRICK.get(), 10))},
             new Object[]{"solar_panel", 1, List.of(of(ModItems.STEEL_PLATE.get(), 5), of(ModItems.CIRCUIT.get(), 15), of(Items.COPPER_INGOT, 5))},
+            new Object[]{"underground_pipe", 2, List.of(of(ModItems.PIPE.get(), 10), of(Items.IRON_INGOT, 5))},
+            new Object[]{"fluid_pump", 1, List.of(of(ModItems.MOTOR.get(), 1), of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.PIPE.get(), 1))},
+            new Object[]{"storage_tank", 1, List.of(of(Items.IRON_INGOT, 20), of(ModItems.STEEL_PLATE.get(), 5))},
             new Object[]{"tesla_tower", 1, List.of(of(ModItems.COPPER_CABLE.get(), 24), of(Items.IRON_INGOT, 8), of(ModItems.CIRCUIT.get(), 4))}
     );
 

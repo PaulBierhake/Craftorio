@@ -84,6 +84,10 @@ public final class ModBlueprints {
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.ASSEMBLER.get(), 1));
         add(context, "steel_furnace", stack(ModItems.STEEL_FURNACE.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 6), SizedIngredient.of(ModItems.STONE_BRICK.get(), 10));
+        add(context, "underground_pipe", stack(ModItems.UNDERGROUND_PIPE.get(), 2), SizedIngredient.of(ModItems.PIPE.get(), 10), iron(5));
+        add(context, "fluid_pump", stack(ModItems.FLUID_PUMP.get(), 1),
+                SizedIngredient.of(ModItems.MOTOR.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(ModItems.PIPE.get(), 1));
+        add(context, "storage_tank", stack(ModItems.STORAGE_TANK.get(), 1), iron(20), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5));
         add(context, "solar_panel", stack(ModItems.SOLAR_PANEL.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5), SizedIngredient.of(ModItems.CIRCUIT.get(), 15), copper(5));
 

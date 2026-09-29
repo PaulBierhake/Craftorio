@@ -130,6 +130,16 @@ public final class ModBlocks {
     public static final DeferredBlock<de.craftorio.energy.SteamEngineBlock> STEAM_ENGINE = BLOCKS.registerBlock("steam_engine",
             de.craftorio.energy.SteamEngineBlock::new,
             machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 4 : 0));
+    public static final DeferredBlock<de.craftorio.fluid.FluidPipeBlock> PIPE = BLOCKS.registerBlock("pipe",
+            de.craftorio.fluid.FluidPipeBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F).noOcclusion().sound(SoundType.METAL));
+    public static final DeferredBlock<de.craftorio.fluid.UndergroundPipeBlock> UNDERGROUND_PIPE = BLOCKS.registerBlock("underground_pipe",
+            de.craftorio.fluid.UndergroundPipeBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F).noOcclusion().sound(SoundType.METAL));
+    public static final DeferredBlock<de.craftorio.fluid.StorageTankBlock> STORAGE_TANK = BLOCKS.registerBlock("storage_tank",
+            de.craftorio.fluid.StorageTankBlock::new, machineProperties());
+    public static final DeferredBlock<de.craftorio.fluid.FluidPumpBlock> FLUID_PUMP = BLOCKS.registerBlock("fluid_pump",
+            de.craftorio.fluid.FluidPumpBlock::new, machineProperties());
     public static final DeferredBlock<de.craftorio.energy.OffshorePumpBlock> OFFSHORE_PUMP = BLOCKS.registerBlock("offshore_pump",
             de.craftorio.energy.OffshorePumpBlock::new, machineProperties().noOcclusion());
     public static final DeferredBlock<GeneratorBlock> REACTOR = BLOCKS.registerBlock("reactor",

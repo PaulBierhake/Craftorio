@@ -133,6 +133,25 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         ModelFile mediumPole = models().getExistingFile(modLoc("block/medium_power_pole"));
         simpleBlock(ModBlocks.MEDIUM_POWER_POLE.get(), mediumPole);
         simpleBlockItem(ModBlocks.MEDIUM_POWER_POLE.get(), mediumPole);
+        ModelFile pipeCore = models().getExistingFile(modLoc("block/pipe_core"));
+        ModelFile pipeArm = models().getExistingFile(modLoc("block/pipe_arm"));
+        var pipeParts = getMultipartBuilder(ModBlocks.PIPE.get());
+        pipeParts.part().modelFile(pipeCore).addModel().end();
+        for (var direction : net.minecraft.core.Direction.values()) {
+            int x = direction == net.minecraft.core.Direction.UP ? 270 : direction == net.minecraft.core.Direction.DOWN ? 90 : 0;
+            int y = direction.getAxis().isHorizontal() ? (int) direction.toYRot() : 0;
+            pipeParts.part().modelFile(pipeArm).rotationX(x).rotationY((y + 180) % 360).addModel()
+                    .condition(net.minecraft.world.level.block.PipeBlock.PROPERTY_BY_DIRECTION.get(direction), true).end();
+        }
+        simpleBlockItem(ModBlocks.PIPE.get(), models().getExistingFile(modLoc("block/pipe_item")));
+        ModelFile undergroundPipe = models().getExistingFile(modLoc("block/underground_pipe"));
+        horizontalBlock(ModBlocks.UNDERGROUND_PIPE.get(), undergroundPipe);
+        simpleBlockItem(ModBlocks.UNDERGROUND_PIPE.get(), undergroundPipe);
+        simpleBlockWithItem(ModBlocks.STORAGE_TANK.get(), models().cubeBottomTop("storage_tank", modLoc("block/storage_tank_side"),
+                modLoc("block/storage_tank_top"), modLoc("block/storage_tank_top")));
+        ModelFile pump = models().orientable("fluid_pump", modLoc("block/machine_side"), modLoc("block/fluid_pump_front"), modLoc("block/machine_top"));
+        horizontalBlock(ModBlocks.FLUID_PUMP.get(), pump);
+        simpleBlockItem(ModBlocks.FLUID_PUMP.get(), pump);
         ModelFile solar = models().getExistingFile(modLoc("block/solar_panel"));
         simpleBlock(ModBlocks.SOLAR_PANEL.get(), solar);
         simpleBlockItem(ModBlocks.SOLAR_PANEL.get(), solar);

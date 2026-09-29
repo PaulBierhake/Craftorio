@@ -35,6 +35,8 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.ENEMY_PORTAL.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get(), ModBlocks.ELEVATOR.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.MEDIUM_POWER_POLE.get(), ModBlocks.SOLAR_PANEL.get(),
                 ModBlocks.STEEL_FURNACE.get(), ModBlocks.ASSEMBLER_2.get());
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.PIPE.get(), ModBlocks.UNDERGROUND_PIPE.get(),
+                ModBlocks.STORAGE_TANK.get(), ModBlocks.FLUID_PUMP.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get());
         tag(BlockTags.NEEDS_IRON_TOOL).add(ModBlocks.TIN_ORE_FIELD.get(), ModBlocks.LEAD_ORE_FIELD.get(), ModBlocks.GOLD_ORE_FIELD.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.TIN_ORE_FIELD.get(), ModBlocks.LEAD_ORE_FIELD.get(), ModBlocks.SULFUR_FIELD.get(),

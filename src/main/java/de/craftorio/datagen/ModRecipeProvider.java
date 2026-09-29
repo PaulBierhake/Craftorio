@@ -74,6 +74,12 @@ public final class ModRecipeProvider extends RecipeProvider {
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 3), SizedIngredient.of(Items.IRON_INGOT, 1));
         assemble(output, "pipe", new ItemStack(ModItems.PIPE.get()), 10, SizedIngredient.of(Items.IRON_INGOT, 1));
         assemble(output, "iron_stick", new ItemStack(ModItems.IRON_STICK.get(), 2), 10, SizedIngredient.of(Items.IRON_INGOT, 1));
+        assemble(output, "underground_pipe", new ItemStack(ModItems.UNDERGROUND_PIPE.get(), 2), 10,
+                SizedIngredient.of(ModItems.PIPE.get(), 10), SizedIngredient.of(Items.IRON_INGOT, 5));
+        assemble(output, "fluid_pump", new ItemStack(ModItems.FLUID_PUMP.get()), 40,
+                SizedIngredient.of(ModItems.MOTOR.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(ModItems.PIPE.get(), 1));
+        assemble(output, "storage_tank", new ItemStack(ModItems.STORAGE_TANK.get()), 60,
+                SizedIngredient.of(Items.IRON_INGOT, 20), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 5));
         assemble(output, "green_science", new ItemStack(ModItems.GREEN_SCIENCE.get()), 120,
                 SizedIngredient.of(ModItems.INSERTER.get(), 1), SizedIngredient.of(ModItems.CONVEYOR_BELT.get(), 1));
         assemble(output, "red_science", new ItemStack(ModItems.RED_SCIENCE.get()), 100,

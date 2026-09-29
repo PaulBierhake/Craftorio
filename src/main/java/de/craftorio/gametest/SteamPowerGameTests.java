@@ -53,19 +53,17 @@ public final class SteamPowerGameTests {
     }
 
     @GameTest(template = EMPTY, timeoutTicks = 100)
-    public static void aBoilerFeedsAtMostTwoEngines(GameTestHelper helper) {
+    public static void aBoilerMakesThreeSteamPerTickAndUsesAFortiethOfItInWater(GameTestHelper helper) {
         BlockPos boiler = new BlockPos(3, 1, 3);
         helper.setBlock(boiler, ModBlocks.BOILER.get());
         helper.setBlock(boiler.east(), ModBlocks.OFFSHORE_PUMP.get());
         helper.setBlock(boiler.east(2), Blocks.WATER);
         BoilerBlockEntity boilerEntity = helper.getBlockEntity(boiler);
         boilerEntity.fuel().insertItem(0, new ItemStack(Items.COAL, 8), false);
-        helper.runAtTickTime(30, () -> {
-            // Steam for one tick: two engines get it, a third and a repeated request do not.
-            long tick = helper.getLevel().getGameTime() + 1_000;
-            helper.assertTrue(boilerEntity.tryServe(boiler.west(), tick), "first engine");
-            helper.assertTrue(boilerEntity.tryServe(boiler.north(), tick), "second engine");
-            helper.assertFalse(boilerEntity.tryServe(boiler.south(), tick), "a boiler feeds at most two engines");
+        helper.runAtTickTime(40, () -> {
+            int steam = boilerEntity.steamTank().getFluidAmount();
+            helper.assertTrue(steam >= 100 && steam <= 3 * 40, "about 3 steam per tick, not " + steam);
+            helper.assertTrue(boilerEntity.waterTank().getFluidAmount() > 0, "the boiler holds water");
             helper.succeed();
         });
     }

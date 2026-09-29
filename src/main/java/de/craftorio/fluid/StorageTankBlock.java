@@ -1,15 +1,14 @@
-package de.craftorio.energy;
+package de.craftorio.fluid;
 
 import com.mojang.serialization.MapCodec;
-import de.craftorio.machine.MachineBaseBlock;
 import de.craftorio.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,11 +16,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-/** Turns steam (from an adjacent boiler or a pipe) into 900 kW for the power grid. */
-public final class SteamEngineBlock extends MachineBaseBlock implements de.craftorio.fluid.FluidConnector {
-    public static final MapCodec<SteamEngineBlock> CODEC = simpleCodec(SteamEngineBlock::new);
+/** Stores {@link #CAPACITY} units of one fluid and evens out with every pipe or machine next to it. */
+public final class StorageTankBlock extends BaseEntityBlock implements FluidConnector {
+    public static final MapCodec<StorageTankBlock> CODEC = simpleCodec(StorageTankBlock::new);
+    public static final int CAPACITY = 25_000;
 
-    public SteamEngineBlock(Properties properties) {
+    public StorageTankBlock(Properties properties) {
         super(properties);
     }
 
@@ -31,26 +31,27 @@ public final class SteamEngineBlock extends MachineBaseBlock implements de.craft
     }
 
     @Override
-    public boolean connectsFluid(BlockState state, net.minecraft.core.Direction face) {
+    public boolean connectsFluid(BlockState state, Direction face) {
         return true;
     }
 
     @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new SteamEngineBlockEntity(pos, state);
+        return new FluidPipeBlockEntity(pos, state);
     }
 
     @Override
     public <T extends BlockEntity> @Nullable BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.STEAM_ENGINE.get(), SteamEngineBlockEntity::serverTick);
+        return level.isClientSide ? null : createTickerHelper(type, ModBlockEntities.FLUID_PIPE.get(), FluidPipeBlockEntity::serverTick);
     }
 
-    /** No GUI: right-click tells why the engine does not run. */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof SteamEngineBlockEntity engine) {
-            serverPlayer.displayClientMessage(Component.translatable("craftorio.steam_engine.status." + engine.status()), true);
-        }
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return FluidPipeBlockEntity.describe(level, pos, player);
     }
 }

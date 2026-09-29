@@ -18,7 +18,6 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.IRON_GEAR.get());
         basicItem(ModItems.CIRCUIT.get());
         basicItem(ModItems.MOTOR.get());
-        basicItem(ModItems.PIPE.get());
         basicItem(ModItems.STEEL_PLATE.get());
         basicItem(ModItems.IRON_STICK.get());
         basicItem(ModItems.STONE_BRICK.get());

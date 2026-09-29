@@ -12,8 +12,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-/** Burns fuel into steam for up to two steam engines next to it; needs an offshore pump next to it. */
-public final class BoilerBlock extends MachineBaseBlock {
+/** Burns fuel into steam for up to two steam engines next to it; gets water from an offshore pump or a pipe. */
+public final class BoilerBlock extends MachineBaseBlock implements de.craftorio.fluid.FluidConnector {
     public static final MapCodec<BoilerBlock> CODEC = simpleCodec(BoilerBlock::new);
 
     public BoilerBlock(Properties properties) {
@@ -23,6 +23,11 @@ public final class BoilerBlock extends MachineBaseBlock {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
+    }
+
+    @Override
+    public boolean connectsFluid(BlockState state, net.minecraft.core.Direction face) {
+        return true;
     }
 
     @Override

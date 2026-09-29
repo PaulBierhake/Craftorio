@@ -121,7 +121,10 @@ public final class ModItems {
     // Intermediate products; each processing step is worth more than its inputs.
     public static final DeferredItem<Item> STEEL_PLATE = ITEMS.registerSimpleItem("steel_plate");
     public static final DeferredItem<Item> IRON_STICK = ITEMS.registerSimpleItem("iron_stick");
-    public static final DeferredItem<Item> PIPE = ITEMS.registerSimpleItem("pipe");
+    public static final DeferredItem<BlockItem> PIPE = ITEMS.registerSimpleBlockItem("pipe", ModBlocks.PIPE);
+    public static final DeferredItem<BlockItem> UNDERGROUND_PIPE = ITEMS.registerSimpleBlockItem("underground_pipe", ModBlocks.UNDERGROUND_PIPE);
+    public static final DeferredItem<BlockItem> STORAGE_TANK = ITEMS.registerSimpleBlockItem("storage_tank", ModBlocks.STORAGE_TANK);
+    public static final DeferredItem<BlockItem> FLUID_PUMP = ITEMS.registerSimpleBlockItem("fluid_pump", ModBlocks.FLUID_PUMP);
     public static final DeferredItem<Item> STONE_BRICK = ITEMS.registerSimpleItem("stone_brick");
     public static final DeferredItem<Item> COPPER_CABLE = ITEMS.registerSimpleItem("copper_cable");
     public static final DeferredItem<Item> IRON_GEAR = ITEMS.registerSimpleItem("iron_gear");

@@ -258,7 +258,7 @@ und das Handbuch-Ersatzbuch.
 
 ### Factorio-Umbau (in Arbeit, siehe `docs/FACTORIO-UMBAU.md`)
 
-Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik) und **U5** (Grün und Stahl).
+Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Forschungssystem), **U3** (Rot), **U4** (Logistik), **U5** (Grün und Stahl) und **U6** (Flüssigkeiten).
 
 - **Energie-Einheit**: 1 kW = 1 FE/t (1 MJ = 20.000 FE). Dampfmaschine 900 kW, Elektro-Ofen
   180 kW, Assembler 75 kW, Elektro-Bohrer 90 kW; der Brenner-Bohrer schafft 0,25 Erz/s bei 150 kW Brennstoff.
@@ -307,6 +307,15 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   *Eisenstange*, und Forschungen können jetzt rote und grüne Pakete kosten (Motor, Automatisierung 2, Energieverteilung 1,
   Fortgeschrittene Materialverarbeitung, Solarenergie, Logistik 2). Abweichungen: keine Stahlkiste (es gibt noch keine
   Kisten-Blöcke); da die Welt standardmäßig keine Nacht hat, liefert das Solarpanel dort immer volle Leistung.
+- **Flüssigkeiten (U6)**: Rohre verbinden sich von selbst mit allem, was Flüssigkeit aufnimmt oder abgibt (Rohre, Tanks,
+  Pumpen, Kessel, Dampfmaschine, Offshore-Pumpe). Jedes Rohr fasst 100 Einheiten, der *Tank* 25.000; angeschlossene Behälter
+  gleichen ihren Füllstand aus (bis 60 Einheiten pro Tick und Verbindung). Die *Pumpe* (Forschung Flüssigkeitsverarbeitung, 29 kW)
+  saugt aus dem Block hinter ihr und drückt in den davor; die *Rohr-Unterführung* verbindet zwei Stücke in einer Linie bis 9
+  Blöcke voneinander (das zweite dreht sich beim Setzen von selbst um). Die Offshore-Pumpe liefert 1200 Wasser/s an alle
+  angrenzenden Rohre und Kessel. Der *Kessel* macht aus 1,8 MW Brennstoff 60 Dampf/s (Wasser 1:10) und gibt ihn an Rohre und
+  Maschinen ab; die *Dampfmaschine* braucht 30 Dampf/s für 900 kW und nur, solange jemand den Strom abnimmt. Rechtsklick auf
+  Rohr, Tank und Pumpe zeigt Inhalt und Zustand. Flüssigkeiten leben nur in Behältern (keine Eimer, keine Blöcke in der Welt);
+  Rohöl, Schweröl, Leichtöl, Petroleum, Schwefelsäure und Schmiermittel sind schon angelegt und werden mit U7 gebraucht.
 - **Steuerungshinweise**: Rechts neben der Hotbar zeigt das HUD, was die rechte Maustaste mit dem Item in der Hand (oder dem
   angesehenen Block) macht – für Bänder, Unterflurbänder, Splitter, Filter-Greifarm, Pfadstab und Handbuch.
 - **Werkzeuge**: Spitzhacken, Äxte, Schaufeln und Hacken sind nicht mehr herstellbar (die Starter-Spitzhacke reicht);
