@@ -128,3 +128,13 @@ Der Zugriff klappt mit `api.php` der Wikis (nicht über die normalen Seiten, die
 
 **Ergänzung zum Vorschlag:** Kingdom Rush braucht nur 4–6 Türme und trägt das Spiel über Bauplätze und Spezialisierung. Für Craftorio heißt das:
 lieber die vorhandenen fünf Türme mit Pfaden vertiefen (TD-C) als weitere Turmtypen hinzufügen, und die Sterne als Dauerfortschritt nutzen.
+
+### 6a. Haben die Türme mehr als Schaden?
+
+Ja, in beiden Vorbildern. Kingdom Rush (Fandom-Wiki geprüft): Kasernen stellen Soldaten, die Gegner **blockieren** und nachwachsen (Respawn 10–14 s);
+Musketiere haben **Scharfschuss mit Sofort-Tod-Chance** und Splittergeschoss; der Arkane Magier den **Todesstrahl** (tötet einen Gegner sofort, außer
+Bossen); der Hexer **halbiert die Rüstung** und verwandelt Gegner; Tesla **verkettet Blitze** und hat ein Feld um den Turm; Big Bertha hat **nie
+verfehlende Raketen** und Streuschuss; Barbaren werfen Äxte und Netze gegen Flieger. BTD6 hat eine eigene Klasse **Unterstützung** (Bananenfarm =
+Einkommen, Dorf = Buff für Nachbartürme, Ingenieur, Stachelfabrik) und Primärtürme, die nur **bremsen** (Eis, Leim).
+Für Craftorio heißt das: Pfade sollten Funktionen statt nur Schaden geben (Bremsen, Rüstung senken, Sofort-Tod gegen Nicht-Bosse, Buff für
+Nachbarn, Einkommen), damit die Pfadwahl (TD-C) wirklich etwas entscheidet.
