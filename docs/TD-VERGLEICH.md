@@ -112,3 +112,19 @@ kommt aus **Durchschlag (Pierce), Reichweite und Spezialfunktionen**.
 3. **Turmkosten:** nur Level-Credits (BTD6-Gefühl, Fabrik liefert nur Munition und Strom), nur Material (Fabrik-Gefühl wie jetzt) oder beides?
 4. **Umfang:** Alle Stufen A–E nacheinander, oder erst A und B testen? Mein Vorschlag: A + B, Spieltest, dann C und D.
 5. **Verknüpfung mit der Forschung:** Die Siegel bei Level 5/10/20/30/40/50 bleiben Pflicht für neue Pakete; dann dürfen Level nicht zu schwer werden, sonst blockiert die Verteidigung den Forschungsfortschritt (Op-Befehl `/craftorio arena clear` gibt es als Notausgang).
+
+## 6. Zweites Vorbild: Kingdom Rush (geprüft über die Fandom-API)
+
+Der Zugriff klappt mit `api.php` der Wikis (nicht über die normalen Seiten, die liefern 403). Geprüfte Punkte aus dem Kingdom-Rush-Wiki:
+
+| Bereich | Kingdom Rush | Bezug zu Craftorio |
+|---|---|---|
+| Leben und Sterne | **20 Leben**; 18–20 übrig = 3 Sterne, 6–17 = 2, 1–5 = 1; verloren bei 0 | Unsere Sterne (alle 10 Leben = 3, ab 5 = 2) sind das gleiche Prinzip, nur mit 10 statt 20 Leben |
+| Türme | 4 Grundtürme (Bogen, Kaserne, Magier, Artillerie); Stufe 1 kostet 70 (Bogen) bis 100 (Magier), Upgrade auf Stufe 2 110 bzw. 160; ab Stufe 4 zwei Spezialisierungen | Wenige, klar unterscheidbare Türme statt vieler; Magie ignoriert physische Panzerung (wie bei uns Laser und Tesla) |
+| Schaden | Physisch (von Rüstung gemindert) gegen Magie (ignoriert Rüstung), das Gegner-Design baut darauf auf | Unser Golem und Behemoth folgen dem schon |
+| Fortschritt | Sterne aus gewonnenen Levels kaufen **dauerhafte Turm-Upgrades** (1–4 Sterne, frei umverteilbar) | Passt zu den Sternen aus unseren Levels: Sterne könnten Dauer-Boni geben (Reichweite, Kosten −5 %) |
+| Komfort | Zwei Zauber mit Abklingzeit (Feuerregen, Verstärkung), ein Held, Schwierigkeit Casual/Normal/Veteran ändert nur die Gegner-Lebenspunkte | Zauber = aktive Fähigkeiten (TD-E); Schwierigkeit als Regler für Gegner-Gesundheit ist billig zu bauen |
+| Weg | Fester Weg je Karte, Türme nur auf **festen Bauplätzen** | Bestätigt: fester Weg ist der Standard in beiden Vorbildern |
+
+**Ergänzung zum Vorschlag:** Kingdom Rush braucht nur 4–6 Türme und trägt das Spiel über Bauplätze und Spezialisierung. Für Craftorio heißt das:
+lieber die vorhandenen fünf Türme mit Pfaden vertiefen (TD-C) als weitere Turmtypen hinzufügen, und die Sterne als Dauerfortschritt nutzen.
