@@ -6,7 +6,7 @@ import de.craftorio.blueprint.TerminalStats;
 import de.craftorio.research.Research;
 import de.craftorio.research.ResearchRules;
 import de.craftorio.research.Researches;
-import de.craftorio.defense.EnemyType;
+import de.craftorio.defense.sim.EnemyDefs;
 import de.craftorio.defense.LevelPlan;
 import de.craftorio.defense.arena.ArenaTheme;
 import de.craftorio.defense.arena.Mutator;
@@ -15,6 +15,7 @@ import de.craftorio.network.TdStatusPayload;
 import de.craftorio.menu.TerminalMenu;
 import de.craftorio.quest.Quest;
 import de.craftorio.quest.Quests;
+import java.util.ArrayList;
 import java.util.List;
 import de.craftorio.registry.ModRegistries;
 import net.minecraft.client.gui.GuiGraphics;
@@ -361,12 +362,25 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         }
         StringBuilder preview = new StringBuilder();
         for (int i = 0; i + 1 < td.preview().size(); i += 2) {
-            EnemyType type = EnemyType.values()[Math.floorMod(td.preview().get(i), EnemyType.values().length)];
+            int code = td.preview().get(i);
+            var def = EnemyDefs.byIndex(code & 255);
             if (!preview.isEmpty()) {
                 preview.append(", ");
             }
-            preview.append(td.preview().get(i + 1)).append("× ")
-                    .append(Component.translatable("entity.craftorio." + type.name().toLowerCase()).getString());
+            preview.append(td.preview().get(i + 1)).append("× ").append(Component.translatable("craftorio.enemy." + def.id()).getString());
+            List<String> modifiers = new ArrayList<>();
+            if ((code >> 8 & 1) != 0) {
+                modifiers.add(Component.translatable("craftorio.enemy.modifier.camo").getString());
+            }
+            if ((code >> 8 & 2) != 0) {
+                modifiers.add(Component.translatable("craftorio.enemy.modifier.regrow").getString());
+            }
+            if ((code >> 8 & 4) != 0) {
+                modifiers.add(Component.translatable("craftorio.enemy.modifier.fortified").getString());
+            }
+            if (!modifiers.isEmpty()) {
+                preview.append(" (").append(String.join(", ", modifiers)).append(")");
+            }
         }
         graphics.drawString(font, Component.translatable("craftorio.td.preview"), x, y + 69, GRAY, false);
         graphics.drawString(font, font.plainSubstrByWidth(preview.toString(), imageWidth - 24), x, y + 80, 0xFFFFFF, false);

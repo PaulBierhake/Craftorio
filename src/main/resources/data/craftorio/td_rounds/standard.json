@@ -1,0 +1,3298 @@
+{
+ "btd6_version": "56.3",
+ "source": "bloonswiki.com Rounds_(BTD6)",
+ "rounds": [
+  {
+   "round": 1,
+   "duration": 17.51,
+   "rbe": 20,
+   "cash": 20.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 20
+    }
+   ]
+  },
+  {
+   "round": 2,
+   "duration": 19.0,
+   "rbe": 35,
+   "cash": 35.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 35
+    }
+   ]
+  },
+  {
+   "round": 3,
+   "duration": 16.71,
+   "rbe": 35,
+   "cash": 35.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 5
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 15
+    }
+   ]
+  },
+  {
+   "round": 4,
+   "duration": 17.31,
+   "rbe": 71,
+   "cash": 71.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 25
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 18
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 5,
+   "duration": 16.5,
+   "rbe": 59,
+   "cash": 59.0,
+   "groups": [
+    {
+     "enemy": "blue_crawler",
+     "count": 12
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 5
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 15
+    }
+   ]
+  },
+  {
+   "round": 6,
+   "duration": 18.7,
+   "rbe": 57,
+   "cash": 57.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 4
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 15
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 15
+    }
+   ]
+  },
+  {
+   "round": 7,
+   "duration": 26.8,
+   "rbe": 75,
+   "cash": 75.0,
+   "groups": [
+    {
+     "enemy": "blue_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 5
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 8,
+   "duration": 28.87,
+   "rbe": 92,
+   "cash": 92.0,
+   "groups": [
+    {
+     "enemy": "blue_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 2
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 12
+    }
+   ]
+  },
+  {
+   "round": 9,
+   "duration": 18.95,
+   "rbe": 90,
+   "cash": 90.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 30
+    }
+   ]
+  },
+  {
+   "round": 10,
+   "duration": 47.99,
+   "rbe": 204,
+   "cash": 204.0,
+   "groups": [
+    {
+     "enemy": "blue_crawler",
+     "count": 60
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 22
+    }
+   ]
+  },
+  {
+   "round": 11,
+   "duration": 19.16,
+   "rbe": 78,
+   "cash": 78.0,
+   "groups": [
+    {
+     "enemy": "yellow_crawler",
+     "count": 3
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 12
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 12,
+   "duration": 17.39,
+   "rbe": 80,
+   "cash": 80.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 15
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "round": 13,
+   "duration": 32.21,
+   "rbe": 169,
+   "cash": 169.0,
+   "groups": [
+    {
+     "enemy": "blue_crawler",
+     "count": 50
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 23
+    }
+   ]
+  },
+  {
+   "round": 14,
+   "duration": 26.63,
+   "rbe": 145,
+   "cash": 145.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 18
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 5
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 5
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 4
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 31
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 5
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "round": 15,
+   "duration": 25.0,
+   "rbe": 151,
+   "cash": 151.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 15
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 12
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "round": 16,
+   "duration": 16.02,
+   "rbe": 152,
+   "cash": 152.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 8
+    }
+   ]
+  },
+  {
+   "round": 17,
+   "duration": 5.0,
+   "rbe": 48,
+   "cash": 48.0,
+   "groups": [
+    {
+     "enemy": "yellow_crawler",
+     "count": 12,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 18,
+   "duration": 26.82,
+   "rbe": 240,
+   "cash": 240.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 60
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 20
+    }
+   ]
+  },
+  {
+   "round": 19,
+   "duration": 15.76,
+   "rbe": 141,
+   "cash": 141.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 5,
+     "regrow": true
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 15
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 20,
+   "duration": 5.25,
+   "rbe": 66,
+   "cash": 66.0,
+   "groups": [
+    {
+     "enemy": "soot_crawler",
+     "count": 6
+    }
+   ]
+  },
+  {
+   "round": 21,
+   "duration": 18.12,
+   "rbe": 230,
+   "cash": 230.0,
+   "groups": [
+    {
+     "enemy": "yellow_crawler",
+     "count": 40
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 22,
+   "duration": 8.0,
+   "rbe": 176,
+   "cash": 176.0,
+   "groups": [
+    {
+     "enemy": "frost_crawler",
+     "count": 16
+    }
+   ]
+  },
+  {
+   "round": 23,
+   "duration": 6.82,
+   "rbe": 154,
+   "cash": 154.0,
+   "groups": [
+    {
+     "enemy": "soot_crawler",
+     "count": 7
+    },
+    {
+     "enemy": "frost_crawler",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "round": 24,
+   "duration": 9.0,
+   "rbe": 43,
+   "cash": 43.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 1,
+     "camo": true
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 20
+    }
+   ]
+  },
+  {
+   "round": 25,
+   "duration": 21.14,
+   "rbe": 210,
+   "cash": 210.0,
+   "groups": [
+    {
+     "enemy": "yellow_crawler",
+     "count": 25,
+     "regrow": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 26,
+   "duration": 14.51,
+   "rbe": 207,
+   "cash": 207.0,
+   "groups": [
+    {
+     "enemy": "pink_crawler",
+     "count": 23
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 27,
+   "duration": 34.26,
+   "rbe": 535,
+   "cash": 535.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 100
+    },
+    {
+     "enemy": "blue_crawler",
+     "count": 60
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 45
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 45
+    }
+   ]
+  },
+  {
+   "round": 28,
+   "duration": 5.0,
+   "rbe": 138,
+   "cash": 138.0,
+   "groups": [
+    {
+     "enemy": "ironbreaker",
+     "count": 6
+    }
+   ]
+  },
+  {
+   "round": 29,
+   "duration": 15.25,
+   "rbe": 260,
+   "cash": 260.0,
+   "groups": [
+    {
+     "enemy": "yellow_crawler",
+     "count": 50
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 15,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 30,
+   "duration": 13.07,
+   "rbe": 207,
+   "cash": 207.0,
+   "groups": [
+    {
+     "enemy": "ironbreaker",
+     "count": 9
+    }
+   ]
+  },
+  {
+   "round": 31,
+   "duration": 15.91,
+   "rbe": 406,
+   "cash": 406.0,
+   "groups": [
+    {
+     "enemy": "soot_crawler",
+     "count": 8
+    },
+    {
+     "enemy": "frost_crawler",
+     "count": 8
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 8
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 2,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 32,
+   "duration": 27.96,
+   "rbe": 495,
+   "cash": 495.0,
+   "groups": [
+    {
+     "enemy": "soot_crawler",
+     "count": 15
+    },
+    {
+     "enemy": "frost_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 33,
+   "duration": 25.34,
+   "rbe": 72,
+   "cash": 72.0,
+   "groups": [
+    {
+     "enemy": "red_crawler",
+     "count": 20,
+     "camo": true
+    },
+    {
+     "enemy": "yellow_crawler",
+     "count": 13,
+     "camo": true
+    }
+   ]
+  },
+  {
+   "round": 34,
+   "duration": 36.0,
+   "rbe": 778,
+   "cash": 778.0,
+   "groups": [
+    {
+     "enemy": "yellow_crawler",
+     "count": 160
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 6
+    }
+   ]
+  },
+  {
+   "round": 35,
+   "duration": 33.76,
+   "rbe": 1015,
+   "cash": 1015.0,
+   "groups": [
+    {
+     "enemy": "frost_crawler",
+     "count": 25
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 5
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 35
+    },
+    {
+     "enemy": "soot_crawler",
+     "count": 30
+    }
+   ]
+  },
+  {
+   "round": 36,
+   "duration": 20.99,
+   "rbe": 760,
+   "cash": 760.0,
+   "groups": [
+    {
+     "enemy": "pink_crawler",
+     "count": 40
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 10,
+     "camo": true,
+     "regrow": true
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 40
+    },
+    {
+     "enemy": "green_crawler",
+     "count": 10,
+     "camo": true,
+     "regrow": true
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 60
+    }
+   ]
+  },
+  {
+   "round": 37,
+   "duration": 43.51,
+   "rbe": 1202,
+   "cash": 1202.0,
+   "groups": [
+    {
+     "enemy": "soot_crawler",
+     "count": 25
+    },
+    {
+     "enemy": "frost_crawler",
+     "count": 25
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 15
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "frost_crawler",
+     "count": 7,
+     "camo": true
+    }
+   ]
+  },
+  {
+   "round": 38,
+   "duration": 29.06,
+   "rbe": 1157,
+   "cash": 1139.0,
+   "groups": [
+    {
+     "enemy": "frost_crawler",
+     "count": 17
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 42
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 14
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "round": 39,
+   "duration": 37.93,
+   "rbe": 1620,
+   "cash": 1620.0,
+   "groups": [
+    {
+     "enemy": "soot_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "frost_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 18
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 2,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 40,
+   "duration": 1.0,
+   "rbe": 616,
+   "cash": 381.0,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 41,
+   "duration": 46.2,
+   "rbe": 2040,
+   "cash": 2040.0,
+   "groups": [
+    {
+     "enemy": "soot_crawler",
+     "count": 60
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 60
+    }
+   ]
+  },
+  {
+   "round": 42,
+   "duration": 11.6,
+   "rbe": 517,
+   "cash": 517.0,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 6,
+     "regrow": true
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 5,
+     "camo": true
+    }
+   ]
+  },
+  {
+   "round": 43,
+   "duration": 9.26,
+   "rbe": 1198,
+   "cash": 1135.0,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 7
+    }
+   ]
+  },
+  {
+   "round": 44,
+   "duration": 23.67,
+   "rbe": 1150,
+   "cash": 1150.0,
+   "groups": [
+    {
+     "enemy": "twilight_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 45,
+   "duration": 53.1,
+   "rbe": 2289,
+   "cash": 2277.0,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 25
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 10,
+     "camo": true
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 180
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 4,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 46,
+   "duration": 7.0,
+   "rbe": 684,
+   "cash": 570.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 6,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 47,
+   "duration": 24.65,
+   "rbe": 1598,
+   "cash": 1490.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 12
+    },
+    {
+     "enemy": "pink_crawler",
+     "count": 70,
+     "camo": true
+    }
+   ]
+  },
+  {
+   "round": 48,
+   "duration": 55.72,
+   "rbe": 2752,
+   "cash": 2695.0,
+   "groups": [
+    {
+     "enemy": "pink_crawler",
+     "count": 40,
+     "regrow": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 30,
+     "camo": true,
+     "regrow": true
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 40
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 3,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 49,
+   "duration": 50.0,
+   "rbe": 4771,
+   "cash": 4609.0,
+   "groups": [
+    {
+     "enemy": "green_crawler",
+     "count": 343
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 18
+    },
+    {
+     "enemy": "twilight_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 10
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 10,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 50,
+   "duration": 28.98,
+   "rbe": 3540,
+   "cash": 2866.0,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 8,
+     "fortified": true
+    },
+    {
+     "enemy": "red_crawler",
+     "count": 20
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 20
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 51,
+   "duration": 24.14,
+   "rbe": 2030,
+   "cash": 947.5,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 15,
+     "camo": true
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 10,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 52,
+   "duration": 20.56,
+   "rbe": 3447,
+   "cash": 1443.5,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 25
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 5
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "round": 53,
+   "duration": 35.0,
+   "rbe": 2248,
+   "cash": 771.5,
+   "groups": [
+    {
+     "enemy": "pink_crawler",
+     "count": 80,
+     "camo": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 54,
+   "duration": 19.41,
+   "rbe": 4872,
+   "cash": 2043.5,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 35
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 55,
+   "duration": 29.78,
+   "rbe": 5296,
+   "cash": 2328.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 10
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 10
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 10
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 15
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 56,
+   "duration": 16.18,
+   "rbe": 2496,
+   "cash": 1130.5,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 40,
+     "camo": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 57,
+   "duration": 26.23,
+   "rbe": 4344,
+   "cash": 1702.0,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 2
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 40
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "round": 58,
+   "duration": 43.98,
+   "rbe": 5780,
+   "cash": 2140.0,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 5
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 15
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 10,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 59,
+   "duration": 26.16,
+   "rbe": 4270,
+   "cash": 2000.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 20
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 50,
+     "camo": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 10,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 60,
+   "duration": 1.0,
+   "rbe": 3164,
+   "cash": 762.5,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 61,
+   "duration": 20.0,
+   "rbe": 6530,
+   "cash": 1071.0,
+   "groups": [
+    {
+     "enemy": "twilight_crawler",
+     "count": 150,
+     "regrow": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "round": 62,
+   "duration": 48.29,
+   "rbe": 8247,
+   "cash": 1224.4,
+   "groups": [
+    {
+     "enemy": "ember_crawler",
+     "count": 250
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 5
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 2,
+     "fortified": true
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 15,
+     "camo": true,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 63,
+   "duration": 42.25,
+   "rbe": 14413,
+   "cash": 2663.0,
+   "groups": [
+    {
+     "enemy": "ironbreaker",
+     "count": 75
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 40
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 40
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 42
+    }
+   ]
+  },
+  {
+   "round": 64,
+   "duration": 9.53,
+   "rbe": 6264,
+   "cash": 685.8,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 6
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 3,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 65,
+   "duration": 62.0,
+   "rbe": 18966,
+   "cash": 2906.6,
+   "groups": [
+    {
+     "enemy": "twilight_crawler",
+     "count": 100
+    },
+    {
+     "enemy": "shimmer_crawler",
+     "count": 70
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 50
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 3
+    },
+    {
+     "enemy": "behemoth",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "round": 66,
+   "duration": 22.75,
+   "rbe": 7496,
+   "cash": 838.2,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 2
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 2
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 4
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 3,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 67,
+   "duration": 26.44,
+   "rbe": 6410,
+   "cash": 856.6,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 4
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 13,
+     "camo": true,
+     "regrow": true,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 68,
+   "duration": 8.44,
+   "rbe": 5628,
+   "cash": 609.8,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 4
+    },
+    {
+     "enemy": "behemoth",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 69,
+   "duration": 42.13,
+   "rbe": 6680,
+   "cash": 1222.0,
+   "groups": [
+    {
+     "enemy": "ironbreaker",
+     "count": 40,
+     "fortified": true
+    },
+    {
+     "enemy": "soot_crawler",
+     "count": 40,
+     "regrow": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 50
+    }
+   ]
+  },
+  {
+   "round": 70,
+   "duration": 41.14,
+   "rbe": 13184,
+   "cash": 2448.8,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 200
+    },
+    {
+     "enemy": "frost_crawler",
+     "count": 120,
+     "camo": true,
+     "regrow": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 71,
+   "duration": 16.55,
+   "rbe": 9280,
+   "cash": 1332.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 30
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 72,
+   "duration": 21.7,
+   "rbe": 10280,
+   "cash": 1332.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 38,
+     "regrow": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 1
+    },
+    {
+     "enemy": "behemoth",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 73,
+   "duration": 26.95,
+   "rbe": 11256,
+   "cash": 1219.6,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 7
+    },
+    {
+     "enemy": "behemoth",
+     "count": 2
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 74,
+   "duration": 82.38,
+   "rbe": 18054,
+   "cash": 2870.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 50
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 25,
+     "camo": true,
+     "regrow": true,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 1
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 60,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 75,
+   "duration": 22.59,
+   "rbe": 25402,
+   "cash": 2492.4,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 1
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 14
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 1,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 3
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 14,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 2,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "round": 76,
+   "duration": 1.78,
+   "rbe": 6240,
+   "cash": 1140.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 60,
+     "regrow": true
+    }
+   ]
+  },
+  {
+   "round": 77,
+   "duration": 58.92,
+   "rbe": 22596,
+   "cash": 2363.2,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 11
+    },
+    {
+     "enemy": "behemoth",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "round": 78,
+   "duration": 90.0,
+   "rbe": 26382,
+   "cash": 4684.0,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 150
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 75
+    },
+    {
+     "enemy": "behemoth",
+     "count": 1
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 80
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 72,
+     "camo": true
+    }
+   ]
+  },
+  {
+   "round": 79,
+   "duration": 60.0,
+   "rbe": 45804,
+   "cash": 6530.0,
+   "groups": [
+    {
+     "enemy": "shimmer_crawler",
+     "count": 500,
+     "regrow": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 4
+    },
+    {
+     "enemy": "behemoth",
+     "count": 2,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 80,
+   "duration": 2.0,
+   "rbe": 16656,
+   "cash": 1220.2,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 81,
+   "duration": 26.47,
+   "rbe": 44506,
+   "cash": 5185.0,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 9
+    },
+    {
+     "enemy": "behemoth",
+     "count": 8
+    }
+   ]
+  },
+  {
+   "round": 82,
+   "duration": 35.68,
+   "rbe": 52320,
+   "cash": 4575.0,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 10
+    },
+    {
+     "enemy": "behemoth",
+     "count": 5,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 83,
+   "duration": 60.2,
+   "rbe": 25080,
+   "cash": 4566.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 40
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 40,
+     "regrow": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 40,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 30
+    }
+   ]
+  },
+  {
+   "round": 84,
+   "duration": 25.0,
+   "rbe": 51480,
+   "cash": 6860.0,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 50
+    },
+    {
+     "enemy": "behemoth",
+     "count": 10
+    }
+   ]
+  },
+  {
+   "round": 85,
+   "duration": 10.0,
+   "rbe": 30704,
+   "cash": 2440.4,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "round": 86,
+   "duration": 20.85,
+   "rbe": 27040,
+   "cash": 762.5,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 5,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 87,
+   "duration": 10.0,
+   "rbe": 63008,
+   "cash": 2440.4,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 88,
+   "duration": 14.55,
+   "rbe": 63600,
+   "cash": 3126.0,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 8
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18
+    },
+    {
+     "enemy": "colossus",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "round": 89,
+   "duration": 20.74,
+   "rbe": 64384,
+   "cash": 1982.0,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 20,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 8,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 90,
+   "duration": 11.9,
+   "rbe": 2756,
+   "cash": 149.3,
+   "groups": [
+    {
+     "enemy": "ironbreaker",
+     "count": 50,
+     "camo": true,
+     "regrow": true,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "round": 91,
+   "duration": 30.0,
+   "rbe": 71160,
+   "cash": 4000.0,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 100,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 20
+    }
+   ]
+  },
+  {
+   "round": 92,
+   "duration": 35.0,
+   "rbe": 117408,
+   "cash": 4345.4,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 50,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 93,
+   "duration": 20.0,
+   "rbe": 62936,
+   "cash": 1753.6,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 10,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6
+    }
+   ]
+  },
+  {
+   "round": 94,
+   "duration": 15.0,
+   "rbe": 178112,
+   "cash": 7473.1,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 25
+    },
+    {
+     "enemy": "colossus",
+     "count": 6
+    }
+   ]
+  },
+  {
+   "round": 95,
+   "duration": 50.81,
+   "rbe": 80860,
+   "cash": 3523.0,
+   "groups": [
+    {
+     "enemy": "ember_crawler",
+     "count": 500,
+     "camo": true,
+     "regrow": true
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 250,
+     "camo": true,
+     "regrow": true,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 50,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 30
+    }
+   ]
+  },
+  {
+   "round": 96,
+   "duration": 32.12,
+   "rbe": 238952,
+   "cash": 9759.6,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 10
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 20,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 10
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 20,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 10
+    },
+    {
+     "enemy": "colossus",
+     "count": 6
+    }
+   ]
+  },
+  {
+   "round": 97,
+   "duration": 5.0,
+   "rbe": 69984,
+   "cash": 1220.2,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 2,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 98,
+   "duration": 30.0,
+   "rbe": 327456,
+   "cash": 9455.8,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 30,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 8
+    }
+   ]
+  },
+  {
+   "round": 99,
+   "duration": 12.0,
+   "rbe": 47424,
+   "cash": 2628.9,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 60
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 9,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 100,
+   "duration": 0.1,
+   "rbe": 67200,
+   "cash": 1334.6,
+   "groups": [
+    {
+     "enemy": "swarm_queen",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 101,
+   "duration": 9.5,
+   "rbe": 20020,
+   "cash": 563.0,
+   "groups": [
+    {
+     "enemy": "ember_crawler",
+     "count": 250
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 10,
+     "fortified": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 50,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 200
+    }
+   ]
+  },
+  {
+   "round": 102,
+   "duration": 46.5,
+   "rbe": 199826,
+   "cash": 2249.2,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 1
+    },
+    {
+     "enemy": "colossus",
+     "count": 1,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 18
+    },
+    {
+     "enemy": "behemoth",
+     "count": 3
+    },
+    {
+     "enemy": "colossus",
+     "count": 2,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 12,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 3,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 103,
+   "duration": 19.0,
+   "rbe": 507908,
+   "cash": 5967.4,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 10,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 100
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 64
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 50,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 66
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 68
+    }
+   ]
+  },
+  {
+   "round": 104,
+   "duration": 22.0,
+   "rbe": 387472,
+   "cash": 7387.5,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 150,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 10
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 100,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 8
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 100
+    },
+    {
+     "enemy": "behemoth",
+     "count": 7
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 100
+    },
+    {
+     "enemy": "behemoth",
+     "count": 5,
+     "fortified": true
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 100,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 4,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 100
+    },
+    {
+     "enemy": "behemoth",
+     "count": 5,
+     "fortified": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 100
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 25
+    }
+   ]
+  },
+  {
+   "round": 105,
+   "duration": 9.0,
+   "rbe": 152340,
+   "cash": 4196.25,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 100
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 25,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 30
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 300,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 106,
+   "duration": 33.5,
+   "rbe": 113376,
+   "cash": 1771.65,
+   "groups": [
+    {
+     "enemy": "shadow_hunter",
+     "count": 21
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 18
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 15
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 12,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 9,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 12
+    }
+   ]
+  },
+  {
+   "round": 107,
+   "duration": 10.0,
+   "rbe": 447384,
+   "cash": 3658.7,
+   "groups": [
+    {
+     "enemy": "crystal_golem",
+     "count": 100,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 444,
+     "camo": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 10,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 108,
+   "duration": 24.0,
+   "rbe": 643088,
+   "cash": 5795.95,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 9
+    },
+    {
+     "enemy": "colossus",
+     "count": 10,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 109,
+   "duration": 18.0,
+   "rbe": 552345,
+   "cash": 7439.25,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 15
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 15
+    },
+    {
+     "enemy": "behemoth",
+     "count": 15
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 15,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 15,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 15,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 110,
+   "duration": 36.0,
+   "rbe": 141410,
+   "cash": 2477.75,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 25
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 9
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 9
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 111,
+   "duration": 18.5,
+   "rbe": 949472,
+   "cash": 9456.55,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 17
+    },
+    {
+     "enemy": "colossus",
+     "count": 9,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 5
+    }
+   ]
+  },
+  {
+   "round": 112,
+   "duration": 20.0,
+   "rbe": 261648,
+   "cash": 2458.8,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 27,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 21,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 113,
+   "duration": 21.5,
+   "rbe": 231102,
+   "cash": 2971.5,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 75,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 15,
+     "fortified": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 42,
+     "camo": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 42,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 114,
+   "duration": 30.0,
+   "rbe": 483416,
+   "cash": 5394.15,
+   "groups": [
+    {
+     "enemy": "shadow_hunter",
+     "count": 9
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 36,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 24
+    },
+    {
+     "enemy": "behemoth",
+     "count": 12
+    },
+    {
+     "enemy": "behemoth",
+     "count": 8,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 5
+    },
+    {
+     "enemy": "colossus",
+     "count": 3,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 115,
+   "duration": 30.0,
+   "rbe": 492396,
+   "cash": 5394.15,
+   "groups": [
+    {
+     "enemy": "shadow_hunter",
+     "count": 9
+    },
+    {
+     "enemy": "colossus",
+     "count": 3,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 8,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 5
+    },
+    {
+     "enemy": "behemoth",
+     "count": 12
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 24
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 36,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 116,
+   "duration": 15.0,
+   "rbe": 575600,
+   "cash": 3932.9,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 8,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 18,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 100
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 100
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 200
+    }
+   ]
+  },
+  {
+   "round": 117,
+   "duration": 14.0,
+   "rbe": 75010,
+   "cash": 944.75,
+   "groups": [
+    {
+     "enemy": "ironbreaker",
+     "count": 250
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 27
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 18,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 118,
+   "duration": 16.0,
+   "rbe": 398784,
+   "cash": 4232.1,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 12
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 30,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 119,
+   "duration": 26.0,
+   "rbe": 319020,
+   "cash": 2001.9,
+   "groups": [
+    {
+     "enemy": "swarm_queen",
+     "count": 2
+    },
+    {
+     "enemy": "swarm_queen",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "round": 120,
+   "duration": 51.0,
+   "rbe": 431808,
+   "cash": 5032.8,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 12
+    },
+    {
+     "enemy": "behemoth",
+     "count": 12
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 24,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 121,
+   "duration": 15.0,
+   "rbe": 516500,
+   "cash": 2744.96,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 14,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 28,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 6,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 122,
+   "duration": 20.0,
+   "rbe": 386730,
+   "cash": 3723.0,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 40
+    },
+    {
+     "enemy": "behemoth",
+     "count": 20,
+     "fortified": true
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 75,
+     "fortified": true
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 75,
+     "fortified": true
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 75,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 123,
+   "duration": 40.0,
+   "rbe": 629936,
+   "cash": 5000.32,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 8,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 200
+    }
+   ]
+  },
+  {
+   "round": 124,
+   "duration": 30.0,
+   "rbe": 738600,
+   "cash": 4575.0,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 75,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 125,
+   "duration": 40.0,
+   "rbe": 939624,
+   "cash": 8646.96,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 6
+    },
+    {
+     "enemy": "colossus",
+     "count": 5
+    },
+    {
+     "enemy": "behemoth",
+     "count": 12
+    },
+    {
+     "enemy": "behemoth",
+     "count": 10
+    },
+    {
+     "enemy": "colossus",
+     "count": 4
+    },
+    {
+     "enemy": "behemoth",
+     "count": 8
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18
+    },
+    {
+     "enemy": "colossus",
+     "count": 3
+    },
+    {
+     "enemy": "behemoth",
+     "count": 6
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 15
+    },
+    {
+     "enemy": "colossus",
+     "count": 2
+    },
+    {
+     "enemy": "behemoth",
+     "count": 4
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 12
+    },
+    {
+     "enemy": "colossus",
+     "count": 1
+    },
+    {
+     "enemy": "behemoth",
+     "count": 2
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 9
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 6
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "round": 126,
+   "duration": 27.0,
+   "rbe": 141778,
+   "cash": 1509.04,
+   "groups": [
+    {
+     "enemy": "ironbreaker",
+     "count": 1,
+     "camo": true,
+     "regrow": true,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 99
+    }
+   ]
+  },
+  {
+   "round": 127,
+   "duration": 14.0,
+   "rbe": 178248,
+   "cash": 2195.52,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 48
+    },
+    {
+     "enemy": "behemoth",
+     "count": 24
+    }
+   ]
+  },
+  {
+   "round": 128,
+   "duration": 28.0,
+   "rbe": 322048,
+   "cash": 3184.36,
+   "groups": [
+    {
+     "enemy": "shadow_hunter",
+     "count": 39,
+     "fortified": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 200,
+     "camo": true,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 30
+    }
+   ]
+  },
+  {
+   "round": 129,
+   "duration": 28.0,
+   "rbe": 826792,
+   "cash": 4023.52,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 7,
+     "fortified": true
+    },
+    {
+     "enemy": "ironbreaker",
+     "count": 77,
+     "camo": true,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 77,
+     "camo": true
+    },
+    {
+     "enemy": "crystal_golem",
+     "count": 77,
+     "camo": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 7
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 9
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 3
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 3
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "round": 130,
+   "duration": 40.0,
+   "rbe": 307968,
+   "cash": 3108.96,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 12
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 27
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 9,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 12
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 9,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 12
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 9
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 48
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 3,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 3,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 6
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 48,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 131,
+   "duration": 39.0,
+   "rbe": 1461456,
+   "cash": 4392.72,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 18,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 132,
+   "duration": 41.0,
+   "rbe": 1268688,
+   "cash": 5904.96,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 5
+    },
+    {
+     "enemy": "colossus",
+     "count": 4
+    },
+    {
+     "enemy": "colossus",
+     "count": 3,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 100,
+     "camo": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 5
+    },
+    {
+     "enemy": "colossus",
+     "count": 4
+    },
+    {
+     "enemy": "colossus",
+     "count": 3,
+     "fortified": true
+    },
+    {
+     "enemy": "ember_crawler",
+     "count": 100,
+     "camo": true
+    }
+   ]
+  },
+  {
+   "round": 133,
+   "duration": 43.0,
+   "rbe": 1153341,
+   "cash": 6145.88,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 2,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 6,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 2,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 9
+    },
+    {
+     "enemy": "behemoth",
+     "count": 9
+    },
+    {
+     "enemy": "colossus",
+     "count": 3
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 9
+    },
+    {
+     "enemy": "behemoth",
+     "count": 9
+    },
+    {
+     "enemy": "colossus",
+     "count": 3
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 9
+    },
+    {
+     "enemy": "behemoth",
+     "count": 9
+    },
+    {
+     "enemy": "colossus",
+     "count": 3
+    }
+   ]
+  },
+  {
+   "round": 134,
+   "duration": 24.01,
+   "rbe": 374840,
+   "cash": 2440.0,
+   "groups": [
+    {
+     "enemy": "behemoth",
+     "count": 12,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 10
+    },
+    {
+     "enemy": "behemoth",
+     "count": 8
+    },
+    {
+     "enemy": "behemoth",
+     "count": 6
+    },
+    {
+     "enemy": "behemoth",
+     "count": 4
+    }
+   ]
+  },
+  {
+   "round": 135,
+   "duration": 24.0,
+   "rbe": 1386840,
+   "cash": 3736.6,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 7,
+     "fortified": true
+    },
+    {
+     "enemy": "colossus",
+     "count": 7,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 7,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 7,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 7,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 136,
+   "duration": 45.0,
+   "rbe": 402624,
+   "cash": 2927.04,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 96,
+     "fortified": true
+    },
+    {
+     "enemy": "behemoth",
+     "count": 24
+    }
+   ]
+  },
+  {
+   "round": 137,
+   "duration": 8.1,
+   "rbe": 1143984,
+   "cash": 6588.24,
+   "groups": [
+    {
+     "enemy": "colossus",
+     "count": 18
+    },
+    {
+     "enemy": "behemoth",
+     "count": 24
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 48
+    }
+   ]
+  },
+  {
+   "round": 138,
+   "duration": 40.0,
+   "rbe": 442872,
+   "cash": 1920.24,
+   "groups": [
+    {
+     "enemy": "shadow_hunter",
+     "count": 33,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 27,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 21,
+     "fortified": true
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 18
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 15
+    },
+    {
+     "enemy": "shadow_hunter",
+     "count": 12
+    }
+   ]
+  },
+  {
+   "round": 139,
+   "duration": 45.0,
+   "rbe": 401346,
+   "cash": 3855.72,
+   "groups": [
+    {
+     "enemy": "brood_mother",
+     "count": 109
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18,
+     "fortified": true
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18
+    },
+    {
+     "enemy": "brood_mother",
+     "count": 18,
+     "fortified": true
+    }
+   ]
+  },
+  {
+   "round": 140,
+   "duration": 46.0,
+   "rbe": 645440,
+   "cash": 1067.68,
+   "groups": [
+    {
+     "enemy": "swarm_queen",
+     "count": 1,
+     "fortified": true
+    },
+    {
+     "enemy": "swarm_queen",
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

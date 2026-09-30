@@ -1,6 +1,7 @@
 package de.craftorio.network;
 
 import de.craftorio.Craftorio;
+import de.craftorio.client.ClientTdEnemies;
 import de.craftorio.client.ClientTdState;
 import de.craftorio.client.ClientTeamState;
 import de.craftorio.quest.QuestActions;
@@ -12,7 +13,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @EventBusSubscriber(modid = Craftorio.MOD_ID)
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
 
     private ModNetwork() {
     }
@@ -31,5 +32,8 @@ public final class ModNetwork {
             }
         });
         registrar.playToClient(TdStatusPayload.TYPE, TdStatusPayload.STREAM_CODEC, (payload, context) -> ClientTdState.update(payload));
+        registrar.playToClient(TdPathPayload.TYPE, TdPathPayload.STREAM_CODEC, (payload, context) -> ClientTdEnemies.updatePath(payload));
+        registrar.playToClient(TdEnemiesPayload.TYPE, TdEnemiesPayload.STREAM_CODEC,
+                (payload, context) -> ClientTdEnemies.updateEnemies(payload, context.player().level().getGameTime()));
     }
 }

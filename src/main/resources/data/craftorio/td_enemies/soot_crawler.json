@@ -1,0 +1,20 @@
+{
+  "index": 5,
+  "btd6": "Black",
+  "hp": 1,
+  "fortified_hp": 0,
+  "speed": 45,
+  "children": [
+    "pink_crawler",
+    "pink_crawler"
+  ],
+  "immune": [
+    "explosion"
+  ],
+  "boss": false,
+  "late": {
+    "children": [
+      "pink_crawler"
+    ]
+  }
+}

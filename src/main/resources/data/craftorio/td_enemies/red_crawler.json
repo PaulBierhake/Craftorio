@@ -1,0 +1,10 @@
+{
+  "index": 0,
+  "btd6": "Red",
+  "hp": 1,
+  "fortified_hp": 0,
+  "speed": 25,
+  "children": [],
+  "immune": [],
+  "boss": false
+}

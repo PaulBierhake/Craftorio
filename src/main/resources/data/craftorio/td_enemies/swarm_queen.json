@@ -1,0 +1,16 @@
+{
+  "index": 16,
+  "btd6": "BAD",
+  "hp": 20000,
+  "fortified_hp": 40000,
+  "speed": 4.5,
+  "children": [
+    "colossus",
+    "colossus",
+    "shadow_hunter",
+    "shadow_hunter",
+    "shadow_hunter"
+  ],
+  "immune": [],
+  "boss": true
+}

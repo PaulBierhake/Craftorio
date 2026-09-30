@@ -2,7 +2,6 @@ package de.craftorio.world;
 
 import de.craftorio.Craftorio;
 import de.craftorio.CraftorioConfig;
-import de.craftorio.defense.TdEnemy;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.monster.Enemy;
@@ -36,7 +35,7 @@ public final class WorldRules {
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.getLevel() instanceof ServerLevel level && level.dimension() == Level.OVERWORLD && CraftorioConfig.NO_HOSTILE_MOBS.get()
-                && event.getEntity() instanceof Enemy && !(event.getEntity() instanceof TdEnemy)) {
+                && event.getEntity() instanceof Enemy) {
             event.setCanceled(true);
         }
     }

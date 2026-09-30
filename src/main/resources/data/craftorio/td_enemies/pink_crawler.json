@@ -1,0 +1,12 @@
+{
+  "index": 4,
+  "btd6": "Pink",
+  "hp": 1,
+  "fortified_hp": 0,
+  "speed": 87.5,
+  "children": [
+    "yellow_crawler"
+  ],
+  "immune": [],
+  "boss": false
+}

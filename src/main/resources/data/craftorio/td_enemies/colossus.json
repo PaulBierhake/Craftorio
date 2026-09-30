@@ -1,0 +1,15 @@
+{
+  "index": 14,
+  "btd6": "ZOMG",
+  "hp": 4000,
+  "fortified_hp": 8000,
+  "speed": 4.5,
+  "children": [
+    "behemoth",
+    "behemoth",
+    "behemoth",
+    "behemoth"
+  ],
+  "immune": [],
+  "boss": true
+}

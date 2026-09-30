@@ -92,10 +92,19 @@ Schichten = eigene HP; bei 0 HP gibt der Gegner seine Kinder frei (Überschaden 
 | Schattenjäger (neu) | DDT | 400 (800) | 816 | 2,64 | 4 getarnte, nachwachsende Golems | Boss-Klasse, getarnt, Stich, Kälte, Energie, Explosion |
 | Schwarmkönigin | BAD | 20.000 (40.000) | 55.760 | 0,18 | 2 Kolosse + 3 Schattenjäger | Boss-Klasse; immun gegen Verlangsamen, Betäuben, Rückstoß |
 
-Ab Runde 81 gelten die BTD6-Vereinfachungen *(prüfen)*:
-- Golems werden zu **Superkristallgolems** (60 HP, geben nur 1 Schimmer frei).
-- Schimmer, Zwielicht, Eisenbrecher und Ruß/Frost/Glut geben nur noch **ein** Kind frei (RBE sinkt entsprechend,
-  siehe Tabellen der Wiki-Seiten).
+Alle Werte dieser Tabelle sind gegen bloonswiki.com geprüft (Geschwindigkeiten, HP, Kinder, RBE; Immunitäten aus der
+Tabelle der Schadensarten dort). Die Immunitäten stammen aus den Bit-Feldern der Wiki-Seite „Damage type": Eisenbrecher
+sind gegen Stich, Kälte und Energie immun (die Wiki-Seite nennt außerdem „Shatter", das hier in Stich aufgeht),
+Glutkrabbler gegen Energie und Feuer, Frostkrabbler gegen Kälte, Rußkrabbler gegen Explosion, Zwielicht gegen
+Explosion und Kälte, der Schattenjäger zusätzlich zu seinen Eigenschaften (getarnt) gegen Stich, Kälte, Energie und
+Explosion.
+
+Ab Runde 81 gelten die BTD6-Vereinfachungen (bestätigt: die Wiki-RBE der Runden 81–100 wird damit exakt getroffen):
+- Golems werden zu **Superkristallgolems** (60 HP, gepanzert 120, geben nur 1 Schimmer frei).
+- Schimmer, Zwielicht, Eisenbrecher und Ruß/Frost/Glut geben nur noch **ein** Kind frei (Ruß/Frost/Glut → 1 rosa,
+  Eisenbrecher → 1 Ruß, Zwielicht → 1 Ruß, Schimmer → 1 Zwielicht); die RBE sinkt entsprechend (Golem 68 statt 104,
+  Schimmer 8 statt 47).
+- Die HP der Boss-Klasse wachsen (§3.6); der Faktor gilt für jede Schicht der Boss-Klasse.
 
 **Bestehende Gegner:**
 - Spitter (Fernangriff auf Türme) **entfällt** (§4.6).
@@ -108,8 +117,8 @@ Ab Runde 81 gelten die BTD6-Vereinfachungen *(prüfen)*:
 | Eigenschaft | BTD6 | Regel |
 |---|---|---|
 | **Getarnt** | Camo | Nur Türme mit Tarnungserkennung zielen auf ihn (§6.5). Flächenschaden trifft ihn trotzdem, wenn er ein anderes Ziel trifft. |
-| **Nachwachsend** | Regrow | Stellt alle **3 s** die nächsthöhere verlorene Schicht wieder her, bis zur Ausgangsstufe *(prüfen)*. |
-| **Gepanzert** | Fortified | Doppelte HP für Eisenbrecher, Golems und Boss-Klasse (Eisenbrecher 1 → 4). |
+| **Nachwachsend** | Regrow | Stellt alle **3 s** die nächsthöhere verlorene Schicht wieder her, bis zur Ausgangsstufe (Wiki bestätigt). Auch Kinder wachsen zurück zum Elternteil und vermehren sich damit. Nachgewachsene Schichten bringen beim erneuten Platzen keine Münzen; Gepanzert kommt nicht zurück. Schattenjäger setzen getarnte, nachwachsende Golems frei, die nicht zum Schattenjäger zurückwachsen. Nicht für die Boss-Klasse. |
+| **Gepanzert** | Fortified | Doppelte HP für Golems und Boss-Klasse, Eisenbrecher 1 → 4 (Wiki bestätigt). Kinder sind nur gepanzert, wenn sie selbst gepanzert sein können (gepanzerter Golem → normale Schimmer; gepanzerte Brutmutter → gepanzerte Golems). |
 
 Die bisherige Themen-Mechanik „Tarnung im Dickicht" entfällt; Tarnung ist jetzt eine Gegnereigenschaft.
 
@@ -133,10 +142,25 @@ Die bisherige Rüstungslogik (`physicalFactor`, `flatArmour`) wird durch **Immun
 
 ### 3.6 Spätes Spiel (Runde 81+)
 
-Nach bloons.fandom.com „Late Game and Freeplay":
+Nach bloonswiki.com „Freeplay" (BTD6). Zwischenwerte sind linear zwischen Start- und Endwert der Stufe; im Code
+(`TdSimulation.lateHpFactor/lateSpeedFactor`) als Tabelle hinterlegt.
 
-| Runden | Geschwindigkeit aller Gegner | HP der Boss-Klasse |
+| Runden | HP-Faktor der Boss-Klasse (Start → Ende) | Geschwindigkeit aller Gegner (Start → Ende) |
 |---|---|---|
+| 81–100 | 1,02 → 1,40 (+2 % pro Runde) | 1,02 → 1,40 (+2 %) |
+| 101–125 | 1,45 → 2,75 (+5 %) | 1,60 → (bis 150) 2,58 (Sprung bei 101) |
+| 126–150 | 2,90 → 6,50 (+15 %) | weiter bis 2,58 |
+| 151–250 | 6,85 → 41,50 (+35 %) | 151–200: 3,00 → 3,98; 201–251: 4,50 → 5,50 |
+| 251–300 | 42,50 → 91,50 (+100 %) | ab 252: 6,00, dann +2 % pro Runde |
+| 301–400 | 93,0 → 241,5 (+150 %) | |
+| 401–500 | 244 → 491,5 (+250 %) | |
+| ab 501 | +500 % pro Runde | |
+
+Außerdem nach Runde 140 zufällige Runden, und die Dauer von Verlangsamung/Betäubung sinkt ab Runde 150 (−10 % je
+50 Runden, höchstens −50 %). Leaks kosten ab Runde 81 weniger Leben (Wiki-Tabelle „Freeplay lives cost", z. B. Golem 65
+statt 104, Brutmutter 460 statt 616); das wird in T2 mit dem Leben-System umgesetzt.
+
+---|---|---|
 | 81–100 | +2 % pro Runde (Runde 100: ×1,4) | +2 % pro Runde (Runde 100: ×1,4) |
 | 101–124 | Sprung auf ×1,6, dann +2 % pro Runde | +5 % pro Runde (Runde 124: ×2,6) |
 | 125–150 | +2 % pro Runde | +15 % pro Runde (Runde 150: ×6,5) |
@@ -150,10 +174,18 @@ Nach bloons.fandom.com „Late Game and Freeplay":
 
 - **Level L = Runden 2L−1 und 2L.** Zwischen den Runden eine kurze Pause (Standard 10 s) oder Start per Knopf.
   Die nächste Runde darf wie in BTD6 jederzeit früher gestartet werden (ohne Bonus).
-- **Rundeninhalt 1:1 aus der BTD6-Standardliste.** Runden 1–40 unten; Runden 41–100 von
-  `https://www.bloonswiki.com/List_of_rounds_in_BTD6` übernehmen, als Datendatei
-  `data/craftorio/td_rounds/standard.json` (Gruppen: Anzahl, Typ, Eigenschaften, Abstand, Startzeit).
-- Ab Runde 101 **Endlosmodus** (Freeplay) mit den Regeln aus §3.6 und zufälligen Runden (BTD6-Logik ab 141 *(prüfen)*).
+- **Rundeninhalt 1:1 aus der BTD6-Standardliste** (`https://www.bloonswiki.com/Rounds_(BTD6)`, Stand Version 56.3).
+  Alle Runden 1–140 liegen als Datendatei `data/craftorio/td_rounds/standard.json` (Gruppen: Gegner, Anzahl,
+  Eigenschaften; dazu Dauer, RBE und Münzen je Runde als Prüfwerte aus dem Wiki). Die Gruppen der Wiki-Liste haben nur
+  die Gesamtdauer der Runde; die Gegner treten deshalb **gleichmäßig über die Dauer verteilt** in die Strecke ein
+  (`RoundDef.spawns()`).
+- Ab Runde 101 **Endlosmodus** (Freeplay) mit den Regeln aus §3.6 und zufälligen Runden (Wiki: ab Runde 141 zufällig
+  erzeugt; 163 und 263 mit eingeschränkter Auswahl; 200 nur Schwarmkönigin).
+- **Prüfung (erledigt in T1):** Für jede der Runden 1–100 stimmt die aus den Gegnerdaten berechnete RBE exakt mit der
+  Wiki-Spalte „Base RBE" überein (`RoundDefsTest`). Damit sind Gegnertabelle, Kinder, Gepanzert-Regel und die
+  Spätspiel-Regeln ab Runde 81 gegen die Wiki-Zahlen bestätigt.
+- IDs: Die Gruppen in den Runden-Tabellen unten nennen Stufen wie im Spiel (`rot` = `red_crawler`, `Ruß` =
+  `soot_crawler`, `Golem` = `crystal_golem` …); die Datei `td_enemies/<id>.json` gehört je zu einem Gegner.
 
 **Runden 1–40 (BTD6 Standard):**
 
@@ -172,7 +204,7 @@ Nach bloons.fandom.com „Late Game and Freeplay":
 | 11 | 3 gelb, 12 grün, 10 blau, 10 rot | 78 |
 | 12 | 10 grün, 15 blau, 5 gelb | 80 |
 | 13 | 50 blau, 23 grün | 169 |
-| 14 | gemischt rot/blau/grün/gelb *(Gruppen aus Wiki)* | 145 |
+| 14 | 18 rot, 5 blau, 5 grün, 4 gelb, 31 rot, 10 blau, 5 grün, 5 gelb | 145 |
 | 15 | 20 rot, 15 blau, 12 grün, 10 gelb, 5 rosa | 151 |
 | 16 | 20 grün, 20 grün, 8 gelb | 152 |
 | 17 | 12 gelb nachwachsend | 48 |
@@ -196,9 +228,74 @@ Nach bloons.fandom.com „Late Game and Freeplay":
 | 35 | 25 Frost, 5 Schimmer, 35 rosa, 30 Ruß | 1.015 |
 | 36 | 40 rosa, 10 grün getarnt+nachwachsend, 40 rosa, 10 grün getarnt+nachwachsend, 60 rosa | 760 |
 | 37 | 25 Ruß, 25 Frost, 15 Eisenbrecher, 10 Zwielicht, 7 Frost getarnt | 1.202 |
-| 38 | 17 Frost, 42 rosa, 14 Eisenbrecher, 10 Zwielicht, 2 Golems | 1.139 |
+| 38 | 17 Frost, 42 rosa, 14 Eisenbrecher, 10 Zwielicht, 2 Golems | 1.157 |
 | 39 | 10 Ruß, 10 Frost, 20 Zwielicht, 18 Schimmer, 2 Schimmer nachwachsend | 1.620 |
 | 40 | 1 Brutmutter | 616 |
+
+**Runden 41–100 (BTD6 Standard, aus dem Wiki übernommen):**
+
+| R | Gruppen (wie im Wiki, in Reihenfolge) | RBE | Dauer |
+|---|---|---|---|
+| 41 | 60 Ruß, 60 Zwielicht  | 2.040 | 46,20 s |
+| 42 | 6 Schimmer nachwachsend, 5 Schimmer getarnt  | 517 | 11,60 s |
+| 43 | 10 Schimmer, 7 Golem  | 1.198 | 9,26 s |
+| 44 | 10 Zwielicht, 10 Zwielicht, 10 Zwielicht, 10 Zwielicht, 10 Zwielicht  | 1.150 | 23,67 s |
+| 45 | 25 Schimmer, 10 Glut getarnt, 180 rosa, 4 Eisenbrecher gepanzert  | 2.289 | 53,10 s |
+| 46 | 6 Golem gepanzert  | 684 | 7,00 s |
+| 47 | 12 Golem, 70 rosa getarnt  | 1.598 | 24,65 s |
+| 48 | 40 rosa nachwachsend, 30 Glut getarnt+nachwachsend, 40 Schimmer, 3 Golem gepanzert  | 2.752 | 55,72 s |
+| 49 | 343 grün, 10 Schimmer, 18 Golem, 20 Zwielicht, 10 Schimmer, 10 Schimmer nachwachsend  | 4.771 | 50,00 s |
+| 50 | 1 Brutmutter, 8 Eisenbrecher gepanzert, 20 rot, 20 Golem, 1 Brutmutter  | 3.540 | 28,98 s |
+| 51 | 15 Golem getarnt, 10 Schimmer nachwachsend  | 2.030 | 24,14 s |
+| 52 | 25 Schimmer, 1 Brutmutter, 5 Golem, 1 Brutmutter, 5 Golem  | 3.447 | 20,56 s |
+| 53 | 80 rosa getarnt, 1 Brutmutter, 1 Brutmutter, 1 Brutmutter  | 2.248 | 35,00 s |
+| 54 | 35 Golem, 1 Brutmutter, 1 Brutmutter  | 4.872 | 19,41 s |
+| 55 | 10 Golem, 10 Golem, 10 Golem, 15 Golem, 1 Brutmutter  | 5.296 | 29,78 s |
+| 56 | 40 Schimmer getarnt, 1 Brutmutter  | 2.496 | 16,18 s |
+| 57 | 2 Brutmutter, 40 Schimmer, 2 Brutmutter  | 4.344 | 26,23 s |
+| 58 | 5 Brutmutter, 15 Golem, 10 Golem gepanzert  | 5.780 | 43,98 s |
+| 59 | 20 Golem, 50 Eisenbrecher getarnt, 10 Golem nachwachsend  | 4.270 | 26,16 s |
+| 60 | 1 Behemoth  | 3.164 | 1,00 s |
+| 61 | 150 Zwielicht nachwachsend, 5 Brutmutter  | 6.530 | 20,00 s |
+| 62 | 250 Glut, 5 Brutmutter, 2 Brutmutter gepanzert, 15 Schimmer getarnt+nachwachsend  | 8.247 | 48,29 s |
+| 63 | 75 Eisenbrecher, 40 Golem, 40 Golem, 42 Golem  | 14.413 | 42,25 s |
+| 64 | 6 Brutmutter, 3 Brutmutter gepanzert  | 6.264 | 9,53 s |
+| 65 | 100 Zwielicht, 70 Schimmer, 50 Golem, 3 Brutmutter, 2 Behemoth  | 18.966 | 62,00 s |
+| 66 | 2 Brutmutter, 2 Brutmutter, 4 Brutmutter, 3 Brutmutter gepanzert  | 7.496 | 22,75 s |
+| 67 | 4 Brutmutter, 13 Golem getarnt+nachwachsend+gepanzert, 4 Brutmutter  | 6.410 | 26,44 s |
+| 68 | 4 Brutmutter, 1 Behemoth  | 5.628 | 8,44 s |
+| 69 | 40 Eisenbrecher gepanzert, 40 Ruß nachwachsend, 50 Golem  | 6.680 | 42,13 s |
+| 70 | 200 Schimmer, 120 Frost getarnt+nachwachsend, 4 Brutmutter  | 13.184 | 41,14 s |
+| 71 | 30 Golem, 10 Brutmutter  | 9.280 | 16,55 s |
+| 72 | 38 Golem nachwachsend, 1 Behemoth, 1 Behemoth  | 10.280 | 21,70 s |
+| 73 | 7 Brutmutter, 2 Behemoth, 1 Brutmutter  | 11.256 | 26,95 s |
+| 74 | 50 Golem, 25 Golem getarnt+nachwachsend+gepanzert, 1 Behemoth, 60 Golem gepanzert  | 18.054 | 82,38 s |
+| 75 | 1 Behemoth, 14 Eisenbrecher, 1 Brutmutter gepanzert, 3 Behemoth, 14 Eisenbrecher gepanzert, 2 Brutmutter gepanzert, 3 Behemoth  | 25.402 | 22,59 s |
+| 76 | 60 Golem nachwachsend  | 6.240 | 1,78 s |
+| 77 | 11 Brutmutter, 5 Behemoth  | 22.596 | 58,92 s |
+| 78 | 150 Schimmer, 75 Golem, 1 Behemoth, 80 Glut, 72 Golem getarnt  | 26.382 | 90,00 s |
+| 79 | 500 Schimmer nachwachsend, 4 Behemoth, 2 Behemoth gepanzert  | 45.804 | 60,00 s |
+| 80 | 1 Koloss  | 16.656 | 2,00 s |
+| 81 | 9 Behemoth, 8 Behemoth  | 44.506 | 26,47 s |
+| 82 | 10 Behemoth, 5 Behemoth gepanzert  | 52.320 | 35,68 s |
+| 83 | 40 Golem, 40 Golem nachwachsend, 40 Golem gepanzert, 30 Brutmutter  | 25.080 | 60,20 s |
+| 84 | 50 Brutmutter, 10 Behemoth  | 51.480 | 25,00 s |
+| 85 | 2 Koloss  | 30.704 | 10,00 s |
+| 86 | 5 Behemoth gepanzert  | 27.040 | 20,85 s |
+| 87 | 4 Koloss  | 63.008 | 10,00 s |
+| 88 | 8 Behemoth, 18 Brutmutter, 2 Koloss  | 63.600 | 14,55 s |
+| 89 | 20 Brutmutter gepanzert, 8 Behemoth gepanzert  | 64.384 | 20,74 s |
+| 90 | 50 Eisenbrecher getarnt+nachwachsend+gepanzert, 3 Schattenjäger  | 2.756 | 11,90 s |
+| 91 | 100 Golem gepanzert, 20 Behemoth  | 71.160 | 30,00 s |
+| 92 | 50 Brutmutter gepanzert, 4 Koloss  | 117.408 | 35,00 s |
+| 93 | 10 Behemoth gepanzert, 6 Schattenjäger  | 62.936 | 20,00 s |
+| 94 | 25 Behemoth, 6 Koloss  | 178.112 | 15,00 s |
+| 95 | 500 Glut getarnt+nachwachsend, 250 Eisenbrecher getarnt+nachwachsend+gepanzert, 50 Brutmutter gepanzert, 30 Schattenjäger  | 80.860 | 50,81 s |
+| 96 | 10 Behemoth, 20 Brutmutter gepanzert, 10 Behemoth, 20 Brutmutter gepanzert, 10 Behemoth, 6 Koloss  | 238.952 | 32,12 s |
+| 97 | 2 Koloss gepanzert  | 69.984 | 5,00 s |
+| 98 | 30 Behemoth gepanzert, 8 Koloss  | 327.456 | 30,00 s |
+| 99 | 60 Brutmutter, 9 Schattenjäger gepanzert  | 47.424 | 12,00 s |
+| 100 | 1 Schwarmkönigin  | 67.200 | 0,10 s |
 
 Erstes Auftreten (Kontrolle): Nachwachsend R17, Ruß R20, Frost R22, Tarnung R24, Zwielicht R26, Eisenbrecher R28,
 Schimmer R35, Golem R38, Brutmutter R40, Gepanzert R45, Behemoth R60, Koloss R80, Schattenjäger R90, Schwarmkönigin R100.
@@ -209,9 +306,9 @@ Referenz-RBE: R45 2.289, R50 3.540, R60 3.164, R80 16.656, R100 67.200.
 | Regel | Wert (BTD6) |
 |---|---|
 | Startguthaben der Kampagne | 650 ⛁ *(prüfen)* |
-| Pro zerstörter Schicht | 1 ⛁ × Einkommensfaktor |
+| Pro zerstörter Schicht | 1 ⛁ × Einkommensfaktor (bestätigt: jede Schicht zählt 1, auch die Schicht eines Golems oder einer Brutmutter; Golem mit Kindern 95, Brutmutter 381, Behemoth 1.525) |
 | Rundenbonus | **100 + Rundennummer** (bestätigt: Runde 1 bringt 20 + 101 = 121) |
-| Einkommensfaktor | R1–50: 100 %; R51–60: 50 %; R61–85: 20 %; R86–100: 10 %; R101–120: 8 %; R121–140: 5 %; R141+: 2 % |
+| Einkommensfaktor | R1–50: 100 %; R51–60: 50 %; R61–85: 20 %; R86–100: 10 %; R101–120: 5 %; R121–140: 4 %; R141+: 2 % (Wiki „Freeplay" bestätigt) |
 | Verkauf eines Turms | 70 % des bezahlten Preises (Turm + Aufrüstungen) |
 | Münzen | gehören dem Team, gelten über alle Level; Anzeige im HUD in der Arena |
 
@@ -497,7 +594,7 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 
 | Paket | Inhalt | Akzeptanz |
 |---|---|---|
-| **T1 – Gegner-Engine** | `TdSimulation` (Bewegung, Schichten, Kinder, Überschaden, Eigenschaften, Immunitäten, Leaks, spätes Spiel), Gegnerdaten §3 als JSON, Netzwerkpaket, Client-Renderer, Entfernen der Gegner-Entities | Unit-Tests für jeden Gegner (RBE aus Kindern = Tabelle), Nachwachsen alle 3 s, Tarnung; Leistungstest 1.000 Gegner |
+| **T1 – Gegner-Engine** ✅ | `TdSimulation` (Bewegung, Schichten, Kinder, Überschaden, Eigenschaften, Immunitäten, Leaks, spätes Spiel), Gegnerdaten §3 als JSON, Netzwerkpaket, Client-Renderer, Entfernen der Gegner-Entities | Unit-Tests für jeden Gegner (RBE aus Kindern = Tabelle), Nachwachsen alle 3 s, Tarnung; Leistungstest 1.000 Gegner |
 | **T2 – Runden, Münzen, Leben** | Rundendaten 1–100, Level = 2 Runden, Münzen und Einkommensfaktor, Rundenbonus, Schwierigkeitsgrade, Leben pro Level, Snapshot/Wiederholung, Kriegskasse, Siegel-Zuordnung, Entfernen von Turm-HP/Ruinen/Reparatur und Spieler-Skalierung, Pfadlängen-Fenster | Unit-Test Rundeneinnahmen gegen Wiki (±2 %); GameTest Level 1 komplett; Pfad < 100 Blöcke wird abgelehnt |
 | **T3 – Turmsystem** | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
 | **T4 – Türme Teil 1** | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |

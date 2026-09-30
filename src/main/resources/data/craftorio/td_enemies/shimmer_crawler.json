@@ -1,0 +1,18 @@
+{
+  "index": 10,
+  "btd6": "Rainbow",
+  "hp": 1,
+  "fortified_hp": 0,
+  "speed": 55,
+  "children": [
+    "twilight_crawler",
+    "twilight_crawler"
+  ],
+  "immune": [],
+  "boss": false,
+  "late": {
+    "children": [
+      "twilight_crawler"
+    ]
+  }
+}

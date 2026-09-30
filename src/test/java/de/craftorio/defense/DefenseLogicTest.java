@@ -12,17 +12,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefenseLogicTest {
     @Test
-    void levelsGetHarderAndBringKeyMaterialsEveryTenLevels() {
+    void aLevelIsTwoRoundsOfTheListAndBringsSealsAtTheMilestones() {
         LevelPlan first = LevelPlan.of(1, 1);
-        LevelPlan fifth = LevelPlan.of(5, 1);
         LevelPlan tenth = LevelPlan.of(10, 1);
 
-        assertEquals(3, first.waves().size());
-        assertTrue(first.waves().stream().flatMap(List::stream).allMatch(type -> type == EnemyType.CRAWLER));
-        assertTrue(fifth.waves().stream().flatMap(List::stream).anyMatch(type -> type == EnemyType.BREAKER));
-        assertTrue(tenth.enemyCount() > fifth.enemyCount());
-        assertTrue(tenth.healthMultiplier() > fifth.healthMultiplier());
-        assertEquals(EnemyType.BROOD_MOTHER, tenth.waves().get(tenth.waves().size() - 1).get(tenth.waves().get(tenth.waves().size() - 1).size() - 1));
+        assertEquals(2, first.rounds().size());
+        assertEquals(1, first.rounds().get(0).round());
+        assertEquals(2, first.rounds().get(1).round());
+        assertEquals(55, first.totalRbe(), 0.5);
+        assertEquals(55, first.enemyCount());
+        assertEquals(19, tenth.rounds().get(0).round());
+        assertEquals(20, tenth.rounds().get(1).round());
+        assertEquals(99, LevelPlan.of(50, 1).rounds().get(0).round());
+        assertEquals(100, LevelPlan.of(50, 1).rounds().get(1).round());
+        assertEquals(47_424 + 67_200, LevelPlan.of(50, 1).totalRbe(), 1);
 
         assertEquals(LevelPlan.KeyReward.NONE, first.keyReward());
         assertEquals(LevelPlan.KeyReward.SILVER_SEAL, tenth.keyReward());
@@ -34,8 +37,9 @@ class DefenseLogicTest {
     }
 
     @Test
-    void moreOnlinePlayersMeanTougherEnemies() {
-        assertEquals(1.35, LevelPlan.of(1, 2).healthMultiplier() / LevelPlan.of(1, 1).healthMultiplier(), 1e-9);
+    void theNumberOfPlayersDoesNotChangeTheEnemies() {
+        assertEquals(LevelPlan.of(7, 1).totalRbe(), LevelPlan.of(7, 4).totalRbe(), 0);
+        assertEquals(LevelPlan.of(7, 1).reward(), LevelPlan.of(7, 4).reward());
     }
 
     @Test
@@ -128,44 +132,32 @@ class DefenseLogicTest {
     }
 
     @Test
-    void crystalGolemsArriveAtLevelTwentyAndResistAmmunition() {
-        assertTrue(LevelPlan.of(19, 1).waves().stream().flatMap(List::stream).noneMatch(type -> type == EnemyType.CRYSTAL_GOLEM));
-        assertTrue(LevelPlan.of(20, 1).waves().stream().flatMap(List::stream).anyMatch(type -> type == EnemyType.CRYSTAL_GOLEM));
-        assertEquals(3.5, EnemyType.CRYSTAL_GOLEM.damageTaken(10, false), 1e-9);
-        assertEquals(10, EnemyType.CRYSTAL_GOLEM.damageTaken(10, true), 1e-9);
-        assertEquals(10, EnemyType.BREAKER.damageTaken(10, false), 1e-9);
+    void theNewEnemiesArriveWithTheRoundsOfTheList() {
+        assertTrue(enemiesOfLevel(18).noneMatch(id -> id.equals("crystal_golem")));
+        assertTrue(enemiesOfLevel(19).anyMatch(id -> id.equals("crystal_golem")), "round 38");
+        assertTrue(enemiesOfLevel(20).anyMatch(id -> id.equals("brood_mother")), "round 40");
+        assertTrue(enemiesOfLevel(30).anyMatch(id -> id.equals("behemoth")), "round 60");
+        assertTrue(enemiesOfLevel(40).anyMatch(id -> id.equals("colossus")), "round 80");
+        assertTrue(enemiesOfLevel(45).anyMatch(id -> id.equals("shadow_hunter")), "round 90");
+        assertTrue(enemiesOfLevel(49).noneMatch(id -> id.equals("swarm_queen")));
+        assertTrue(enemiesOfLevel(50).anyMatch(id -> id.equals("swarm_queen")), "round 100");
         assertTrue(TowerType.LASER.energyWeapon());
         assertTrue(TowerType.LASER.range() > TowerType.GUN.range());
     }
 
-    @Test
-    void moreOnlinePlayersMeanMoreAndTougherEnemies() {
-        LevelPlan solo = LevelPlan.of(7, 1);
-        LevelPlan trio = LevelPlan.of(7, 3);
-        assertEquals(solo.enemyCount() + 2 * LevelPlan.CRAWLERS_PER_EXTRA_PLAYER * solo.waves().size(), trio.enemyCount());
-        assertTrue(trio.healthMultiplier() > solo.healthMultiplier());
-        assertEquals(solo.reward(), trio.reward(), "rewards do not scale – the team shares them");
+    private static java.util.stream.Stream<String> enemiesOfLevel(int level) {
+        return LevelPlan.of(level, 1).rounds().stream().flatMap(round -> round.groups().stream()).map(group -> group.enemy());
     }
 
     @Test
-    void flatArmourTakesPointsOffPhysicalHitsAndKeepsAtLeastATenth() {
-        assertEquals(0.4, EnemyType.BEHEMOTH.damageTaken(4, false), 1e-9);
-        assertEquals(3.2, EnemyType.BEHEMOTH.damageTaken(TowerStats.damage(TowerType.GUN, 1) * TowerType.AP_FACTOR, false), 1e-9);
-        assertEquals(25.6, EnemyType.BEHEMOTH.damageTaken(TowerStats.damage(TowerType.GUN, 1) * TowerType.URANIUM_FACTOR, false), 1e-9);
-        assertEquals(30, EnemyType.BEHEMOTH.damageTaken(30, true), 1e-9, "energy and fire ignore the plating");
-        // the queen has 5 points of plating and takes half of what is left
-        assertEquals(0.5 * (20 - 5), EnemyType.SWARM_QUEEN.damageTaken(20, false), 1e-9);
-        assertEquals(12, EnemyType.CRAWLER.damageTaken(12, false) * 1.0 + 0, 1e-9, "the small ones have no armour");
-    }
-
-    @Test
-    void behemothsComeFromLevelThirtyFiveAndTheQueenLeadsLevelFifty() {
-        assertTrue(LevelPlan.of(34, 1).waves().stream().flatMap(java.util.List::stream).noneMatch(type -> type == EnemyType.BEHEMOTH));
-        assertTrue(LevelPlan.of(35, 1).waves().stream().flatMap(java.util.List::stream).anyMatch(type -> type == EnemyType.BEHEMOTH));
-        assertTrue(LevelPlan.of(49, 1).waves().stream().flatMap(java.util.List::stream).noneMatch(type -> type == EnemyType.SWARM_QUEEN));
-        var last = LevelPlan.of(50, 1).waves().get(LevelPlan.of(50, 1).waves().size() - 1);
-        assertEquals(1, last.stream().filter(type -> type == EnemyType.SWARM_QUEEN).count());
-        assertEquals(1, last.stream().filter(type -> type == EnemyType.BROOD_MOTHER).count());
+    void towerDamageKindsAndLayerDamage() {
+        assertEquals(de.craftorio.defense.sim.DamageKind.SHARP, TowerType.CROSSBOW.damageKind(Magazine.NORMAL));
+        assertEquals(de.craftorio.defense.sim.DamageKind.SHARP, TowerType.GUN.damageKind(Magazine.NORMAL));
+        assertEquals(de.craftorio.defense.sim.DamageKind.NORMAL, TowerType.GUN.damageKind(Magazine.ARMOUR_PIERCING));
+        assertEquals(de.craftorio.defense.sim.DamageKind.ENERGY, TowerType.LASER.damageKind(Magazine.NORMAL));
+        assertEquals(de.craftorio.defense.sim.DamageKind.FIRE, TowerType.FLAME.damageKind(Magazine.NORMAL));
+        assertEquals(1, TowerStats.layerDamage(TowerType.CROSSBOW, 1, 1));
+        assertEquals(8, TowerStats.layerDamage(TowerType.GUN, 1, TowerType.URANIUM_FACTOR));
     }
 
     @Test
@@ -174,31 +166,5 @@ class DefenseLogicTest {
         assertEquals(LevelPlan.KeyReward.DIAMOND_SEAL, LevelPlan.of(40, 1).keyReward());
         assertEquals(LevelPlan.KeyReward.STAR_SEAL, LevelPlan.of(50, 1).keyReward());
         assertEquals(LevelPlan.KeyReward.NONE, LevelPlan.of(41, 1).keyReward());
-    }
-
-    /** Damage per second of a tower of the given level with the given ammunition factor. */
-    private static double dps(TowerType type, int level, double ammunition) {
-        return TowerStats.damage(type, level) * ammunition * type.targets() * 20.0 / type.cooldown();
-    }
-
-    @Test
-    void theCurveOfLevelsThirtyToFiftyMatchesTheReferenceDefences() {
-        // bosses make single levels jump, so compare levels five apart
-        for (int level = 1; level <= 55; level++) {
-            assertTrue(LevelPlan.of(level + 5, 1).totalHealth() > LevelPlan.of(level, 1).totalHealth(), "level " + (level + 5) + " is harder than " + level);
-        }
-        double exposure = 180; // seconds of fire a defence gets on the enemies of one level
-        // Level 40 is doable with ten lasers and ten flamethrowers of upgrade level 2 ...
-        double energy = 10 * dps(TowerType.LASER, 2, 1) + 10 * dps(TowerType.FLAME, 2, 1);
-        double level40 = LevelPlan.of(40, 1).totalHealth();
-        assertTrue(level40 <= energy * exposure, "level 40 " + level40 + " vs " + energy * exposure);
-        assertTrue(level40 >= energy * exposure * 0.5, "and not trivial");
-        // ... level 50 is not, but it is with sixteen uranium gun turrets of level 3 in addition (not with armour-piercing ones).
-        double level50 = LevelPlan.of(50, 1).totalHealth();
-        assertTrue(level50 > energy * exposure, "level 50 needs more");
-        double uranium = energy + 16 * dps(TowerType.GUN, 3, TowerType.URANIUM_FACTOR);
-        double piercing = energy + 16 * dps(TowerType.GUN, 3, TowerType.AP_FACTOR);
-        assertTrue(level50 <= uranium * exposure, "level 50 " + level50 + " vs " + uranium * exposure);
-        assertTrue(level50 > piercing * exposure, "armour-piercing ammunition is not enough: " + piercing * exposure);
     }
 }

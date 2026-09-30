@@ -1,0 +1,25 @@
+{
+  "index": 15,
+  "btd6": "DDT",
+  "hp": 400,
+  "fortified_hp": 800,
+  "speed": 66,
+  "children": [
+    "crystal_golem",
+    "crystal_golem",
+    "crystal_golem",
+    "crystal_golem"
+  ],
+  "immune": [
+    "sharp",
+    "cold",
+    "energy",
+    "explosion"
+  ],
+  "boss": true,
+  "camo": true,
+  "child_mods": [
+    "camo",
+    "regrow"
+  ]
+}

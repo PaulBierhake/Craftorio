@@ -89,6 +89,16 @@ public enum TowerType {
         return targets;
     }
 
+    /** What kind of damage its hits are; the heavy magazines of the gun hit everything. */
+    public de.craftorio.defense.sim.DamageKind damageKind(Magazine magazine) {
+        return switch (this) {
+            case CROSSBOW -> de.craftorio.defense.sim.DamageKind.SHARP;
+            case GUN -> magazine == Magazine.NORMAL ? de.craftorio.defense.sim.DamageKind.SHARP : de.craftorio.defense.sim.DamageKind.NORMAL;
+            case TESLA, LASER -> de.craftorio.defense.sim.DamageKind.ENERGY;
+            case FLAME -> de.craftorio.defense.sim.DamageKind.FIRE;
+        };
+    }
+
     /** Credits to rebuild a destroyed tower from its ruin. */
     public long rebuildCost() {
         return switch (this) {

@@ -1,0 +1,22 @@
+{
+  "index": 8,
+  "btd6": "Lead",
+  "hp": 1,
+  "fortified_hp": 4,
+  "speed": 25,
+  "children": [
+    "soot_crawler",
+    "soot_crawler"
+  ],
+  "immune": [
+    "sharp",
+    "cold",
+    "energy"
+  ],
+  "boss": false,
+  "late": {
+    "children": [
+      "soot_crawler"
+    ]
+  }
+}

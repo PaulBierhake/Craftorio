@@ -1,0 +1,15 @@
+{
+  "index": 13,
+  "btd6": "BFB",
+  "hp": 700,
+  "fortified_hp": 1400,
+  "speed": 6.25,
+  "children": [
+    "brood_mother",
+    "brood_mother",
+    "brood_mother",
+    "brood_mother"
+  ],
+  "immune": [],
+  "boss": true
+}

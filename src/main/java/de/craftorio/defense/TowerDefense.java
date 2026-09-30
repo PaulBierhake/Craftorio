@@ -7,6 +7,10 @@ import de.craftorio.defense.arena.Arenas;
 import de.craftorio.defense.arena.Mutator;
 import de.craftorio.defense.arena.Tile;
 import de.craftorio.economy.Credits;
+import de.craftorio.defense.sim.SimEnemy;
+import de.craftorio.defense.sim.TdSimulation;
+import de.craftorio.network.TdEnemiesPayload;
+import de.craftorio.network.TdPathPayload;
 import de.craftorio.network.TdStatusPayload;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModDataComponents;
@@ -63,6 +67,10 @@ import java.util.UUID;
 public final class TowerDefense extends SavedData {
     private static final String FILE_NAME = "craftorio_tower_defense";
     private static final int STATUS_INTERVAL = 20;
+    /** Ticks between two enemy snapshots for the clients; in between they walk on by themselves. */
+    private static final int SNAPSHOT_INTERVAL = 4;
+    /** Every this many snapshots the path is sent again, for players who came late. */
+    private static final int PATH_EVERY = 10;
     private static final int AUTO_START_DELAY = 100;
     public static final long ENERGY_CAPACITY = 2_000_000;
     public static final int AMMO_CAPACITY = 5_000;
@@ -73,6 +81,8 @@ public final class TowerDefense extends SavedData {
     private final Map<Integer, UUID> teamBySlot = new HashMap<>();
     private int nextSlot;
     private int statusIn;
+    private int snapshotIn;
+    private int pathCounter;
     private long worldSeed;
 
     public static final class Zone {
@@ -753,6 +763,11 @@ public final class TowerDefense extends SavedData {
         if (sendStatus) {
             statusIn = STATUS_INTERVAL;
         }
+        boolean sendSnapshot = --snapshotIn <= 0;
+        if (sendSnapshot) {
+            snapshotIn = SNAPSHOT_INTERVAL;
+        }
+        boolean sendPath = sendSnapshot && ++pathCounter % PATH_EVERY == 0;
         for (Map.Entry<UUID, Zone> entry : new ArrayList<>(zones.entrySet())) {
             UUID team = entry.getKey();
             Zone zone = entry.getValue();
@@ -761,6 +776,8 @@ public final class TowerDefense extends SavedData {
                 LevelRun.Outcome outcome = zone.run.tick(level);
                 if (outcome != LevelRun.Outcome.RUNNING) {
                     finish(server, level, team, zone, outcome == LevelRun.Outcome.WON);
+                } else {
+                    syncEnemies(level, zone, sendSnapshot, sendPath);
                 }
             } else if (zone.run == null && zone.autoStartIn > 0 && --zone.autoStartIn == 0) {
                 // A new map needs a new path first; auto-start waits until one is laid.
@@ -785,11 +802,51 @@ public final class TowerDefense extends SavedData {
         }
     }
 
+    /** Tells the players in the arena about the path and where the enemies are. */
+    private void syncEnemies(ServerLevel level, Zone zone, boolean snapshot, boolean path) {
+        if (!snapshot && !path) {
+            return;
+        }
+        List<ServerPlayer> watchers = level.players().stream().filter(player -> Arenas.slotAt(player.blockPosition()) == zone.slot).toList();
+        if (watchers.isEmpty()) {
+            return;
+        }
+        LevelRun run = zone.run;
+        if (path) {
+            TdPathPayload payload = new TdPathPayload(zone.slot, run.points().stream().map(p -> new float[]{(float) p.x, (float) p.y, (float) p.z}).toList());
+            watchers.forEach(player -> send(player, payload));
+        }
+        if (snapshot) {
+            TdEnemiesPayload payload = enemiesPayload(zone.slot, run.simulation());
+            watchers.forEach(player -> send(player, payload));
+        }
+    }
+
+    static TdEnemiesPayload enemiesPayload(int slot, TdSimulation sim) {
+        List<SimEnemy> enemies = sim.enemies();
+        int n = enemies.size();
+        int[] ids = new int[n];
+        byte[] kinds = new byte[n];
+        byte[] flags = new byte[n];
+        float[] distances = new float[n];
+        // the simulation keeps its enemies in the order of their ids
+        for (int i = 0; i < n; i++) {
+            SimEnemy enemy = enemies.get(i);
+            ids[i] = enemy.id();
+            kinds[i] = (byte) enemy.def().index();
+            flags[i] = (byte) enemy.flags();
+            distances[i] = (float) enemy.distance();
+        }
+        return new TdEnemiesPayload(slot, (float) sim.speed(), ids, kinds, flags, distances);
+    }
+
     private void finish(MinecraftServer server, ServerLevel level, UUID team, Zone zone, boolean won) {
         LevelPlan plan = zone.run.plan();
         int lives = zone.run.lives();
         zone.run.end(level);
         zone.run = null;
+        TdEnemiesPayload none = TdEnemiesPayload.empty(zone.slot);
+        level.players().stream().filter(player -> Arenas.slotAt(player.blockPosition()) == zone.slot).forEach(player -> send(player, none));
         if (won) {
             Mutator mutator = mutator(zone);
             long reward = Math.round(plan.reward() * mutator.rewardFactor());
@@ -844,14 +901,14 @@ public final class TowerDefense extends SavedData {
         LevelPlan plan = run != null ? run.plan() : LevelPlan.of(zone.level, 1);
         int previewWave = run == null ? 0 : run.upcomingWave();
         List<Integer> preview = new ArrayList<>();
-        if (previewWave < plan.waves().size()) {
-            LevelPlan.summary(plan.waves().get(previewWave)).forEach((type, count) -> {
-                preview.add(type.ordinal());
+        if (previewWave < plan.rounds().size()) {
+            LevelPlan.summary(plan.rounds().get(previewWave)).forEach((code, count) -> {
+                preview.add(code);
                 preview.add(count);
             });
         }
         ArenaLayout layout = layout(zone);
-        return new TdStatusPayload(true, zone.level, run != null, run == null ? 0 : run.wave(), plan.waves().size(),
+        return new TdStatusPayload(true, zone.level, run != null, run == null ? 0 : run.wave(), plan.rounds().size(),
                 run == null ? LevelPlan.LIVES : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.repairCost,
                 layout.theme().ordinal(), mutator(zone).ordinal(), zone.lastStars, preview, zone.energy,
                 zone.ammo(ModItems.BOLT.get()), magazines(zone), run != null && run.canCallWave(), unsupplied(level, zone));
@@ -869,6 +926,18 @@ public final class TowerDefense extends SavedData {
 
     private static void send(ServerPlayer player, TdStatusPayload payload) {
         if (player.connection.hasChannel(TdStatusPayload.TYPE)) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
+    }
+
+    private static void send(ServerPlayer player, TdPathPayload payload) {
+        if (player.connection.hasChannel(TdPathPayload.TYPE)) {
+            PacketDistributor.sendToPlayer(player, payload);
+        }
+    }
+
+    private static void send(ServerPlayer player, TdEnemiesPayload payload) {
+        if (player.connection.hasChannel(TdEnemiesPayload.TYPE)) {
             PacketDistributor.sendToPlayer(player, payload);
         }
     }

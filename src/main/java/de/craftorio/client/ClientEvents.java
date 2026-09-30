@@ -10,7 +10,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import de.craftorio.registry.ModBlockEntities;
-import de.craftorio.registry.ModEntities;
 import de.craftorio.registry.ModMenus;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
@@ -90,6 +89,7 @@ public final class ClientEvents {
         public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             ClientTeamState.clear();
             ClientTdState.clear();
+            ClientTdEnemies.clear();
         }
     }
 
@@ -113,13 +113,6 @@ public final class ClientEvents {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModBlockEntities.CONVEYOR_BELT.get(), ConveyorBeltRenderer::new);
             event.registerBlockEntityRenderer(ModBlockEntities.POWER_POLE.get(), PowerPoleRenderer::new);
-            event.registerEntityRenderer(ModEntities.CRAWLER.get(), TdEnemyRenderer::crawler);
-            event.registerEntityRenderer(ModEntities.BREAKER.get(), TdEnemyRenderer::breaker);
-            event.registerEntityRenderer(ModEntities.SPITTER.get(), TdEnemyRenderer::spitter);
-            event.registerEntityRenderer(ModEntities.BROOD_MOTHER.get(), TdEnemyRenderer::broodMother);
-            event.registerEntityRenderer(ModEntities.CRYSTAL_GOLEM.get(), TdEnemyRenderer::crystalGolem);
-            event.registerEntityRenderer(ModEntities.BEHEMOTH.get(), TdEnemyRenderer::behemoth);
-            event.registerEntityRenderer(ModEntities.SWARM_QUEEN.get(), TdEnemyRenderer::swarmQueen);
         }
 
         @SubscribeEvent

@@ -1,0 +1,12 @@
+{
+  "index": 1,
+  "btd6": "Blue",
+  "hp": 1,
+  "fortified_hp": 0,
+  "speed": 35,
+  "children": [
+    "red_crawler"
+  ],
+  "immune": [],
+  "boss": false
+}

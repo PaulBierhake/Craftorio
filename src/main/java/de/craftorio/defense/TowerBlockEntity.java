@@ -1,5 +1,8 @@
 package de.craftorio.defense;
 
+import de.craftorio.defense.sim.DamageKind;
+import de.craftorio.defense.sim.SimEnemy;
+import de.craftorio.defense.sim.TdSimulation;
 import net.minecraft.world.item.Items;
 import de.craftorio.blueprint.Blueprints;
 import de.craftorio.economy.Credits;
@@ -39,12 +42,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Shoots enemies in range (by its target mode), takes damage from them and becomes a ruin at 0 HP. */
@@ -192,19 +195,25 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     private boolean fire(ServerLevel level) {
         double range = range();
         Vec3 muzzle = worldPosition.getCenter().add(0, 0.8, 0);
-        // Camouflaged enemies (forest thicket) are only spotted within half the range.
-        List<TdEnemy> targets = level.getEntitiesOfClass(TdEnemy.class, new AABB(worldPosition).inflate(range),
-                        enemy -> enemy.isAlive() && enemy.position().distanceTo(muzzle) <= (enemy.camouflaged() ? range / 2 : range)).stream()
-                .sorted(targetMode.order())
-                .limit(type.targets())
-                .toList();
+        // Until the towers of the rebuild (T4/T5) decide for themselves, every tower sees camouflaged enemies.
+        List<SimEnemy> targets = new ArrayList<>();
+        TdSimulation simulation = null;
+        for (LevelRun run : LevelRun.activeIn(level)) {
+            List<SimEnemy> found = run.simulation().targets(muzzle.x, muzzle.y, muzzle.z, range, true, targetMode.order(), type.targets());
+            if (!found.isEmpty()) {
+                simulation = run.simulation();
+                targets = found;
+                break;
+            }
+        }
         if (targets.isEmpty() || !payForShot()) {
             return false;
         }
-        float damage = (float) TowerStats.damage(type, upgradeLevel) * (type == TowerType.GUN ? (float) magazine.factor() : 1F);
+        int damage = TowerStats.layerDamage(type, upgradeLevel, type == TowerType.GUN ? magazine.factor() : 1);
+        DamageKind kind = type.damageKind(magazine);
         Vec3 from = muzzle;
-        for (TdEnemy target : targets) {
-            Vec3 to = target.position().add(0, target.getBbHeight() / 2, 0);
+        for (SimEnemy target : targets) {
+            Vec3 to = new Vec3(target.x(), target.y() + 0.5, target.z());
             trail(level, from, to, switch (type) {
                 case CROSSBOW -> ParticleTypes.CRIT;
                 case GUN -> ParticleTypes.SMOKE;
@@ -212,9 +221,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
                 case LASER -> ParticleTypes.END_ROD;
                 case FLAME -> ParticleTypes.FLAME;
             });
-            target.invulnerableTime = 0;
-            target.hurt(type.energyWeapon() ? level.damageSources().magic()
-                    : type == TowerType.FLAME ? level.damageSources().inFire() : level.damageSources().generic(), damage);
+            simulation.hit(target, damage, kind);
             if (type == TowerType.TESLA) {
                 from = to; // chain lightning jumps on
             }

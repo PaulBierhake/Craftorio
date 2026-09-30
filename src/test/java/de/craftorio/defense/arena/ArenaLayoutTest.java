@@ -1,6 +1,5 @@
 package de.craftorio.defense.arena;
 
-import de.craftorio.defense.EnemyType;
 import de.craftorio.defense.LevelPlan;
 import org.junit.jupiter.api.Test;
 
@@ -80,8 +79,11 @@ class ArenaLayoutTest {
         assertEquals(50, LevelPlan.starBonus(100, 3));
         assertEquals(0, LevelPlan.starBonus(100, 1));
         assertEquals(10 * 3, LevelPlan.earlyCallBonus(5, 200));
-        Map<EnemyType, Integer> summary = LevelPlan.summary(List.of(EnemyType.CRAWLER, EnemyType.BREAKER, EnemyType.CRAWLER));
-        assertEquals(Map.of(EnemyType.CRAWLER, 2, EnemyType.BREAKER, 1), summary);
-        assertEquals(EnemyType.CRAWLER, summary.keySet().iterator().next());
+        // round 3: 10 red, 5 blue, 15 red crawlers: 25 red and 5 blue, red first
+        Map<Integer, Integer> summary = LevelPlan.summary(de.craftorio.defense.sim.RoundDefs.get(3));
+        assertEquals(Map.of(0, 25, 1, 5), summary);
+        assertEquals(0, summary.keySet().iterator().next());
+        // round 17: regrowing yellow crawlers carry the regrow bit above the index
+        assertEquals(Map.of(3 | 2 << 8, 12), LevelPlan.summary(de.craftorio.defense.sim.RoundDefs.get(17)));
     }
 }

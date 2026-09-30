@@ -7,10 +7,15 @@ import de.craftorio.defense.arena.ArenaLayout;
 import de.craftorio.defense.arena.ArenaTheme;
 import de.craftorio.defense.arena.Arenas;
 import de.craftorio.defense.arena.Tile;
+import de.craftorio.defense.sim.EnemyDefs;
+import de.craftorio.defense.sim.SimEnemy;
+import de.craftorio.defense.sim.TdPath;
+import de.craftorio.defense.sim.TdSimulation;
+import de.craftorio.network.TdEnemiesPayload;
+import de.craftorio.network.TdPathPayload;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import de.craftorio.registry.ModBlocks;
-import de.craftorio.registry.ModEntities;
 import de.craftorio.registry.ModItems;
 import de.craftorio.team.Team;
 import de.craftorio.team.TeamData;
@@ -39,66 +44,109 @@ public final class DefenseGameTests {
     private DefenseGameTests() {
     }
 
+    /** A straight track through the test area with a run the towers can see; the test's ticks move the enemies. */
+    private static LevelRun track(GameTestHelper helper, int level) {
+        List<Vec3> path = new ArrayList<>();
+        for (int x = 1; x <= 15; x++) {
+            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        }
+        LevelRun run = new LevelRun(LevelPlan.of(level, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
+        run.register(helper.getLevel());
+        helper.onEachTick(() -> run.simulation().tick());
+        return run;
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 300)
-    public static void crossbowTowerKillsCrawler(GameTestHelper helper) {
+    public static void crossbowTowerPopsACrawler(GameTestHelper helper) {
         BlockPos towerPos = new BlockPos(3, 1, 3);
         helper.setBlock(towerPos, ModBlocks.CROSSBOW_TOWER.get());
         TowerBlockEntity tower = helper.getBlockEntity(towerPos);
         tower.ammo().insertItem(0, new ItemStack(ModItems.BOLT.get(), 10), false);
-
-        List<Vec3> path = new ArrayList<>();
-        for (int x = 1; x <= 15; x++) {
-            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
-        }
-        LevelRun run = new LevelRun(LevelPlan.of(1, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
-        TdEnemy crawler = ModEntities.CRAWLER.get().create(helper.getLevel());
-        crawler.start(run, path, 1.0);
-        helper.getLevel().addFreshEntity(crawler);
+        LevelRun run = track(helper, 1);
+        run.simulation().spawn("red_crawler");
 
         helper.succeedWhen(() -> {
-            helper.assertTrue(crawler.isRemoved() && crawler.isDeadOrDying(), "crawler still alive");
+            helper.assertTrue(run.simulation().count() == 0 && run.simulation().paidPops() == 1, "crawler not popped");
             helper.assertTrue(tower.ammo().getStackInSlot(0).getCount() < 10, "tower used no ammunition");
+            run.end(helper.getLevel());
         });
     }
 
-    @GameTest(template = LARGE)
-    public static void crystalGolemArmourOnlyStopsAmmunition(GameTestHelper helper) {
-        List<Vec3> path = new ArrayList<>();
-        for (int x = 1; x <= 15; x++) {
-            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
-        }
-        LevelRun run = new LevelRun(LevelPlan.of(20, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
-        TdEnemy golem = ModEntities.CRYSTAL_GOLEM.get().create(helper.getLevel());
-        golem.start(run, path, 1.0);
-        helper.getLevel().addFreshEntity(golem);
-        float full = golem.getHealth();
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void boltsBounceOffAnIronbreaker(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(3, 1, 3);
+        helper.setBlock(towerPos, ModBlocks.CROSSBOW_TOWER.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        tower.ammo().insertItem(0, new ItemStack(ModItems.BOLT.get(), 10), false);
+        LevelRun run = track(helper, 1);
+        run.simulation().spawn("ironbreaker");
 
-        golem.hurt(helper.getLevel().damageSources().generic(), 10);
-        helper.assertTrue(Math.abs(full - 3.5F - golem.getHealth()) < 0.01F, "ammunition hits are reduced to 35 %");
-        golem.invulnerableTime = 0;
-        golem.hurt(helper.getLevel().damageSources().magic(), 10);
-        helper.assertTrue(Math.abs(full - 13.5F - golem.getHealth()) < 0.01F, "energy hits pass the armour");
-        golem.discard();
-        helper.succeed();
+        helper.runAtTickTime(60, () -> {
+            helper.assertValueEqual(run.simulation().count(), 1, "the ironbreaker is still walking");
+            helper.assertValueEqual(run.simulation().paidPops(), 0, "nothing popped: sharp damage does nothing to lead");
+            helper.assertTrue(tower.ammo().getStackInSlot(0).getCount() < 10, "the tower shot anyway");
+            run.end(helper.getLevel());
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 200)
+    public static void armourPiercingMagazinesPopIronbreakers(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(3, 1, 4);
+        helper.setBlock(towerPos, ModBlocks.GUN_TURRET.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        tower.ammo().insertItem(0, new ItemStack(ModItems.AP_MAGAZINE.get()), false);
+        LevelRun run = track(helper, 1);
+        run.simulation().spawn("ironbreaker");
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(run.simulation().paidPops() >= 1, "the normal damage of armour-piercing magazines pops lead");
+            run.end(helper.getLevel());
+        });
     }
 
     @GameTest(template = LARGE, timeoutTicks = 300)
-    public static void laserTowerBurnsDownCrystalGolem(GameTestHelper helper) {
+    public static void laserTowerPopsACrystalGolem(GameTestHelper helper) {
         BlockPos towerPos = new BlockPos(3, 1, 3);
         helper.setBlock(towerPos, ModBlocks.LASER_TOWER.get());
         TowerBlockEntity tower = helper.getBlockEntity(towerPos);
         tower.energy().setEnergy(tower.energy().getMaxEnergyStored());
+        LevelRun run = track(helper, 20);
+        run.simulation().spawn("crystal_golem");
 
-        List<Vec3> path = new ArrayList<>();
-        for (int x = 1; x <= 15; x++) {
-            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        helper.succeedWhen(() -> {
+            helper.assertTrue(run.simulation().enemies().stream().noneMatch(e -> e.def().id().equals("crystal_golem")), "golem still there");
+            helper.assertTrue(run.simulation().paidPops() >= 1, "no layer popped");
+            run.end(helper.getLevel());
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void enemySnapshotsAreCompactAndSurviveTheWire(GameTestHelper helper) {
+        TdPathPayload path = new TdPathPayload(3, List.of(new float[]{1, 2, 3}, new float[]{4, 5, 6}));
+        io.netty.buffer.ByteBuf buffer = io.netty.buffer.Unpooled.buffer();
+        TdPathPayload.STREAM_CODEC.encode(buffer, path);
+        TdPathPayload decodedPath = TdPathPayload.STREAM_CODEC.decode(buffer);
+        helper.assertValueEqual(decodedPath.points().get(1)[2], 6F, "path point");
+
+        TdSimulation sim = new TdSimulation(new TdPath(List.of(new double[]{0, 0, 0}, new double[]{150, 0, 0})));
+        for (int i = 0; i < 1_000; i++) {
+            sim.spawn(EnemyDefs.IDS.get(i % 12), i % 7 == 0, i % 5 == 0, i % 3 == 0);
         }
-        LevelRun run = new LevelRun(LevelPlan.of(20, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
-        TdEnemy golem = ModEntities.CRYSTAL_GOLEM.get().create(helper.getLevel());
-        golem.start(run, path, 1.0);
-        helper.getLevel().addFreshEntity(golem);
-
-        helper.succeedWhen(() -> helper.assertTrue(golem.isRemoved() && golem.isDeadOrDying(), "golem still alive"));
+        for (int i = 0; i < 100; i++) {
+            sim.tick();
+        }
+        TdEnemiesPayload payload = TowerDefense.enemiesPayload(2, sim);
+        buffer = io.netty.buffer.Unpooled.buffer();
+        TdEnemiesPayload.STREAM_CODEC.encode(buffer, payload);
+        helper.assertTrue(buffer.readableBytes() < 8_000, "1,000 enemies take " + buffer.readableBytes() + " bytes");
+        TdEnemiesPayload decoded = TdEnemiesPayload.STREAM_CODEC.decode(buffer);
+        helper.assertValueEqual(decoded.size(), 1_000, "enemies");
+        helper.assertValueEqual(decoded.ids()[999], payload.ids()[999], "ids survive the delta coding");
+        helper.assertValueEqual(decoded.kinds()[11], payload.kinds()[11], "kind");
+        helper.assertValueEqual(decoded.flags()[14], payload.flags()[14], "flags");
+        helper.assertValueEqual(decoded.distances()[500], payload.distances()[500], "distance");
+        helper.succeed();
     }
 
     @GameTest(template = LARGE, timeoutTicks = 100, batch = "defense_clear")
@@ -196,28 +244,22 @@ public final class DefenseGameTests {
 
     @GameTest(template = LARGE, timeoutTicks = 2000, batch = "defense_lose")
     public static void undefendedLevelIsLost(GameTestHelper helper) {
-        Setup setup = buildArena(helper, "LoseTest");
+        Setup setup = buildArena(helper, "LoseTest", 25); // the enemies of level 25 cost more than 150 lives
         setup.defense.start(setup.player.server, setup.team.id());
         helper.assertTrue(setup.zone().run().isPresent(), "level did not start");
 
         helper.succeedWhen(() -> {
             helper.assertTrue(setup.zone().run().isEmpty(), "level still running");
-            helper.assertValueEqual(setup.zone().level(), 1, "level must not advance");
+            helper.assertValueEqual(setup.zone().level(), 25, "level must not advance");
             helper.assertValueEqual(setup.team.balance(), 0L, "no reward");
         });
     }
 
-    /** A golem with a thousand times the health: towers keep shooting at it without killing it. */
-    private static TdEnemy target(GameTestHelper helper) {
-        List<Vec3> path = new ArrayList<>();
-        for (int x = 1; x <= 15; x++) {
-            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
-        }
-        LevelRun run = new LevelRun(LevelPlan.of(20, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
-        TdEnemy golem = ModEntities.CRYSTAL_GOLEM.get().create(helper.getLevel());
-        golem.start(run, path, 1_000.0);
-        helper.getLevel().addFreshEntity(golem);
-        return golem;
+    /** A run with a swarm queen on it: towers keep shooting at her for a long time without popping her. */
+    private static LevelRun target(GameTestHelper helper) {
+        LevelRun run = track(helper, 20);
+        run.simulation().spawn("swarm_queen");
+        return run;
     }
 
     @GameTest(template = LARGE, timeoutTicks = 100)
@@ -228,9 +270,10 @@ public final class DefenseGameTests {
         tower.ammo().insertItem(0, new ItemStack(ModItems.MAGAZINE.get(), 2), false);
         helper.assertTrue(tower.ammo().isItemValid(0, new ItemStack(ModItems.AP_MAGAZINE.get())), "AP magazines fit too");
         helper.assertFalse(tower.ammo().isItemValid(0, new ItemStack(ModItems.BOLT.get())), "bolts do not");
-        target(helper);
+        LevelRun run = target(helper);
 
         helper.runAtTickTime(20, () -> {
+            run.end(helper.getLevel());
             // 10 shots per magazine: the first magazine is loaded, the second one still sits in the slot.
             helper.assertValueEqual(tower.ammo().getStackInSlot(0).getCount(), 1, "one magazine used so far");
             helper.assertTrue(tower.shotsLeft() < TowerType.SHOTS_PER_MAGAZINE && tower.shotsLeft() >= 0, "shots left " + tower.shotsLeft());
@@ -245,9 +288,10 @@ public final class DefenseGameTests {
         helper.setBlock(towerPos, ModBlocks.GUN_TURRET.get());
         TowerBlockEntity tower = helper.getBlockEntity(towerPos);
         tower.ammo().insertItem(0, new ItemStack(ModItems.AP_MAGAZINE.get()), false);
-        target(helper);
+        LevelRun run = target(helper);
 
         helper.runAtTickTime(20, () -> {
+            run.end(helper.getLevel());
             helper.assertTrue(tower.armourPiercing(), "the AP magazine is loaded");
             helper.assertTrue(tower.ammo().getStackInSlot(0).isEmpty(), "and taken from the slot");
             helper.succeed();
@@ -262,71 +306,19 @@ public final class DefenseGameTests {
         helper.assertTrue(tower.ammo().isItemValid(0, new ItemStack(ModItems.URANIUM_MAGAZINE.get())), "uranium magazines fit");
         helper.assertTrue(de.craftorio.defense.arena.ArenaFeederBlockEntity.isAmmo(new ItemStack(ModItems.URANIUM_MAGAZINE.get())), "the feeder takes them");
         tower.ammo().insertItem(0, new ItemStack(ModItems.URANIUM_MAGAZINE.get()), false);
-        TdEnemy target = target(helper);
-        float before = target.getHealth();
+        LevelRun run = target(helper);
+        SimEnemy target = run.simulation().enemies().get(0);
+        double before = target.hp();
 
         helper.runAtTickTime(20, () -> {
+            run.end(helper.getLevel());
             helper.assertValueEqual(tower.magazine(), Magazine.URANIUM, "the uranium magazine is loaded");
             helper.assertTrue(tower.ammo().getStackInSlot(0).isEmpty(), "and taken from the slot");
-            // one shot of 7 damage × 4.8 = 33.6, of which the golem's armour lets 35 % through
-            helper.assertTrue(before - target.getHealth() >= 33.6F * 0.35F - 0.01F, "damage " + (before - target.getHealth()));
+            // one shot of 7 damage × 4.8 = 33.6 points, which is 8 layers
+            helper.assertTrue(before - target.hp() >= 8, "damage " + (before - target.hp()));
             helper.succeed();
         });
     }
-
-    @GameTest(template = LARGE, timeoutTicks = 60)
-    public static void aBehemothsPlatingStopsWeakHitsButNotEnergyOrUranium(GameTestHelper helper) {
-        List<Vec3> path = new ArrayList<>();
-        for (int x = 1; x <= 15; x++) {
-            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
-        }
-        LevelRun run = new LevelRun(LevelPlan.of(35, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
-        TdEnemy behemoth = ModEntities.BEHEMOTH.get().create(helper.getLevel());
-        behemoth.start(run, path, 1.0);
-        helper.getLevel().addFreshEntity(behemoth);
-        float full = behemoth.getHealth();
-
-        behemoth.hurt(helper.getLevel().damageSources().generic(), 4);
-        helper.assertTrue(Math.abs(full - 0.4F - behemoth.getHealth()) < 0.01F, "a bolt keeps a tenth: " + (full - behemoth.getHealth()));
-        behemoth.invulnerableTime = 0;
-        behemoth.hurt(helper.getLevel().damageSources().generic(), 33.6F);
-        helper.assertTrue(Math.abs(full - 0.4F - 25.6F - behemoth.getHealth()) < 0.02F, "uranium loses 8 points to the plating");
-        behemoth.invulnerableTime = 0;
-        behemoth.hurt(helper.getLevel().damageSources().magic(), 10);
-        helper.assertTrue(Math.abs(full - 36F - behemoth.getHealth()) < 0.02F, "energy passes the plating");
-        behemoth.discard();
-        helper.succeed();
-    }
-
-    @GameTest(template = LARGE, timeoutTicks = 100)
-    public static void theSwarmQueenCallsHerBroodInThreePhases(GameTestHelper helper) {
-        List<Vec3> path = new ArrayList<>();
-        for (int x = 1; x <= 15; x++) {
-            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
-        }
-        LevelRun run = new LevelRun(LevelPlan.of(50, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
-        TdEnemy queen = ModEntities.SWARM_QUEEN.get().create(helper.getLevel());
-        queen.start(run, path, 1.0);
-        helper.getLevel().addFreshEntity(queen);
-        helper.assertValueEqual(queen.phase(), 0, "starts in phase 0");
-        int[] others = new int[1];
-        helper.runAtTickTime(5, () -> {
-            others[0] = run.enemiesLeft(); // the waves that have not spawned; the queen is not part of the run's list, her brood is
-            queen.setHealth(queen.getMaxHealth() * 0.6F);
-        });
-        helper.runAtTickTime(15, () -> {
-            helper.assertValueEqual(queen.phase(), 1, "phase 1 below two thirds");
-            helper.assertValueEqual(run.enemiesLeft() - others[0], 8, "eight crawlers join");
-            queen.setHealth(queen.getMaxHealth() * 0.3F);
-        });
-        helper.runAtTickTime(25, () -> {
-            helper.assertValueEqual(queen.phase(), 2, "phase 2 below one third");
-            helper.assertValueEqual(run.enemiesLeft() - others[0], 8 + 12 + 4, "twelve crawlers and four breakers join");
-            queen.discard();
-            helper.succeed();
-        });
-    }
-
 
     @GameTest(template = LARGE, timeoutTicks = 100, batch = "defense_flame")
     public static void theFeederTakesCrudeOilForFlamethrowerTurrets(GameTestHelper helper) {
@@ -389,6 +381,10 @@ public final class DefenseGameTests {
 
     /** A fresh arena for a new team with the shortest possible path laid from the gate to the core. */
     private static Setup buildArena(GameTestHelper helper, String name) {
+        return buildArena(helper, name, 1);
+    }
+
+    private static Setup buildArena(GameTestHelper helper, String name, int level) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         TeamRegistry registry = TeamData.registry(player.server);
         Team team = registry.ensureTeam(player.getUUID(), name);
@@ -396,6 +392,9 @@ public final class DefenseGameTests {
         TowerDefense defense = TowerDefense.get(player.server);
         TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
         ServerLevel arena = TowerDefense.arena(player.server);
+        if (level > 1) {
+            defense.jumpToLevel(arena, zone, level);
+        }
         for (int[] tile : defense.layout(zone).route()) {
             arena.setBlock(Arenas.field(zone.slot(), tile[0], tile[1], Arenas.BUILD_Y), ModBlocks.PATH_BLOCK.get().defaultBlockState(), 3);
         }

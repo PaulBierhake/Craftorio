@@ -140,10 +140,16 @@ und das Handbuch-Ersatzbuch.
   ein Turm keine Versorgung hat; Tooltips der Türme und der Leitfaden-Schritt *Arena-Einspeiser* erklären es.
 - **Level** im Terminal-Tab *Abwehr* starten (optional automatisch weiter): Karte, Regel, Mutator,
   **Wellenvorschau**, Arena-Vorrat; **Welle rufen** schickt die nächste Welle früher (Bonus-Credits).
-  10 Leben; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); ab Level 6 zufällige **Mutatoren**
+  150 Leben; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); ab Level 6 zufällige **Mutatoren**
   (Nebel, Eilmarsch, Gehärtet) mit mehr Belohnung.
-- **Gegner**: Krabbler, Brecher (ab 5), Spucker (ab 10), Kristallgolem (ab 20), Brutmutter (Boss). Sie greifen
-  **nur Türme** an – nie die Fabrik oder Spieler.
+- **Gegner (Umbau nach Bloons TD 6, Paket T1)**: Ein Level sind zwei Runden der BTD6-Standardliste (Level L = Runden
+  2L−1 und 2L, Level 50 endet mit der Schwarmkönigin in Runde 100). Die Gegner sind keine Entities mehr, sondern
+  Zahlen in einer Simulation (`TdSimulation`): Krabbler in fünf Stufen, Ruß-, Frost- und Glutkrabbler, Eisenbrecher,
+  Zwielicht- und Schimmerkrabbler, Kristallgolems, Brutmutter, Behemoth, Koloss, Schattenjäger und Schwarmkönigin.
+  Jeder Gegner hat Schichten und gibt beim Platzen seine Kinder frei; manche sind **getarnt**, **nachwachsend**
+  (alle 3 s eine Schicht) oder **gepanzert**, und viele sind gegen bestimmte Schadensarten immun. Die Gegner
+  greifen keine Türme an; ein durchgelassener Gegner kostet so viele Leben wie seine RBE. Der Client zeichnet sie als
+  Blöcke entlang des Pfades. Daten: `data/craftorio/td_enemies` und `td_rounds`; Spezifikation in `docs/TD-UMBAU.md`.
 - Nach einem Sieg kommen alle Türme mit Stufe, HP und Munition ins **Turmdepot** und die nächste Karte entsteht;
   Arena-Siegel liegen ebenfalls im Depot. Das Depot ist ein
   Nur-Entnahme-Inventar (Rechtsklick, *Alles nehmen*); unbeschädigte Türme werden repariert und stapeln. Zerstörte Türme werden zu **Ruinen**
@@ -253,8 +259,7 @@ und das Handbuch-Ersatzbuch.
   (ein Block Abstand) – so kann kein Trichter, Band, Bohrer, Aufzug oder Greifarm Items in eine fremde Basis
   hinein- oder herausbewegen; Greifarme prüfen das zusätzlich selbst. Tritt ein Solo-Spieler einem Team bei,
   gehen seine Blöcke **und seine TD-Zone** an das neue Team über. Operatoren im Kreativmodus dürfen alles.
-- **Skalierung**: Pro zusätzlichem Teammitglied online kommen je Welle 2 Krabbler mehr (zusätzlich zu +35 %
-  Gegner-HP); die Belohnung bleibt gleich.
+- **Skalierung**: Die Gegner skalieren nicht mehr mit der Zahl der Spieler (wie in BTD6); die Belohnung bleibt gleich.
 - **Balancing-Test**: Ein GameTest prüft, dass jede Montagestufe und jedes Ofenrezept mit Mengen mindestens 10 % Wert schafft und kein
   Schmelzrezept Wert vernichtet.
 - **EMI** (optional): Kategorien *Montage* und *Bauplan (Werkbank)* mit der nötigen Forschung. **Jade** (optional): Besitzer-Team, Bohrer-Rate, Maschinenfortschritt, Turm-HP/Munition,
@@ -364,9 +369,9 @@ Umgesetzt: **U0** (Arena-Fehler und -Komfort), **U1** (Grundlagen), **U2** (Fors
   Flugroboterrahmen, Leichtbaustrukturen) werden in der Montagemaschine gebaut; ihre Forschungen verlangen das Diamant-Siegel (Arena Level 40)
   und das Sternen-Siegel (Level 50). Damit sind Modul 3, Montagemaschine 3, Beacons, Kovarex, Wiederaufbereitung, Logistik 3 (Express-Bänder),
   Uran-Munition und die Bergbauproduktivität 1–3 (+10 % Erz je Stufe) freigeschaltet.
-- **Tower-Defense-Endgame (U11f)**: Ab Level 35 kommen *Behemoths* mit Panzerung (8 Punkte je physischem Treffer: erst panzerbrechende oder
-  Uran-Magazine, Laser und Flammen wirken), Level 50 endet mit der *Schwarmkönigin*, die in drei Phasen ihre Brut ruft. Das *Uran-Magazin*
-  (Faktor 4,8) geht in Geschütztürme und in den Arena-Einspeiser.
+- **Tower-Defense-Endgame (U11f)**: Behemoth, Koloss und Schwarmkönigin kommen jetzt mit den Runden 60, 80 und 100 der BTD6-Liste (Level 30, 40, 50);
+  statt Rüstung gelten Immunitäten gegen Schadensarten (Eisenbrecher: Stich, Kälte, Energie – nur panzerbrechende und Uran-Magazine
+  treffen normal). Das *Uran-Magazin* (Faktor 4,8) geht in Geschütztürme und in den Arena-Einspeiser.
 - **Leitfaden (U9)**: Das Handbuch (Taste G) führt in rund 80 Schritten durch den Forschungsbaum: von Erz per Hand über erste
   Bohrer, Strom, Labor und Automatisierung, Arena, grüne Pakete, Stahl, Flüssigkeiten und Öl bis zu Chemie, Militär, Minen, Uran, Kernkraft, Module und das Endgame bis Lila und Gelb. Belohnungen
   sind klein: meist Items (Kohle, Zahnräder, Bänder, Schaltkreise, Rohre, Stahl, Pakete), Credits gibt es nur wenige und vor allem für

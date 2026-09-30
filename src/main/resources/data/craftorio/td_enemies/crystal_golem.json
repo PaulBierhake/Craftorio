@@ -1,0 +1,20 @@
+{
+  "index": 11,
+  "btd6": "Ceramic",
+  "hp": 10,
+  "fortified_hp": 20,
+  "speed": 62.5,
+  "children": [
+    "shimmer_crawler",
+    "shimmer_crawler"
+  ],
+  "immune": [],
+  "boss": false,
+  "late": {
+    "hp": 60,
+    "fortified_hp": 120,
+    "children": [
+      "shimmer_crawler"
+    ]
+  }
+}

@@ -5,7 +5,6 @@ import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.registry.ModBlocks;
 import de.craftorio.registry.ModCreativeTabs;
 import de.craftorio.registry.ModDataComponents;
-import de.craftorio.registry.ModEntities;
 import de.craftorio.registry.ModFeatures;
 import de.craftorio.registry.ModFluids;
 import de.craftorio.registry.ModMenus;
@@ -31,7 +30,6 @@ public final class Craftorio {
         ModDataComponents.COMPONENTS.register(modBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
-        ModEntities.ENTITIES.register(modBus);
         ModFeatures.FEATURES.register(modBus);
         ModMenus.MENUS.register(modBus);
         ModRecipes.TYPES.register(modBus);

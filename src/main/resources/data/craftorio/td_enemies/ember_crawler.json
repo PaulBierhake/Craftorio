@@ -1,0 +1,21 @@
+{
+  "index": 7,
+  "btd6": "Purple",
+  "hp": 1,
+  "fortified_hp": 0,
+  "speed": 75,
+  "children": [
+    "pink_crawler",
+    "pink_crawler"
+  ],
+  "immune": [
+    "energy",
+    "fire"
+  ],
+  "boss": false,
+  "late": {
+    "children": [
+      "pink_crawler"
+    ]
+  }
+}

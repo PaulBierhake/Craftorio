@@ -1,20 +1,21 @@
 package de.craftorio.defense;
 
-import java.util.ArrayList;
+import de.craftorio.defense.sim.RoundDef;
+import de.craftorio.defense.sim.RoundDefs;
+
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * What a level consists of: waves of enemies, their health multiplier and the reward. Pure logic so the
- * difficulty curve can be unit tested and tuned in one place.
+ * What a level consists of: two rounds of the standard round list (level L is rounds 2L-1 and 2L) and the reward.
+ * Pure logic so the difficulty curve can be unit tested.
  */
-public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMultiplier, long reward, KeyReward keyReward) {
-    public static final int LIVES = 10;
-    public static final int SPAWN_INTERVAL = 15;
-    public static final int WAVE_DELAY = 200;
-    /** Extra enemy health per additional online team member. */
-    public static final double HEALTH_PER_EXTRA_PLAYER = 0.35;
-    /** Extra crawlers per wave for every additional online team member. */
-    public static final int CRAWLERS_PER_EXTRA_PLAYER = 2;
+public record LevelPlan(int level, List<RoundDef> rounds, long reward, KeyReward keyReward) {
+    public static final int LIVES = 150;
+    /** Ticks of rest between the two rounds of a level. */
+    public static final int ROUND_DELAY = 200;
+    public static final int ROUNDS_PER_LEVEL = 2;
 
     public enum KeyReward {
         NONE, BRONZE_SEAL, SILVER_SEAL, GOLD_SEAL, PLATINUM_SEAL, DIAMOND_SEAL, STAR_SEAL
@@ -24,45 +25,15 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
         if (level < 1) {
             throw new IllegalArgumentException("level must be at least 1: " + level);
         }
-        int waveCount = Math.min(8, 3 + level / 5);
-        List<List<EnemyType>> waves = new ArrayList<>();
-        for (int wave = 1; wave <= waveCount; wave++) {
-            List<EnemyType> enemies = new ArrayList<>();
-            int crawlers = 3 + level + wave + CRAWLERS_PER_EXTRA_PLAYER * Math.max(0, players - 1);
-            int breakers = level >= 5 ? (level + wave) / 4 : 0;
-            int spitters = level >= 10 ? (level + wave) / 5 : 0;
-            int golems = level >= 20 ? (level + wave) / 8 : 0;
-            int behemoths = level >= 35 ? (level + wave - 32) / 7 : 0;
-            // Interleave so tougher enemies are escorted by crawlers.
-            for (int i = 0; i < Math.max(Math.max(Math.max(crawlers, golems), Math.max(breakers, spitters)), behemoths); i++) {
-                if (i < crawlers) {
-                    enemies.add(EnemyType.CRAWLER);
-                }
-                if (i < breakers) {
-                    enemies.add(EnemyType.BREAKER);
-                }
-                if (i < spitters) {
-                    enemies.add(EnemyType.SPITTER);
-                }
-                if (i < golems) {
-                    enemies.add(EnemyType.CRYSTAL_GOLEM);
-                }
-                if (i < behemoths) {
-                    enemies.add(EnemyType.BEHEMOTH);
-                }
-            }
-            if (level % 10 == 0 && wave == waveCount) {
-                enemies.add(EnemyType.BROOD_MOTHER);
-            }
-            // The finale of level 50 (and every fiftieth level after it) is led by the swarm queen.
-            if (level % 50 == 0 && wave == waveCount) {
-                enemies.add(EnemyType.SWARM_QUEEN);
-            }
-            waves.add(List.copyOf(enemies));
-        }
-        double health = (1 + 0.12 * (level - 1)) * (1 + HEALTH_PER_EXTRA_PLAYER * Math.max(0, players - 1));
+        RoundDef first = RoundDefs.get(firstRound(level));
+        RoundDef second = RoundDefs.get(firstRound(level) + 1);
         long reward = 100 + 40L * level + (level % 10 == 0 ? 50L * level : 0);
-        return new LevelPlan(level, List.copyOf(waves), health, reward, keyReward(level));
+        return new LevelPlan(level, List.of(first, second), reward, keyReward(level));
+    }
+
+    /** The number of the first of the level's two rounds. */
+    public static int firstRound(int level) {
+        return ROUNDS_PER_LEVEL * level - 1;
     }
 
     /** The arena seals: bronze at level 5, silver at 10, gold at 20, platinum at 30, diamond at 40 and star at 50 (first research of a new science pack). */
@@ -78,13 +49,13 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
         };
     }
 
-    /** Health of all enemies of the level together, with the level's multiplier. */
-    public double totalHealth() {
-        return waves.stream().flatMap(List::stream).mapToDouble(type -> type.health() * healthMultiplier).sum();
+    /** RBE of all enemies of the level together. */
+    public double totalRbe() {
+        return rounds.stream().mapToDouble(RoundDefs::rbe).sum();
     }
 
     public int enemyCount() {
-        return waves.stream().mapToInt(List::size).sum();
+        return rounds.stream().mapToInt(RoundDef::enemyCount).sum();
     }
 
     /** 3 stars for no lost life, 2 for at least half of the lives left, otherwise 1. */
@@ -100,15 +71,23 @@ public record LevelPlan(int level, List<List<EnemyType>> waves, double healthMul
         return reward * Math.max(0, stars - 1) / 4;
     }
 
-    /** Credits for calling the next wave early: per second skipped, growing with the level. */
+    /** Credits for calling the next round early: per second skipped, growing with the level. */
     public static long earlyCallBonus(int level, int ticksSkipped) {
         return (long) (ticksSkipped / 20) * (2 + level / 5);
     }
 
-    /** How many enemies of each type a wave holds, in order of first appearance. */
-    public static java.util.Map<EnemyType, Integer> summary(List<EnemyType> wave) {
-        java.util.Map<EnemyType, Integer> counts = new java.util.LinkedHashMap<>();
-        wave.forEach(type -> counts.merge(type, 1, Integer::sum));
+    /** Code of an enemy group in packets: the enemy's index, the modifier bits (1 camo, 2 regrow, 4 fortified) above it. */
+    public static int previewCode(String enemy, boolean camo, boolean regrow, boolean fortified) {
+        int index = de.craftorio.defense.sim.EnemyDefs.get(enemy).index();
+        return index | ((camo ? 1 : 0) | (regrow ? 2 : 0) | (fortified ? 4 : 0)) << 8;
+    }
+
+    /** How many enemies of each kind (and modifiers) a round holds, in order of first appearance, by {@link #previewCode}. */
+    public static Map<Integer, Integer> summary(RoundDef round) {
+        Map<Integer, Integer> counts = new LinkedHashMap<>();
+        for (RoundDef.Group group : round.groups()) {
+            counts.merge(previewCode(group.enemy(), group.camo(), group.regrow(), group.fortified()), group.count(), Integer::sum);
+        }
         return counts;
     }
 }

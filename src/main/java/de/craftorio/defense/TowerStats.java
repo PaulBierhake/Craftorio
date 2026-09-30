@@ -19,6 +19,16 @@ public final class TowerStats {
         return type.damage() * (1 + 0.3 * (level - 1));
     }
 
+    /**
+     * Layers one hit pops (BTD6 counts damage in layers): the tower's damage in points divided by four, at least 1.
+     * A stand-in until the towers of the rebuild bring their own values (T4/T5).
+     *
+     * @param factor ammunition factor
+     */
+    public static int layerDamage(TowerType type, int level, double factor) {
+        return (int) Math.max(1, Math.round(damage(type, level) * factor / 4));
+    }
+
     public static int maxHealth(TowerType type, int level) {
         return (int) Math.round(type.health() * (1 + 0.25 * (level - 1)));
     }

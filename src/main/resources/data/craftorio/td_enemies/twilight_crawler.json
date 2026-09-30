@@ -1,0 +1,21 @@
+{
+  "index": 9,
+  "btd6": "Zebra",
+  "hp": 1,
+  "fortified_hp": 0,
+  "speed": 45,
+  "children": [
+    "soot_crawler",
+    "frost_crawler"
+  ],
+  "immune": [
+    "explosion",
+    "cold"
+  ],
+  "boss": false,
+  "late": {
+    "children": [
+      "soot_crawler"
+    ]
+  }
+}

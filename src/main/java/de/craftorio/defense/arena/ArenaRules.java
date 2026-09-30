@@ -1,7 +1,6 @@
 package de.craftorio.defense.arena;
 
 import de.craftorio.Craftorio;
-import de.craftorio.defense.TdEnemy;
 import de.craftorio.defense.TowerBlock;
 import de.craftorio.defense.TowerDefense;
 import de.craftorio.registry.ModBlocks;
@@ -83,7 +82,7 @@ public final class ArenaRules {
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.getLevel() instanceof ServerLevel level && Arenas.isArena(level)
-                && event.getEntity() instanceof Mob && !(event.getEntity() instanceof TdEnemy)) {
+                && event.getEntity() instanceof Mob) {
             event.setCanceled(true);
         }
     }

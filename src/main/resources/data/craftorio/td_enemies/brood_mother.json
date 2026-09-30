@@ -1,0 +1,15 @@
+{
+  "index": 12,
+  "btd6": "MOAB",
+  "hp": 200,
+  "fortified_hp": 400,
+  "speed": 25,
+  "children": [
+    "crystal_golem",
+    "crystal_golem",
+    "crystal_golem",
+    "crystal_golem"
+  ],
+  "immune": [],
+  "boss": true
+}
