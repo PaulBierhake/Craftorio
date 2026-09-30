@@ -1,0 +1,107 @@
+{
+  "btd6": "Super Monkey",
+  "cost": 2500,
+  "range": 5.0,
+  "supply": "energy",
+  "supply_cost": 10,
+  "targets": [
+    "first",
+    "last",
+    "close",
+    "strong"
+  ],
+  "attack": {
+    "kind": "projectile",
+    "cooldown": 0.045,
+    "projectiles": 1,
+    "pierce": 1,
+    "damage": 1,
+    "damage_kind": "sharp",
+    "length": 12.0,
+    "radius": 0.2,
+    "random_angle": 8
+  },
+  "paths": [
+    [
+      {
+        "btd6": "Laser Blasts",
+        "cost": 2000,
+        "effects": []
+      },
+      {
+        "btd6": "Plasma Blasts",
+        "cost": 2500,
+        "effects": []
+      },
+      {
+        "btd6": "Sun Avatar",
+        "cost": 20000,
+        "effects": []
+      },
+      {
+        "btd6": "Sun Temple",
+        "cost": 100000,
+        "effects": []
+      },
+      {
+        "btd6": "True Sun God",
+        "cost": 500000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Super Range",
+        "cost": 1500,
+        "effects": []
+      },
+      {
+        "btd6": "Epic Range",
+        "cost": 1900,
+        "effects": []
+      },
+      {
+        "btd6": "Robo Monkey",
+        "cost": 7500,
+        "effects": []
+      },
+      {
+        "btd6": "Tech Terror",
+        "cost": 25000,
+        "effects": []
+      },
+      {
+        "btd6": "The Anti-Bloon",
+        "cost": 70000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Knockback",
+        "cost": 3000,
+        "effects": []
+      },
+      {
+        "btd6": "Ultravision",
+        "cost": 1200,
+        "effects": []
+      },
+      {
+        "btd6": "Dark Knight",
+        "cost": 5600,
+        "effects": []
+      },
+      {
+        "btd6": "Dark Champion",
+        "cost": 55555,
+        "effects": []
+      },
+      {
+        "btd6": "Legend of the Night",
+        "cost": 165650,
+        "effects": []
+      }
+    ]
+  ]
+}

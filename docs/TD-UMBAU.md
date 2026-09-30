@@ -420,19 +420,28 @@ Die BTD6-Balance setzt eine feste Streckenlänge voraus. Der Pfadstab erzwingt d
 ### 6.1 Aufrüstsystem
 
 - **3 Pfade × 5 Stufen.** Ein Pfad bis Stufe 5, ein zweiter bis Stufe 2, der dritte gesperrt
-  (Beispiele: 5-2-0, 2-0-5, 0-3-2 nicht erlaubt).
-- Kosten in Münzen = BTD6-Mittel-Preis × Schwierigkeitsfaktor.
+  (Beispiele: 5-2-0, 2-0-5, 0-2-5 erlaubt; 3-3-0, 2-2-2, 0-3-2 nicht). Das ergibt wie im Wiki 64 Zustände je Turm
+  (`TowerRules.canUpgrade`, Unit-Test zählt sie).
+- Kosten in Münzen = BTD6-Mittel-Preis × Schwierigkeitsfaktor. **Geprüft (T3):** Grundpreis und alle Aufrüstpreise
+  stehen in `data/craftorio/td_towers/*.json`; ein Unit-Test vergleicht für alle 10 Türme und alle 64 Zustände den
+  Gesamtpreis und den Verkaufswert mit der Wiki-Tabelle „Costs and sell values" (`wiki_tower_costs.json`).
+- **Platzieren:** Ein frischer Turm aus der Fabrik kostet beim Bauen seinen Grundpreis in Münzen; ein Turm mit
+  Aufrüstungen aus dem Depot ist schon bezahlt (das Turm-Item merkt sich Aufrüstungen und den bezahlten Betrag).
+  Platzieren bleibt während einer Runde gesperrt, Aufrüsten und Verkaufen gehen jederzeit.
 - **Freischaltung durch Forschung** (ersetzt BTD6-XP):
 
   | Stufe | Forschung | Kosten *(Vorschlag)* | Voraussetzung |
   |---|---|---|---|
   | 1–2 | – | – | – |
-  | 3 | „Turmtechnik I" | 75 × R+G | Turm-Forschung des jeweiligen Turms |
-  | 4 | „Turmtechnik II" | 150 × R+G+M | Militär-Paket |
-  | 5 | „Turmtechnik III" | 300 × R+G+M+B | Chemie-Paket |
+  | 3 | „Turmtechnik I" (`tower_tech_1`) | 75 × R+G | Geschütztürme, Logistik-Paket |
+  | 4 | „Turmtechnik II" (`tower_tech_2`) | 150 × R+G+M | Turmtechnik I, Militär-Paket |
+  | 5 | „Turmtechnik III" (`tower_tech_3`) | 300 × R+G+M+B | Turmtechnik II, Chemie-Paket |
+
+  Ab Stufe 3 kommen **Bauteile** aus der Fabrik dazu (Tabelle in §6.3), die der Spieler beim Kauf im Inventar hat.
 - **Fähigkeiten** (z. B. Schneesturm, Versorgungsabwurf, Boss-Attentäter): Knopf im Turm-GUI und eine Taste, wenn der
   Spieler in der Arena ist; Abklingzeit wie BTD6.
-- **Verkaufen:** 70 % (§4.2).
+- **Verkaufen:** 70 % des bezahlten Betrags, gerundet (§4.2); Nachschublager mit „Bananenbergung" (Pfad 3, Stufe 2)
+  zahlen 80 % zurück (so steht es in der Wiki-Kostentabelle). Der Turm kommt als frisches Turm-Item zurück.
 
 ### 6.2 Turmliste
 
@@ -471,7 +480,13 @@ ab Stufe 3 dazu, als Verbindung zur Fabrik:
 | 4 | 10 fortschrittliche Schaltkreise |
 | 5 | 5 Prozessoren + 2 Elektromotoren |
 
-**Armbrustturm (Dart Monkey)**
+**Hinweis:** Die Namen, Preise und Wirkungen aller 150 Aufrüstungen stehen in `data/craftorio/td_towers/<turm>.json`
+(Quelle: die Turmseiten und die „Stats:"-Seiten von bloonswiki.com, Version 55–56). Die folgende Tabelle beschreibt den
+**Kommandoposten (Monkey Village)** – im ersten Entwurf stand sie fälschlich unter „Armbrustturm". Die Armbrust (Dart
+Monkey) hat die Pfade Durchschlag / Tempo / Reichweite (Scharfe Schüsse … Ultra-Juggernaut, Schnelle Schüsse …
+Plasma-Affenclub, Weitschuss … Armbrustmeister).
+
+**Kommandoposten (Monkey Village)**
 
 | Pfad | Wirkung (Stufen laut Wiki übernehmen) |
 |---|---|
@@ -609,7 +624,7 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 |---|---|---|
 | **T1 – Gegner-Engine** ✅ | `TdSimulation` (Bewegung, Schichten, Kinder, Überschaden, Eigenschaften, Immunitäten, Leaks, spätes Spiel), Gegnerdaten §3 als JSON, Netzwerkpaket, Client-Renderer, Entfernen der Gegner-Entities | Unit-Tests für jeden Gegner (RBE aus Kindern = Tabelle), Nachwachsen alle 3 s, Tarnung; Leistungstest 1.000 Gegner |
 | **T2 – Runden, Münzen, Leben** ✅ | Rundendaten 1–100, Level = 2 Runden, Münzen und Einkommensfaktor, Rundenbonus, Schwierigkeitsgrade, Leben pro Level, Snapshot/Wiederholung, Kriegskasse, Siegel-Zuordnung, Entfernen von Turm-HP/Ruinen/Reparatur und Spieler-Skalierung, Pfadlängen-Fenster | Unit-Test Rundeneinnahmen gegen Wiki (±2 %); GameTest Level 1 komplett; Pfad < 100 Blöcke wird abgelehnt |
-| **T3 – Turmsystem** | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
+| **T3 – Turmsystem** ✅ | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
 | **T4 – Türme Teil 1** | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
 | **T5 – Türme Teil 2** | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |
 | **T6 – Modi und Endlos** | Herausforderungen §7, Endlosmodus ab Runde 101 mit §3.6, Arena-Wissen §8, Rangliste (höchste Runde pro Team) | GameTest je Modus; Freeplay-Skalierung als Unit-Test |

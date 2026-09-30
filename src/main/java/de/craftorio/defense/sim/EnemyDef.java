@@ -19,9 +19,10 @@ import java.util.Set;
  * @param camo         is always camouflaged
  * @param childMods    modifiers ("camo", "regrow") its children get
  * @param late         values from round 81 on, or null if they do not change
+ * @param radius       size in blocks, for projectiles that have to touch it
  */
 public record EnemyDef(String id, int index, String btd6, double hp, double fortifiedHp, double speed, List<String> children,
-                       Set<DamageKind> immune, boolean boss, boolean camo, List<String> childMods, Late late) {
+                       Set<DamageKind> immune, boolean boss, boolean camo, List<String> childMods, Late late, double radius) {
 
     /**
      * Late-game values; a field that is not given keeps the normal one.

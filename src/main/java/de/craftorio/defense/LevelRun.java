@@ -29,6 +29,8 @@ public final class LevelRun {
 
     /** All runs that are going on; towers look for their targets here. */
     private static final List<LevelRun> ACTIVE = new CopyOnWriteArrayList<>();
+    /** A tower outside an arena fights on a run whose path comes this close (blocks). */
+    private static final double NEAR_PATH = 8;
 
     /** Where the level is fought: arena slot, map and mutator. Null in tests that build their own track. */
     public record Arena(int slot, ArenaLayout layout, Mutator mutator) {
@@ -162,6 +164,33 @@ public final class LevelRun {
             }
         }
         return runs;
+    }
+
+    /** The run whose path a tower at this position fights on: in the arena its own slot's run, elsewhere the nearest one. */
+    static @Nullable LevelRun runFor(ServerLevel level, BlockPos tower) {
+        LevelRun best = null;
+        double bestDistance = Double.MAX_VALUE;
+        for (LevelRun run : ACTIVE) {
+            if (run.registeredIn != level || run.finished) {
+                continue;
+            }
+            if (run.arena != null) {
+                if (run.arena.slot() == de.craftorio.defense.arena.Arenas.slotAt(tower)) {
+                    return run;
+                }
+                continue;
+            }
+            double distance = Double.MAX_VALUE;
+            for (Vec3 point : run.points) {
+                distance = Math.min(distance, point.distanceToSqr(tower.getX(), point.y, tower.getZ()));
+            }
+            // only a run whose path passes close by: other tests and arenas are far away
+            if (distance < bestDistance && distance <= NEAR_PATH * NEAR_PATH) {
+                bestDistance = distance;
+                best = run;
+            }
+        }
+        return best;
     }
 
     void begin(ServerLevel level) {

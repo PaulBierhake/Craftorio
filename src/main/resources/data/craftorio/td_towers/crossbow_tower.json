@@ -1,0 +1,106 @@
+{
+  "btd6": "Dart Monkey",
+  "cost": 200,
+  "range": 3.2,
+  "supply": "ammo",
+  "supply_cost": 10,
+  "targets": [
+    "first",
+    "last",
+    "close",
+    "strong"
+  ],
+  "attack": {
+    "kind": "projectile",
+    "cooldown": 0.95,
+    "projectiles": 1,
+    "pierce": 2,
+    "damage": 1,
+    "damage_kind": "sharp",
+    "length": 7.5,
+    "radius": 0.2
+  },
+  "paths": [
+    [
+      {
+        "btd6": "Sharp Shots",
+        "cost": 140,
+        "effects": []
+      },
+      {
+        "btd6": "Razor Sharp Shots",
+        "cost": 200,
+        "effects": []
+      },
+      {
+        "btd6": "Spike-o-pult",
+        "cost": 320,
+        "effects": []
+      },
+      {
+        "btd6": "Juggernaut",
+        "cost": 1800,
+        "effects": []
+      },
+      {
+        "btd6": "Ultra-Juggernaut",
+        "cost": 15000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Quick Shots",
+        "cost": 100,
+        "effects": []
+      },
+      {
+        "btd6": "Very Quick Shots",
+        "cost": 190,
+        "effects": []
+      },
+      {
+        "btd6": "Triple Shot",
+        "cost": 450,
+        "effects": []
+      },
+      {
+        "btd6": "Super Monkey Fan Club",
+        "cost": 7200,
+        "effects": []
+      },
+      {
+        "btd6": "Plasma Monkey Fan Club",
+        "cost": 45000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Long Range Darts",
+        "cost": 90,
+        "effects": []
+      },
+      {
+        "btd6": "Enhanced Eyesight",
+        "cost": 200,
+        "effects": []
+      },
+      {
+        "btd6": "Crossbow",
+        "cost": 575,
+        "effects": []
+      },
+      {
+        "btd6": "Sharp Shooter",
+        "cost": 2050,
+        "effects": []
+      },
+      {
+        "btd6": "Crossbow Master",
+        "cost": 21500,
+        "effects": []
+      }
+    ]
+  ]
+}

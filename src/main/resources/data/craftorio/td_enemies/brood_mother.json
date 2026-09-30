@@ -11,5 +11,6 @@
     "crystal_golem"
   ],
   "immune": [],
-  "boss": true
+  "boss": true,
+  "radius": 1.2
 }

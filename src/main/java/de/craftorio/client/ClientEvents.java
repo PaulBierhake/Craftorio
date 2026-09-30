@@ -28,6 +28,10 @@ public final class ClientEvents {
     public static final KeyMapping OPEN_GUIDE = new KeyMapping("key.craftorio.guide", InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_G, "key.categories.craftorio");
 
+    /** Uses the first ability of the tower the player is looking at. */
+    public static final KeyMapping TOWER_ABILITY = new KeyMapping("key.craftorio.tower_ability", InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_V, "key.categories.craftorio");
+
     private ClientEvents() {
     }
 
@@ -78,6 +82,12 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void onClientTick(ClientTickEvent.Post event) {
             Minecraft minecraft = Minecraft.getInstance();
+            while (TOWER_ABILITY.consumeClick()) {
+                if (minecraft.screen == null && minecraft.player != null && minecraft.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit
+                        && minecraft.level != null && minecraft.level.getBlockState(hit.getBlockPos()).getBlock() instanceof de.craftorio.defense.TowerBlock) {
+                    net.neoforged.neoforge.network.PacketDistributor.sendToServer(new de.craftorio.network.TowerAbilityPayload(hit.getBlockPos(), 0));
+                }
+            }
             while (OPEN_GUIDE.consumeClick()) {
                 if (minecraft.screen == null && minecraft.player != null) {
                     GuideScreen.open();
@@ -101,6 +111,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(OPEN_GUIDE);
+            event.register(TOWER_ABILITY);
         }
 
         @SubscribeEvent

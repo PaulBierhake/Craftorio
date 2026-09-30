@@ -18,5 +18,6 @@
     "children": [
       "soot_crawler"
     ]
-  }
+  },
+  "radius": 0.5
 }

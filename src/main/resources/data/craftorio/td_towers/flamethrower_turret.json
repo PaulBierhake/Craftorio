@@ -1,0 +1,103 @@
+{
+  "btd6": "Tack Shooter",
+  "cost": 260,
+  "range": 2.3,
+  "supply": "fluid",
+  "supply_cost": 6,
+  "targets": [
+    "close"
+  ],
+  "attack": {
+    "kind": "ring",
+    "cooldown": 1.12,
+    "projectiles": 8,
+    "pierce": 1,
+    "damage": 1,
+    "damage_kind": "sharp",
+    "length": 3.2,
+    "radius": 0.05
+  },
+  "paths": [
+    [
+      {
+        "btd6": "Faster Shooting",
+        "cost": 150,
+        "effects": []
+      },
+      {
+        "btd6": "Even Faster Shooting",
+        "cost": 220,
+        "effects": []
+      },
+      {
+        "btd6": "Hot Shots",
+        "cost": 600,
+        "effects": []
+      },
+      {
+        "btd6": "Ring of Fire",
+        "cost": 3500,
+        "effects": []
+      },
+      {
+        "btd6": "Inferno Ring",
+        "cost": 45500,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Long Range Tacks",
+        "cost": 100,
+        "effects": []
+      },
+      {
+        "btd6": "Super Range Tacks",
+        "cost": 225,
+        "effects": []
+      },
+      {
+        "btd6": "Blade Shooter",
+        "cost": 550,
+        "effects": []
+      },
+      {
+        "btd6": "Blade Maelstrom",
+        "cost": 2700,
+        "effects": []
+      },
+      {
+        "btd6": "Super Maelstrom",
+        "cost": 15000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "More Tacks",
+        "cost": 150,
+        "effects": []
+      },
+      {
+        "btd6": "Even More Tacks",
+        "cost": 150,
+        "effects": []
+      },
+      {
+        "btd6": "Tack Sprayer",
+        "cost": 450,
+        "effects": []
+      },
+      {
+        "btd6": "Overdrive",
+        "cost": 3200,
+        "effects": []
+      },
+      {
+        "btd6": "The Tack Zone",
+        "cost": 20000,
+        "effects": []
+      }
+    ]
+  ]
+}

@@ -8,6 +8,8 @@ import de.craftorio.defense.arena.Mutator;
 import de.craftorio.defense.arena.Tile;
 import de.craftorio.economy.Credits;
 import de.craftorio.defense.sim.RoundRules;
+import de.craftorio.defense.sim.TowerDef;
+import de.craftorio.defense.sim.TowerRules;
 import de.craftorio.defense.sim.SimEnemy;
 import de.craftorio.defense.sim.TdSimulation;
 import de.craftorio.network.TdEnemiesPayload;
@@ -441,6 +443,28 @@ public final class TowerDefense extends SavedData {
     }
 
     /** Why a tower may not stand at this position, or null. */
+    public @Nullable String towerPlaceError(ServerPlayer player, BlockPos pos, ItemStack stack) {
+        String error = towerPlaceError(player, pos);
+        return error != null ? error : placementCoinsError(Arenas.slotAt(pos), stack);
+    }
+
+    /** A tower from the depot is already paid for; a fresh one costs its base price in coins. */
+    @Nullable String placementCoinsError(int slot, ItemStack stack) {
+        if (!stack.has(ModDataComponents.TOWER_STATE.get()) && stack.getItem() instanceof net.minecraft.world.item.BlockItem item
+                && item.getBlock() instanceof TowerBlock tower) {
+            Zone zone = zoneAt(slot).orElse(null);
+            if (zone != null && zone.coins() < price(zone.slot, tower.towerType().def().cost())) {
+                return "craftorio.tower.place.no_coins";
+            }
+        }
+        return null;
+    }
+
+    /** Is this level the one the arenas are in (the GameTest server puts them into its overworld)? */
+    public static boolean isArenaLevel(ServerLevel level) {
+        return level == arena(level.getServer());
+    }
+
     public @Nullable String towerPlaceError(ServerPlayer player, BlockPos pos) {
         String error = fieldError(player, pos);
         if (error != null) {
@@ -726,6 +750,34 @@ public final class TowerDefense extends SavedData {
         return Component.translatable("craftorio.td.warchest.done", Credits.format(allowed), allowed);
     }
 
+    /** Takes coins from the arena's team; false if it does not have that much. */
+    boolean spend(int slot, long amount) {
+        Zone zone = zoneAt(slot).orElse(null);
+        if (zone == null || amount < 0 || zone.coins < amount) {
+            return false;
+        }
+        zone.coins -= amount;
+        setDirty();
+        return true;
+    }
+
+    /** Gives coins to the arena's team (selling towers). */
+    void earn(int slot, long amount) {
+        zoneAt(slot).ifPresent(zone -> {
+            zone.coins += amount;
+            setDirty();
+        });
+    }
+
+    /** A price in coins with the team's difficulty applied. */
+    long price(int slot, long basePrice) {
+        return zoneAt(slot).map(zone -> TowerRules.price(basePrice, zone.difficulty.priceFactor())).orElse(basePrice);
+    }
+
+    long upgradePrice(int slot, TowerDef.Upgrade upgrade) {
+        return price(slot, upgrade.cost());
+    }
+
     /** Operators and the retry: sets the coins directly. */
     void setCoins(Zone zone, double coins) {
         zone.coins = coins;
@@ -822,7 +874,7 @@ public final class TowerDefense extends SavedData {
             if (blockEntity instanceof TowerBlockEntity tower) {
                 ItemStack ammo = tower.ammo().getStackInSlot(0).copy();
                 tower.ammo().setStackInSlot(0, ItemStack.EMPTY);
-                addToDepot(zone, towerItem(tower.type(), tower.upgradeLevel()));
+                addToDepot(zone, towerItem(tower.type(), tower.tiers(), tower.paid()));
                 if (!ammo.isEmpty()) {
                     addToDepot(zone, ammo);
                 }
@@ -832,12 +884,10 @@ public final class TowerDefense extends SavedData {
         setDirty();
     }
 
-    /** A tower item; the state component is only set when it differs from a freshly built tower, so those stack. */
-    public static ItemStack towerItem(TowerType type, int upgradeLevel) {
+    /** A tower item that remembers its upgrades and what was paid for it; placing it again is free. */
+    public static ItemStack towerItem(TowerType type, int[] tiers, long paid) {
         ItemStack stack = new ItemStack(ModBlocks.tower(type).get());
-        if (!TowerStats.isPristine(upgradeLevel)) {
-            stack.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel));
-        }
+        stack.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(tiers[0], tiers[1], tiers[2], paid));
         return stack;
     }
 

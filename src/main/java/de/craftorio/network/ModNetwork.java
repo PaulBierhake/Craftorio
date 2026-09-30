@@ -31,6 +31,12 @@ public final class ModNetwork {
                 QuestActions.claim(player, payload.index());
             }
         });
+        registrar.playToServer(TowerAbilityPayload.TYPE, TowerAbilityPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player && player.distanceToSqr(payload.pos().getCenter()) <= 64 * 64
+                    && player.level().getBlockEntity(payload.pos()) instanceof de.craftorio.defense.TowerBlockEntity tower) {
+                tower.activateAbility(player, payload.index());
+            }
+        });
         registrar.playToClient(TdStatusPayload.TYPE, TdStatusPayload.STREAM_CODEC, (payload, context) -> ClientTdState.update(payload));
         registrar.playToClient(TdPathPayload.TYPE, TdPathPayload.STREAM_CODEC, (payload, context) -> ClientTdEnemies.updatePath(payload));
         registrar.playToClient(TdEnemiesPayload.TYPE, TdEnemiesPayload.STREAM_CODEC,

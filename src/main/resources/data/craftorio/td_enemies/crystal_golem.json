@@ -19,5 +19,6 @@
     "cash": 87,
     "leak": 65,
     "fortified_leak": 75
-  }
+  },
+  "radius": 0.6
 }

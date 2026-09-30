@@ -354,14 +354,17 @@ public final class TdSimulation {
         return sum;
     }
 
-    /** The enemies within range of a point, best first by {@code order}, at most {@code limit}; camouflaged ones only if the tower detects them. */
+    /**
+     * The enemies within range of a point, best first by {@code order}, at most {@code limit}; camouflaged ones only if the
+     * tower detects them. Distances are on the ground plane; a negative range means unlimited.
+     */
     public List<SimEnemy> targets(double cx, double cy, double cz, double range, boolean detectsCamo, Comparator<SimEnemy> order, int limit) {
         compact();
-        double rangeSqr = range * range;
+        double rangeSqr = range < 0 ? Double.POSITIVE_INFINITY : range * range;
         List<SimEnemy> found = new ArrayList<>();
         for (int i = 0, n = enemies.size(); i < n; i++) {
             SimEnemy enemy = enemies.get(i);
-            if ((detectsCamo || !enemy.camo) && enemy.distanceSqr(cx, cy, cz) <= rangeSqr) {
+            if ((detectsCamo || !enemy.camo) && enemy.flatDistanceSqr(cx, cz) <= rangeSqr) {
                 found.add(enemy);
             }
         }
@@ -369,5 +372,20 @@ public final class TdSimulation {
             found.sort(order);
         }
         return found.size() > limit ? new ArrayList<>(found.subList(0, limit)) : found;
+    }
+
+    /** The one enemy a tower aims at, or null: like {@link #targets} with limit 1 but without sorting everything. */
+    public SimEnemy bestTarget(double cx, double cz, double range, boolean detectsCamo, Comparator<SimEnemy> order, java.util.function.Predicate<SimEnemy> filter) {
+        compact();
+        double rangeSqr = range < 0 ? Double.POSITIVE_INFINITY : range * range;
+        SimEnemy best = null;
+        for (int i = 0, n = enemies.size(); i < n; i++) {
+            SimEnemy enemy = enemies.get(i);
+            if ((detectsCamo || !enemy.camo) && enemy.flatDistanceSqr(cx, cz) <= rangeSqr && (filter == null || filter.test(enemy))
+                    && (best == null || order.compare(enemy, best) < 0)) {
+                best = enemy;
+            }
+        }
+        return best;
     }
 }

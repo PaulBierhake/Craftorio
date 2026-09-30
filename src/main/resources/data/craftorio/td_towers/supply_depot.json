@@ -1,0 +1,97 @@
+{
+  "btd6": "Banana Farm",
+  "cost": 1250,
+  "range": 0,
+  "supply": "none",
+  "supply_cost": 0,
+  "targets": [],
+  "paths": [
+    [
+      {
+        "btd6": "Increased Production",
+        "cost": 500,
+        "effects": []
+      },
+      {
+        "btd6": "Greater Production",
+        "cost": 600,
+        "effects": []
+      },
+      {
+        "btd6": "Banana Plantation",
+        "cost": 3000,
+        "effects": []
+      },
+      {
+        "btd6": "Banana Research Facility",
+        "cost": 19000,
+        "effects": []
+      },
+      {
+        "btd6": "Banana Central",
+        "cost": 115000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Long Life Bananas",
+        "cost": 300,
+        "effects": []
+      },
+      {
+        "btd6": "Valuable Bananas",
+        "cost": 800,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey Bank",
+        "cost": 3650,
+        "effects": []
+      },
+      {
+        "btd6": "IMF Loan",
+        "cost": 7200,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey-Nomics",
+        "cost": 100000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "EZ Collect",
+        "cost": 250,
+        "effects": []
+      },
+      {
+        "btd6": "Banana Salvage",
+        "cost": 400,
+        "effects": [
+          {
+            "type": "number",
+            "name": "sell_share",
+            "set": 0.8
+          }
+        ]
+      },
+      {
+        "btd6": "Marketplace",
+        "cost": 2700,
+        "effects": []
+      },
+      {
+        "btd6": "Central Market",
+        "cost": 15000,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey Wall Street",
+        "cost": 70000,
+        "effects": []
+      }
+    ]
+  ]
+}

@@ -16,12 +16,16 @@ public final class ModDataComponents {
     public static final DeferredRegister.DataComponents COMPONENTS =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Craftorio.MOD_ID);
 
-    /** Upgrade level of a tower carried as an item (old items also stored the health of the tower, which is ignored now). */
-    public record TowerState(int level) {
+    /** Upgrades (tiers of the three paths) and the coins paid for a tower carried as an item; towers without it are fresh from the factory. */
+    public record TowerState(int path1, int path2, int path3, long paid) {
         public static final Codec<TowerState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.fieldOf("level").forGetter(TowerState::level)).apply(instance, TowerState::new));
+                Codec.INT.optionalFieldOf("path1", 0).forGetter(TowerState::path1),
+                Codec.INT.optionalFieldOf("path2", 0).forGetter(TowerState::path2),
+                Codec.INT.optionalFieldOf("path3", 0).forGetter(TowerState::path3),
+                Codec.LONG.optionalFieldOf("paid", 0L).forGetter(TowerState::paid)).apply(instance, TowerState::new));
         public static final StreamCodec<ByteBuf, TowerState> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT, TowerState::level, TowerState::new);
+                ByteBufCodecs.VAR_INT, TowerState::path1, ByteBufCodecs.VAR_INT, TowerState::path2, ByteBufCodecs.VAR_INT, TowerState::path3,
+                ByteBufCodecs.VAR_LONG, TowerState::paid, TowerState::new);
     }
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<TowerState>> TOWER_STATE =

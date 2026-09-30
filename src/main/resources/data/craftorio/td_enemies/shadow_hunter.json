@@ -21,5 +21,6 @@
   "child_mods": [
     "camo",
     "regrow"
-  ]
+  ],
+  "radius": 1.1
 }

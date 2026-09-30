@@ -83,6 +83,13 @@ public final class SimEnemy {
         return rbe;
     }
 
+    /** Squared distance on the ground plane: heights do not matter in the arena. */
+    public double flatDistanceSqr(double px, double pz) {
+        double dx = x - px;
+        double dz = z - pz;
+        return dx * dx + dz * dz;
+    }
+
     public double distanceSqr(double px, double py, double pz) {
         double dx = x - px;
         double dy = y - py;

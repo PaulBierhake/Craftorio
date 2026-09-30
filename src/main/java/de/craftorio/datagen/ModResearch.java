@@ -59,11 +59,15 @@ public final class ModResearch {
         add(context, "military_2", 20, 15, R_G, List.of("turrets", "logistic_science_pack"),
                 List.of("ap_magazine", "grenade", "assembling/ap_magazine", "assembling/grenade"));
         add(context, "stone_walls", 10, 10, List.of(), List.of("stone_wall", "assembling/stone_wall"));
+        // Tower technology (T3): upgrade tiers 3, 4 and 5 of every tower need these (replacing the XP of Bloons TD 6).
+        add(context, "tower_tech_1", 75, 30, R_G, List.of("turrets", "logistic_science_pack"), List.of());
         add(context, "military_science_pack", 30, 15, R_G, List.of("military_2", "stone_walls"),
                 List.of("military_science", "assembling/military_science"), key(ModItems.SILVER_SEAL.get()));
+        add(context, "tower_tech_2", 150, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY), List.of("tower_tech_1", "military_science_pack"), List.of());
         add(context, "flammables", 50, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY), List.of("fluid_handling", "military_science_pack"),
                 List.of("flamethrower_turret"));
         add(context, "lasers", 100, 30, List.of(Pack.RED, Pack.GREEN, Pack.BLUE), List.of("chemical_science_pack", "battery"), List.of());
+        add(context, "tower_tech_3", 300, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY, Pack.BLUE), List.of("tower_tech_2", "chemical_science_pack"), List.of());
         add(context, "laser_turrets", 150, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY), List.of("lasers", "military_science_pack"),
                 List.of("laser_tower"));
         add(context, "agriculture", 30, 15, List.of(), List.of("greenhouse", "farm/wheat", "farm/carrot", "farm/potato",

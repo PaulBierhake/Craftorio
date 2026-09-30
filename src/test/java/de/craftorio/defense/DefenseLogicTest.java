@@ -122,19 +122,6 @@ class DefenseLogicTest {
         assertFalse(allows(Set.of(List.of(4, 65, 0), List.of(5, 64, 1), List.of(5, 64, -1)), 5, 0));
     }
 
-    @Test
-    void towerItemsOfLevelOneStackWithNewOnes() {
-        assertTrue(TowerStats.isPristine(1));
-        assertFalse(TowerStats.isPristine(2));
-    }
-
-    @Test
-    void upgradesRaiseDamage() {
-        assertEquals(4, TowerStats.damage(TowerType.CROSSBOW, 1), 1e-9);
-        assertEquals(8.8, TowerStats.damage(TowerType.CROSSBOW, 5), 1e-9);
-        assertFalse(TowerStats.upgradeCredits(2) >= TowerStats.upgradeCredits(3));
-    }
-
     /** Portal at x=0, core right after the last block at x = coreX. */
     private static PathTracer.Result trace(Set<List<Integer>> blocks, int coreX) {
         return PathTracer.trace(new int[]{0, 64, 0},
@@ -152,8 +139,6 @@ class DefenseLogicTest {
         assertTrue(enemiesOfLevel(45).anyMatch(id -> id.equals("shadow_hunter")), "round 90");
         assertTrue(enemiesOfLevel(49).noneMatch(id -> id.equals("swarm_queen")));
         assertTrue(enemiesOfLevel(50).anyMatch(id -> id.equals("swarm_queen")), "round 100");
-        assertTrue(TowerType.LASER.energyWeapon());
-        assertTrue(TowerType.LASER.range() > TowerType.GUN.range());
     }
 
     private static java.util.stream.Stream<String> enemiesOfLevel(int level) {
@@ -161,14 +146,20 @@ class DefenseLogicTest {
     }
 
     @Test
-    void towerDamageKindsAndLayerDamage() {
-        assertEquals(de.craftorio.defense.sim.DamageKind.SHARP, TowerType.CROSSBOW.damageKind(Magazine.NORMAL));
-        assertEquals(de.craftorio.defense.sim.DamageKind.SHARP, TowerType.GUN.damageKind(Magazine.NORMAL));
-        assertEquals(de.craftorio.defense.sim.DamageKind.NORMAL, TowerType.GUN.damageKind(Magazine.ARMOUR_PIERCING));
-        assertEquals(de.craftorio.defense.sim.DamageKind.ENERGY, TowerType.LASER.damageKind(Magazine.NORMAL));
-        assertEquals(de.craftorio.defense.sim.DamageKind.FIRE, TowerType.FLAME.damageKind(Magazine.NORMAL));
-        assertEquals(1, TowerStats.layerDamage(TowerType.CROSSBOW, 1, 1));
-        assertEquals(8, TowerStats.layerDamage(TowerType.GUN, 1, TowerType.URANIUM_FACTOR));
+    void towerTypesReadTheirDataFromTheDefinitions() {
+        assertEquals("crossbow_tower", TowerType.CROSSBOW.defId());
+        assertEquals(200, TowerType.CROSSBOW.def().cost());
+        assertTrue(TowerType.CROSSBOW.usesItemAmmo());
+        assertTrue(TowerType.TESLA.usesEnergy());
+        assertTrue(TowerType.LASER.usesEnergy());
+        assertTrue(TowerType.FLAME.usesFluid());
+        assertEquals(6, TowerType.FLAME.fluidPerShot());
+        assertEquals(400, TowerType.TESLA.energyCapacity());
+        assertEquals(200, TowerType.LASER.energyCapacity());
+        assertEquals(de.craftorio.defense.sim.DamageKind.NORMAL, Magazine.ARMOUR_PIERCING.damageKind());
+        assertEquals(null, Magazine.NORMAL.damageKind());
+        assertEquals(1.6, Magazine.ARMOUR_PIERCING.factor(), 0);
+        assertEquals(4.8, Magazine.URANIUM.factor(), 0);
     }
 
     @Test

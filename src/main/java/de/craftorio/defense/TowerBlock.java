@@ -9,6 +9,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -52,7 +54,7 @@ public final class TowerBlock extends BaseEntityBlock {
             return defaultBlockState();
         }
         if (context.getPlayer() instanceof ServerPlayer player) {
-            String error = TowerDefense.get(player.server).towerPlaceError(player, context.getClickedPos());
+            String error = TowerDefense.get(player.server).towerPlaceError(player, context.getClickedPos(), context.getItemInHand());
             if (error != null) {
                 player.displayClientMessage(Component.translatable(error).withStyle(ChatFormatting.RED), true);
                 return null;
@@ -60,6 +62,27 @@ public final class TowerBlock extends BaseEntityBlock {
             return defaultBlockState();
         }
         return null;
+    }
+
+    /** A tower fresh from the factory is paid for with its base price in coins; one from the depot has been paid already. */
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (level.isClientSide || !(placer instanceof ServerPlayer player) || !(level.getBlockEntity(pos) instanceof TowerBlockEntity tower)
+                || tower.paid() > 0) {
+            return;
+        }
+        TowerDefense defense = TowerDefense.get(player.server);
+        int slot = de.craftorio.defense.arena.Arenas.slotAt(pos);
+        long price = defense.price(slot, towerType.def().cost());
+        if (defense.spend(slot, price)) {
+            tower.setPaid(price);
+            player.displayClientMessage(Component.translatable("craftorio.tower.placed", price), true);
+        } else {
+            level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+            player.getInventory().placeItemBackInInventory(stack.copyWithCount(1));
+            player.displayClientMessage(Component.translatable("craftorio.tower.place.no_coins").withStyle(ChatFormatting.RED), true);
+        }
     }
 
     @Override

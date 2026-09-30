@@ -38,14 +38,19 @@ public abstract class MachineMenuBase extends AbstractContainerMenu {
 
     /** Call after adding the machine's own slots. */
     protected void addPlayerInventory(Inventory inventory) {
+        addPlayerInventory(inventory, 84);
+    }
+
+    /** The player inventory with its top row at {@code top} (84 in the standard GUI). */
+    protected void addPlayerInventory(Inventory inventory, int top) {
         machineSlots = slots.size();
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 84 + row * 18));
+                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, top + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 142));
+            addSlot(new Slot(inventory, column, 8 + column * 18, top + 58));
         }
     }
 

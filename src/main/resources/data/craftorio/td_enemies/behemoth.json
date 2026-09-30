@@ -11,5 +11,6 @@
     "brood_mother"
   ],
   "immune": [],
-  "boss": true
+  "boss": true,
+  "radius": 2.0
 }

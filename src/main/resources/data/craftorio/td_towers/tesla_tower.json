@@ -1,0 +1,106 @@
+{
+  "btd6": "Wizard Monkey",
+  "cost": 250,
+  "range": 4.0,
+  "supply": "energy",
+  "supply_cost": 40,
+  "targets": [
+    "first",
+    "last",
+    "close",
+    "strong"
+  ],
+  "attack": {
+    "kind": "projectile",
+    "cooldown": 1.1,
+    "projectiles": 1,
+    "pierce": 3,
+    "damage": 1,
+    "damage_kind": "energy",
+    "length": 8.0,
+    "radius": 0.4
+  },
+  "paths": [
+    [
+      {
+        "btd6": "Guided Magic",
+        "cost": 175,
+        "effects": []
+      },
+      {
+        "btd6": "Arcane Blast",
+        "cost": 450,
+        "effects": []
+      },
+      {
+        "btd6": "Arcane Mastery",
+        "cost": 1450,
+        "effects": []
+      },
+      {
+        "btd6": "Arcane Spike",
+        "cost": 10000,
+        "effects": []
+      },
+      {
+        "btd6": "Archmage",
+        "cost": 32000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Fireball",
+        "cost": 300,
+        "effects": []
+      },
+      {
+        "btd6": "Wall of Fire",
+        "cost": 800,
+        "effects": []
+      },
+      {
+        "btd6": "Dragon's Breath",
+        "cost": 3300,
+        "effects": []
+      },
+      {
+        "btd6": "Summon Phoenix",
+        "cost": 6000,
+        "effects": []
+      },
+      {
+        "btd6": "Wizard Lord Phoenix",
+        "cost": 50000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Intense Magic",
+        "cost": 300,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey Sense",
+        "cost": 300,
+        "effects": []
+      },
+      {
+        "btd6": "Shimmer",
+        "cost": 1500,
+        "effects": []
+      },
+      {
+        "btd6": "Necromancer: Unpopped Army",
+        "cost": 2800,
+        "effects": []
+      },
+      {
+        "btd6": "Prince of Darkness",
+        "cost": 26500,
+        "effects": []
+      }
+    ]
+  ]
+}

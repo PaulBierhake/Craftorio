@@ -1,0 +1,104 @@
+{
+  "btd6": "Sniper Monkey",
+  "cost": 350,
+  "range": -1,
+  "supply": "ammo",
+  "supply_cost": 10,
+  "targets": [
+    "first",
+    "last",
+    "close",
+    "strong"
+  ],
+  "attack": {
+    "kind": "instant",
+    "cooldown": 1.59,
+    "projectiles": 1,
+    "pierce": 1,
+    "damage": 2,
+    "damage_kind": "sharp"
+  },
+  "paths": [
+    [
+      {
+        "btd6": "Full Metal Jacket",
+        "cost": 350,
+        "effects": []
+      },
+      {
+        "btd6": "Large Calibre",
+        "cost": 1300,
+        "effects": []
+      },
+      {
+        "btd6": "Deadly Precision",
+        "cost": 2200,
+        "effects": []
+      },
+      {
+        "btd6": "Maim MOAB",
+        "cost": 6300,
+        "effects": []
+      },
+      {
+        "btd6": "Cripple MOAB",
+        "cost": 32000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Night Vision Goggles",
+        "cost": 250,
+        "effects": []
+      },
+      {
+        "btd6": "Shrapnel Shot",
+        "cost": 450,
+        "effects": []
+      },
+      {
+        "btd6": "Bouncing Bullet",
+        "cost": 2100,
+        "effects": []
+      },
+      {
+        "btd6": "Supply Drop",
+        "cost": 7600,
+        "effects": []
+      },
+      {
+        "btd6": "Elite Sniper",
+        "cost": 12000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Fast Firing",
+        "cost": 450,
+        "effects": []
+      },
+      {
+        "btd6": "Even Faster Firing",
+        "cost": 450,
+        "effects": []
+      },
+      {
+        "btd6": "Semi-Automatic",
+        "cost": 2700,
+        "effects": []
+      },
+      {
+        "btd6": "Full Auto Rifle",
+        "cost": 4100,
+        "effects": []
+      },
+      {
+        "btd6": "Elite Defender",
+        "cost": 14900,
+        "effects": []
+      }
+    ]
+  ]
+}

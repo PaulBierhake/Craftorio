@@ -85,7 +85,8 @@ public final class EnemyDefs {
         return new EnemyDef(id, json.get("index").getAsInt(), json.get("btd6").getAsString(), json.get("hp").getAsDouble(),
                 json.get("fortified_hp").getAsDouble(), json.get("speed").getAsDouble(), strings(json.getAsJsonArray("children")),
                 immune, json.get("boss").getAsBoolean(), json.has("camo") && json.get("camo").getAsBoolean(),
-                json.has("child_mods") ? strings(json.getAsJsonArray("child_mods")) : List.of(), late);
+                json.has("child_mods") ? strings(json.getAsJsonArray("child_mods")) : List.of(), late,
+                json.has("radius") ? json.get("radius").getAsDouble() : 0.45);
     }
 
     private static List<String> strings(JsonArray array) {

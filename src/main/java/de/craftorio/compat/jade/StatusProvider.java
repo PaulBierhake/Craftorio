@@ -48,7 +48,7 @@ enum StatusProvider implements IBlockComponentProvider, IServerDataProvider<Bloc
         } else if (blockEntity instanceof ProcessingMachineBlockEntity machine && machine.progressPercent() >= 0) {
             lines.add(Component.translatable("craftorio.jade.progress", machine.progressPercent()));
         } else if (blockEntity instanceof TowerBlockEntity tower) {
-            lines.add(Component.translatable("craftorio.jade.tower", tower.upgradeLevel()));
+            lines.add(Component.translatable("craftorio.jade.tower", de.craftorio.defense.sim.TowerRules.notation(tower.tiers())));
             if (tower.type().usesItemAmmo()) {
                 lines.add(Component.translatable("craftorio.jade.ammo", tower.ammo().getStackInSlot(0).getCount()));
             }

@@ -1,18 +1,18 @@
 package de.craftorio.defense;
 
-import de.craftorio.defense.sim.DamageKind;
+import de.craftorio.defense.sim.TowerDef;
+import de.craftorio.defense.sim.TowerDefs;
 
-/** Tower base stats; upgrades scale the damage (see {@link TowerStats}). */
+/**
+ * The tower blocks of the game. Everything about what a tower does (price, range, attacks, upgrades) lives in its
+ * {@link TowerDef}, read from {@code data/craftorio/td_towers}.
+ */
 public enum TowerType {
-    CROSSBOW(4, 10, 20, 0, 1, 0),
-    /** Fires magazines: ten shots each, armour-piercing ones hit 60 % harder, uranium ones 4.8 times. */
-    GUN(7, 12, 12, 0, 1, 0),
-    /** Uses grid power instead of ammunition and jumps to up to three enemies. */
-    TESLA(10, 8, 30, 400, 3, 0),
-    /** Long-range energy beam. */
-    LASER(30, 14, 20, 800, 1, 0),
-    /** Burns crude oil from the arena reserve: short range, hits up to three enemies. */
-    FLAME(12, 8, 10, 0, 3, 6);
+    CROSSBOW("crossbow_tower"),
+    GUN("gun_turret"),
+    FLAME("flamethrower_turret"),
+    TESLA("tesla_tower"),
+    LASER("laser_tower");
 
     /** Shots one magazine gives a gun turret. */
     public static final int SHOTS_PER_MAGAZINE = 10;
@@ -21,77 +21,51 @@ public enum TowerType {
     /** Damage factor of a uranium magazine (24 against 5 of the plain one in Factorio). */
     public static final double URANIUM_FACTOR = 4.8;
 
-    private final double damage;
-    private final double range;
-    private final int cooldown;
-    private final int energyPerShot;
-    private final int targets;
-    private final int fluidPerShot;
+    private final String defId;
 
-    TowerType(double damage, double range, int cooldown, int energyPerShot, int targets, int fluidPerShot) {
-        this.damage = damage;
-        this.range = range;
-        this.cooldown = cooldown;
-        this.energyPerShot = energyPerShot;
-        this.targets = targets;
-        this.fluidPerShot = fluidPerShot;
+    TowerType(String defId) {
+        this.defId = defId;
     }
 
-    public double damage() {
-        return damage;
+    public String defId() {
+        return defId;
     }
 
-    public double range() {
-        return range;
+    public TowerDef def() {
+        return TowerDefs.get(defId);
     }
 
-    public int cooldown() {
-        return cooldown;
-    }
-
-    public int energyPerShot() {
-        return energyPerShot;
+    /** Towers that take items as ammunition (bolts, magazines, grenades, plastic). */
+    public boolean usesItemAmmo() {
+        String supply = def().supply();
+        return supply.equals("ammo") || supply.equals("plastic");
     }
 
     public boolean usesEnergy() {
-        return energyPerShot > 0;
-    }
-
-    /** Units of fluid one shot burns (flamethrower), 0 for the others. */
-    public int fluidPerShot() {
-        return fluidPerShot;
+        return def().supply().equals("energy");
     }
 
     public boolean usesFluid() {
-        return fluidPerShot > 0;
+        return def().supply().equals("fluid");
     }
 
-    /** Towers that take items as ammunition (bolts, magazines). */
-    public boolean usesItemAmmo() {
-        return energyPerShot == 0 && fluidPerShot == 0;
+    /** Energy one shot takes. */
+    public int energyPerShot() {
+        return usesEnergy() ? def().supplyCost() : 0;
     }
 
-    /** Energy weapons deal energy damage, which leaden enemies shrug off. */
-    public boolean energyWeapon() {
-        return usesEnergy();
+    /** Units of oil one shot burns. */
+    public int fluidPerShot() {
+        return usesFluid() ? def().supplyCost() : 0;
     }
 
-    /** Buffer of energy towers: ten shots. */
+    /** Buffer of energy towers: ten shots, at least 200. */
     public int energyCapacity() {
-        return energyPerShot * 10;
+        return usesEnergy() ? Math.max(200, energyPerShot() * 10) : 0;
     }
 
-    public int targets() {
-        return targets;
-    }
-
-    /** What kind of damage its hits are; the heavy magazines of the gun hit everything. */
-    public DamageKind damageKind(Magazine magazine) {
-        return switch (this) {
-            case CROSSBOW -> DamageKind.SHARP;
-            case GUN -> magazine == Magazine.NORMAL ? DamageKind.SHARP : DamageKind.NORMAL;
-            case TESLA, LASER -> DamageKind.ENERGY;
-            case FLAME -> DamageKind.FIRE;
-        };
+    /** Does the tower shoot? Support towers (command post, supply depot) do not. */
+    public boolean attacks() {
+        return def().attack() != null;
     }
 }

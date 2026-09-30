@@ -129,11 +129,16 @@ und das Handbuch-Ersatzbuch.
   offen, der Kern sitzt in der Ostmauer.
 - **Weg legen**: mit dem **Pfadstab** vom offenen Tor zum Kern (Klick = Wegstück, nächster Klick in derselben
   Reihe/Spalte = gerade Linie, Schleichen + Klick entfernt). Der Pfadstab lehnt Abzweigungen, Kreuzungen und 2×2-Flächen sofort ab; Schleichen +
-  Klick in die Luft zeigt den kürzesten Weg als Partikel. Rechtsklick auf den Kern prüft den Weg.
-- **Türme** frei auf freiem Boden oder Plateaus: **Armbrustturm** (Bolzen), **Geschützturm** (Magazine: zehn Schüsse je Magazin, panzerbrechende +60 %),
-  **Flammenwerfer-Turm** (Rohöl aus dem Arena-Vorrat, kurze Reichweite, bis 3 Ziele, Feuer ignoriert die Kristallpanzerung),
-  **Tesla-Turm** und **Laserturm** (Strom). GUI mit Lebenspunkten, **Aufrüstung Stufe I–V** und **Zielmodus**
-  (Erster/Letzter/Stärkster/Schwächster). Versorgung per Hand oder über den **Arena-Einspeiser** in der Fabrik
+  Klick in die Luft zeigt eine Route von 100–160 Blöcken als Partikel. Rechtsklick auf den Kern prüft den Weg.
+- **Türme (Paket T3)** frei auf freiem Boden oder Plateaus (+10 % Reichweite): **Armbrustturm** (Bolzen), **Geschützturm** (Magazine:
+  zehn Schüsse je Magazin, panzerbrechende und Uran-Magazine treffen alles), **Flammenwerfer-Turm** (Rohöl aus dem Arena-Vorrat),
+  **Tesla-Turm** und **Laserturm** (Strom). Ein frischer Turm kostet beim Bauen seinen **Grundpreis in Münzen** (Armbrust 200 ⛁,
+  Geschütz 350, Flammenwerfer 260, Tesla 250, Laser 2.500; Schwierigkeitsfaktor inklusive), Türme aus dem Depot sind bezahlt.
+  GUI mit **drei Aufrüstpfaden à fünf Stufen** wie in Bloons TD 6 (ein Pfad bis 5, ein zweiter bis 2, der dritte gesperrt; Preise aus dem Wiki,
+  in Münzen), **Verkaufen** (70 % des bezahlten Betrags), **Zielmodus** (Erster/Letzter/Nächster/Stärkster) und
+  **Fähigkeiten** (Knopf oder Taste V auf den angesehenen Turm). Die Stufen 3, 4 und 5 brauchen die Forschungen
+  *Turmtechnik I–III* und Bauteile aus der Fabrik (5 Schaltkreise / 10 fortschrittliche Schaltkreise / 5 Prozessoren + 2 Motoren).
+  Die Wirkungen der Aufrüstungen kommen mit den Paketen T4 und T5. Versorgung per Hand oder über den **Arena-Einspeiser** in der Fabrik
   (Strom und Munition per Band/Greifarm → Arena-Vorrat).
   **Wie kommen Strom und Munition in die Arena?** In der Arena kann nichts gebaut werden: Den Einspeiser in der
   Fabrik ans Stromnetz hängen und mit Bolzen/Magazinen füttern und Rohöl per Rohr in den Einspeiser leiten. Das Arena-HUD zeigt Vorrat und warnt rot, wenn
@@ -218,9 +223,8 @@ und das Handbuch-Ersatzbuch.
   - **Schnelles Förderband** (3,75 Blöcke/s, Stufe 2) und **Express-Förderband** (5,625 Blöcke/s, Stufe 3);
     alle Bänder lassen sich beliebig verbinden.
   - **Reaktor** (Stufe 3): 400 FE/t aus Brennstäben (5 Minuten pro Stab), 200.000 FE Puffer.
-- **Tower Defense**: Ab Level 20 kommen **Kristallgolems** – ihr Panzer lässt nur 35 % von Munitionsschaden
-  durch; Energietürme (Tesla, Laser) machen vollen Schaden. Der **Laserturm** (Stufe 3) schießt 14 Blöcke weit
-  mit 30 Schaden (800 FE pro Schuss).
+- **Tower Defense**: Die Basiswerte der Türme (Preis, Reichweite, Abklingzeit, Durchschlag, Schadensart) stammen aus den
+  Stats-Seiten von bloonswiki.com; der Laserturm (Super Monkey) schießt sehr schnell und braucht 10 FE pro Schuss.
 - Admin-Befehl: `/craftorio layer unlock caves|mines` schaltet den Bereich um die eigene Position ohne Eingang
   frei (für Tests oder alte Welten).
 

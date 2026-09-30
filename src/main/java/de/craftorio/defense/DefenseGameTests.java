@@ -174,21 +174,107 @@ public final class DefenseGameTests {
         helper.succeed();
     }
 
-    @GameTest(template = EMPTY)
-    public static void upgradeCostsCreditsAndMaterials(GameTestHelper helper) {
-        ServerPlayer player = helper.makeMockServerPlayerInLevel();
-        TeamRegistry registry = TeamData.registry(player.server);
-        Team team = registry.ensureTeam(player.getUUID(), "UpgradeTest");
-        registry.setBalance(team.id(), 200);
-        BlockPos pos = new BlockPos(2, 1, 2);
-        helper.setBlock(pos, ModBlocks.CROSSBOW_TOWER.get());
-        TowerBlockEntity tower = helper.getBlockEntity(pos);
+    /** A tower in the team's arena (the upgrade and the sale need the arena's coins). */
+    private static TowerBlockEntity arenaTower(Setup setup, TowerType type, int x, int z) {
+        ServerLevel arena = TowerDefense.arena(setup.player.server);
+        BlockPos pos = Arenas.field(setup.zone().slot(), x, z, Arenas.BUILD_Y);
+        arena.setBlock(pos, ModBlocks.tower(type).get().defaultBlockState(), 3);
+        return (TowerBlockEntity) arena.getBlockEntity(pos);
+    }
 
-        helper.assertFalse(tower.upgrade(player), "no iron plates yet");
-        player.getInventory().add(new ItemStack(Items.IRON_INGOT, 8));
-        helper.assertTrue(tower.upgrade(player), "upgrade to level 2");
-        helper.assertValueEqual(tower.upgradeLevel(), 2, "level");
-        helper.assertValueEqual(team.balance(), 50L, "credits left");
+    @GameTest(template = EMPTY)
+    public static void upgradesCostCoinsPartsAndResearchAndFollowTheCrossPathRule(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "UpgradeTest");
+        ServerPlayer player = setup.player;
+        TeamRegistry registry = TeamData.registry(player.server);
+        TowerBlockEntity tower = arenaTower(setup, TowerType.CROSSBOW, 2, 2);
+        tower.setPaid(200);
+        setup.defense.setCoins(setup.zone(), 10_000);
+
+        helper.assertTrue(tower.upgrade(player, 0), "Sharp Shots (140)");
+        helper.assertValueEqual(setup.zone().coins(), 9_860L, "coins left");
+        helper.assertValueEqual(tower.paid(), 340L, "paid so far: 200 + 140");
+        helper.assertTrue(tower.upgrade(player, 0), "Razor Sharp Shots (200)");
+        helper.assertValueEqual(setup.zone().coins(), 9_660L, "coins left");
+        helper.assertFalse(tower.upgrade(player, 0), "tier 3 needs the research Tower Technology I");
+        helper.assertValueEqual(tower.tier(0), 2, "still tier 2");
+        registry.grantResearch(setup.team.id(), TowerBlockEntity.techResearch(1));
+        helper.assertFalse(tower.upgrade(player, 0), "and five circuits");
+        player.getInventory().add(new ItemStack(ModItems.CIRCUIT.get(), 5));
+        helper.assertTrue(tower.upgrade(player, 0), "Spike-o-pult (320)");
+        helper.assertValueEqual(setup.zone().coins(), 9_340L, "coins left");
+        helper.assertFalse(player.getInventory().hasAnyMatching(stack -> stack.is(ModItems.CIRCUIT.get())), "the circuits are used up");
+        helper.assertTrue(tower.upgrade(player, 1), "second path: tier 1");
+        helper.assertTrue(tower.upgrade(player, 1), "second path: tier 2");
+        helper.assertFalse(tower.upgrade(player, 1), "second path stops at tier 2 (3-3-0 is not allowed)");
+        helper.assertFalse(tower.upgrade(player, 2), "third path stays closed (3-2-1 is not allowed)");
+        helper.assertValueEqual(tower.tiers()[0] + "-" + tower.tiers()[1] + "-" + tower.tiers()[2], "3-2-0", "state");
+        helper.assertValueEqual(tower.paid(), 200L + 140 + 200 + 320 + 100 + 190, "everything paid");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void upgradesNeedEnoughCoinsAndRespectTheDifficulty(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "UpgradePriceTest");
+        TowerBlockEntity tower = arenaTower(setup, TowerType.CROSSBOW, 2, 2);
+        setup.defense.setCoins(setup.zone(), 100);
+        helper.assertFalse(tower.upgrade(setup.player, 0), "140 coins needed, 100 there");
+        setup.defense.setDifficulty(setup.team.id(), Difficulty.EASY);
+        helper.assertFalse(tower.upgrade(setup.player, 0), "on Easy it costs 119, still more than 100");
+        setup.defense.setCoins(setup.zone(), 119);
+        helper.assertTrue(tower.upgrade(setup.player, 0), "119 coins are enough on Easy");
+        helper.assertValueEqual(setup.zone().coins(), 0L, "all spent");
+        helper.assertValueEqual(tower.paid(), 119L, "the price paid counts for selling");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void sellingPaysBackSeventyPercentAndReturnsThePlainTower(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "SellTest");
+        TowerBlockEntity tower = arenaTower(setup, TowerType.GUN, 2, 2);
+        tower.setPaid(350);
+        tower.setTiers(1, 0, 0);
+        tower.setPaid(350 + 350);
+        setup.defense.setCoins(setup.zone(), 0);
+        BlockPos pos = tower.getBlockPos();
+        helper.assertValueEqual(tower.sellValue(), 490L, "70 % of 700");
+        setup.player.getInventory().clearContent();
+        helper.assertTrue(tower.sell(setup.player), "sold");
+        helper.assertValueEqual(setup.zone().coins(), 490L, "coins paid back");
+        helper.assertTrue(TowerDefense.arena(setup.player.server).getBlockState(pos).isAir(), "the tower is gone");
+        ItemStack back = setup.player.getInventory().getItem(0);
+        helper.assertTrue(back.is(ModBlocks.GUN_TURRET.get().asItem()) && !back.has(de.craftorio.registry.ModDataComponents.TOWER_STATE.get()),
+                "a plain tower item comes back: " + back);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aFreshTowerCostsItsPriceAndOneFromTheDepotIsFree(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "PlaceTest");
+        ServerLevel arena = TowerDefense.arena(setup.player.server);
+        BlockPos pos = Arenas.field(setup.zone().slot(), 2, 2, Arenas.BUILD_Y);
+        ItemStack fresh = new ItemStack(ModBlocks.CROSSBOW_TOWER.get());
+        int slot = setup.zone().slot();
+        setup.defense.setCoins(setup.zone(), 150);
+        helper.assertTrue(setup.defense.placementCoinsError(slot, fresh) != null, "200 coins needed");
+        setup.defense.setCoins(setup.zone(), 650);
+        helper.assertTrue(setup.defense.placementCoinsError(slot, fresh) == null, "650 coins are enough");
+        // placing pays
+        arena.setBlock(pos, ModBlocks.CROSSBOW_TOWER.get().defaultBlockState(), 3);
+        ModBlocks.CROSSBOW_TOWER.get().setPlacedBy(arena, pos, arena.getBlockState(pos), setup.player, fresh);
+        helper.assertValueEqual(setup.zone().coins(), 450L, "200 paid");
+        helper.assertValueEqual(((TowerBlockEntity) arena.getBlockEntity(pos)).paid(), 200L, "remembered");
+        // a tower from the depot costs nothing
+        BlockPos other = Arenas.field(setup.zone().slot(), 4, 2, Arenas.BUILD_Y);
+        ItemStack packed = TowerDefense.towerItem(TowerType.CROSSBOW, new int[]{2, 0, 0}, 340);
+        helper.assertTrue(setup.defense.placementCoinsError(slot, packed) == null, "no coins needed");
+        arena.setBlock(other, ModBlocks.CROSSBOW_TOWER.get().defaultBlockState(), 3);
+        TowerBlockEntity placed = (TowerBlockEntity) arena.getBlockEntity(other);
+        placed.applyComponentsFromItemStack(packed);
+        ModBlocks.CROSSBOW_TOWER.get().setPlacedBy(arena, other, arena.getBlockState(other), setup.player, packed);
+        helper.assertValueEqual(setup.zone().coins(), 450L, "nothing paid");
+        helper.assertValueEqual(placed.tier(0), 2, "upgrades came along");
+        helper.assertValueEqual(placed.paid(), 340L, "and what was paid");
         helper.succeed();
     }
 
@@ -203,10 +289,10 @@ public final class DefenseGameTests {
                 int x = tile[0] + side[0];
                 int z = tile[1] + side[1];
                 BlockPos pos = Arenas.field(setup.zone().slot(), x, z, Arenas.BUILD_Y);
-                if (placed < 8 && tile[0] % 5 == 2 && layout.tile(x, z) == Tile.GROUND && arena.getBlockState(pos).canBeReplaced()) {
+                if (placed < 12 && tile[0] % 5 == 2 && layout.tile(x, z) == Tile.GROUND && arena.getBlockState(pos).canBeReplaced()) {
                     arena.setBlock(pos, ModBlocks.CROSSBOW_TOWER.get().defaultBlockState(), 3);
                     if (arena.getBlockEntity(pos) instanceof TowerBlockEntity tower) {
-                        tower.setUpgradeLevel(TowerStats.MAX_LEVEL);
+                        tower.setTiers(5, 2, 0);
                         tower.ammo().insertItem(0, new ItemStack(ModItems.BOLT.get(), 64), false);
                         placed++;
                     }
@@ -236,7 +322,7 @@ public final class DefenseGameTests {
         ServerLevel arena = TowerDefense.arena(setup.player.server);
         BlockPos towerPos = Arenas.field(setup.zone().slot(), 2, 2, Arenas.BUILD_Y);
         arena.setBlock(towerPos, ModBlocks.CROSSBOW_TOWER.get().defaultBlockState(), 3);
-        ((TowerBlockEntity) arena.getBlockEntity(towerPos)).setUpgradeLevel(3);
+        ((TowerBlockEntity) arena.getBlockEntity(towerPos)).setTiers(3, 2, 0);
         setup.defense.setCoins(setup.zone(), 1_234);
         setup.defense.start(setup.player.server, setup.team.id());
         helper.assertTrue(setup.zone().run().isPresent(), "level did not start");
@@ -248,8 +334,8 @@ public final class DefenseGameTests {
             helper.assertValueEqual(setup.zone().level(), 25, "level must not advance");
             helper.assertValueEqual(setup.team.balance(), 0L, "no reward");
             helper.assertValueEqual(setup.zone().coins(), 1_234L, "the coins of the start are back");
-            helper.assertTrue(arena.getBlockEntity(towerPos) instanceof TowerBlockEntity tower && tower.upgradeLevel() == 3,
-                    "the tower is back with its level");
+            helper.assertTrue(arena.getBlockEntity(towerPos) instanceof TowerBlockEntity tower && tower.tier(0) == 3 && tower.tier(1) == 2,
+                    "the tower is back with its upgrades");
         });
     }
 
@@ -439,7 +525,7 @@ public final class DefenseGameTests {
             run.end(helper.getLevel());
             helper.assertValueEqual(tower.magazine(), Magazine.URANIUM, "the uranium magazine is loaded");
             helper.assertTrue(tower.ammo().getStackInSlot(0).isEmpty(), "and taken from the slot");
-            // one shot of 7 damage × 4.8 = 33.6 points, which is 8 layers
+            // 2 damage x 4.8 = 9.6 layers, rounded to 10 (normal damage)
             helper.assertTrue(before - target.hp() >= 8, "damage " + (before - target.hp()));
             helper.succeed();
         });
@@ -529,14 +615,20 @@ public final class DefenseGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void towerItemsKeepTheirLevel(GameTestHelper helper) {
-        ItemStack item = TowerDefense.towerItem(TowerType.GUN, 4);
-        helper.assertValueEqual(item.get(de.craftorio.registry.ModDataComponents.TOWER_STATE.get()).level(), 4, "level on the item");
+    public static void towerItemsKeepTheirUpgradesAndWhatWasPaid(GameTestHelper helper) {
+        ItemStack item = TowerDefense.towerItem(TowerType.GUN, new int[]{3, 2, 0}, 1_200);
+        var state = item.get(de.craftorio.registry.ModDataComponents.TOWER_STATE.get());
+        helper.assertValueEqual(state.path1() + "-" + state.path2() + "-" + state.path3(), "3-2-0", "upgrades on the item");
+        helper.assertValueEqual(state.paid(), 1_200L, "paid on the item");
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.GUN_TURRET.get());
         TowerBlockEntity tower = helper.getBlockEntity(pos);
-        tower.applyComponentsFromItemStack(TowerDefense.towerItem(TowerType.GUN, 4));
-        helper.assertValueEqual(tower.upgradeLevel(), 4, "level applied");
+        tower.applyComponentsFromItemStack(item);
+        helper.assertValueEqual(tower.tier(0), 3, "path 1 applied");
+        helper.assertValueEqual(tower.tier(1), 2, "path 2 applied");
+        helper.assertValueEqual(tower.paid(), 1_200L, "paid applied");
+        helper.assertTrue(ItemStack.isSameItemSameComponents(item, TowerDefense.towerItem(TowerType.GUN, new int[]{3, 2, 0}, 1_200)), "equal towers stack");
+        helper.assertFalse(ItemStack.isSameItemSameComponents(item, TowerDefense.towerItem(TowerType.GUN, new int[]{3, 2, 0}, 1_201)), "others do not");
         helper.succeed();
     }
 
@@ -629,11 +721,12 @@ public final class DefenseGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void towersFromTheDepotStackWithNewOnes(GameTestHelper helper) {
+    public static void towersFromTheDepotDoNotStackWithFreshOnes(GameTestHelper helper) {
         ItemStack fresh = new ItemStack(ModBlocks.CROSSBOW_TOWER.get());
-        ItemStack packed = TowerDefense.towerItem(TowerType.CROSSBOW, 1);
-        helper.assertTrue(ItemStack.isSameItemSameComponents(fresh, packed), "unupgraded intact towers stack");
-        helper.assertFalse(ItemStack.isSameItemSameComponents(fresh, TowerDefense.towerItem(TowerType.CROSSBOW, 2)), "upgraded towers do not");
+        ItemStack packed = TowerDefense.towerItem(TowerType.CROSSBOW, new int[]{0, 0, 0}, 200);
+        helper.assertFalse(ItemStack.isSameItemSameComponents(fresh, packed), "a depot tower is already paid for, a fresh one is not");
+        helper.assertTrue(ItemStack.isSameItemSameComponents(packed, TowerDefense.towerItem(TowerType.CROSSBOW, new int[]{0, 0, 0}, 200)), "two equal ones stack");
+        helper.assertFalse(ItemStack.isSameItemSameComponents(packed, TowerDefense.towerItem(TowerType.CROSSBOW, new int[]{1, 0, 0}, 340)), "upgraded ones do not");
         helper.succeed();
     }
 
@@ -646,9 +739,9 @@ public final class DefenseGameTests {
         TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
         int before = zone.depotSize();
         for (int i = 0; i < 3; i++) {
-            TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.CROSSBOW, 1));
+            TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.CROSSBOW, new int[]{0, 0, 0}, 200));
         }
-        TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.GUN, 3));
+        TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.GUN, new int[]{3, 0, 0}, 1_000));
         helper.assertValueEqual(zone.depotSize(), before + 2, "three equal towers share a stack");
 
         var view = defense.depotView(zone);

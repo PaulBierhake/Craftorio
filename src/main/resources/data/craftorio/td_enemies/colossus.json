@@ -11,5 +11,6 @@
     "behemoth"
   ],
   "immune": [],
-  "boss": true
+  "boss": true,
+  "radius": 2.6
 }

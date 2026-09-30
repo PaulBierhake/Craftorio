@@ -16,6 +16,11 @@ public enum Magazine {
         this.factor = factor;
     }
 
+    /** The damage kind of its hits: only the plain magazine is sharp; the heavy ones hit everything. */
+    public de.craftorio.defense.sim.DamageKind damageKind() {
+        return this == NORMAL ? null : de.craftorio.defense.sim.DamageKind.NORMAL;
+    }
+
     public double factor() {
         return factor;
     }

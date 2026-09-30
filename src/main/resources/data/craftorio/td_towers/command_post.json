@@ -1,0 +1,91 @@
+{
+  "btd6": "Monkey Village",
+  "cost": 1200,
+  "range": 4.0,
+  "supply": "none",
+  "supply_cost": 0,
+  "targets": [],
+  "paths": [
+    [
+      {
+        "btd6": "Bigger Radius",
+        "cost": 400,
+        "effects": []
+      },
+      {
+        "btd6": "Jungle Drums",
+        "cost": 1500,
+        "effects": []
+      },
+      {
+        "btd6": "Primary Training",
+        "cost": 800,
+        "effects": []
+      },
+      {
+        "btd6": "Primary Mentoring",
+        "cost": 2500,
+        "effects": []
+      },
+      {
+        "btd6": "Primary Expertise",
+        "cost": 25000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Grow Blocker",
+        "cost": 250,
+        "effects": []
+      },
+      {
+        "btd6": "Radar Scanner",
+        "cost": 2000,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey Intelligence Bureau",
+        "cost": 7500,
+        "effects": []
+      },
+      {
+        "btd6": "Call to Arms",
+        "cost": 20000,
+        "effects": []
+      },
+      {
+        "btd6": "Homeland Defense",
+        "cost": 40000,
+        "effects": []
+      }
+    ],
+    [
+      {
+        "btd6": "Monkey Business",
+        "cost": 500,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey Commerce",
+        "cost": 500,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey Town",
+        "cost": 10000,
+        "effects": []
+      },
+      {
+        "btd6": "Monkey City",
+        "cost": 3000,
+        "effects": []
+      },
+      {
+        "btd6": "Monkeyopolis",
+        "cost": 5000,
+        "effects": []
+      }
+    ]
+  ]
+}

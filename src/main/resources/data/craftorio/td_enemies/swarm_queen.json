@@ -12,5 +12,6 @@
     "shadow_hunter"
   ],
   "immune": [],
-  "boss": true
+  "boss": true,
+  "radius": 3.2
 }
