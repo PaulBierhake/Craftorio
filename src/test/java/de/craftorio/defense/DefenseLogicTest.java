@@ -45,32 +45,49 @@ class DefenseLogicTest {
     @Test
     void tracesStraightAndSlopedPaths() {
         Set<List<Integer>> blocks = new HashSet<>();
-        for (int x = 1; x <= 25; x++) {
-            blocks.add(List.of(x, x > 12 ? 65 : 64, 0)); // one step up halfway
+        for (int x = 1; x <= 110; x++) {
+            blocks.add(List.of(x, x > 55 ? 65 : 64, 0)); // one step up halfway
         }
-        PathTracer.Result result = trace(blocks, 26);
+        PathTracer.Result result = trace(blocks, 111);
 
         assertTrue(result.ok(), () -> "error " + result.error());
-        assertEquals(25, result.path().size());
+        assertEquals(110, result.path().size());
         assertEquals(1, result.path().get(0)[0]);
     }
 
     @Test
     void rejectsBranchesDeadEndsAndShortPaths() {
         Set<List<Integer>> branched = new HashSet<>();
-        for (int x = 1; x <= 25; x++) {
+        for (int x = 1; x <= 110; x++) {
             branched.add(List.of(x, 64, 0));
         }
         branched.add(List.of(10, 64, 1));
-        assertEquals(PathTracer.Error.BRANCH, trace(branched, 26).error());
+        assertEquals(PathTracer.Error.BRANCH, trace(branched, 111).error());
 
         Set<List<Integer>> deadEnd = new HashSet<>();
         for (int x = 1; x <= 15; x++) {
             deadEnd.add(List.of(x, 64, 0));
         }
-        assertEquals(PathTracer.Error.DEAD_END, trace(deadEnd, 26).error());
-        assertEquals(PathTracer.Error.TOO_SHORT, trace(deadEnd, 16).error());
-        assertEquals(PathTracer.Error.NO_START, trace(Set.of(), 26).error());
+        assertEquals(PathTracer.Error.DEAD_END, trace(deadEnd, 111).error());
+        assertEquals(PathTracer.Error.NO_START, trace(Set.of(), 111).error());
+    }
+
+    @Test
+    void theLengthOfThePathMustLieInTheWindow() {
+        assertEquals(100, PathTracer.MIN_LENGTH);
+        assertEquals(160, PathTracer.MAX_LENGTH);
+        for (int[] lengthAndExpected : new int[][]{{99, 1}, {100, 0}, {130, 0}, {160, 0}, {161, 2}}) {
+            Set<List<Integer>> line = new HashSet<>();
+            for (int x = 1; x <= lengthAndExpected[0]; x++) {
+                line.add(List.of(x, 64, 0));
+            }
+            PathTracer.Result result = trace(line, lengthAndExpected[0] + 1);
+            switch (lengthAndExpected[1]) {
+                case 0 -> assertTrue(result.ok(), "length " + lengthAndExpected[0] + " " + result.error());
+                case 1 -> assertEquals(PathTracer.Error.TOO_SHORT, result.error(), "length " + lengthAndExpected[0]);
+                default -> assertEquals(PathTracer.Error.TOO_LONG, result.error(), "length " + lengthAndExpected[0]);
+            }
+        }
     }
 
     /** Portal at x=0, core at x=coreX, all at y=64 and z=0 unless a block says otherwise. */
@@ -106,21 +123,15 @@ class DefenseLogicTest {
     }
 
     @Test
-    void towerItemsOfLevelOneAtFullHealthStackWithNewOnes() {
-        int full = TowerStats.maxHealth(TowerType.GUN, 1);
-        assertTrue(TowerStats.isPristine(TowerType.GUN, 1, full));
-        assertFalse(TowerStats.isPristine(TowerType.GUN, 1, full - 1));
-        assertFalse(TowerStats.isPristine(TowerType.GUN, 2, TowerStats.maxHealth(TowerType.GUN, 2)));
-        assertFalse(TowerStats.isPristine(TowerType.GUN, 1, 0), "ruins are not pristine");
+    void towerItemsOfLevelOneStackWithNewOnes() {
+        assertTrue(TowerStats.isPristine(1));
+        assertFalse(TowerStats.isPristine(2));
     }
 
     @Test
-    void upgradesRaiseDamageAndHealth() {
+    void upgradesRaiseDamage() {
         assertEquals(4, TowerStats.damage(TowerType.CROSSBOW, 1), 1e-9);
         assertEquals(8.8, TowerStats.damage(TowerType.CROSSBOW, 5), 1e-9);
-        assertEquals(200, TowerStats.maxHealth(TowerType.CROSSBOW, 5));
-        assertEquals(30, TowerStats.repairCost(70, 100));
-        assertEquals(0, TowerStats.repairCost(120, 100));
         assertFalse(TowerStats.upgradeCredits(2) >= TowerStats.upgradeCredits(3));
     }
 
@@ -166,5 +177,46 @@ class DefenseLogicTest {
         assertEquals(LevelPlan.KeyReward.DIAMOND_SEAL, LevelPlan.of(40, 1).keyReward());
         assertEquals(LevelPlan.KeyReward.STAR_SEAL, LevelPlan.of(50, 1).keyReward());
         assertEquals(LevelPlan.KeyReward.NONE, LevelPlan.of(41, 1).keyReward());
+    }
+
+    @Test
+    void difficultiesFollowBloonsTd6() {
+        assertEquals(200, Difficulty.EASY.lives());
+        assertEquals(150, Difficulty.MEDIUM.lives());
+        assertEquals(100, Difficulty.HARD.lives());
+        assertEquals(1, Difficulty.IMPOPPABLE.lives());
+        assertEquals(0.85, Difficulty.EASY.priceFactor(), 0);
+        assertEquals(1.0, Difficulty.MEDIUM.priceFactor(), 0);
+        assertEquals(1.08, Difficulty.HARD.priceFactor(), 0);
+        assertEquals(1.2, Difficulty.IMPOPPABLE.priceFactor(), 0);
+        // the wiki: Medium bloons are 10 % faster than on Easy, Hard ones 25 %
+        assertEquals(1.0, Difficulty.EASY.speedFactor(), 0);
+        assertEquals(1.1, Difficulty.MEDIUM.speedFactor(), 0);
+        assertEquals(1.25, Difficulty.HARD.speedFactor(), 0);
+        assertEquals(1.25 / 1.1, Difficulty.HARD.speedFactor() / Difficulty.MEDIUM.speedFactor(), 1e-9);
+        assertEquals(850, Difficulty.EASY.price(1_000));
+        assertEquals(1_080, Difficulty.HARD.price(1_000));
+        assertEquals(1_200, Difficulty.IMPOPPABLE.price(1_000));
+        assertEquals(Difficulty.MEDIUM.lives(), LevelPlan.LIVES);
+    }
+
+    @Test
+    void theDifficultyCanOnlyBeMadeEasierOnceTheCampaignHasStarted() {
+        assertTrue(Difficulty.MEDIUM.mayChangeTo(Difficulty.IMPOPPABLE, false));
+        assertTrue(Difficulty.IMPOPPABLE.mayChangeTo(Difficulty.EASY, false));
+        assertFalse(Difficulty.MEDIUM.mayChangeTo(Difficulty.HARD, true));
+        assertTrue(Difficulty.HARD.mayChangeTo(Difficulty.MEDIUM, true));
+        assertFalse(Difficulty.EASY.mayChangeTo(Difficulty.MEDIUM, true));
+        assertEquals(Difficulty.MEDIUM, Difficulty.EASY.next());
+        assertEquals(Difficulty.EASY, Difficulty.IMPOPPABLE.next());
+    }
+
+    @Test
+    void arenasFromBeforeTheCoinsStartWithHalfOfWhatBloonsTd6Paid() {
+        assertEquals(650, Coins.migratedStart(1), 0);
+        // level 2 comes after rounds 1 and 2: (20 + 101) + (35 + 102) = 258, half of it
+        assertEquals(650 + 129, Coins.migratedStart(2), 1e-9);
+        assertTrue(Coins.migratedStart(20) > Coins.migratedStart(10));
+        assertTrue(Coins.earnedUpTo(100) > 160_000, "the wiki's cumulative cash at round 100 (pops and bonuses) is far above 160,000");
     }
 }

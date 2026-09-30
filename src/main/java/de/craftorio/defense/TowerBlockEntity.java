@@ -50,12 +50,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Shoots enemies in range (by its target mode), takes damage from them and becomes a ruin at 0 HP. */
+/** Shoots enemies in range (by its target mode); the enemies never attack it. */
 public final class TowerBlockEntity extends BlockEntity implements MenuProvider {
 
     private final TowerType type;
     private int upgradeLevel = 1;
-    private int health;
     private int cooldown;
     private TargetMode targetMode = TargetMode.FIRST;
     private final EnergyBuffer energy;
@@ -78,12 +77,10 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> health;
-                case 1 -> maxHealth();
-                case 2 -> upgradeLevel;
-                case 3 -> SplitIntData.low(energy.getEnergyStored());
-                case 4 -> SplitIntData.high(energy.getEnergyStored());
-                case 5 -> targetMode.ordinal();
+                case 0 -> upgradeLevel;
+                case 1 -> SplitIntData.low(energy.getEnergyStored());
+                case 2 -> SplitIntData.high(energy.getEnergyStored());
+                case 3 -> targetMode.ordinal();
                 default -> 0;
             };
         }
@@ -102,7 +99,6 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         super(ModBlockEntities.TOWER.get(), pos, state);
         this.type = ((TowerBlock) state.getBlock()).towerType();
         this.energy = new EnergyBuffer(Math.max(1, type.energyCapacity()), 200, 0, this::setChanged);
-        this.health = TowerStats.maxHealth(type, 1);
     }
 
     public TowerType type() {
@@ -111,14 +107,6 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
 
     public int upgradeLevel() {
         return upgradeLevel;
-    }
-
-    public int health() {
-        return health;
-    }
-
-    public int maxHealth() {
-        return TowerStats.maxHealth(type, upgradeLevel);
     }
 
     public EnergyBuffer energy() {
@@ -294,43 +282,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         }
     }
 
-    /** Called by enemies. At 0 HP the tower turns into a ruin that keeps its type and upgrade level. */
-    public void damage(double amount) {
-        if (level == null || isRemoved()) {
-            return;
-        }
-        health -= (int) Math.ceil(amount);
-        setChanged();
-        if (health <= 0) {
-            Level world = this.level;
-            BlockPos pos = worldPosition;
-            TowerType towerType = type;
-            int keptLevel = upgradeLevel;
-            dropAmmo();
-            world.setBlock(pos, ModBlocks.TOWER_RUIN.get().defaultBlockState(), Block.UPDATE_ALL);
-            if (world.getBlockEntity(pos) instanceof TowerRuinBlockEntity ruin) {
-                ruin.remember(towerType, keptLevel);
-            }
-            world.playSound(null, pos, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.7F, 1.4F);
-            if (world instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5, 2, 0.3, 0.3, 0.3, 0);
-            }
-        }
-    }
-
-    public long repairCost() {
-        return TowerStats.repairCost(health, maxHealth());
-    }
-
-    public void repair() {
-        health = maxHealth();
-        setChanged();
-    }
-
-    /** Restores a tower from its ruin with full health. */
-    void restore(int keptLevel) {
-        upgradeLevel = Math.max(1, Math.min(TowerStats.MAX_LEVEL, keptLevel));
-        health = maxHealth();
+    /** Sets the upgrade level (towers taken out of the depot, tests). */
+    public void setUpgradeLevel(int level) {
+        upgradeLevel = Math.max(1, Math.min(TowerStats.MAX_LEVEL, level));
         setChanged();
     }
 
@@ -366,9 +320,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             return false;
         }
         Blueprints.take(player.getInventory(), materials, 1);
-        int oldMax = maxHealth();
         upgradeLevel = next;
-        health += maxHealth() - oldMax;
         setChanged();
         player.displayClientMessage(Component.translatable("craftorio.tower.upgraded", upgradeLevel, Credits.format(credits)).withStyle(ChatFormatting.GREEN), true);
         return true;
@@ -391,23 +343,22 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return new TowerMenu(containerId, inventory, this, data);
     }
 
-    /** Sets level and health from a tower item taken out of the depot. */
+    /** Sets the level from a tower item taken out of the depot. */
     @Override
     protected void applyImplicitComponents(DataComponentInput input) {
         super.applyImplicitComponents(input);
         ModDataComponents.TowerState state = input.get(ModDataComponents.TOWER_STATE.get());
         if (state != null) {
             upgradeLevel = Math.max(1, Math.min(TowerStats.MAX_LEVEL, state.level()));
-            health = Math.max(0, Math.min(maxHealth(), state.health()));
         }
     }
 
-    /** Broken towers drop an item that remembers level and health. */
+    /** Upgraded towers drop an item that remembers the level. */
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-        if (!TowerStats.isPristine(type, upgradeLevel, health)) {
-            components.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel, health));
+        if (!TowerStats.isPristine(upgradeLevel)) {
+            components.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel));
         }
     }
 
@@ -416,7 +367,6 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         super.saveAdditional(tag, registries);
         tag.putString("target", targetMode.name());
         tag.putInt("level", upgradeLevel);
-        tag.putInt("health", health);
         tag.putInt("energy", energy.getEnergyStored());
         tag.put("ammo", ammo.serializeNBT(registries));
         tag.putInt("shots_left", shotsLeft);
@@ -432,7 +382,6 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         } catch (IllegalArgumentException missing) {
             targetMode = TargetMode.FIRST;
         }
-        health = tag.contains("health") ? tag.getInt("health") : maxHealth();
         energy.setEnergy(tag.getInt("energy"));
         ammo.deserializeNBT(registries, tag.getCompound("ammo"));
         shotsLeft = tag.getInt("shots_left");

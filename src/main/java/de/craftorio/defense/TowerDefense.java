@@ -7,6 +7,7 @@ import de.craftorio.defense.arena.Arenas;
 import de.craftorio.defense.arena.Mutator;
 import de.craftorio.defense.arena.Tile;
 import de.craftorio.economy.Credits;
+import de.craftorio.defense.sim.RoundRules;
 import de.craftorio.defense.sim.SimEnemy;
 import de.craftorio.defense.sim.TdSimulation;
 import de.craftorio.network.TdEnemiesPayload;
@@ -74,6 +75,8 @@ public final class TowerDefense extends SavedData {
     private static final int AUTO_START_DELAY = 100;
     public static final long ENERGY_CAPACITY = 2_000_000;
     public static final int AMMO_CAPACITY = 5_000;
+    /** Credits per level that may be exchanged for coins at the terminal, times the level number. */
+    public static final long WAR_CHEST_PER_LEVEL = 100;
     /** Units of crude oil the arena reserve holds for flamethrower turrets. */
     public static final int FLUID_CAPACITY = 20_000;
 
@@ -93,7 +96,14 @@ public final class TowerDefense extends SavedData {
         private @Nullable BlockPos home;
         private @Nullable LevelRun run;
         private int autoStartIn = -1;
-        private long repairCost;
+        /** The team's arena coins ⛁: earned by popping and at the end of rounds, valid across levels. */
+        private double coins = RoundRules.START_COINS;
+        private Difficulty difficulty = Difficulty.MEDIUM;
+        /** Has a level been started? The difficulty can only be made easier from then on. */
+        private boolean campaignStarted;
+        /** Credits exchanged for coins in the current level (the war chest is limited per level). */
+        private long warChestUsed;
+        private @Nullable Snapshot snapshot;
         private int lastStars;
         private final List<ItemStack> depot = new ArrayList<>();
         private long energy;
@@ -121,6 +131,24 @@ public final class TowerDefense extends SavedData {
 
         public Optional<LevelRun> run() {
             return Optional.ofNullable(run);
+        }
+
+        /** Whole coins the team has. */
+        public long coins() {
+            return (long) Math.floor(coins);
+        }
+
+        public Difficulty difficulty() {
+            return difficulty;
+        }
+
+        public boolean campaignStarted() {
+            return campaignStarted;
+        }
+
+        /** Credits that can still be exchanged for coins in this level. */
+        public long warChestLeft() {
+            return Math.max(0, WAR_CHEST_PER_LEVEL * level - warChestUsed);
         }
 
         public long energy() {
@@ -465,6 +493,7 @@ public final class TowerDefense extends SavedData {
             return Component.translatable("craftorio.td.clear.already", target);
         }
         zone.level = target + 1;
+        zone.warChestUsed = 0;
         zone.layout = null;
         nextMap(arena, zone);
         setDirty();
@@ -579,7 +608,7 @@ public final class TowerDefense extends SavedData {
                 (x, y, z) -> Math.abs(x - core.getX()) + Math.abs(z - core.getZ()) == 1 && Math.abs(y - core.getY()) <= 1);
         if (!result.ok()) {
             return new PathCheck(null, Component.translatable("craftorio.td.error.path." + result.error().name().toLowerCase(),
-                    PathTracer.MIN_LENGTH));
+                    result.error() == PathTracer.Error.TOO_LONG ? PathTracer.MAX_LENGTH : PathTracer.MIN_LENGTH));
         }
         List<Vec3> points = new ArrayList<>();
         points.add(new Vec3(portal.getX() + 0.5, portal.getY() + 1, portal.getZ() + 0.5));
@@ -606,12 +635,14 @@ public final class TowerDefense extends SavedData {
         if (check.path() == null) {
             return check.message();
         }
-        int players = Math.max(1, onlineMembers(server, team).size());
         Mutator mutator = mutator(zone);
-        zone.run = new LevelRun(LevelPlan.of(zone.level, players), check.path(), zone.core(),
-                new LevelRun.Arena(zone.slot, layout(zone), mutator));
+        zone.snapshot = takeSnapshot(level, zone);
+        zone.campaignStarted = true;
+        zone.run = new LevelRun(LevelPlan.of(zone.level, 1), check.path(), zone.core(),
+                new LevelRun.Arena(zone.slot, layout(zone), mutator), zone.difficulty);
         zone.run.begin(level);
         zone.autoStartIn = -1;
+        setDirty();
         broadcast(server, team, Component.translatable("craftorio.td.started", zone.level).withStyle(ChatFormatting.GOLD));
         return Component.translatable("craftorio.td.started", zone.level);
     }
@@ -624,58 +655,124 @@ public final class TowerDefense extends SavedData {
         }
     }
 
-    /** Sends the next wave now; the skipped waiting time is paid out as bonus credits. */
+    /** Starts the next round now (as in Bloons TD 6 without a bonus), even while the last one is still going. */
     public Component callWave(MinecraftServer server, UUID team) {
         Zone zone = zones.get(team);
         if (zone == null || zone.run == null) {
             return Component.translatable("craftorio.td.error.not_running");
         }
-        int skipped = zone.run.callNextWave();
-        if (skipped <= 0) {
+        if (zone.run.callNextWave() <= 0) {
             return Component.translatable("craftorio.td.call.not_now");
         }
-        long bonus = LevelPlan.earlyCallBonus(zone.level, skipped);
-        if (bonus > 0) {
-            TeamData.registry(server).deposit(team, bonus);
-        }
-        return Component.translatable("craftorio.td.call.done", Credits.format(bonus));
+        return Component.translatable("craftorio.td.call.done");
     }
 
-    /** Repairs every damaged tower and rebuilds every ruin in the arena, if the team can pay for all of it. */
-    public Component repairAll(MinecraftServer server, UUID team) {
+    /** The team's difficulty: any before the first level starts, afterwards only an easier one. */
+    public Component setDifficulty(UUID team, Difficulty wanted) {
         Zone zone = zones.get(team);
-        ServerLevel level = arena(server);
-        if (zone == null || level == null) {
+        if (zone == null) {
             return Component.translatable("craftorio.td.error.no_zone");
         }
-        long cost = repairCost(level, zone.slot);
-        if (cost == 0) {
-            return Component.translatable("craftorio.td.repair.nothing");
+        if (zone.run != null) {
+            return Component.translatable("craftorio.td.error.running");
         }
-        if (!TeamData.registry(server).withdraw(team, cost)) {
-            return Component.translatable("craftorio.td.repair.too_expensive", Credits.format(cost));
+        if (wanted == zone.difficulty) {
+            return Component.translatable("craftorio.td.difficulty.set", Component.translatable("craftorio.td.difficulty." + wanted.name().toLowerCase()));
+        }
+        if (!zone.difficulty.mayChangeTo(wanted, zone.campaignStarted)) {
+            return Component.translatable("craftorio.td.difficulty.locked");
+        }
+        zone.difficulty = wanted;
+        setDirty();
+        return Component.translatable("craftorio.td.difficulty.set", Component.translatable("craftorio.td.difficulty." + wanted.name().toLowerCase()));
+    }
+
+    /** The next difficulty: any in turn before the first level; afterwards the next easier one, until the easiest is reached. */
+    public Component cycleDifficulty(UUID team) {
+        Zone zone = zones.get(team);
+        if (zone == null) {
+            return Component.translatable("craftorio.td.error.no_zone");
+        }
+        if (!zone.campaignStarted) {
+            return setDifficulty(team, zone.difficulty.next());
+        }
+        return zone.difficulty.ordinal() == 0 ? Component.translatable("craftorio.td.difficulty.locked")
+                : setDifficulty(team, Difficulty.byOrdinal(zone.difficulty.ordinal() - 1));
+    }
+
+    /**
+     * The war chest: exchanges credits for coins 1:1, at most 100 per level number and level (level 20: 2,000 coins).
+     * The factory helps like a small farm without making the arena trivial.
+     */
+    public Component exchangeCredits(MinecraftServer server, UUID team, long amount) {
+        Zone zone = zones.get(team);
+        if (zone == null) {
+            return Component.translatable("craftorio.td.error.no_zone");
+        }
+        long allowed = Math.min(amount, zone.warChestLeft());
+        if (allowed <= 0) {
+            return Component.translatable("craftorio.td.warchest.full", zone.level);
+        }
+        TeamRegistry registry = TeamData.registry(server);
+        if (registry.team(team).map(Team::balance).orElse(0L) < allowed) {
+            allowed = registry.team(team).map(Team::balance).orElse(0L);
+        }
+        if (allowed <= 0 || !registry.withdraw(team, allowed)) {
+            return Component.translatable("craftorio.td.warchest.no_credits");
+        }
+        zone.coins += allowed;
+        zone.warChestUsed += allowed;
+        setDirty();
+        return Component.translatable("craftorio.td.warchest.done", Credits.format(allowed), allowed);
+    }
+
+    /** Operators and the retry: sets the coins directly. */
+    void setCoins(Zone zone, double coins) {
+        zone.coins = coins;
+        setDirty();
+    }
+
+    /** What a level starts with: the coins, the depot and every tower on the field with its state, to come back to when the level is lost. */
+    private record Snapshot(double coins, List<ItemStack> depot, List<TowerSnapshot> towers) {
+    }
+
+    private record TowerSnapshot(BlockPos pos, net.minecraft.world.level.block.state.BlockState state, CompoundTag data) {
+    }
+
+    private Snapshot takeSnapshot(ServerLevel level, Zone zone) {
+        List<TowerSnapshot> towers = new ArrayList<>();
+        for (BlockEntity blockEntity : blockEntitiesInArena(level, zone.slot)) {
+            if (blockEntity instanceof TowerBlockEntity tower) {
+                towers.add(new TowerSnapshot(tower.getBlockPos(), tower.getBlockState(), tower.saveWithFullMetadata(level.registryAccess())));
+            }
+        }
+        return new Snapshot(zone.coins, zone.depot.stream().map(ItemStack::copy).toList(), towers);
+    }
+
+    /** A lost level is tried again from the state it started in: coins, depot and towers come back; the path stays. */
+    private void restoreSnapshot(ServerLevel level, Zone zone) {
+        Snapshot snapshot = zone.snapshot;
+        zone.snapshot = null;
+        if (snapshot == null) {
+            return;
         }
         for (BlockEntity blockEntity : blockEntitiesInArena(level, zone.slot)) {
             if (blockEntity instanceof TowerBlockEntity tower) {
-                tower.repair();
-            } else if (blockEntity instanceof TowerRuinBlockEntity ruin) {
-                ruin.rebuild();
+                tower.dropAmmo();
+                level.setBlock(tower.getBlockPos(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
             }
         }
-        zone.repairCost = 0;
-        return Component.translatable("craftorio.td.repair.done", Credits.format(cost));
-    }
-
-    static long repairCost(ServerLevel level, int slot) {
-        long cost = 0;
-        for (BlockEntity blockEntity : blockEntitiesInArena(level, slot)) {
-            if (blockEntity instanceof TowerBlockEntity tower) {
-                cost += tower.repairCost();
-            } else if (blockEntity instanceof TowerRuinBlockEntity ruin) {
-                cost += ruin.rebuildCost();
+        for (TowerSnapshot tower : snapshot.towers()) {
+            level.setBlock(tower.pos(), tower.state(), 3);
+            BlockEntity blockEntity = level.getBlockEntity(tower.pos());
+            if (blockEntity != null) {
+                blockEntity.loadWithComponents(tower.data(), level.registryAccess());
             }
         }
-        return cost;
+        zone.coins = snapshot.coins();
+        zone.depot.clear();
+        zone.depot.addAll(snapshot.depot());
+        setDirty();
     }
 
     static List<BlockPos> findTowers(ServerLevel level, BlockPos min, BlockPos max) {
@@ -719,19 +816,16 @@ public final class TowerDefense extends SavedData {
         return found;
     }
 
-    /** Packs all towers and ruins of the field into the depot (with level, health and ammunition) and builds the next map. */
+    /** Packs all towers of the field into the depot (with level and ammunition) and builds the next map. */
     void nextMap(ServerLevel level, Zone zone) {
         for (BlockEntity blockEntity : blockEntitiesInArena(level, zone.slot)) {
             if (blockEntity instanceof TowerBlockEntity tower) {
                 ItemStack ammo = tower.ammo().getStackInSlot(0).copy();
                 tower.ammo().setStackInSlot(0, ItemStack.EMPTY);
-                // Intact towers are repaired for the new map, so unupgraded ones stack with freshly built towers.
-                addToDepot(zone, towerItem(tower.type(), tower.upgradeLevel(), tower.maxHealth()));
+                addToDepot(zone, towerItem(tower.type(), tower.upgradeLevel()));
                 if (!ammo.isEmpty()) {
                     addToDepot(zone, ammo);
                 }
-            } else if (blockEntity instanceof TowerRuinBlockEntity ruin) {
-                addToDepot(zone, towerItem(ruin.towerType(), ruin.upgradeLevel(), 0));
             }
         }
         ArenaBuilder.buildField(level, zone.slot, layout(zone), arenaSeed(zone) + zone.level);
@@ -739,10 +833,10 @@ public final class TowerDefense extends SavedData {
     }
 
     /** A tower item; the state component is only set when it differs from a freshly built tower, so those stack. */
-    public static ItemStack towerItem(TowerType type, int upgradeLevel, int health) {
+    public static ItemStack towerItem(TowerType type, int upgradeLevel) {
         ItemStack stack = new ItemStack(ModBlocks.tower(type).get());
-        if (!TowerStats.isPristine(type, upgradeLevel, health)) {
-            stack.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel, health));
+        if (!TowerStats.isPristine(upgradeLevel)) {
+            stack.set(ModDataComponents.TOWER_STATE.get(), new ModDataComponents.TowerState(upgradeLevel));
         }
         return stack;
     }
@@ -774,6 +868,7 @@ public final class TowerDefense extends SavedData {
             List<ServerPlayer> online = onlineMembers(server, team);
             if (zone.run != null && !online.isEmpty()) {
                 LevelRun.Outcome outcome = zone.run.tick(level);
+                zone.coins += zone.run.takeCoins();
                 if (outcome != LevelRun.Outcome.RUNNING) {
                     finish(server, level, team, zone, outcome == LevelRun.Outcome.WON);
                 } else {
@@ -788,7 +883,9 @@ public final class TowerDefense extends SavedData {
                 }
             }
             if (sendStatus) {
-                zone.repairCost = zone.run == null ? repairCost(level, zone.slot) : zone.repairCost;
+                if (zone.run != null) {
+                    setDirty(); // the coins changed
+                }
                 TdStatusPayload status = status(level, zone);
                 online.forEach(player -> send(player, status));
             }
@@ -849,8 +946,10 @@ public final class TowerDefense extends SavedData {
         level.players().stream().filter(player -> Arenas.slotAt(player.blockPosition()) == zone.slot).forEach(player -> send(player, none));
         if (won) {
             Mutator mutator = mutator(zone);
-            long reward = Math.round(plan.reward() * mutator.rewardFactor());
-            int stars = LevelPlan.stars(lives);
+            long reward = Math.round(plan.reward() * mutator.rewardFactor() * zone.difficulty.rewardFactor());
+            int stars = LevelPlan.stars(lives, zone.difficulty.lives());
+            zone.snapshot = null;
+            zone.warChestUsed = 0;
             long total = reward + LevelPlan.starBonus(reward, stars);
             TeamData.registry(server).deposit(team, total);
             ItemStack key = keyItem(plan.keyReward());
@@ -870,6 +969,7 @@ public final class TowerDefense extends SavedData {
                 zone.autoStartIn = AUTO_START_DELAY;
             }
         } else {
+            restoreSnapshot(level, zone);
             broadcast(server, team, Component.translatable("craftorio.td.lost", plan.level()).withStyle(ChatFormatting.RED));
         }
         setDirty();
@@ -909,9 +1009,10 @@ public final class TowerDefense extends SavedData {
         }
         ArenaLayout layout = layout(zone);
         return new TdStatusPayload(true, zone.level, run != null, run == null ? 0 : run.wave(), plan.rounds().size(),
-                run == null ? LevelPlan.LIVES : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.repairCost,
+                run == null ? zone.difficulty.lives() : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.coins(),
                 layout.theme().ordinal(), mutator(zone).ordinal(), zone.lastStars, preview, zone.energy,
-                zone.ammo(ModItems.BOLT.get()), magazines(zone), run != null && run.canCallWave(), unsupplied(level, zone));
+                zone.ammo(ModItems.BOLT.get()), magazines(zone), run != null && run.canCallWave(), unsupplied(level, zone),
+                zone.difficulty.ordinal(), zone.difficulty.lives(), zone.warChestLeft(), zone.campaignStarted);
     }
 
     private int unsupplied(ServerLevel level, Zone zone) {
@@ -971,6 +1072,10 @@ public final class TowerDefense extends SavedData {
             entry.putBoolean("auto", zone.auto);
             entry.putBoolean("built", zone.built);
             entry.putInt("last_stars", zone.lastStars);
+            entry.putDouble("coins", zone.coins);
+            entry.putString("difficulty", zone.difficulty.name());
+            entry.putBoolean("campaign_started", zone.campaignStarted);
+            entry.putLong("war_chest_used", zone.warChestUsed);
             if (zone.home != null) {
                 entry.put("home", NbtUtils.writeBlockPos(zone.home));
             }
@@ -1001,6 +1106,15 @@ public final class TowerDefense extends SavedData {
             zone.auto = entry.getBoolean("auto");
             zone.built = entry.getBoolean("built");
             zone.lastStars = entry.getInt("last_stars");
+            // Arenas from before the coins start with about half of what Bloons TD 6 would have paid up to their level.
+            zone.coins = entry.contains("coins") ? entry.getDouble("coins") : Coins.migratedStart(zone.level);
+            try {
+                zone.difficulty = Difficulty.valueOf(entry.getString("difficulty"));
+            } catch (IllegalArgumentException missing) {
+                zone.difficulty = Difficulty.MEDIUM;
+            }
+            zone.campaignStarted = entry.contains("campaign_started") ? entry.getBoolean("campaign_started") : zone.level > 1;
+            zone.warChestUsed = entry.getLong("war_chest_used");
             zone.home = NbtUtils.readBlockPos(entry, "home").orElse(null);
             for (Tag stack : entry.getList("depot", Tag.TAG_COMPOUND)) {
                 ItemStack parsed = ItemStack.parseOptional(registries, (CompoundTag) stack);

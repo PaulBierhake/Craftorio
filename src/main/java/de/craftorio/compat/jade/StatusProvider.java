@@ -2,7 +2,6 @@ package de.craftorio.compat.jade;
 
 import de.craftorio.Craftorio;
 import de.craftorio.defense.TowerBlockEntity;
-import de.craftorio.defense.TowerRuinBlockEntity;
 import de.craftorio.economy.Credits;
 import de.craftorio.logistics.ElevatorBlock;
 import de.craftorio.logistics.ElevatorBlockEntity;
@@ -49,7 +48,7 @@ enum StatusProvider implements IBlockComponentProvider, IServerDataProvider<Bloc
         } else if (blockEntity instanceof ProcessingMachineBlockEntity machine && machine.progressPercent() >= 0) {
             lines.add(Component.translatable("craftorio.jade.progress", machine.progressPercent()));
         } else if (blockEntity instanceof TowerBlockEntity tower) {
-            lines.add(Component.translatable("craftorio.jade.tower", tower.health(), tower.maxHealth(), tower.upgradeLevel()));
+            lines.add(Component.translatable("craftorio.jade.tower", tower.upgradeLevel()));
             if (tower.type().usesItemAmmo()) {
                 lines.add(Component.translatable("craftorio.jade.ammo", tower.ammo().getStackInSlot(0).getCount()));
             }
@@ -58,8 +57,6 @@ enum StatusProvider implements IBlockComponentProvider, IServerDataProvider<Bloc
             if (blockEntity instanceof de.craftorio.heat.ReactorBlockEntity reactor && reactor.burning()) {
                 lines.add(Component.translatable("craftorio.reactor.heat", String.format(java.util.Locale.ROOT, "%.0f", reactor.heatPerTick() / 1000.0)));
             }
-        } else if (blockEntity instanceof TowerRuinBlockEntity ruin) {
-            lines.add(Component.translatable("craftorio.jade.ruin", Credits.format(ruin.rebuildCost())).withStyle(ChatFormatting.RED));
         } else if (blockEntity instanceof CaveEntranceBlockEntity site) {
             lines.add(site.status());
         } else if (blockEntity instanceof ElevatorBlockEntity) {

@@ -19,6 +19,8 @@ public final class SimEnemy {
     double z;
     int segment;
     boolean alive = true;
+    /** The round it entered the path in; its children keep it. */
+    int spawnRound;
     /** Red-blue-equivalents left, kept up to date for targeting. */
     double rbe;
     /** Slowdown and similar effects: multiplies the speed. */
@@ -71,6 +73,10 @@ public final class SimEnemy {
 
     public double z() {
         return z;
+    }
+
+    public int spawnRound() {
+        return spawnRound;
     }
 
     public double rbe() {

@@ -2,11 +2,8 @@ package de.craftorio.defense;
 
 import com.mojang.serialization.MapCodec;
 import de.craftorio.registry.ModBlockEntities;
-import de.craftorio.registry.ModBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -26,7 +23,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-/** A defense tower; may only be placed in the team's arena. Right-click opens its GUI (ammo, health, upgrades, target). */
+/** A defense tower; may only be placed in the team's arena. Right-click opens its GUI (ammo, upgrades, target). */
 public final class TowerBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 24, 14);
 
@@ -63,18 +60,6 @@ public final class TowerBlock extends BaseEntityBlock {
             return defaultBlockState();
         }
         return null;
-    }
-
-    /** A tower item from a destroyed tower is placed as its ruin. */
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof TowerBlockEntity tower && tower.health() <= 0) {
-            int keptLevel = tower.upgradeLevel();
-            level.setBlock(pos, ModBlocks.TOWER_RUIN.get().defaultBlockState(), Block.UPDATE_ALL);
-            if (level.getBlockEntity(pos) instanceof TowerRuinBlockEntity ruin) {
-                ruin.remember(towerType, keptLevel);
-            }
-        }
     }
 
     @Override

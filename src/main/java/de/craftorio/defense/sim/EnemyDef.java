@@ -23,8 +23,14 @@ import java.util.Set;
 public record EnemyDef(String id, int index, String btd6, double hp, double fortifiedHp, double speed, List<String> children,
                        Set<DamageKind> immune, boolean boss, boolean camo, List<String> childMods, Late late) {
 
-    /** Late-game values; a field that is not given keeps the normal one. */
-    public record Late(double hp, double fortifiedHp, List<String> children) {
+    /**
+     * Late-game values; a field that is not given keeps the normal one.
+     *
+     * @param cash          coins the layer pays when popped (a super crystal golem pays 87 instead of 1), before the income factor
+     * @param leak          lives a leaked enemy of this kind costs in total (0: calculated from the layers)
+     * @param fortifiedLeak as {@code leak} when fortified
+     */
+    public record Late(double hp, double fortifiedHp, List<String> children, int cash, int leak, int fortifiedLeak) {
     }
 
     public EnemyDef {
@@ -47,6 +53,11 @@ public record EnemyDef(String id, int index, String btd6, double hp, double fort
 
     public List<String> children(boolean lateGame) {
         return lateGame && late != null ? late.children : children;
+    }
+
+    /** Coins popping this layer pays (before the income factor). */
+    public int popCash(boolean lateGame) {
+        return lateGame && late != null ? late.cash : 1;
     }
 
     public boolean isImmune(DamageKind kind) {

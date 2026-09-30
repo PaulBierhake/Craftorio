@@ -139,9 +139,16 @@ und das Handbuch-Ersatzbuch.
   Fabrik ans Stromnetz hängen und mit Bolzen/Magazinen füttern und Rohöl per Rohr in den Einspeiser leiten. Das Arena-HUD zeigt Vorrat und warnt rot, wenn
   ein Turm keine Versorgung hat; Tooltips der Türme und der Leitfaden-Schritt *Arena-Einspeiser* erklären es.
 - **Level** im Terminal-Tab *Abwehr* starten (optional automatisch weiter): Karte, Regel, Mutator,
-  **Wellenvorschau**, Arena-Vorrat; **Welle rufen** schickt die nächste Welle früher (Bonus-Credits).
-  150 Leben; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); ab Level 6 zufällige **Mutatoren**
-  (Nebel, Eilmarsch, Gehärtet) mit mehr Belohnung.
+  **Rundenvorschau**, Arena-Vorrat; **Nächste Runde jetzt** startet die nächste Runde jederzeit früher (wie in BTD6, ohne Bonus).
+  **Schwierigkeit** (Leicht 200 Leben / Mittel 150 / Schwer 100 / Unbesiegbar 1 Leben; Preis- und Tempofaktoren wie BTD6) wählbar
+  bis zum ersten Level, danach nur nach unten; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); ab Level 6
+  zufällige **Mutatoren** (Nebel, Eilmarsch, Gehärtet) mit mehr Belohnung.
+- **Arena-Münzen (⛁, Paket T2)**: Jedes Team startet mit 650 ⛁. Jede zerstörte Schicht bringt 1 ⛁ (ab Runde 51 weniger: 50 %, 20 %, 10 %, 5 %,
+  4 %, 2 %), das Rundenende 100 + Rundennummer; ein Golem ab Runde 81 zahlt 87 für seine Schicht. Die Werte stimmen für alle 140 Runden mit der
+  Wiki-Spalte „Cash" überein (Unit-Test). Die **Kriegskasse** im Terminal tauscht Credits 1:1 in Münzen (höchstens 100 × Levelnummer pro Level).
+  Ein durchgelassener Gegner kostet so viele Leben wie seine RBE (ab Runde 81 nach der Wiki-Tabelle). Wird ein Level verloren, stellt der
+  **Snapshot** Münzen, Depot und Türme vom Levelstart wieder her. Der Pfad muss **100 bis 160 Blöcke** lang sein; jede Karte hat eine
+  garantierte Schlangenroute dafür (Pfadstab: Schleichen + Klick in die Luft). Münzen werden ab Paket T3 für Turmkäufe gebraucht.
 - **Gegner (Umbau nach Bloons TD 6, Paket T1)**: Ein Level sind zwei Runden der BTD6-Standardliste (Level L = Runden
   2L−1 und 2L, Level 50 endet mit der Schwarmkönigin in Runde 100). Die Gegner sind keine Entities mehr, sondern
   Zahlen in einer Simulation (`TdSimulation`): Krabbler in fünf Stufen, Ruß-, Frost- und Glutkrabbler, Eisenbrecher,
@@ -152,8 +159,7 @@ und das Handbuch-Ersatzbuch.
   Blöcke entlang des Pfades. Daten: `data/craftorio/td_enemies` und `td_rounds`; Spezifikation in `docs/TD-UMBAU.md`.
 - Nach einem Sieg kommen alle Türme mit Stufe, HP und Munition ins **Turmdepot** und die nächste Karte entsteht;
   Arena-Siegel liegen ebenfalls im Depot. Das Depot ist ein
-  Nur-Entnahme-Inventar (Rechtsklick, *Alles nehmen*); unbeschädigte Türme werden repariert und stapeln. Zerstörte Türme werden zu **Ruinen**
-  (Wiederaufbau für Credits, *Alle Türme reparieren* im Terminal).
+  Nur-Entnahme-Inventar (Rechtsklick, *Alles nehmen*); Türme stapeln, wenn sie gleich aufgerüstet sind. Türme haben keine Lebenspunkte mehr (keine Ruinen, keine Reparatur): Gegner greifen sie nie an.
 - Admin-Befehl: `/craftorio arena route` legt den kürzesten Weg (für Tests).
 
 ![Arena von oben](docs/screenshots/arena-draufsicht.png)
@@ -252,7 +258,7 @@ und das Handbuch-Ersatzbuch.
 - **Team-Rechte**: Das erste Mitglied ist die **Teamleitung**. Sie kann Mitglieder entfernen
   (`/craftorio team kick <Spieler>`), die Leitung übergeben (`/craftorio team leader <Spieler>`) und festlegen,
   wer Credits ausgeben darf (`/craftorio team spending all|leader`) – gilt für Baupläne, Turm-Upgrades,
-  Reparaturen und Wiederaufbau. `/craftorio team info` zeigt Leitung und Ausgaberecht.
+  Kriegskasse. `/craftorio team info` zeigt Leitung und Ausgaberecht.
 - **Blockschutz zwischen Teams** (Server-Config `protection.enabled`, Standard an): Maschinen, Türme und alle
   Blöcke mit Inventar gehören dem Team, das sie platziert hat. Andere Teams können sie nicht abbauen oder
   öffnen, Explosionen zerstören sie nicht. Geschützte Blöcke verschiedener Teams dürfen sich **nicht berühren**
@@ -262,8 +268,8 @@ und das Handbuch-Ersatzbuch.
 - **Skalierung**: Die Gegner skalieren nicht mehr mit der Zahl der Spieler (wie in BTD6); die Belohnung bleibt gleich.
 - **Balancing-Test**: Ein GameTest prüft, dass jede Montagestufe und jedes Ofenrezept mit Mengen mindestens 10 % Wert schafft und kein
   Schmelzrezept Wert vernichtet.
-- **EMI** (optional): Kategorien *Montage* und *Bauplan (Werkbank)* mit der nötigen Forschung. **Jade** (optional): Besitzer-Team, Bohrer-Rate, Maschinenfortschritt, Turm-HP/Munition,
-  Ruinen-Kosten, Baustellen- und Aufzugsstatus sowie Ertrag und Wert von Erzfeldern.
+- **EMI** (optional): Kategorien *Montage* und *Bauplan (Werkbank)* mit der nötigen Forschung. **Jade** (optional): Besitzer-Team, Bohrer-Rate, Maschinenfortschritt, Turm-Stufe/Munition,
+  Baustellen- und Aufzugsstatus sowie Ertrag und Wert von Erzfeldern.
   Im Dev-Client mit `./gradlew runClient -Pcompat` laden.
   **Empfehlung für Spieler:** EMI (für 1.21.1/NeoForge, z. B. von Modrinth) einfach zusätzlich in den
   `mods`-Ordner des **Clients** legen – dann zeigt ein Klick auf ein Item (R = Rezept, U = Verwendung), wie man

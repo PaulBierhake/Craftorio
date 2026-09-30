@@ -3,6 +3,7 @@ package de.craftorio.defense;
 import de.craftorio.defense.arena.ArenaLayout;
 import de.craftorio.defense.arena.Mutator;
 import de.craftorio.defense.sim.RoundDef;
+import de.craftorio.defense.sim.RoundRules;
 import de.craftorio.defense.sim.TdPath;
 import de.craftorio.defense.sim.TdSimulation;
 import net.minecraft.core.BlockPos;
@@ -18,8 +19,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * One level in progress: sends out the rounds, tracks lives and runs the {@link TdSimulation} of the enemies. Not
- * persisted – a restart aborts it.
+ * One level in progress: sends out the two rounds, tracks lives and coins and runs the {@link TdSimulation} of the
+ * enemies. Not persisted – a restart aborts it.
  */
 public final class LevelRun {
     public enum Outcome {
@@ -33,38 +34,57 @@ public final class LevelRun {
     public record Arena(int slot, ArenaLayout layout, Mutator mutator) {
     }
 
+    /** A round that has started: its enemies enter one after the other. */
+    private static final class Started {
+        final RoundDef def;
+        final List<RoundDef.Spawn> spawns;
+        int next;
+        int ticks;
+        boolean paid;
+
+        Started(RoundDef def) {
+            this.def = def;
+            this.spawns = def.spawns();
+        }
+
+        boolean spawning() {
+            return next < spawns.size();
+        }
+    }
+
     private final LevelPlan plan;
+    private final Difficulty difficulty;
     private final List<Vec3> points;
     private final BlockPos core;
     private final @Nullable Arena arena;
     private final TdSimulation sim;
     private final Set<Long> forcedChunks = new HashSet<>();
+    private final List<Started> started = new ArrayList<>();
     private @Nullable ServerLevel registeredIn;
-    /** Index of the round that is running or comes next. */
-    private int round;
-    private boolean roundRunning;
-    private List<RoundDef.Spawn> spawns = List.of();
-    private int nextSpawn;
-    private int roundTicks;
+    /** Index of the next round to start. */
+    private int nextRound;
     private int cooldown;
-    private int lives = LevelPlan.LIVES;
+    /** The last started round has sent all its enemies and the rest before the next one is running. */
+    private boolean resting;
+    private int lives;
+    private double coins;
     private boolean finished;
 
     LevelRun(LevelPlan plan, List<Vec3> path, BlockPos core) {
-        this(plan, path, core, null);
+        this(plan, path, core, null, Difficulty.MEDIUM);
     }
 
-    LevelRun(LevelPlan plan, List<Vec3> path, BlockPos core, @Nullable Arena arena) {
+    LevelRun(LevelPlan plan, List<Vec3> path, BlockPos core, @Nullable Arena arena, Difficulty difficulty) {
         this.plan = plan;
+        this.difficulty = difficulty;
         this.points = List.copyOf(path);
         this.core = core;
         this.arena = arena;
+        this.lives = difficulty.lives();
         List<double[]> walk = new ArrayList<>(path.size());
         path.forEach(point -> walk.add(new double[]{point.x, point.y, point.z}));
         this.sim = new TdSimulation(new TdPath(walk));
-        if (arena != null) {
-            sim.setExternalSpeed(arena.mutator().speedFactor());
-        }
+        sim.setExternalSpeed(difficulty.speedFactor() * (arena != null ? arena.mutator().speedFactor() : 1));
     }
 
     public @Nullable Arena arena() {
@@ -73,6 +93,10 @@ public final class LevelRun {
 
     public LevelPlan plan() {
         return plan;
+    }
+
+    public Difficulty difficulty() {
+        return difficulty;
     }
 
     public TdSimulation simulation() {
@@ -86,23 +110,41 @@ public final class LevelRun {
 
     /** The round of the level that is running or comes next, from 1. */
     public int wave() {
-        return Math.min(round + 1, plan.rounds().size());
+        return Math.min(nextRound + (spawningNow() ? 0 : 1), plan.rounds().size());
+    }
+
+    private boolean spawningNow() {
+        return !started.isEmpty() && started.get(started.size() - 1).spawning();
     }
 
     public int lives() {
         return lives;
     }
 
+    public int maxLives() {
+        return difficulty.lives();
+    }
+
     public int enemiesLeft() {
         int unspawned = 0;
-        for (int r = round; r < plan.rounds().size(); r++) {
-            unspawned += plan.rounds().get(r).enemyCount() - (r == round && roundRunning ? nextSpawn : 0);
+        for (int r = nextRound; r < plan.rounds().size(); r++) {
+            unspawned += plan.rounds().get(r).enemyCount();
+        }
+        for (Started round : started) {
+            unspawned += round.spawns.size() - round.next;
         }
         return unspawned + sim.count();
     }
 
     public boolean isFinished() {
         return finished;
+    }
+
+    /** Coins earned since the last call: pops and round bonuses (with fractions). */
+    double takeCoins() {
+        double earned = coins + sim.takeCoins();
+        coins = 0;
+        return earned;
     }
 
     /** Makes the run known to the towers, without claiming chunks (tests with their own track). */
@@ -149,43 +191,60 @@ public final class LevelRun {
         tickRounds();
         sim.tick();
         lives = Math.max(0, lives - sim.takeLeaked());
+        payRoundBonuses();
         if (lives <= 0) {
             return Outcome.LOST;
         }
-        return round >= plan.rounds().size() && !roundRunning && sim.count() == 0 ? Outcome.WON : Outcome.RUNNING;
+        boolean allSent = nextRound >= plan.rounds().size() && !spawningNow();
+        return allSent && sim.count() == 0 ? Outcome.WON : Outcome.RUNNING;
     }
 
-    /** Starts the next round when the rest is over and lets its enemies in one after the other. */
+    /** Starts the next round when the rest is over and lets the enemies of every started round in, one after the other. */
     private void tickRounds() {
-        if (!roundRunning && round < plan.rounds().size()) {
-            if (cooldown > 0) {
-                cooldown--;
-                return;
+        if (nextRound < plan.rounds().size() && !spawningNow()) {
+            if (started.isEmpty()) {
+                startNextRound();
+            } else {
+                if (!resting) { // the last round has just sent its final enemy: rest before the next one
+                    resting = true;
+                    cooldown = LevelPlan.ROUND_DELAY;
+                }
+                if (cooldown > 0) {
+                    cooldown--;
+                } else {
+                    startNextRound();
+                }
             }
-            RoundDef def = plan.rounds().get(round);
-            sim.setRound(def.round());
-            spawns = def.spawns();
-            nextSpawn = 0;
-            roundTicks = 0;
-            roundRunning = true;
         }
-        if (roundRunning) {
-            while (nextSpawn < spawns.size() && spawns.get(nextSpawn).tick() <= roundTicks) {
-                RoundDef.Group group = spawns.get(nextSpawn++).group();
+        for (Started round : started) {
+            while (round.spawning() && round.spawns.get(round.next).tick() <= round.ticks) {
+                RoundDef.Group group = round.spawns.get(round.next++).group();
+                sim.setRound(round.def.round());
                 sim.spawn(group.enemy(), group.camo(), group.regrow(), group.fortified());
             }
-            roundTicks++;
-            if (nextSpawn >= spawns.size()) {
-                roundRunning = false;
-                round++;
-                cooldown = LevelPlan.ROUND_DELAY;
+            round.ticks++;
+        }
+    }
+
+    private void startNextRound() {
+        started.add(new Started(plan.rounds().get(nextRound++)));
+        resting = false;
+        cooldown = 0;
+    }
+
+    /** The end of a round pays 100 plus its number once all its enemies are gone. */
+    private void payRoundBonuses() {
+        for (Started round : started) {
+            if (!round.paid && !round.spawning() && sim.aliveOfRound(round.def.round()) == 0) {
+                round.paid = true;
+                coins += RoundRules.roundBonus(round.def.round());
             }
         }
     }
 
-    /** Between two rounds the next one can be called early. */
+    /** The next round can be started at any time, even while the last one is still going. */
     public boolean canCallWave() {
-        return round > 0 && round < plan.rounds().size() && !roundRunning && cooldown > 0;
+        return nextRound < plan.rounds().size() && !finished;
     }
 
     /** Starts the next round now; returns the ticks of waiting time skipped. */
@@ -194,16 +253,16 @@ public final class LevelRun {
             return 0;
         }
         int skipped = cooldown;
-        cooldown = 0;
-        return skipped;
+        startNextRound();
+        return Math.max(1, skipped);
     }
 
     /** The round that spawns next (or is spawning now), from 0. */
     public int upcomingWave() {
-        return round;
+        return nextRound;
     }
 
-    /** Removes remaining enemies and releases forced chunks. */
+    /** Releases forced chunks; towers no longer see the run. */
     void end(ServerLevel level) {
         finished = true;
         ACTIVE.remove(this);

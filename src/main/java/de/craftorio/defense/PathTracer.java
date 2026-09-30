@@ -10,8 +10,9 @@ import java.util.Set;
  * line: every step has exactly one unvisited neighbour (horizontally adjacent, up to one block higher or lower).
  */
 public final class PathTracer {
-    public static final int MIN_LENGTH = 20;
-    public static final int MAX_LENGTH = 400;
+    /** The path window: the Bloons TD 6 balance assumes a fixed track length. */
+    public static final int MIN_LENGTH = 100;
+    public static final int MAX_LENGTH = 160;
     private static final int[][] HORIZONTAL = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
     private PathTracer() {

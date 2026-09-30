@@ -305,7 +305,7 @@ Referenz-RBE: R45 2.289, R50 3.540, R60 3.164, R80 16.656, R100 67.200.
 
 | Regel | Wert (BTD6) |
 |---|---|
-| Startguthaben der Kampagne | 650 ⛁ *(prüfen)* |
+| Startguthaben der Kampagne | 650 ⛁ (Wiki „Cash" bestätigt) |
 | Pro zerstörter Schicht | 1 ⛁ × Einkommensfaktor (bestätigt: jede Schicht zählt 1, auch die Schicht eines Golems oder einer Brutmutter; Golem mit Kindern 95, Brutmutter 381, Behemoth 1.525) |
 | Rundenbonus | **100 + Rundennummer** (bestätigt: Runde 1 bringt 20 + 101 = 121) |
 | Einkommensfaktor | R1–50: 100 %; R51–60: 50 %; R61–85: 20 %; R86–100: 10 %; R101–120: 5 %; R121–140: 4 %; R141+: 2 % (Wiki „Freeplay" bestätigt) |
@@ -319,16 +319,24 @@ Rundeneinnahmen mit dieser Spalte für Runde 1–100 (Toleranz ±2 %).
 
 Pro Team im Terminal wählbar, bevor Level 1 startet (danach nur nach unten änderbar):
 
-| Stufe | Leben pro Level | Preisfaktor | Belohnung (Credits) |
-|---|---|---|---|
-| Leicht | 200 | ×0,85 | ×0,75 |
-| Mittel (Standard) | 150 | ×1,0 | ×1,0 |
-| Schwer | 100 | ×1,08 | ×1,25 |
-| Unbesiegbar | 1 | ×1,2 | ×1,5 |
+| Stufe | Leben pro Level | Preisfaktor | Gegnertempo | Belohnung (Credits) |
+|---|---|---|---|---|
+| Leicht | 200 | ×0,85 | ×1,0 | ×0,75 |
+| Mittel (Standard) | 150 | ×1,0 | ×1,1 | ×1,0 |
+| Schwer | 100 | ×1,08 | ×1,25 | ×1,25 |
+| Unbesiegbar | 1 | ×1,2 | ×1,25 | ×1,5 |
+
+Leben, Preisfaktoren und Gegnertempo sind gegen die Wiki-Seiten Easy, Medium, Hard und Impoppable geprüft (Leicht:
+Gegner im Grundtempo; Mittel: 10 % schneller als Leicht; Schwer: 25 % schneller als Leicht, rund 13,6 % schneller als
+Mittel; Unbesiegbar: Schwer mit 1 Leben und Preis ×1,2 gegenüber Mittel). Nicht übernommen: Die Brutmutter von Runde 40
+hat in BTD6 nur auf Leicht 133 statt 200 HP; Leicht endet dort in BTD6 auch nach Runde 40, hier laufen alle Stufen bis
+Runde 100. Die Belohnungsfaktoren sind Craftorio-Werte (BTD6 hat keine Credits).
 
 **Leben** gelten pro Level (siehe Entscheidung TD-E3). Ein durchgelassener Gegner kostet so viele Leben wie seine
-**RBE inklusive Kinder**. Für die Boss-Klasse gelten eigene Werte laut Wiki *(prüfen: Brutmutter-Leak)*; ein Leak der
-Boss-Klasse beendet auf Schwer und Unbesiegbar das Level praktisch sofort, wie in BTD6.
+**RBE inklusive Kinder**; ab Runde 81 gilt die Tabelle „Freeplay lives cost" des Wiki (Golem 65, gepanzert 75; Brutmutter
+460/700; Behemoth 2.540/4.200; Koloss 14.160/24.800; Schattenjäger 660/1.100; Schwarmkönigin 50.300/92.900), im Code
+`EnemyDefs.leak`. Ein Leak der Boss-Klasse beendet auf Schwer und Unbesiegbar das Level praktisch sofort, wie in BTD6.
+Ein angeschlagener Gegner kostet nur, was noch von ihm übrig ist.
 
 ### 4.4 Credits und Münzen
 
@@ -394,11 +402,16 @@ Wie BTD6: **Erster, Letzter, Nächster, Stärkster** (ersetzt Schwächster). Tar
 ### 5.4 Pfadlänge
 
 Die BTD6-Balance setzt eine feste Streckenlänge voraus. Der Pfadstab erzwingt deshalb ein **Längenfenster**:
-- Mindestens **100**, höchstens **160 Blöcke** (Standard in BTD6-Karten grob 1.000–1.600 Einheiten *(prüfen)*).
-- Das Level startet nur mit einem Pfad in diesem Fenster; der Kern zeigt die aktuelle Länge an.
-- Die bisherige Grenze `PathTracer.MIN_LENGTH`/`MAX_LENGTH` (20/400) wird ersetzt.
-- `ArenaLayout.generate` muss garantieren, dass ein Pfad von mindestens 100 Blöcken möglich ist (Test über alle Themen
-  und Seeds).
+- Mindestens **100**, höchstens **160 Blöcke**. Prüfung gegen das Wiki: Die Seiten der Karten geben die Streckenlänge
+  in „Red Bloon Seconds" an (Monkey Meadow: Leicht 36,5 s, Mittel 33,2 s, Schwer 29,2 s – das bestätigt nebenbei die
+  Gegnertempi ×1,0 / ×1,1 / ×1,25). Bei 2,5 Blöcken/s für Rot (Leicht) entsprechen 100–160 Blöcke 40–64 s auf Leicht und
+  36–58 s auf Mittel, also dem Bereich der BTD6-Karten.
+- Das Level startet nur mit einem Pfad in diesem Fenster (`PathTracer.MIN_LENGTH`/`MAX_LENGTH` = 100/160); die Meldung
+  nennt die Grenzen, „Weg OK" zeigt die Länge.
+- Jede Karte enthält eine **garantierte Schlangenroute** von 104–124 Blöcken (`ArenaLayout.route()`): drei Bahnen
+  (Ost, West, Ost) mit mindestens drei Reihen Abstand; der Generator räumt sie frei. Der Pfadstab zeigt sie mit
+  Partikeln (Schleichen + Klick in die Luft). Ein Unit-Test prüft für 60 Startwerte × 50 Level und alle Themen, dass die
+  Route im Fenster liegt, keine Kachel blockiert ist und der `PathTracer` sie akzeptiert.
 
 ---
 
@@ -595,7 +608,7 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 | Paket | Inhalt | Akzeptanz |
 |---|---|---|
 | **T1 – Gegner-Engine** ✅ | `TdSimulation` (Bewegung, Schichten, Kinder, Überschaden, Eigenschaften, Immunitäten, Leaks, spätes Spiel), Gegnerdaten §3 als JSON, Netzwerkpaket, Client-Renderer, Entfernen der Gegner-Entities | Unit-Tests für jeden Gegner (RBE aus Kindern = Tabelle), Nachwachsen alle 3 s, Tarnung; Leistungstest 1.000 Gegner |
-| **T2 – Runden, Münzen, Leben** | Rundendaten 1–100, Level = 2 Runden, Münzen und Einkommensfaktor, Rundenbonus, Schwierigkeitsgrade, Leben pro Level, Snapshot/Wiederholung, Kriegskasse, Siegel-Zuordnung, Entfernen von Turm-HP/Ruinen/Reparatur und Spieler-Skalierung, Pfadlängen-Fenster | Unit-Test Rundeneinnahmen gegen Wiki (±2 %); GameTest Level 1 komplett; Pfad < 100 Blöcke wird abgelehnt |
+| **T2 – Runden, Münzen, Leben** ✅ | Rundendaten 1–100, Level = 2 Runden, Münzen und Einkommensfaktor, Rundenbonus, Schwierigkeitsgrade, Leben pro Level, Snapshot/Wiederholung, Kriegskasse, Siegel-Zuordnung, Entfernen von Turm-HP/Ruinen/Reparatur und Spieler-Skalierung, Pfadlängen-Fenster | Unit-Test Rundeneinnahmen gegen Wiki (±2 %); GameTest Level 1 komplett; Pfad < 100 Blöcke wird abgelehnt |
 | **T3 – Turmsystem** | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
 | **T4 – Türme Teil 1** | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
 | **T5 – Türme Teil 2** | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |

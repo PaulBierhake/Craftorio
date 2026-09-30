@@ -12,15 +12,22 @@ import java.util.List;
 /**
  * Server to client, once a second: the team's tower defense status for the HUD and the terminal.
  *
- * @param preview     the next wave as pairs (enemy type ordinal, count)
- * @param canCallWave the next wave can be called early right now
+ * @param coins       arena coins the team has
+ * @param preview     the next round as pairs (enemy code, count), see LevelPlan#previewCode
+ * @param canCallWave the next round can be started early right now
  * @param unsupplied  towers in the arena that can not fire because neither they nor the arena reserve hold ammunition or energy
+ * @param difficulty  ordinal of the team's difficulty
+ * @param maxLives    lives at the start of a level on this difficulty
+ * @param warChestLeft credits that can still be exchanged for coins in this level
+ * @param campaignStarted a level has been started, so the difficulty can only be made easier
  */
 public record TdStatusPayload(boolean hasZone, int level, boolean running, int wave, int waves, int lives,
-                              int enemiesLeft, boolean auto, long repairCost, int theme, int mutator, int lastStars,
-                              List<Integer> preview, long energy, int bolts, int cartridges, boolean canCallWave, int unsupplied)
+                              int enemiesLeft, boolean auto, long coins, int theme, int mutator, int lastStars,
+                              List<Integer> preview, long energy, int bolts, int cartridges, boolean canCallWave, int unsupplied,
+                              int difficulty, int maxLives, long warChestLeft, boolean campaignStarted)
         implements CustomPacketPayload {
-    public static final TdStatusPayload NONE = new TdStatusPayload(false, 1, false, 0, 0, 0, 0, false, 0, 0, 0, 0, List.of(), 0, 0, 0, false, 0);
+    public static final TdStatusPayload NONE = new TdStatusPayload(false, 1, false, 0, 0, 0, 0, false, 0, 0, 0, 0, List.of(), 0, 0, 0, false, 0,
+            1, 150, 0, false);
     public static final Type<TdStatusPayload> TYPE = new Type<>(Craftorio.id("td_status"));
 
     public static final StreamCodec<ByteBuf, TdStatusPayload> STREAM_CODEC = StreamCodec.of(
@@ -34,7 +41,7 @@ public record TdStatusPayload(boolean hasZone, int level, boolean running, int w
                 out.writeVarInt(payload.lives);
                 out.writeVarInt(payload.enemiesLeft);
                 out.writeBoolean(payload.auto);
-                out.writeVarLong(payload.repairCost);
+                out.writeVarLong(payload.coins);
                 out.writeVarInt(payload.theme);
                 out.writeVarInt(payload.mutator);
                 out.writeVarInt(payload.lastStars);
@@ -45,6 +52,10 @@ public record TdStatusPayload(boolean hasZone, int level, boolean running, int w
                 out.writeVarInt(payload.cartridges);
                 out.writeBoolean(payload.canCallWave);
                 out.writeVarInt(payload.unsupplied);
+                out.writeVarInt(payload.difficulty);
+                out.writeVarInt(payload.maxLives);
+                out.writeVarLong(payload.warChestLeft);
+                out.writeBoolean(payload.campaignStarted);
             },
             buf -> {
                 FriendlyByteBuf in = new FriendlyByteBuf(buf);
@@ -56,7 +67,7 @@ public record TdStatusPayload(boolean hasZone, int level, boolean running, int w
                 int lives = in.readVarInt();
                 int enemiesLeft = in.readVarInt();
                 boolean auto = in.readBoolean();
-                long repairCost = in.readVarLong();
+                long coins = in.readVarLong();
                 int theme = in.readVarInt();
                 int mutator = in.readVarInt();
                 int lastStars = in.readVarInt();
@@ -65,8 +76,18 @@ public record TdStatusPayload(boolean hasZone, int level, boolean running, int w
                 for (int i = 0; i < size; i++) {
                     preview.add(in.readVarInt());
                 }
-                return new TdStatusPayload(hasZone, level, running, wave, waves, lives, enemiesLeft, auto, repairCost, theme, mutator,
-                        lastStars, List.copyOf(preview), in.readVarLong(), in.readVarInt(), in.readVarInt(), in.readBoolean(), in.readVarInt());
+                long energy = in.readVarLong();
+                int bolts = in.readVarInt();
+                int cartridges = in.readVarInt();
+                boolean canCallWave = in.readBoolean();
+                int unsupplied = in.readVarInt();
+                int difficulty = in.readVarInt();
+                int maxLives = in.readVarInt();
+                long warChestLeft = in.readVarLong();
+                boolean campaignStarted = in.readBoolean();
+                return new TdStatusPayload(hasZone, level, running, wave, waves, lives, enemiesLeft, auto, coins, theme, mutator,
+                        lastStars, List.copyOf(preview), energy, bolts, cartridges, canCallWave, unsupplied, difficulty, maxLives,
+                        warChestLeft, campaignStarted);
             });
 
     @Override

@@ -12,7 +12,8 @@ import java.util.Map;
  * Pure logic so the difficulty curve can be unit tested.
  */
 public record LevelPlan(int level, List<RoundDef> rounds, long reward, KeyReward keyReward) {
-    public static final int LIVES = 150;
+    /** Lives on the standard difficulty; see {@link Difficulty}. */
+    public static final int LIVES = Difficulty.MEDIUM.lives();
     /** Ticks of rest between the two rounds of a level. */
     public static final int ROUND_DELAY = 200;
     public static final int ROUNDS_PER_LEVEL = 2;
@@ -59,21 +60,20 @@ public record LevelPlan(int level, List<RoundDef> rounds, long reward, KeyReward
     }
 
     /** 3 stars for no lost life, 2 for at least half of the lives left, otherwise 1. */
-    public static int stars(int livesLeft) {
-        if (livesLeft >= LIVES) {
+    public static int stars(int livesLeft, int maxLives) {
+        if (livesLeft >= maxLives) {
             return 3;
         }
-        return livesLeft * 2 >= LIVES ? 2 : 1;
+        return livesLeft * 2 >= maxLives ? 2 : 1;
+    }
+
+    public static int stars(int livesLeft) {
+        return stars(livesLeft, LIVES);
     }
 
     /** Extra credits for stars: +25 % of the reward per star above the first. */
     public static long starBonus(long reward, int stars) {
         return reward * Math.max(0, stars - 1) / 4;
-    }
-
-    /** Credits for calling the next round early: per second skipped, growing with the level. */
-    public static long earlyCallBonus(int level, int ticksSkipped) {
-        return (long) (ticksSkipped / 20) * (2 + level / 5);
     }
 
     /** Code of an enemy group in packets: the enemy's index, the modifier bits (1 camo, 2 regrow, 4 fortified) above it. */

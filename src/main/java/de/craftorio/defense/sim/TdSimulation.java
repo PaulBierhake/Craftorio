@@ -27,6 +27,9 @@ public final class TdSimulation {
     private int leaked;
     private int pops;
     private int paidPops;
+    private double coins;
+    /** Living enemies by the round they came from. */
+    private final java.util.Map<Integer, Integer> aliveByRound = new java.util.HashMap<>();
 
     public TdSimulation(TdPath path) {
         this.path = path;
@@ -118,6 +121,8 @@ public final class TdSimulation {
         enemy.regrow = regrow && !def.boss();
         enemy.fortified = fortified && def.canBeFortified();
         enemy.regrowTop = def.id();
+        enemy.spawnRound = round;
+        aliveByRound.merge(round, 1, Integer::sum);
         enemy.hp = layerHp(def, enemy.fortified);
         place(enemy, 0, 0);
         refreshRbe(enemy);
@@ -168,7 +173,7 @@ public final class TdSimulation {
             enemy.distance += enemy.def.blocksPerTick() * enemy.speedFactor * factor;
             if (enemy.distance >= path.length()) {
                 leaked += lifeCost(enemy);
-                enemy.alive = false;
+                retire(enemy);
                 removed = true;
                 continue;
             }
@@ -198,9 +203,23 @@ public final class TdSimulation {
         refreshRbe(enemy);
     }
 
-    /** Lives a leaking enemy costs: its RBE (at least 1). */
+    /** Lives a leaking enemy costs: what is left of it with all its children (at least 1); see {@link EnemyDefs#leak}. */
     public int lifeCost(SimEnemy enemy) {
-        return (int) Math.max(1, Math.round(enemy.rbe));
+        boolean fortified = enemy.fortified && enemy.def.canBeFortified();
+        double total = EnemyDefs.leak(enemy.def, late, fortified);
+        double missing = (layerHp(enemy.def, fortified) - enemy.hp) / (enemy.def.boss() ? hpFactor : 1);
+        return (int) Math.max(1, Math.round(total - missing));
+    }
+
+    /** The enemy is gone (popped or leaked). */
+    private void retire(SimEnemy enemy) {
+        enemy.alive = false;
+        aliveByRound.merge(enemy.spawnRound, -1, Integer::sum);
+    }
+
+    /** Enemies still alive that entered in this round or (with their children) came from it. */
+    public int aliveOfRound(int round) {
+        return Math.max(0, aliveByRound.getOrDefault(round, 0));
     }
 
     private void compact() {
@@ -246,6 +265,7 @@ public final class TdSimulation {
             if (!free) {
                 paid++;
                 paidPops++;
+                coins += enemy.def.popCash(late) * RoundRules.incomeFactor(enemy.spawnRound);
             }
             if (excess > EPSILON && !enemy.def.boss()) {
                 for (SimEnemy child : children) {
@@ -258,7 +278,7 @@ public final class TdSimulation {
 
     /** Destroys the enemy's current layer and releases its children in its place. */
     private List<SimEnemy> pop(SimEnemy enemy) {
-        enemy.alive = false;
+        retire(enemy);
         dirty = true;
         List<String> kinds = enemy.def.children(late);
         if (kinds.isEmpty()) {
@@ -275,6 +295,8 @@ public final class TdSimulation {
             child.regrow = !def.boss() && (enemy.regrow || enemy.def.childMods().contains("regrow"));
             child.regrowTop = boss ? def.id() : enemy.regrowTop;
             child.freeLayers = Math.max(0, enemy.freeLayers - 1);
+            child.spawnRound = enemy.spawnRound;
+            aliveByRound.merge(child.spawnRound, 1, Integer::sum);
             child.hp = layerHp(def, child.fortified);
             child.speedFactor = enemy.speedFactor;
             place(child, enemy.distance, enemy.segment);
@@ -306,6 +328,13 @@ public final class TdSimulation {
     /** Layers popped so far that paid a coin. */
     public int paidPops() {
         return paidPops;
+    }
+
+    /** Coins earned by pops since the last call (fractions are kept). */
+    public double takeCoins() {
+        double earned = coins;
+        coins = 0;
+        return earned;
     }
 
     /** Lives lost to leaks since the last call. */

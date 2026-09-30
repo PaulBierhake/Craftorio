@@ -70,8 +70,7 @@ public final class ArenaRules {
             return;
         }
         BlockState state = event.getState();
-        boolean removable = state.is(ModBlocks.PATH_BLOCK.get()) || state.getBlock() instanceof TowerBlock
-                || state.is(ModBlocks.TOWER_RUIN.get());
+        boolean removable = state.is(ModBlocks.PATH_BLOCK.get()) || state.getBlock() instanceof TowerBlock;
         String error = removable ? TowerDefense.get(level.getServer()).pathEditError(player, event.getPos()) : "craftorio.arena.error.no_building";
         if (error != null) {
             player.displayClientMessage(Component.translatable(error).withStyle(ChatFormatting.RED), true);

@@ -1,6 +1,6 @@
 package de.craftorio.defense;
 
-/** Upgrade levels I–V: each level adds 30 % damage and 25 % health; repairs cost one credit per missing hit point. */
+/** Upgrade levels I–V: each level adds 30 % damage (a stand-in until the towers of the rebuild, T3–T5). */
 public final class TowerStats {
     public static final int MAX_LEVEL = 5;
 
@@ -29,10 +29,6 @@ public final class TowerStats {
         return (int) Math.max(1, Math.round(damage(type, level) * factor / 4));
     }
 
-    public static int maxHealth(TowerType type, int level) {
-        return (int) Math.round(type.health() * (1 + 0.25 * (level - 1)));
-    }
-
     public static long upgradeCredits(int toLevel) {
         return UPGRADE_CREDITS[toLevel];
     }
@@ -50,12 +46,8 @@ public final class TowerStats {
         };
     }
 
-    /** A tower of level 1 with full health, like a freshly built one. */
-    public static boolean isPristine(TowerType type, int level, int health) {
-        return level <= 1 && health >= maxHealth(type, 1);
-    }
-
-    public static long repairCost(int health, int maxHealth) {
-        return Math.max(0, maxHealth - health);
+    /** A tower of level 1, like a freshly built one. */
+    public static boolean isPristine(int level) {
+        return level <= 1;
     }
 }

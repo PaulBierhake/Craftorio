@@ -15,6 +15,9 @@
     "fortified_hp": 120,
     "children": [
       "shimmer_crawler"
-    ]
+    ],
+    "cash": 87,
+    "leak": 65,
+    "fortified_leak": 75
   }
 }

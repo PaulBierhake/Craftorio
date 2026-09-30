@@ -7,6 +7,7 @@ import de.craftorio.research.Research;
 import de.craftorio.research.ResearchRules;
 import de.craftorio.research.Researches;
 import de.craftorio.defense.sim.EnemyDefs;
+import de.craftorio.defense.Difficulty;
 import de.craftorio.defense.LevelPlan;
 import de.craftorio.defense.arena.ArenaTheme;
 import de.craftorio.defense.arena.Mutator;
@@ -35,7 +36,9 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     private Tab tab = Tab.RESEARCH;
     private Button startButton;
     private Button autoButton;
-    private Button repairButton;
+    private Button difficultyButton;
+    private Button warChestSmallButton;
+    private Button warChestLargeButton;
     private Button callButton;
     private Button sealsButton;
     private Button handbookButton;
@@ -61,20 +64,27 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
                 .bounds(leftPos + 130, topPos + 17, 58, 14).build());
         addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.tab.quests"), button -> showQuests())
                 .bounds(leftPos + 190, topPos + 17, 58, 14).build());
+        warChestSmallButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.td.button.warchest", 100), button -> sendButton(TerminalMenu.TD_WAR_CHEST_SMALL))
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.td.warchest.hint")))
+                .bounds(leftPos + 12, topPos + 118, 74, 16).build());
+        warChestLargeButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.td.button.warchest", "1.000"), button -> sendButton(TerminalMenu.TD_WAR_CHEST_LARGE))
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.td.warchest.hint")))
+                .bounds(leftPos + 91, topPos + 118, 74, 16).build());
+        difficultyButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_DIFFICULTY))
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.td.difficulty.hint")))
+                .bounds(leftPos + 170, topPos + 118, 74, 16).build());
         startButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_START))
-                .bounds(leftPos + 12, topPos + 150, 110, 18).build());
+                .bounds(leftPos + 12, topPos + 138, 110, 18).build());
         autoButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_TOGGLE_AUTO))
-                .bounds(leftPos + 128, topPos + 150, 116, 18).build());
-        repairButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_REPAIR_ALL))
-                .bounds(leftPos + 12, topPos + 172, 150, 18).build());
+                .bounds(leftPos + 128, topPos + 138, 116, 18).build());
         callButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.td.button.call"), button -> sendButton(TerminalMenu.TD_CALL_WAVE))
-                .bounds(leftPos + 166, topPos + 172, 78, 18).build());
+                .bounds(leftPos + 12, topPos + 160, 232, 18).build());
         sealsButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.claim.seals_button"), button -> sendButton(TerminalMenu.CLAIM_SEALS))
                 .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.terminal.claim.seals_hint")))
-                .bounds(leftPos + 12, topPos + 193, 110, 14).build());
+                .bounds(leftPos + 12, topPos + 183, 110, 14).build());
         handbookButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.claim.handbook_button"), button -> sendButton(TerminalMenu.CLAIM_HANDBOOK))
                 .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.terminal.claim.handbook_hint")))
-                .bounds(leftPos + 128, topPos + 193, 116, 14).build());
+                .bounds(leftPos + 128, topPos + 183, 116, 14).build());
     }
 
     @Override
@@ -87,15 +97,19 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         super.containerTick();
         TdStatusPayload td = ClientTdState.status();
         boolean defense = tab == Tab.DEFENSE;
-        startButton.visible = autoButton.visible = repairButton.visible = callButton.visible = defense;
+        startButton.visible = autoButton.visible = callButton.visible = defense;
+        difficultyButton.visible = warChestSmallButton.visible = warChestLargeButton.visible = defense;
         sealsButton.visible = handbookButton.visible = defense;
         callButton.active = td.canCallWave();
         startButton.active = td.hasZone() && !td.running();
         startButton.setMessage(Component.translatable("craftorio.td.button.start", td.level()));
         autoButton.active = td.hasZone();
         autoButton.setMessage(Component.translatable(td.auto() ? "craftorio.td.button.auto_on" : "craftorio.td.button.auto_off"));
-        repairButton.active = td.hasZone() && td.repairCost() > 0 && !td.running();
-        repairButton.setMessage(Component.translatable("craftorio.td.button.repair", Credits.format(td.repairCost())));
+        Difficulty difficulty = Difficulty.byOrdinal(td.difficulty());
+        difficultyButton.active = td.hasZone() && !td.running() && (!td.campaignStarted() || difficulty != Difficulty.EASY);
+        difficultyButton.setMessage(Component.translatable("craftorio.td.button.difficulty",
+                Component.translatable("craftorio.td.difficulty." + difficulty.name().toLowerCase())));
+        warChestSmallButton.active = warChestLargeButton.active = td.hasZone() && td.warChestLeft() > 0;
     }
 
     /** The terminal has no blueprint list; its research rows are drawn by {@link #renderResearch}. */
@@ -338,7 +352,9 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             return;
         }
         String theme = ArenaTheme.values()[Math.floorMod(td.theme(), ArenaTheme.values().length)].name().toLowerCase();
-        line(graphics, "craftorio.td.next_level", String.valueOf(td.level()), x, y);
+        Difficulty difficulty = Difficulty.byOrdinal(td.difficulty());
+        line(graphics, "craftorio.td.next_level", td.level() + " · " + Component.translatable("craftorio.td.difficulty."
+                + difficulty.name().toLowerCase()).getString(), x, y);
         line(graphics, "craftorio.td.map", Component.translatable("craftorio.arena.theme." + theme).getString(), x, y + 11);
         Mutator mutator = Mutator.values()[Math.floorMod(td.mutator(), Mutator.values().length)];
         if (mutator != Mutator.NONE) {
@@ -348,17 +364,16 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
             graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.arena.theme." + theme + ".rule").getString(),
                     imageWidth - 24), x, y + 22, GRAY, false);
         }
+        graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.td.coins", Credits.formatNumber(td.coins()),
+                Credits.formatNumber(td.warChestLeft())).getString(), imageWidth - 24), x, y + 33, GOLD, false);
         if (td.running()) {
-            line(graphics, "craftorio.td.wave", td.wave() + " / " + td.waves(), x, y + 34);
-            line(graphics, "craftorio.td.lives", td.lives() + " / " + LevelPlan.LIVES, x, y + 45);
-            line(graphics, "craftorio.td.enemies", String.valueOf(td.enemiesLeft()), x, y + 56);
+            graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.td.running", td.wave(), td.waves(), td.lives(),
+                    td.maxLives(), td.enemiesLeft()).getString(), imageWidth - 24), x, y + 44, 0xFFFFFF, false);
         } else {
-            line(graphics, "craftorio.td.reward", Credits.format(LevelPlan.of(td.level(), 1).reward()), x, y + 34);
-            line(graphics, "craftorio.td.milestone", Component.translatable("craftorio.td.milestone.in",
-                    10 - (td.level() - 1) % 10).getString(), x, y + 45);
-            if (td.lastStars() > 0) {
-                line(graphics, "craftorio.td.last_stars", "★".repeat(td.lastStars()) + "☆".repeat(3 - td.lastStars()), x, y + 56);
-            }
+            String stars = td.lastStars() > 0 ? "  " + "★".repeat(td.lastStars()) + "☆".repeat(3 - td.lastStars()) : "";
+            graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.td.reward_line",
+                    Credits.format(Math.round(LevelPlan.of(td.level(), 1).reward() * difficulty.rewardFactor())), td.maxLives()).getString() + stars,
+                    imageWidth - 24), x, y + 44, 0xFFFFFF, false);
         }
         StringBuilder preview = new StringBuilder();
         for (int i = 0; i + 1 < td.preview().size(); i += 2) {
@@ -382,10 +397,10 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
                 preview.append(" (").append(String.join(", ", modifiers)).append(")");
             }
         }
-        graphics.drawString(font, Component.translatable("craftorio.td.preview"), x, y + 69, GRAY, false);
-        graphics.drawString(font, font.plainSubstrByWidth(preview.toString(), imageWidth - 24), x, y + 80, 0xFFFFFF, false);
+        graphics.drawString(font, Component.translatable("craftorio.td.preview"), x, y + 55, GRAY, false);
+        graphics.drawString(font, font.plainSubstrByWidth(preview.toString(), imageWidth - 24), x, y + 66, 0xFFFFFF, false);
         graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.td.reserves", Credits.formatNumber(td.energy()),
-                td.bolts(), td.cartridges()).getString(), imageWidth - 24), x, y + 94, GRAY, false);
+                td.bolts(), td.cartridges()).getString(), imageWidth - 24), x, y + 79, GRAY, false);
     }
 
     private void renderStats(GuiGraphics graphics) {

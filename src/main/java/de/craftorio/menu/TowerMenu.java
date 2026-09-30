@@ -12,7 +12,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class TowerMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 6;
+    public static final int DATA_COUNT = 4;
     public static final int BUTTON_UPGRADE = 0;
     public static final int BUTTON_TARGET = 1;
     public static final int AMMO_X = 26;
@@ -41,24 +41,16 @@ public final class TowerMenu extends MachineMenuBase {
         return tower;
     }
 
-    public int health() {
-        return (short) data.get(0);
-    }
-
-    public int maxHealth() {
-        return data.get(1);
-    }
-
     public int upgradeLevel() {
-        return data.get(2);
+        return data.get(0);
     }
 
     public int energy() {
-        return SplitIntData.join(data.get(3), data.get(4));
+        return SplitIntData.join(data.get(1), data.get(2));
     }
 
     public TargetMode targetMode() {
-        return TargetMode.values()[Math.floorMod(data.get(5), TargetMode.values().length)];
+        return TargetMode.values()[Math.floorMod(data.get(3), TargetMode.values().length)];
     }
 
     @Override

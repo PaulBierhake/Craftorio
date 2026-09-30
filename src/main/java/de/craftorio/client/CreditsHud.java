@@ -1,6 +1,5 @@
 package de.craftorio.client;
 
-import de.craftorio.defense.LevelPlan;
 import de.craftorio.defense.arena.Arenas;
 import de.craftorio.economy.Credits;
 import de.craftorio.network.TdStatusPayload;
@@ -37,7 +36,11 @@ public final class CreditsHud {
         TdStatusPayload td = ClientTdState.status();
         if (td.running()) {
             graphics.drawString(minecraft.font, Component.translatable("craftorio.hud.td", td.level(), td.wave(), td.waves(),
-                    td.lives(), LevelPlan.LIVES, td.enemiesLeft()), 6, y, td.lives() <= 5 ? 0xFF6B6B : 0xFFFFFF, true);
+                    td.lives(), td.maxLives(), td.enemiesLeft()), 6, y, td.lives() * 10 <= td.maxLives() ? 0xFF6B6B : 0xFFFFFF, true);
+            y += 11;
+        }
+        if (td.hasZone() && minecraft.level != null && minecraft.level.dimension() == Arenas.DIMENSION) {
+            graphics.drawString(minecraft.font, Component.translatable("craftorio.hud.coins", Credits.formatNumber(td.coins())), 6, y, 0xFFD54F, true);
             y += 11;
         }
         if (td.hasZone() && minecraft.level != null && minecraft.level.dimension() == Arenas.DIMENSION) {

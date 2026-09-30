@@ -16,13 +16,12 @@ public final class ModDataComponents {
     public static final DeferredRegister.DataComponents COMPONENTS =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Craftorio.MOD_ID);
 
-    /** Upgrade level and health of a tower carried as an item; health 0 means it is a ruin. */
-    public record TowerState(int level, int health) {
+    /** Upgrade level of a tower carried as an item (old items also stored the health of the tower, which is ignored now). */
+    public record TowerState(int level) {
         public static final Codec<TowerState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.INT.fieldOf("level").forGetter(TowerState::level),
-                Codec.INT.fieldOf("health").forGetter(TowerState::health)).apply(instance, TowerState::new));
+                Codec.INT.fieldOf("level").forGetter(TowerState::level)).apply(instance, TowerState::new));
         public static final StreamCodec<ByteBuf, TowerState> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT, TowerState::level, ByteBufCodecs.VAR_INT, TowerState::health, TowerState::new);
+                ByteBufCodecs.VAR_INT, TowerState::level, TowerState::new);
     }
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<TowerState>> TOWER_STATE =

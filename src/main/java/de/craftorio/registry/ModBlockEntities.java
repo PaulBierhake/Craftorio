@@ -5,7 +5,6 @@ import de.craftorio.defense.arena.ArenaFeederBlockEntity;
 import de.craftorio.Craftorio;
 import de.craftorio.economy.block.TradingPostBlockEntity;
 import de.craftorio.defense.TowerBlockEntity;
-import de.craftorio.defense.TowerRuinBlockEntity;
 import de.craftorio.energy.PowerPoleBlockEntity;
 import de.craftorio.machine.ProcessingMachineBlockEntity;
 import de.craftorio.research.LaboratoryBlockEntity;
@@ -84,10 +83,6 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(TowerBlockEntity::new,
                     ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get(),
                     ModBlocks.LASER_TOWER.get(), ModBlocks.FLAMETHROWER_TURRET.get()).build(null));
-
-    @SuppressWarnings("DataFlowIssue")
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TowerRuinBlockEntity>> TOWER_RUIN = BLOCK_ENTITIES.register("tower_ruin",
-            () -> BlockEntityType.Builder.of(TowerRuinBlockEntity::new, ModBlocks.TOWER_RUIN.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CaveEntranceBlockEntity>> CAVE_ENTRANCE = BLOCK_ENTITIES.register("cave_entrance",

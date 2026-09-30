@@ -21,8 +21,12 @@ import java.util.UUID;
 public final class TerminalMenu extends AbstractContainerMenu {
     public static final int TD_START = 10_000;
     public static final int TD_TOGGLE_AUTO = 10_001;
-    public static final int TD_REPAIR_ALL = 10_002;
+    /** Next difficulty; before the first level any, afterwards only an easier one. */
+    public static final int TD_DIFFICULTY = 10_002;
     public static final int TD_CALL_WAVE = 10_003;
+    /** Credits for coins at 1:1, 100 or 1,000 at a time (limited per level). */
+    public static final int TD_WAR_CHEST_SMALL = 10_006;
+    public static final int TD_WAR_CHEST_LARGE = 10_007;
     /** Lost seals and the lost handbook are handed out again. */
     public static final int CLAIM_SEALS = 10_004;
     public static final int CLAIM_HANDBOOK = 10_005;
@@ -74,9 +78,10 @@ public final class TerminalMenu extends AbstractContainerMenu {
                 }
                 serverPlayer.displayClientMessage(Component.translatable(has ? "craftorio.terminal.claim.has_handbook" : "craftorio.terminal.claim.handbook"), true);
             }
-            case TD_REPAIR_ALL -> {
+            case TD_DIFFICULTY -> serverPlayer.displayClientMessage(defense.cycleDifficulty(team), true);
+            case TD_WAR_CHEST_SMALL, TD_WAR_CHEST_LARGE -> {
                 if (TeamData.maySpend(serverPlayer)) {
-                    serverPlayer.displayClientMessage(defense.repairAll(serverPlayer.server, team), true);
+                    serverPlayer.displayClientMessage(defense.exchangeCredits(serverPlayer.server, team, id == TD_WAR_CHEST_SMALL ? 100 : 1_000), true);
                 }
             }
             default -> {

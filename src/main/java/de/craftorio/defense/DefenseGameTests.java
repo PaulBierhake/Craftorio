@@ -46,13 +46,20 @@ public final class DefenseGameTests {
 
     /** A straight track through the test area with a run the towers can see; the test's ticks move the enemies. */
     private static LevelRun track(GameTestHelper helper, int level) {
+        return track(helper, level, true);
+    }
+
+    /** As {@link #track(GameTestHelper, int)}; without {@code tickSimulation} the test runs the whole level itself. */
+    private static LevelRun track(GameTestHelper helper, int level, boolean tickSimulation) {
         List<Vec3> path = new ArrayList<>();
         for (int x = 1; x <= 15; x++) {
             path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
         }
         LevelRun run = new LevelRun(LevelPlan.of(level, 1), path, helper.absolutePos(new BlockPos(15, 1, 8)));
         run.register(helper.getLevel());
-        helper.onEachTick(() -> run.simulation().tick());
+        if (tickSimulation) {
+            helper.onEachTick(() -> run.simulation().tick());
+        }
         return run;
     }
 
@@ -168,26 +175,6 @@ public final class DefenseGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void destroyedTowerBecomesRuinAndRebuildsWithItsLevel(GameTestHelper helper) {
-        BlockPos pos = new BlockPos(2, 1, 2);
-        helper.setBlock(pos, ModBlocks.GUN_TURRET.get());
-        TowerBlockEntity tower = helper.getBlockEntity(pos);
-        tower.restore(3);
-
-        tower.damage(10_000);
-        helper.assertBlockPresent(ModBlocks.TOWER_RUIN.get(), pos);
-        TowerRuinBlockEntity ruin = helper.getBlockEntity(pos);
-        helper.assertValueEqual(ruin.rebuildCost(), TowerType.GUN.rebuildCost(), "rebuild cost");
-
-        ruin.rebuild();
-        helper.assertBlockPresent(ModBlocks.GUN_TURRET.get(), pos);
-        TowerBlockEntity rebuilt = helper.getBlockEntity(pos);
-        helper.assertValueEqual(rebuilt.upgradeLevel(), 3, "upgrade level kept");
-        helper.assertValueEqual(rebuilt.health(), rebuilt.maxHealth(), "full health after rebuild");
-        helper.succeed();
-    }
-
-    @GameTest(template = EMPTY)
     public static void upgradeCostsCreditsAndMaterials(GameTestHelper helper) {
         ServerPlayer player = helper.makeMockServerPlayerInLevel();
         TeamRegistry registry = TeamData.registry(player.server);
@@ -202,11 +189,10 @@ public final class DefenseGameTests {
         helper.assertTrue(tower.upgrade(player), "upgrade to level 2");
         helper.assertValueEqual(tower.upgradeLevel(), 2, "level");
         helper.assertValueEqual(team.balance(), 50L, "credits left");
-        helper.assertValueEqual(tower.maxHealth(), 125, "health of a level 2 crossbow tower");
         helper.succeed();
     }
 
-    @GameTest(template = LARGE, timeoutTicks = 2000, batch = "defense_win")
+    @GameTest(template = LARGE, timeoutTicks = 3600, batch = "defense_win")
     public static void defendedLevelIsWonPaysRewardAndChangesTheMap(GameTestHelper helper) {
         Setup setup = buildArena(helper, "WinTest");
         ServerLevel arena = TowerDefense.arena(setup.player.server);
@@ -220,7 +206,7 @@ public final class DefenseGameTests {
                 if (placed < 8 && tile[0] % 5 == 2 && layout.tile(x, z) == Tile.GROUND && arena.getBlockState(pos).canBeReplaced()) {
                     arena.setBlock(pos, ModBlocks.CROSSBOW_TOWER.get().defaultBlockState(), 3);
                     if (arena.getBlockEntity(pos) instanceof TowerBlockEntity tower) {
-                        tower.restore(TowerStats.MAX_LEVEL);
+                        tower.setUpgradeLevel(TowerStats.MAX_LEVEL);
                         tower.ammo().insertItem(0, new ItemStack(ModItems.BOLT.get(), 64), false);
                         placed++;
                     }
@@ -235,6 +221,8 @@ public final class DefenseGameTests {
         helper.succeedWhen(() -> {
             helper.assertValueEqual(setup.zone().level(), 2, "next level");
             helper.assertTrue(setup.team.balance() >= LevelPlan.of(1, 1).reward(), "reward paid");
+            // both rounds paid their bonus (101 + 102) and the pops paid coins
+            helper.assertTrue(setup.zone().coins() >= 650 + 101 + 102 + 30, "coins " + setup.zone().coins());
             helper.assertTrue(TowerDefense.findTowers(arena, TowerDefense.arenaMin(setup.zone().slot()),
                     TowerDefense.arenaMax(setup.zone().slot())).isEmpty(), "towers packed up for the new map");
             helper.assertTrue(setup.defense.checkPath(arena, setup.zone()).path() == null, "old path removed");
@@ -243,16 +231,153 @@ public final class DefenseGameTests {
     }
 
     @GameTest(template = LARGE, timeoutTicks = 2000, batch = "defense_lose")
-    public static void undefendedLevelIsLost(GameTestHelper helper) {
+    public static void undefendedLevelIsLostAndTheSnapshotComesBack(GameTestHelper helper) {
         Setup setup = buildArena(helper, "LoseTest", 25); // the enemies of level 25 cost more than 150 lives
+        ServerLevel arena = TowerDefense.arena(setup.player.server);
+        BlockPos towerPos = Arenas.field(setup.zone().slot(), 2, 2, Arenas.BUILD_Y);
+        arena.setBlock(towerPos, ModBlocks.CROSSBOW_TOWER.get().defaultBlockState(), 3);
+        ((TowerBlockEntity) arena.getBlockEntity(towerPos)).setUpgradeLevel(3);
+        setup.defense.setCoins(setup.zone(), 1_234);
         setup.defense.start(setup.player.server, setup.team.id());
         helper.assertTrue(setup.zone().run().isPresent(), "level did not start");
+        arena.setBlock(towerPos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3); // gone during the level
+        setup.defense.setCoins(setup.zone(), 99_999);
 
         helper.succeedWhen(() -> {
             helper.assertTrue(setup.zone().run().isEmpty(), "level still running");
             helper.assertValueEqual(setup.zone().level(), 25, "level must not advance");
             helper.assertValueEqual(setup.team.balance(), 0L, "no reward");
+            helper.assertValueEqual(setup.zone().coins(), 1_234L, "the coins of the start are back");
+            helper.assertTrue(arena.getBlockEntity(towerPos) instanceof TowerBlockEntity tower && tower.upgradeLevel() == 3,
+                    "the tower is back with its level");
         });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 2400, batch = "defense_lose")
+    public static void theDifficultyCanOnlyBeMadeEasierAfterTheFirstLevel(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "DifficultyTest", 25);
+        UUID team = setup.team.id();
+        helper.assertValueEqual(setup.zone().difficulty(), Difficulty.MEDIUM, "standard difficulty");
+        setup.defense.setDifficulty(team, Difficulty.HARD);
+        helper.assertValueEqual(setup.zone().difficulty(), Difficulty.HARD, "any difficulty before the first level");
+        setup.defense.cycleDifficulty(team);
+        helper.assertValueEqual(setup.zone().difficulty(), Difficulty.IMPOPPABLE, "cycled");
+        setup.defense.setDifficulty(team, Difficulty.HARD);
+        setup.defense.start(setup.player.server, team);
+        helper.assertTrue(setup.zone().run().isPresent(), "level did not start");
+        helper.assertValueEqual(setup.zone().run().get().maxLives(), 100, "hard: 100 lives");
+        helper.assertValueEqual(setup.zone().run().get().difficulty(), Difficulty.HARD, "the run knows it");
+        setup.defense.setDifficulty(team, Difficulty.EASY);
+        helper.assertValueEqual(setup.zone().difficulty(), Difficulty.HARD, "not while a level runs");
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(setup.zone().run().isEmpty(), "level still running");
+            helper.assertTrue(setup.zone().campaignStarted(), "campaign started");
+            setup.defense.setDifficulty(team, Difficulty.IMPOPPABLE);
+            helper.assertValueEqual(setup.zone().difficulty(), Difficulty.HARD, "no harder difficulty afterwards");
+            setup.defense.cycleDifficulty(team);
+            helper.assertValueEqual(setup.zone().difficulty(), Difficulty.MEDIUM, "cycling goes down one step at a time");
+            setup.defense.setDifficulty(team, Difficulty.EASY);
+            helper.assertValueEqual(setup.zone().difficulty(), Difficulty.EASY, "easier is fine");
+            setup.defense.cycleDifficulty(team);
+            helper.assertValueEqual(setup.zone().difficulty(), Difficulty.EASY, "the easiest stays");
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void theWarChestExchangesCreditsForCoinsUpToTheLevelLimit(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "WarChestTest");
+        TeamRegistry registry = TeamData.registry(setup.player.server);
+        UUID team = setup.team.id();
+        registry.setBalance(team, 5_000);
+        long coins = setup.zone().coins();
+        helper.assertValueEqual(setup.zone().warChestLeft(), TowerDefense.WAR_CHEST_PER_LEVEL, "level 1 allows 100");
+        setup.defense.exchangeCredits(setup.player.server, team, 1_000);
+        helper.assertValueEqual(setup.zone().coins(), coins + 100, "only the limit is exchanged");
+        helper.assertValueEqual(setup.team.balance(), 4_900L, "100 credits paid");
+        helper.assertValueEqual(setup.zone().warChestLeft(), 0L, "used up");
+        setup.defense.exchangeCredits(setup.player.server, team, 100);
+        helper.assertValueEqual(setup.zone().coins(), coins + 100, "nothing more at level 1");
+        helper.assertValueEqual(setup.team.balance(), 4_900L, "and no credits taken");
+        setup.defense.clearLevels(setup.player.server, team, 19); // levels 1 to 19 cleared: level 20 next, 2,000 coins per level
+        helper.assertValueEqual(setup.zone().level(), 20, "level 20");
+        helper.assertValueEqual(setup.zone().warChestLeft(), 2_000L, "level 20: 2,000 coins");
+        registry.setBalance(team, 50);
+        setup.defense.exchangeCredits(setup.player.server, team, 1_000);
+        helper.assertValueEqual(setup.team.balance(), 0L, "not more than the team owns");
+        helper.assertValueEqual(setup.zone().coins(), coins + 150, "50 more coins");
+        helper.succeed();
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 2400)
+    public static void roundsPayTheirBonusAndLeaksCostLives(GameTestHelper helper) {
+        LevelRun run = track(helper, 1, false);
+        double[] coins = new double[1];
+        helper.onEachTick(() -> coins[0] += run.takeCoins());
+        int[] ticks = new int[1];
+        LevelRun.Outcome[] outcome = {LevelRun.Outcome.RUNNING};
+        helper.onEachTick(() -> {
+            if (outcome[0] == LevelRun.Outcome.RUNNING) {
+                outcome[0] = run.tick(helper.getLevel());
+                ticks[0]++;
+            }
+        });
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(outcome[0] == LevelRun.Outcome.WON, "level not won yet: " + outcome[0] + " after " + ticks[0] + " ticks");
+            helper.assertValueEqual(run.lives(), 150 - 55, "55 red crawlers leaked, one life each");
+            helper.assertTrue(Math.abs(coins[0] - (101 + 102)) < 1e-6, "the two round bonuses are all there is to earn: " + coins[0]);
+            run.end(helper.getLevel());
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 2400)
+    public static void theNextRoundCanBeCalledAtAnyTime(GameTestHelper helper) {
+        LevelRun run = track(helper, 1, false);
+        double[] coins = new double[1];
+        int[] ticks = new int[1];
+        LevelRun.Outcome[] outcome = {LevelRun.Outcome.RUNNING};
+        helper.onEachTick(() -> {
+            coins[0] += run.takeCoins();
+            if (outcome[0] == LevelRun.Outcome.RUNNING) {
+                outcome[0] = run.tick(helper.getLevel());
+                ticks[0]++;
+            }
+        });
+        helper.runAtTickTime(20, () -> {
+            helper.assertTrue(run.canCallWave(), "round 2 can be called while round 1 is still coming");
+            helper.assertTrue(run.callNextWave() > 0, "called");
+            helper.assertFalse(run.canCallWave(), "there is no round 3 in a level");
+            helper.assertValueEqual(run.simulation().round(), 1, "round 2's first enemy has not entered yet");
+        });
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(outcome[0] == LevelRun.Outcome.WON, "level not won yet: " + outcome[0] + " after " + ticks[0] + " ticks");
+            helper.assertTrue(ticks[0] < 1_000, "the rounds overlap, so the level is over early: " + ticks[0]);
+            helper.assertTrue(Math.abs(coins[0] - (101 + 102)) < 1e-6, "no bonus for calling early, both round bonuses as usual: " + coins[0]);
+            run.end(helper.getLevel());
+        });
+    }
+
+    @GameTest(template = EMPTY, timeoutTicks = 400, batch = "defense_maps")
+    public static void pathsOutsideTheWindowAreRefused(GameTestHelper helper) {
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        TeamRegistry registry = TeamData.registry(player.server);
+        Team team = registry.ensureTeam(player.getUUID(), "WindowTest");
+        TowerDefense defense = TowerDefense.get(player.server);
+        TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
+        ServerLevel arena = TowerDefense.arena(player.server);
+        defense.jumpToLevel(arena, zone, 10); // the colosseum: the gate and the core are in the same row
+        for (int x = 0; x < ArenaLayout.SIZE; x++) {
+            arena.setBlock(Arenas.field(zone.slot(), x, ArenaLayout.CORE_ROW, Arenas.BUILD_Y), ModBlocks.PATH_BLOCK.get().defaultBlockState(), 3);
+        }
+        TowerDefense.PathCheck check = defense.checkPath(arena, zone);
+        helper.assertTrue(check.path() == null, "a straight path of 41 blocks is accepted");
+        helper.assertTrue(check.message().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents contents
+                && contents.getKey().endsWith("path.too_short"), "the message says the path is too short");
+        defense.start(player.server, team.id());
+        helper.assertTrue(zone.run().isEmpty(), "no run with a path that is too short");
+        helper.succeed();
     }
 
     /** A run with a swarm queen on it: towers keep shooting at her for a long time without popping her. */
@@ -404,15 +529,14 @@ public final class DefenseGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void towerItemsKeepLevelAndHealth(GameTestHelper helper) {
-        ItemStack item = TowerDefense.towerItem(TowerType.GUN, 4, 0);
+    public static void towerItemsKeepTheirLevel(GameTestHelper helper) {
+        ItemStack item = TowerDefense.towerItem(TowerType.GUN, 4);
         helper.assertValueEqual(item.get(de.craftorio.registry.ModDataComponents.TOWER_STATE.get()).level(), 4, "level on the item");
         BlockPos pos = new BlockPos(2, 1, 2);
         helper.setBlock(pos, ModBlocks.GUN_TURRET.get());
         TowerBlockEntity tower = helper.getBlockEntity(pos);
-        tower.applyComponentsFromItemStack(TowerDefense.towerItem(TowerType.GUN, 4, 50));
+        tower.applyComponentsFromItemStack(TowerDefense.towerItem(TowerType.GUN, 4));
         helper.assertValueEqual(tower.upgradeLevel(), 4, "level applied");
-        helper.assertValueEqual(tower.health(), 50, "health applied");
         helper.succeed();
     }
 
@@ -507,9 +631,9 @@ public final class DefenseGameTests {
     @GameTest(template = EMPTY)
     public static void towersFromTheDepotStackWithNewOnes(GameTestHelper helper) {
         ItemStack fresh = new ItemStack(ModBlocks.CROSSBOW_TOWER.get());
-        ItemStack packed = TowerDefense.towerItem(TowerType.CROSSBOW, 1, TowerStats.maxHealth(TowerType.CROSSBOW, 1));
+        ItemStack packed = TowerDefense.towerItem(TowerType.CROSSBOW, 1);
         helper.assertTrue(ItemStack.isSameItemSameComponents(fresh, packed), "unupgraded intact towers stack");
-        helper.assertFalse(ItemStack.isSameItemSameComponents(fresh, TowerDefense.towerItem(TowerType.CROSSBOW, 2, 200)), "upgraded towers do not");
+        helper.assertFalse(ItemStack.isSameItemSameComponents(fresh, TowerDefense.towerItem(TowerType.CROSSBOW, 2)), "upgraded towers do not");
         helper.succeed();
     }
 
@@ -522,9 +646,9 @@ public final class DefenseGameTests {
         TowerDefense.Zone zone = defense.ensureArena(player.server, team.id());
         int before = zone.depotSize();
         for (int i = 0; i < 3; i++) {
-            TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.CROSSBOW, 1, TowerStats.maxHealth(TowerType.CROSSBOW, 1)));
+            TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.CROSSBOW, 1));
         }
-        TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.GUN, 3, 50));
+        TowerDefense.addToDepot(zone, TowerDefense.towerItem(TowerType.GUN, 3));
         helper.assertValueEqual(zone.depotSize(), before + 2, "three equal towers share a stack");
 
         var view = defense.depotView(zone);

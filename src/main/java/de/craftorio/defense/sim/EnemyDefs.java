@@ -78,7 +78,9 @@ public final class EnemyDefs {
             JsonObject l = json.getAsJsonObject("late");
             late = new EnemyDef.Late(l.has("hp") ? l.get("hp").getAsDouble() : json.get("hp").getAsDouble(),
                     l.has("fortified_hp") ? l.get("fortified_hp").getAsDouble() : json.get("fortified_hp").getAsDouble(),
-                    l.has("children") ? strings(l.getAsJsonArray("children")) : strings(json.getAsJsonArray("children")));
+                    l.has("children") ? strings(l.getAsJsonArray("children")) : strings(json.getAsJsonArray("children")),
+                    l.has("cash") ? l.get("cash").getAsInt() : 1, l.has("leak") ? l.get("leak").getAsInt() : 0,
+                    l.has("fortified_leak") ? l.get("fortified_leak").getAsInt() : 0);
         }
         return new EnemyDef(id, json.get("index").getAsInt(), json.get("btd6").getAsString(), json.get("hp").getAsDouble(),
                 json.get("fortified_hp").getAsDouble(), json.get("speed").getAsDouble(), strings(json.getAsJsonArray("children")),
@@ -115,6 +117,31 @@ public final class EnemyDefs {
             total += rbe(get(child), lateGame, fort && def.boss(), bossFactor);
         }
         RBE.put(key, total);
+        return total;
+    }
+
+    /**
+     * Lives a leaked, undamaged enemy costs: its hit points plus everything that comes out of it (the RBE, with the
+     * unscaled hit points); in the late game the super crystal golem costs a fixed 65 (75 fortified), see the wiki's Freeplay page.
+     */
+    public static synchronized int leak(EnemyDef def, boolean lateGame, boolean fortified) {
+        boolean fort = fortified && def.canBeFortified();
+        if (lateGame && def.late() != null && def.late().leak() > 0) {
+            return fort ? def.late().fortifiedLeak() : def.late().leak();
+        }
+        double total = def.hp(lateGame, fort);
+        for (String child : def.children(lateGame)) {
+            total += leak(get(child), lateGame, fort && def.boss());
+        }
+        return (int) Math.round(total);
+    }
+
+    /** Coins popping an enemy with all its children pays (before the income factor). */
+    public static int cash(EnemyDef def, boolean lateGame) {
+        int total = def.popCash(lateGame);
+        for (String child : def.children(lateGame)) {
+            total += cash(get(child), lateGame);
+        }
         return total;
     }
 

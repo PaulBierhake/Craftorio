@@ -3,7 +3,6 @@ package de.craftorio.registry;
 import de.craftorio.Craftorio;
 import de.craftorio.blueprint.TerminalBlock;
 import de.craftorio.defense.TowerBlock;
-import de.craftorio.defense.TowerRuin;
 import de.craftorio.defense.TowerType;
 import de.craftorio.defense.ZoneBlocks;
 import de.craftorio.defense.arena.ArenaBlocks;
@@ -252,8 +251,6 @@ public final class ModBlocks {
     public static final DeferredBlock<net.minecraft.world.level.block.WallBlock> STONE_WALL = BLOCKS.registerBlock("stone_wall",
             net.minecraft.world.level.block.WallBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
-    public static final DeferredBlock<TowerRuin> TOWER_RUIN = BLOCKS.registerBlock("tower_ruin", TowerRuin::new,
-            BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.0F).noLootTable().noOcclusion().sound(SoundType.GRAVEL));
 
     public static DeferredBlock<TowerBlock> tower(TowerType type) {
         return switch (type) {

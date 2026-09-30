@@ -24,7 +24,7 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
 
         tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get(), ModBlocks.POWER_POLE.get(), ModBlocks.WORKBENCH.get(),
                 ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.CAVE_ENTRANCE.get());
-        tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.PATH_BLOCK.get(), ModBlocks.TOWER_RUIN.get());
+        tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.PATH_BLOCK.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
                 ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get(), ModBlocks.COAL_FIELD.get(),
                 ModBlocks.BURNER_DRILL.get(), ModBlocks.CONVEYOR_BELT.get(), ModBlocks.INSERTER.get(),

@@ -17,15 +17,20 @@ public final class ArenaLayout {
     public static final int[] SPAWN_ROWS = {8, 20, 32};
     /** At least this many tiles must allow towers. */
     public static final int MIN_BUILD_TILES = 250;
+    /** The path must be this long (blocks) to level out the Bloons TD 6 balance, which assumes a fixed track length. */
+    public static final int MIN_PATH = 100;
+    public static final int MAX_PATH = 160;
 
     private final ArenaTheme theme;
     private final int spawnRow;
     private final Tile[][] tiles;
+    private final java.util.List<int[]> route;
 
-    private ArenaLayout(ArenaTheme theme, int spawnRow, Tile[][] tiles) {
+    private ArenaLayout(ArenaTheme theme, int spawnRow, Tile[][] tiles, java.util.List<int[]> route) {
         this.theme = theme;
         this.spawnRow = spawnRow;
         this.tiles = tiles;
+        this.route = route;
     }
 
     public ArenaTheme theme() {
@@ -63,34 +68,14 @@ public final class ArenaLayout {
         return shortestPath(tiles, spawnRow);
     }
 
-    /** Tiles {x, z} of one shortest way from the gate to the core (used by tests and hints). */
+    /**
+     * Tiles {x, z} of a route from the gate to the core whose length lies in the path window ({@value #MIN_PATH} to
+     * {@value #MAX_PATH} blocks): a serpentine that is cleared into every map, so there is always a way the player can
+     * lay (hint for the path wand, used by tests). Every step has exactly one neighbour of the route besides the
+     * previous one, so the route is a valid path for the path tracer.
+     */
     public java.util.List<int[]> route() {
-        int[][] previous = new int[SIZE * SIZE][];
-        boolean[] seen = new boolean[SIZE * SIZE];
-        Deque<int[]> queue = new ArrayDeque<>();
-        queue.add(new int[]{0, spawnRow});
-        seen[spawnRow] = true;
-        int[][] steps = {{1, 0}, {0, 1}, {0, -1}, {-1, 0}};
-        while (!queue.isEmpty()) {
-            int[] at = queue.poll();
-            if (at[0] == SIZE - 1 && at[1] == CORE_ROW) {
-                java.util.LinkedList<int[]> route = new java.util.LinkedList<>();
-                for (int[] step = at; step != null; step = previous[step[0] * SIZE + step[1]]) {
-                    route.addFirst(step);
-                }
-                return route;
-            }
-            for (int[] step : steps) {
-                int x = at[0] + step[0];
-                int z = at[1] + step[1];
-                if (x >= 0 && z >= 0 && x < SIZE && z < SIZE && !seen[x * SIZE + z] && tiles[x][z].allowsPath()) {
-                    seen[x * SIZE + z] = true;
-                    previous[x * SIZE + z] = at;
-                    queue.add(new int[]{x, z});
-                }
-            }
-        }
-        return java.util.List.of();
+        return route;
     }
 
     // --- generation
@@ -130,8 +115,11 @@ public final class ArenaLayout {
         int spawnRow = theme == ArenaTheme.COLOSSEUM ? CORE_ROW : SPAWN_ROWS[random.nextInt(SPAWN_ROWS.length)];
         clearAround(tiles, 0, spawnRow);
         clearAround(tiles, SIZE - 1, CORE_ROW);
-        if (shortestPath(tiles, spawnRow) < 0) {
-            carve(tiles, random, spawnRow);
+        java.util.List<int[]> route = planRoute(random, spawnRow);
+        for (int[] cell : route) {
+            if (!tiles[cell[0]][cell[1]].allowsPath()) {
+                tiles[cell[0]][cell[1]] = Tile.GROUND;
+            }
         }
         // Never so crowded that there is no room for towers.
         while (buildable(tiles) < MIN_BUILD_TILES) {
@@ -141,7 +129,7 @@ public final class ArenaLayout {
                 tiles[x][z] = Tile.GROUND;
             }
         }
-        return new ArenaLayout(theme, spawnRow, tiles);
+        return new ArenaLayout(theme, spawnRow, tiles, java.util.List.copyOf(route));
     }
 
     private static void forest(Tile[][] tiles, Random random, double density) {
@@ -225,22 +213,55 @@ public final class ArenaLayout {
         }
     }
 
-    /** Opens a winding corridor from the gate to the core. */
-    private static void carve(Tile[][] tiles, Random random, int spawnRow) {
-        int x = 0;
-        int z = spawnRow;
-        while (x < SIZE - 1 || z != CORE_ROW) {
-            if (!tiles[x][z].allowsPath()) {
-                tiles[x][z] = Tile.GROUND;
-            }
-            boolean moveX = z == CORE_ROW || (x < SIZE - 1 && random.nextInt(3) != 0);
-            if (moveX && x < SIZE - 1) {
-                x++;
-            } else {
-                z += Integer.signum(CORE_ROW - z);
-            }
+    /**
+     * A serpentine from the gate to the core: lanes along the field three or more rows apart, joined at their ends.
+     * From the top or bottom gate three lanes (east, west, east), from the middle gate a loop through the upper half.
+     */
+    static java.util.List<int[]> planRoute(Random random, int spawnRow) {
+        java.util.List<int[]> route = new java.util.ArrayList<>();
+        int east = SIZE - 1;
+        if (spawnRow == CORE_ROW) {
+            int a = 28 + random.nextInt(5);
+            int b = 4 + random.nextInt(5);
+            int c = 34 + random.nextInt(4);
+            int upper = 14;
+            int top = 8;
+            line(route, 0, CORE_ROW, a, CORE_ROW);
+            line(route, a, CORE_ROW, a, upper);
+            line(route, a, upper, b, upper);
+            line(route, b, upper, b, top);
+            line(route, b, top, c, top);
+            line(route, c, top, c, CORE_ROW);
+            line(route, c, CORE_ROW, east, CORE_ROW);
+        } else {
+            int a = 33 + random.nextInt(6);
+            int b = 2 + random.nextInt(5);
+            int middle = spawnRow < CORE_ROW ? 12 + random.nextInt(5) : 24 + random.nextInt(5);
+            line(route, 0, spawnRow, a, spawnRow);
+            line(route, a, spawnRow, a, middle);
+            line(route, a, middle, b, middle);
+            line(route, b, middle, b, CORE_ROW);
+            line(route, b, CORE_ROW, east, CORE_ROW);
         }
-        tiles[x][z] = Tile.GROUND;
+        return route;
+    }
+
+    /** Appends the cells from (x0, z0) to (x1, z1) along one axis, without repeating the cell the route stands on. */
+    private static void line(java.util.List<int[]> route, int x0, int z0, int x1, int z1) {
+        int dx = Integer.signum(x1 - x0);
+        int dz = Integer.signum(z1 - z0);
+        int x = x0;
+        int z = z0;
+        while (true) {
+            if (route.isEmpty() || route.get(route.size() - 1)[0] != x || route.get(route.size() - 1)[1] != z) {
+                route.add(new int[]{x, z});
+            }
+            if (x == x1 && z == z1) {
+                return;
+            }
+            x += dx;
+            z += dz;
+        }
     }
 
     private static void clearAround(Tile[][] tiles, int cx, int cz) {

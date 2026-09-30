@@ -63,12 +63,6 @@ public final class TowerScreen extends MachineScreenBase<TowerMenu> {
         int level = Math.max(1, menu.upgradeLevel());
         int x = leftPos + 8;
         int y = topPos + 18;
-        // Health bar
-        int width = 138;
-        float fraction = menu.maxHealth() <= 0 ? 0 : Math.max(0, (float) menu.health() / menu.maxHealth());
-        graphics.fill(x, y, x + width, y + 8, 0xFF373737);
-        graphics.fill(x + 1, y + 1, x + 1 + (int) ((width - 2) * fraction), y + 7, fraction > 0.5F ? 0xFF4CAF50 : fraction > 0.25F ? 0xFFFFC107 : 0xFFE53935);
-        graphics.drawString(font, menu.health() + " / " + menu.maxHealth() + " HP", x + 2, y + 10, 0x404040, false);
         String stats = String.format(Locale.ROOT, "%s · %.1f dmg · %.0f m", Component.translatable("craftorio.tower.level", level).getString(),
                 TowerStats.damage(menu.tower().type(), level), menu.tower().type().range());
         graphics.drawString(font, stats, x + 2, y + 21, 0x404040, false);
