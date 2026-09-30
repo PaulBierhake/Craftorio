@@ -26,6 +26,25 @@ public final class Blueprints {
                 .toList();
     }
 
+    /** Order of the research that unlocks the blueprint; blueprints that need none come first (-1). */
+    public static int unlockOrder(RegistryAccess access, Holder.Reference<Blueprint> holder) {
+        String id = id(holder);
+        return access.registryOrThrow(de.craftorio.registry.ModRegistries.RESEARCH).holders()
+                .filter(research -> research.value().unlocks().stream().anyMatch(unlock -> unlock.toString().equals(id)))
+                .mapToInt(research -> research.value().order()).min().orElse(-1);
+    }
+
+    /** What the workbench lists: the blueprints the team knows, by category and then in the order they were unlocked. */
+    public static List<Holder.Reference<Blueprint>> forWorkbench(RegistryAccess access, Set<String> researched,
+                                                                 @org.jetbrains.annotations.Nullable BlueprintCategory category) {
+        return sorted(access).stream()
+                .filter(holder -> isKnown(access, researched, holder))
+                .filter(holder -> category == null || BlueprintCategory.of(holder.key().location().getPath()) == category)
+                .sorted(Comparator.<Holder.Reference<Blueprint>>comparingInt(holder -> BlueprintCategory.of(holder.key().location().getPath()).ordinal())
+                        .thenComparingInt(holder -> unlockOrder(access, holder)))
+                .toList();
+    }
+
     public static String id(Holder.Reference<Blueprint> holder) {
         return holder.key().location().toString();
     }

@@ -36,6 +36,8 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     private Button autoButton;
     private Button repairButton;
     private Button callButton;
+    private Button sealsButton;
+    private Button handbookButton;
     private int questScroll;
     private int researchScroll;
 
@@ -66,6 +68,12 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
                 .bounds(leftPos + 12, topPos + 172, 150, 18).build());
         callButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.td.button.call"), button -> sendButton(TerminalMenu.TD_CALL_WAVE))
                 .bounds(leftPos + 166, topPos + 172, 78, 18).build());
+        sealsButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.claim.seals_button"), button -> sendButton(TerminalMenu.CLAIM_SEALS))
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.terminal.claim.seals_hint")))
+                .bounds(leftPos + 12, topPos + 193, 110, 14).build());
+        handbookButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.claim.handbook_button"), button -> sendButton(TerminalMenu.CLAIM_HANDBOOK))
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.terminal.claim.handbook_hint")))
+                .bounds(leftPos + 128, topPos + 193, 116, 14).build());
     }
 
     @Override
@@ -79,6 +87,7 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         TdStatusPayload td = ClientTdState.status();
         boolean defense = tab == Tab.DEFENSE;
         startButton.visible = autoButton.visible = repairButton.visible = callButton.visible = defense;
+        sealsButton.visible = handbookButton.visible = defense;
         callButton.active = td.canCallWave();
         startButton.active = td.hasZone() && !td.running();
         startButton.setMessage(Component.translatable("craftorio.td.button.start", td.level()));

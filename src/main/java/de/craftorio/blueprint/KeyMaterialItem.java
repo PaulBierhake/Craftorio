@@ -17,6 +17,11 @@ public final class KeyMaterialItem extends Item {
         this.level = level;
     }
 
+    /** The tower defense level that hands this seal out. */
+    public int level() {
+        return level;
+    }
+
     @Override
     public boolean isFoil(ItemStack stack) {
         return true;

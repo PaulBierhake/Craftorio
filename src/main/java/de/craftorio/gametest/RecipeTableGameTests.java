@@ -432,6 +432,14 @@ public final class RecipeTableGameTests {
         }
     }
 
+    @GameTest(template = "empty")
+    public static void everyBlueprintHasAWorkbenchCategory(GameTestHelper helper) {
+        var registry = helper.getLevel().registryAccess().registryOrThrow(ModRegistries.BLUEPRINTS);
+        List<String> missing = registry.keySet().stream().map(id -> id.getPath()).filter(path -> !de.craftorio.blueprint.BlueprintCategory.isListed(path)).toList();
+        helper.assertTrue(missing.isEmpty(), "no category: " + missing);
+        helper.succeed();
+    }
+
     /** Every blueprint has a description in both languages (craftorio.blueprint.&lt;id&gt;.desc). */
     @GameTest(template = "empty")
     public static void everyBlueprintHasADescriptionInBothLanguages(GameTestHelper helper) throws java.io.IOException {

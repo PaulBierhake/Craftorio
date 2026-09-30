@@ -11,6 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
@@ -22,6 +23,9 @@ public final class TerminalMenu extends AbstractContainerMenu {
     public static final int TD_TOGGLE_AUTO = 10_001;
     public static final int TD_REPAIR_ALL = 10_002;
     public static final int TD_CALL_WAVE = 10_003;
+    /** Lost seals and the lost handbook are handed out again. */
+    public static final int CLAIM_SEALS = 10_004;
+    public static final int CLAIM_HANDBOOK = 10_005;
     /** Plus the quest's index in {@link de.craftorio.quest.Quests#ALL}. */
     public static final int QUEST_CLAIM = 20_000;
 
@@ -59,6 +63,17 @@ public final class TerminalMenu extends AbstractContainerMenu {
             case TD_START -> serverPlayer.displayClientMessage(defense.start(serverPlayer.server, team), true);
             case TD_TOGGLE_AUTO -> defense.toggleAuto(team);
             case TD_CALL_WAVE -> serverPlayer.displayClientMessage(defense.callWave(serverPlayer.server, team), true);
+            case CLAIM_SEALS -> {
+                int given = defense.claimSeals(serverPlayer);
+                serverPlayer.displayClientMessage(Component.translatable(given > 0 ? "craftorio.terminal.claim.seals" : "craftorio.terminal.claim.no_seals", given), true);
+            }
+            case CLAIM_HANDBOOK -> {
+                boolean has = serverPlayer.getInventory().hasAnyMatching(stack -> stack.is(de.craftorio.registry.ModItems.GUIDE_BOOK.get()));
+                if (!has) {
+                    serverPlayer.getInventory().placeItemBackInInventory(new ItemStack(de.craftorio.registry.ModItems.GUIDE_BOOK.get()));
+                }
+                serverPlayer.displayClientMessage(Component.translatable(has ? "craftorio.terminal.claim.has_handbook" : "craftorio.terminal.claim.handbook"), true);
+            }
             case TD_REPAIR_ALL -> {
                 if (TeamData.maySpend(serverPlayer)) {
                     serverPlayer.displayClientMessage(defense.repairAll(serverPlayer.server, team), true);

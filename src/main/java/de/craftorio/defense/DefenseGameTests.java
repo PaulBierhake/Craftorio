@@ -101,6 +101,24 @@ public final class DefenseGameTests {
         helper.succeedWhen(() -> helper.assertTrue(golem.isRemoved() && golem.isDeadOrDying(), "golem still alive"));
     }
 
+    @GameTest(template = LARGE, timeoutTicks = 100, batch = "defense_clear")
+    public static void operatorsClearLevelsAndLostSealsCanBeClaimedAgain(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "ClearTest");
+        ServerPlayer player = setup.player();
+        player.getInventory().clearContent();
+        helper.assertValueEqual(setup.defense().claimSeals(player), 0, "no level cleared, no seal");
+        setup.defense().clearLevels(player.server, setup.team().id(), 30);
+        helper.assertValueEqual(setup.zone().level(), 31, "levels up to 30 cleared");
+        // bronze (5), silver (10), gold (20) and platinum (30): every research that needs one has not been paid yet
+        helper.assertTrue(setup.defense().claimSeals(player) >= 4, "the seals of cleared levels are handed out");
+        helper.assertValueEqual(setup.defense().claimSeals(player), 0, "nothing more while the player carries them");
+        helper.assertTrue(player.getInventory().hasAnyMatching(stack -> stack.is(ModItems.PLATINUM_SEAL.get())), "platinum seal");
+        helper.assertFalse(player.getInventory().hasAnyMatching(stack -> stack.is(ModItems.DIAMOND_SEAL.get())), "level 40 is not cleared");
+        setup.defense().clearLevels(player.server, setup.team().id(), -1);
+        helper.assertValueEqual(setup.zone().level(), 32, "a single level cleared");
+        helper.succeed();
+    }
+
     @GameTest(template = EMPTY)
     public static void destroyedTowerBecomesRuinAndRebuildsWithItsLevel(GameTestHelper helper) {
         BlockPos pos = new BlockPos(2, 1, 2);

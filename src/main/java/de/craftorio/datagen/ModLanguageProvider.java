@@ -186,6 +186,17 @@ public final class ModLanguageProvider {
 
             add("craftorio.gui.energy", "Energy: %s / %s FE");
             add("craftorio.gui.no_known_recipe", "No recipe researched for this machine yet: research it in the terminal (oil processing for the refinery).");
+            add("craftorio.arena.error.round_running", "No towers can be built while a round is running.");
+            add("craftorio.td.clear.already", "Level %s is already cleared.");
+            add("craftorio.td.clear.done", "Levels up to %s cleared, the arena is at level %s now.");
+            add("craftorio.terminal.claim.seals_button", "Claim lost seals");
+            add("craftorio.terminal.claim.seals_hint", "Hands out the arena seals of cleared levels again that your research still needs and you do not carry.");
+            add("craftorio.terminal.claim.seals", "%s seal(s) handed out.");
+            add("craftorio.terminal.claim.no_seals", "No seal missing.");
+            add("craftorio.terminal.claim.handbook_button", "Claim handbook");
+            add("craftorio.terminal.claim.handbook_hint", "Hands out the handbook if you lost it.");
+            add("craftorio.terminal.claim.handbook", "Handbook handed out.");
+            add("craftorio.terminal.claim.has_handbook", "You already carry a handbook.");
             add("craftorio.gui.no_recipe", "Choose a recipe");
             add("craftorio.power.no_network", "Not connected");
             add("craftorio.power.network", "Grid: %s poles · %s generators · %s consumers · %s accumulators · %s/%s FE/t · %s%% supplied");
@@ -199,6 +210,14 @@ public final class ModLanguageProvider {
 
             add("craftorio.key_material.hint", "Key material – reward for tower defense level %s");
             add("craftorio.workbench.hint", "Click: build 1 · Shift-click: build 10");
+            add("craftorio.workbench.category.all", "All");
+            add("craftorio.workbench.category.parts", "Parts");
+            add("craftorio.workbench.category.logistics", "Logistics");
+            add("craftorio.workbench.category.production", "Production");
+            add("craftorio.workbench.category.power", "Power");
+            add("craftorio.workbench.category.fluids", "Fluids and oil");
+            add("craftorio.workbench.category.defense", "Defense");
+
             add("craftorio.workbench.build", "Build");
             add("craftorio.workbench.can_build", "ready to build");
             add("craftorio.boiler.water", "Water: connected");
@@ -974,6 +993,17 @@ public final class ModLanguageProvider {
 
             add("craftorio.gui.energy", "Energie: %s / %s FE");
             add("craftorio.gui.no_known_recipe", "Für diese Maschine ist noch kein Rezept erforscht: im Terminal erforschen (Ölverarbeitung für die Raffinerie).");
+            add("craftorio.arena.error.round_running", "Während einer Runde können keine Türme gebaut werden.");
+            add("craftorio.td.clear.already", "Level %s ist schon geschafft.");
+            add("craftorio.td.clear.done", "Level bis %s geschafft, die Arena steht jetzt bei Level %s.");
+            add("craftorio.terminal.claim.seals_button", "Verlorene Siegel holen");
+            add("craftorio.terminal.claim.seals_hint", "Gibt die Arena-Siegel geschaffter Level noch einmal aus, die deine Forschung braucht und die du nicht bei dir trägst.");
+            add("craftorio.terminal.claim.seals", "%s Siegel ausgegeben.");
+            add("craftorio.terminal.claim.no_seals", "Kein Siegel fehlt.");
+            add("craftorio.terminal.claim.handbook_button", "Handbuch holen");
+            add("craftorio.terminal.claim.handbook_hint", "Gibt das Handbuch aus, falls du es verloren hast.");
+            add("craftorio.terminal.claim.handbook", "Handbuch ausgegeben.");
+            add("craftorio.terminal.claim.has_handbook", "Du trägst schon ein Handbuch.");
             add("craftorio.gui.no_recipe", "Rezept wählen");
             add("craftorio.power.no_network", "Nicht verbunden");
             add("craftorio.power.network", "Netz: %s Masten · %s Generatoren · %s Verbraucher · %s Akkus · %s/%s FE/t · %s%% versorgt");
@@ -986,6 +1016,13 @@ public final class ModLanguageProvider {
             add(ModItems.PLATINUM_SEAL.get(), "Platin-Arena-Siegel");
 
             add("craftorio.key_material.hint", "Schlüsselmaterial – Belohnung für Tower-Defense-Level %s");
+            add("craftorio.workbench.category.all", "Alle");
+            add("craftorio.workbench.category.parts", "Teile");
+            add("craftorio.workbench.category.logistics", "Logistik");
+            add("craftorio.workbench.category.production", "Produktion");
+            add("craftorio.workbench.category.power", "Energie");
+            add("craftorio.workbench.category.fluids", "Flüssigkeiten und Öl");
+            add("craftorio.workbench.category.defense", "Verteidigung");
             add("craftorio.workbench.hint", "Klick: 1 bauen · Shift-Klick: 10 bauen");
             add("craftorio.workbench.build", "Bauen");
             add("craftorio.workbench.can_build", "baubereit");

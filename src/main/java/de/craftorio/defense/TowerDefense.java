@@ -246,7 +246,7 @@ public final class TowerDefense extends SavedData {
         setDirty();
         Vec3 arrival = Arenas.arrival(zone.slot);
         player.teleportTo(arena, arrival.x, arrival.y, arrival.z, 180F, 20F);
-        if (!player.getInventory().contains(new ItemStack(ModItems.PATH_WAND.get()))) {
+        if (!player.getInventory().hasAnyMatching(stack -> stack.is(ModItems.PATH_WAND.get()))) {
             player.getInventory().placeItemBackInInventory(new ItemStack(ModItems.PATH_WAND.get()));
         }
         ArenaLayout layout = layout(zone);
@@ -381,6 +381,9 @@ public final class TowerDefense extends SavedData {
         if (error != null) {
             return error;
         }
+        if (zoneAt(Arenas.slotAt(pos)).filter(zone -> zone.run != null).isPresent()) {
+            return "craftorio.arena.error.round_running";
+        }
         Zone zone = zoneAt(Arenas.slotAt(pos)).orElseThrow();
         return zone.run != null ? "craftorio.td.error.running" : null;
     }
@@ -410,6 +413,52 @@ public final class TowerDefense extends SavedData {
         // Open ground and rough ground (gravel, moss) take towers; only plateaus need their own height.
         boolean ok = (type == Tile.GROUND || type == Tile.ROUGH) && pos.getY() == Arenas.BUILD_Y || type == Tile.HIGH && pos.getY() == Arenas.HIGH_Y;
         return ok ? null : "craftorio.arena.error.no_tower_here";
+    }
+
+    /**
+     * Lost seals: the team gets every seal of a level it has cleared back while the research that needs it has not been
+     * paid yet (and the player carries none). Returns how many were handed out.
+     */
+    public int claimSeals(ServerPlayer player) {
+        Team team = teamOf(player);
+        int cleared = zone(team.id()).map(zone -> zone.level - 1).orElse(0);
+        var researches = player.server.registryAccess().registryOrThrow(de.craftorio.registry.ModRegistries.RESEARCH);
+        int given = 0;
+        for (var holder : de.craftorio.research.Researches.sorted(player.server.registryAccess())) {
+            if (team.keyItemsPaid(de.craftorio.research.Researches.id(holder))) {
+                continue;
+            }
+            for (var key : holder.value().unlockItems()) {
+                ItemStack seal = key.getItems().length == 0 ? ItemStack.EMPTY : key.getItems()[0];
+                if (seal.getItem() instanceof de.craftorio.blueprint.KeyMaterialItem material && material.level() <= cleared
+                        && !player.getInventory().hasAnyMatching(stack -> stack.is(seal.getItem()))) {
+                    player.getInventory().placeItemBackInInventory(new ItemStack(seal.getItem()));
+                    given++;
+                }
+            }
+        }
+        return given;
+    }
+
+    /** Operators: clears tower defense levels for the team without playing them (up to and including {@code upTo}; one level if negative). */
+    public Component clearLevels(MinecraftServer server, UUID team, int upTo) {
+        ServerLevel arena = arena(server);
+        if (arena == null) {
+            return Component.translatable("craftorio.td.error.no_zone");
+        }
+        Zone zone = ensureArena(server, team);
+        if (zone.run != null) {
+            return Component.translatable("craftorio.td.error.running");
+        }
+        int target = upTo < 0 ? zone.level : upTo;
+        if (target < zone.level) {
+            return Component.translatable("craftorio.td.clear.already", target);
+        }
+        zone.level = target + 1;
+        zone.layout = null;
+        nextMap(arena, zone);
+        setDirty();
+        return Component.translatable("craftorio.td.clear.done", target, zone.level);
     }
 
     private @Nullable String fieldError(ServerPlayer player, BlockPos pos) {

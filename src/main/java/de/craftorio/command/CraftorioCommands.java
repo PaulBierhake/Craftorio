@@ -87,7 +87,11 @@ public final class CraftorioCommands {
                 }))
                 // Admin shortcut for tests: lays the shortest possible path in the own arena.
                 .then(literal("arena").requires(source -> source.hasPermission(2))
-                        .then(literal("route").executes(ctx -> run(ctx, CraftorioCommands::arenaRoute))))
+                        .then(literal("route").executes(ctx -> run(ctx, CraftorioCommands::arenaRoute)))
+                        .then(literal("clear").executes(ctx -> clearLevels(ctx, -1))
+                                .then(literal("all").executes(ctx -> clearLevels(ctx, 50)))
+                                .then(argument("level", com.mojang.brigadier.arguments.IntegerArgumentType.integer(1, 1000))
+                                        .executes(ctx -> clearLevels(ctx, com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(ctx, "level"))))))
                 // Admin shortcut (tests, repairing old worlds): unlocks a layer area without building an entrance.
                 .then(literal("research").requires(source -> source.hasPermission(2))
                         .then(literal("all").executes(ctx -> grantResearch(ctx, null)))
@@ -156,6 +160,14 @@ public final class CraftorioCommands {
             collect(required, all, into);
         }
         into.add(id);
+    }
+
+    /** Operators: clears the current tower defense level (no argument), all levels up to a number, or all of them (up to 50). */
+    private static int clearLevels(CommandContext<CommandSourceStack> ctx, int upTo) throws CommandSyntaxException {
+        Team team = teamOf(ctx.getSource().getPlayerOrException());
+        Component result = de.craftorio.defense.TowerDefense.get(ctx.getSource().getServer()).clearLevels(ctx.getSource().getServer(), team.id(), upTo);
+        ctx.getSource().sendSuccess(() -> result, true);
+        return 1;
     }
 
     private static int unlockLayer(CommandContext<CommandSourceStack> ctx, Layer layer) {
