@@ -1,6 +1,6 @@
 # Craftorio – Tower Defense nach Bloons TD 6
 
-Status: **Entwurf zur Freigabe** (Entscheidungen in §12). Dieses Dokument ersetzt die TD-Balancing-Regeln aus
+Status: **entschieden** (alle Entscheidungen in §12 wie empfohlen). Dieses Dokument ersetzt die TD-Balancing-Regeln aus
 `docs/KONZEPT.md` §6 und `docs/FACTORIO-UMBAU.md` §4.4/§6/§11.7. Arena, Pfadstab, Kartenthemen, Arena-Tor,
 Einspeiser, Siegel und Forschung bleiben und werden angebunden.
 
@@ -238,6 +238,19 @@ Boss-Klasse beendet auf Schwer und Unbesiegbar das Level praktisch sofort, wie i
 - **Credits** (Fabrik, Handelsposten) und **Münzen** (Arena) sind getrennt.
 - **Kriegskasse:** Im Terminal lassen sich Credits in Münzen tauschen, **1 : 1, höchstens 100 × Level Münzen pro
   Level** (Level 20: 2.000 ⛁). Die Fabrik hilft also wie eine kleine Farm, trivialisiert die Arena aber nicht.
+- **Warenlieferung an das Nachschublager** (entschieden): Jedes Nachschublager holt zu Rundenbeginn einen
+  **Warenkorb** aus der Arena-Reserve (Einspeiser, per Band/Greifarm aus der Fabrik beliefert). Mit vollständigem Korb
+  bringt es in dieser Runde **+50 % Münzen**; ohne Korb läuft es normal.
+
+  | Stufe von Pfad 1 | Warenkorb pro Runde und Lager |
+  |---|---|
+  | 0–2 | 10 Schaltkreise |
+  | 3 | 10 fortschrittliche Schaltkreise |
+  | 4–5 | 5 Prozessoren |
+
+  Mengen und Bonus sind Startwerte für den Simulator. Das HUD zeigt pro Runde, wie viele Lager beliefert wurden.
+- **Obergrenze der Kriegskasse** ist ebenfalls ein Startwert: Der Simulator soll prüfen, dass Kasse + Lieferbonus die
+  Referenz-Aufstellungen nicht mehr als ca. 30 % schneller bezahlbar machen als reines BTD6-Einkommen.
 - Pro geschafftem Level gibt es weiterhin **Credits** (bisherige Formel × Schwierigkeitsfaktor) und die Siegel.
 - Sterne bleiben:
   - 3 Sterne: kein Leben verloren
@@ -487,19 +500,19 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 | **T1 – Gegner-Engine** | `TdSimulation` (Bewegung, Schichten, Kinder, Überschaden, Eigenschaften, Immunitäten, Leaks, spätes Spiel), Gegnerdaten §3 als JSON, Netzwerkpaket, Client-Renderer, Entfernen der Gegner-Entities | Unit-Tests für jeden Gegner (RBE aus Kindern = Tabelle), Nachwachsen alle 3 s, Tarnung; Leistungstest 1.000 Gegner |
 | **T2 – Runden, Münzen, Leben** | Rundendaten 1–100, Level = 2 Runden, Münzen und Einkommensfaktor, Rundenbonus, Schwierigkeitsgrade, Leben pro Level, Snapshot/Wiederholung, Kriegskasse, Siegel-Zuordnung, Entfernen von Turm-HP/Ruinen/Reparatur und Spieler-Skalierung, Pfadlängen-Fenster | Unit-Test Rundeneinnahmen gegen Wiki (±2 %); GameTest Level 1 komplett; Pfad < 100 Blöcke wird abgelehnt |
 | **T3 – Turmsystem** | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
-| **T4 – Türme Teil 1** | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
+| **T4 – Türme Teil 1** | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
 | **T5 – Türme Teil 2** | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |
 | **T6 – Modi und Endlos** | Herausforderungen §7, Endlosmodus ab Runde 101 mit §3.6, Arena-Wissen §8, Rangliste (höchste Runde pro Team) | GameTest je Modus; Freeplay-Skalierung als Unit-Test |
 | **T7 – Leitfaden, Handbuch, Feinschliff** | Handbuch-Seiten: Gegner (mit Immunitäten), Türme (Pfade), Wirtschaft; Leitfaden-Hinweise; README; Migration §10 | Alle Tests grün; Kampagne im Simulator mit Referenz-Sets bis Runde 100 schaffbar |
 
 ---
 
-## 12. Entscheidungen
+## 12. Entscheidungen (getroffen: alle wie empfohlen)
 
-| ID | Frage | Empfehlung (gilt, falls nichts anderes entschieden wird) |
+| ID | Frage | Entscheidung |
 |---|---|---|
 | TD-E1 | Vorbild Bloons TD 6? | **Ja**, meistbewertetes TD-Spiel mit 97 % |
-| TD-E2 | Eigene Arena-Münzen statt Credits in der Arena? | **Ja**, sonst lässt sich die BTD6-Wirtschaft nicht übernehmen; Kriegskasse als begrenzte Brücke |
+| TD-E2 | Eigene Arena-Münzen statt Credits in der Arena? | **Ja**, sonst lässt sich die BTD6-Wirtschaft nicht übernehmen; Fabrik-Ertrag über die begrenzte Kriegskasse **und** Warenlieferungen an das Nachschublager (§4.4) |
 | TD-E3 | Leben pro Level oder über die ganze Kampagne? | **Pro Level** (mit Snapshot), sonst kann ein früher Fehler die Kampagne unspielbar machen |
 | TD-E4 | Nachschublager-Früchte einsammeln müssen? | **Nein**, automatisch; Pfad 3 bleibt als Wertsteigerung |
 | TD-E5 | Exotische Stufe-4/5-Effekte (Nekromant, Sonnentempel-Opfer, Fanclub-Verwandlung) 1:1? | Soweit mit der Gegner-Engine machbar ja; sonst gleichwertiger Ersatz mit denselben Kosten, im Dokument festhalten |
