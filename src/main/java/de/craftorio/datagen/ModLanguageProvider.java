@@ -452,6 +452,8 @@ public final class ModLanguageProvider {
             add("entity.craftorio.crystal_golem", "Crystal Golem");
             add("entity.craftorio.behemoth", "Behemoth");
             add("entity.craftorio.swarm_queen", "Swarm Queen");
+            add("craftorio.command.research_granted", "%s researches finished for your team.");
+            add("craftorio.command.research_unknown", "No research called %s.");
             add("craftorio.command.layer_unlocked", "Unlocked %s chunks of the layer (Y %s to %s); they are being dug out.");
             add("craftorio.mine.open", "Mine shaft open – take the scaffolding down into the mine layer.");
             add("craftorio.mine.opened", "A mine shaft has opened! The mine area around chunk %s, %s is being dug out.");
@@ -1238,6 +1240,8 @@ public final class ModLanguageProvider {
             add("entity.craftorio.crystal_golem", "Kristallgolem");
             add("entity.craftorio.behemoth", "Behemoth");
             add("entity.craftorio.swarm_queen", "Schwarmkönigin");
+            add("craftorio.command.research_granted", "%s Forschungen für dein Team abgeschlossen.");
+            add("craftorio.command.research_unknown", "Keine Forschung namens %s.");
             add("craftorio.command.layer_unlocked", "%s Chunks der Schicht freigeschaltet (Y %s bis %s); sie werden ausgehöhlt.");
             add("craftorio.mine.open", "Minenschacht offen – über das Gerüst hinab in die Minenschicht.");
             add("craftorio.mine.opened", "Ein Minenschacht wurde geöffnet! Der Minenbereich um Chunk %s, %s wird ausgehöhlt.");

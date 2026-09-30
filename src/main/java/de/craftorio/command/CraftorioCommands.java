@@ -89,6 +89,13 @@ public final class CraftorioCommands {
                 .then(literal("arena").requires(source -> source.hasPermission(2))
                         .then(literal("route").executes(ctx -> run(ctx, CraftorioCommands::arenaRoute))))
                 // Admin shortcut (tests, repairing old worlds): unlocks a layer area without building an entrance.
+                .then(literal("research").requires(source -> source.hasPermission(2))
+                        .then(literal("all").executes(ctx -> grantResearch(ctx, null)))
+                        .then(argument("name", StringArgumentType.word())
+                                .suggests((ctx, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(
+                                        de.craftorio.research.Researches.sorted(ctx.getSource().registryAccess()).stream()
+                                                .map(holder -> holder.key().location().getPath()), builder))
+                                .executes(ctx -> grantResearch(ctx, StringArgumentType.getString(ctx, "name")))))
                 .then(literal("layer").requires(source -> source.hasPermission(2))
                         .then(literal("unlock")
                                 .then(literal("caves").executes(ctx -> unlockLayer(ctx, Layer.CAVES)))
@@ -109,6 +116,46 @@ public final class CraftorioCommands {
         int count = placed;
         ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.td.path_ok", count), false);
         return placed;
+    }
+
+    /** Finishes one research with all its prerequisites for your team, or all of them ({@code name} null): for testing. */
+    private static int grantResearch(CommandContext<CommandSourceStack> ctx, String name) throws CommandSyntaxException {
+        Team team = teamOf(ctx.getSource().getPlayerOrException());
+        TeamRegistry registry = registry(ctx);
+        var access = ctx.getSource().registryAccess();
+        java.util.Map<String, de.craftorio.research.Research> all = new java.util.LinkedHashMap<>();
+        de.craftorio.research.Researches.sorted(access).forEach(holder -> all.put(de.craftorio.research.Researches.id(holder), holder.value()));
+        java.util.Set<String> wanted = new java.util.LinkedHashSet<>();
+        if (name == null) {
+            wanted.addAll(all.keySet());
+        } else {
+            String id = Craftorio.id(name).toString();
+            if (!all.containsKey(id)) {
+                ctx.getSource().sendFailure(Component.translatable("craftorio.command.research_unknown", name));
+                return 0;
+            }
+            collect(id, all, wanted);
+        }
+        int granted = 0;
+        for (String id : wanted) {
+            if (!team.researched().contains(id)) {
+                registry.grantResearch(team.id(), id);
+                granted++;
+            }
+        }
+        int count = granted;
+        ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.research_granted", count), true);
+        return granted;
+    }
+
+    private static void collect(String id, java.util.Map<String, de.craftorio.research.Research> all, java.util.Set<String> into) {
+        if (into.contains(id) || !all.containsKey(id)) {
+            return;
+        }
+        for (String required : de.craftorio.research.Researches.requires(all.get(id))) {
+            collect(required, all, into);
+        }
+        into.add(id);
     }
 
     private static int unlockLayer(CommandContext<CommandSourceStack> ctx, Layer layer) {
