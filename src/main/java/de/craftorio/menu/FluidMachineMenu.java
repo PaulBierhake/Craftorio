@@ -88,7 +88,9 @@ public final class FluidMachineMenu extends MachineMenuBase {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (id == BUTTON_PREVIOUS_RECIPE || id == BUTTON_NEXT_RECIPE) {
-            machine.cycle(id == BUTTON_NEXT_RECIPE ? 1 : -1);
+            if (!machine.cycle(id == BUTTON_NEXT_RECIPE ? 1 : -1) && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.translatable("craftorio.gui.no_known_recipe"), true);
+            }
             return true;
         }
         return false;

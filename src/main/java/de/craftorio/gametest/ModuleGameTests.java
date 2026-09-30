@@ -208,4 +208,20 @@ public final class ModuleGameTests {
         helper.assertValueEqual(de.craftorio.defense.LevelPlan.keyReward(45), de.craftorio.defense.LevelPlan.KeyReward.NONE, "level 45");
         helper.succeed();
     }
+
+    @GameTest(template = "empty", timeoutTicks = 60)
+    public static void aLampShinesOnlyWithPower(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.LAMP.get());
+        de.craftorio.energy.LampBlockEntity lamp = helper.getBlockEntity(pos);
+        helper.runAtTickTime(5, () -> {
+            helper.assertBlockProperty(pos, de.craftorio.energy.LampBlock.LIT, false);
+            lamp.energy().setEnergy(100);
+        });
+        helper.runAtTickTime(15, () -> {
+            helper.assertBlockProperty(pos, de.craftorio.energy.LampBlock.LIT, true);
+            helper.assertValueEqual(helper.getBlockState(pos).getLightEmission(helper.getLevel(), helper.absolutePos(pos)), 15, "bright");
+            helper.succeed();
+        });
+    }
 }

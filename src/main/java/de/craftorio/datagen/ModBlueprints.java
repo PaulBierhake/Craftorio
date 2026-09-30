@@ -82,6 +82,9 @@ public final class ModBlueprints {
         add(context, "assembler_2", stack(ModItems.ASSEMBLER_2.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 2), SizedIngredient.of(ModItems.CIRCUIT.get(), 3),
                 SizedIngredient.of(ModItems.IRON_GEAR.get(), 5), SizedIngredient.of(ModItems.ASSEMBLER.get(), 1));
+        // Factorio's small lamp: 1 circuit, 1 iron plate, 3 copper cables
+        add(context, "lamp", stack(ModItems.LAMP.get(), 1),
+                SizedIngredient.of(ModItems.CIRCUIT.get(), 1), iron(1), SizedIngredient.of(ModItems.COPPER_CABLE.get(), 3));
         add(context, "assembler_3", stack(ModItems.ASSEMBLER_3.get(), 1),
                 SizedIngredient.of(ModItems.ASSEMBLER_2.get(), 2), SizedIngredient.of(ModItems.module(de.craftorio.module.ModuleKind.SPEED, 1).get(), 4));
         add(context, "beacon", stack(ModItems.BEACON.get(), 1),

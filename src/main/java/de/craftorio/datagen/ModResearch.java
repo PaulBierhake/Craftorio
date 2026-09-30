@@ -46,6 +46,7 @@ public final class ModResearch {
         add(context, "advanced_material_processing", 75, 30, R_G, List.of("steel_processing", "logistic_science_pack"), List.of("steel_furnace"));
         add(context, "fluid_handling", 50, 15, R_G, List.of("automation_2", "engines"),
                 List.of("fluid_pump", "storage_tank", "underground_pipe", "assembling/fluid_pump", "assembling/storage_tank", "assembling/underground_pipe"));
+        add(context, "optics", 10, 15, List.of("electronics"), List.of("lamp"));
         add(context, "solar_energy", 100, 30, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"), List.of("solar_panel"));
         add(context, "energy_turrets", 100, 30, List.of("turrets", "engines"), List.of("tesla_tower"));
         add(context, "oil_processing", 100, 30, R_G, List.of("fluid_handling"),

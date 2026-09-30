@@ -49,6 +49,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> STEEL_FURNACE = ITEMS.registerSimpleBlockItem("steel_furnace", ModBlocks.STEEL_FURNACE);
     public static final DeferredItem<BlockItem> ASSEMBLER_2 = ITEMS.registerSimpleBlockItem("assembler_2", ModBlocks.ASSEMBLER_2);
     public static final DeferredItem<BlockItem> ASSEMBLER_3 = ITEMS.registerSimpleBlockItem("assembler_3", ModBlocks.ASSEMBLER_3);
+    public static final DeferredItem<BlockItem> LAMP = ITEMS.registerSimpleBlockItem("lamp", ModBlocks.LAMP);
     public static final DeferredItem<BlockItem> BEACON = ITEMS.registerSimpleBlockItem("beacon", ModBlocks.BEACON);
 
     /** The nine modules: speed, efficiency and productivity, tiers 1 to 3 (id {@code speed_module_1} and so on). */

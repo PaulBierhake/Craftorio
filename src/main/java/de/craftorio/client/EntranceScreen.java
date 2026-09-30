@@ -34,6 +34,19 @@ public final class EntranceScreen extends MachineScreenBase<EntranceMenu> {
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        if (menu.stage() == CaveEntranceBlock.STAGE_MATERIALS) {
+            List<Item> items = menu.items();
+            for (int i = 0; i < items.size() && i < EntranceMenu.MAX_ITEMS; i++) {
+                if (isHovering(8, 20 - 3 + i * ROW_HEIGHT - 1, 16, 16, mouseX, mouseY)) {
+                    graphics.renderTooltip(font, new ItemStack(items.get(i)), mouseX, mouseY);
+                }
+            }
+        }
+    }
+
+    @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         super.renderBg(graphics, partialTick, mouseX, mouseY);
         int x = leftPos + 8;

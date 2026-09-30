@@ -322,6 +322,23 @@ public final class FluidGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void aRefineryOfATeamThatKnowsOilProcessingCanSelectItsRecipe(GameTestHelper helper) {
+        var player = helper.makeMockServerPlayerInLevel();
+        var registry = de.craftorio.team.TeamData.registry(player.server);
+        var team = registry.ensureTeam(player.getUUID(), "RefineryTest");
+        registry.grantResearch(team.id(), Craftorio.id("oil_processing").toString());
+        BlockPos pos = new BlockPos(2, 1, 3);
+        helper.setBlock(pos, ModBlocks.OIL_REFINERY.get());
+        de.craftorio.protection.BlockOwnership.get(helper.getLevel()).claim(helper.absolutePos(pos), team.id());
+        FluidMachineBlockEntity refinery = helper.getBlockEntity(pos);
+        refinery.cycle(1);
+        helper.assertTrue(refinery.selected() != null, "a recipe is selected");
+        helper.assertValueEqual(refinery.selected().id(), Craftorio.id("oil/basic_oil_processing"), "basic oil processing is the one the team knows");
+        helper.assertValueEqual(refinery.fluids().fill(new FluidStack(ModFluids.CRUDE_OIL.get(), 50), IFluidHandler.FluidAction.SIMULATE), 50, "crude oil is accepted");
+        helper.succeed();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 200)
     public static void aPumpjackOnAnOilWellFillsTheRefinery(GameTestHelper helper) {
         helper.setBlock(new BlockPos(2, 1, 3), ModBlocks.OIL_WELL.get());

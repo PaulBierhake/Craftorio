@@ -175,10 +175,10 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
     }
 
     /** Steps through the recipes of this machine that the owning team may use (from the GUI's arrow buttons). */
-    public void cycle(int direction) {
+    public boolean cycle(int direction) {
         List<FluidRecipes.Recipe> recipes = FluidRecipes.forMachine(type);
         if (level == null || recipes.isEmpty()) {
-            return;
+            return false;
         }
         int index = selectedIndex();
         if (index < 0 && direction < 0) {
@@ -188,9 +188,10 @@ public final class FluidMachineBlockEntity extends BlockEntity implements MenuPr
             index = Math.floorMod(index + direction, recipes.size());
             if (MachineRules.knows(level, worldPosition, recipes.get(index).id())) {
                 select(recipes.get(index).id());
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, FluidMachineBlockEntity machine) {

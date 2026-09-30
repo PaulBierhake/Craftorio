@@ -95,6 +95,11 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         machine(ModBlocks.ASSEMBLER.get(), "assembler");
         machine(ModBlocks.ASSEMBLER_2.get(), "assembler_2");
         machine(ModBlocks.ASSEMBLER_3.get(), "assembler_3");
+        ModelFile lampOff = models().cubeAll("lamp", modLoc("block/lamp"));
+        ModelFile lampOn = models().cubeAll("lamp_on", modLoc("block/lamp_on"));
+        getVariantBuilder(ModBlocks.LAMP.get()).forAllStates(state -> ConfiguredModel.builder()
+                .modelFile(state.getValue(de.craftorio.energy.LampBlock.LIT) ? lampOn : lampOff).build());
+        simpleBlockItem(ModBlocks.LAMP.get(), lampOff);
         machine(ModBlocks.BEACON.get(), "beacon");
         machine(ModBlocks.LABORATORY.get(), "laboratory");
         workbench(ModBlocks.WORKBENCH.get(), "workbench");

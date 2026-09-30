@@ -140,6 +140,9 @@ public final class ModLanguageProvider {
             add(ModBlocks.STEEL_FURNACE.get(), "Steel Furnace");
             add(ModBlocks.ASSEMBLER_2.get(), "Assembling Machine 2");
             add(ModBlocks.ASSEMBLER_3.get(), "Assembling Machine 3");
+            add(ModBlocks.LAMP.get(), "Lamp");
+            add("craftorio.research.optics", "Optics");
+            add("craftorio.blueprint.lamp.desc", "Lamp: 5 kW from the grid, bright light for caves and mines (put a power pole next to it).");
             add(ModBlocks.BEACON.get(), "Beacon");
             for (var kind : de.craftorio.module.ModuleKind.values()) {
                 String name = switch (kind) {
@@ -182,6 +185,7 @@ public final class ModLanguageProvider {
             add("craftorio.research.solar_energy", "Solar Energy");
 
             add("craftorio.gui.energy", "Energy: %s / %s FE");
+            add("craftorio.gui.no_known_recipe", "No recipe researched for this machine yet: research it in the terminal (oil processing for the refinery).");
             add("craftorio.gui.no_recipe", "Choose a recipe");
             add("craftorio.power.no_network", "Not connected");
             add("craftorio.power.network", "Grid: %s poles · %s generators · %s consumers · %s accumulators · %s/%s FE/t · %s%% supplied");
@@ -922,6 +926,9 @@ public final class ModLanguageProvider {
             add(ModBlocks.STEEL_FURNACE.get(), "Stahlofen");
             add(ModBlocks.ASSEMBLER_2.get(), "Montagemaschine 2");
             add(ModBlocks.ASSEMBLER_3.get(), "Montagemaschine 3");
+            add(ModBlocks.LAMP.get(), "Lampe");
+            add("craftorio.research.optics", "Optik");
+            add("craftorio.blueprint.lamp.desc", "Lampe: 5 kW aus dem Netz, helles Licht für Höhlen und Minen (Strommast danebenstellen).");
             add(ModBlocks.BEACON.get(), "Beacon");
             for (var kind : de.craftorio.module.ModuleKind.values()) {
                 String name = switch (kind) {
@@ -964,6 +971,7 @@ public final class ModLanguageProvider {
             add("craftorio.research.solar_energy", "Solarenergie");
 
             add("craftorio.gui.energy", "Energie: %s / %s FE");
+            add("craftorio.gui.no_known_recipe", "Für diese Maschine ist noch kein Rezept erforscht: im Terminal erforschen (Ölverarbeitung für die Raffinerie).");
             add("craftorio.gui.no_recipe", "Rezept wählen");
             add("craftorio.power.no_network", "Nicht verbunden");
             add("craftorio.power.network", "Netz: %s Masten · %s Generatoren · %s Verbraucher · %s Akkus · %s/%s FE/t · %s%% versorgt");

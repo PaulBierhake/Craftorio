@@ -169,6 +169,10 @@ public final class ModBlocks {
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER = machine("assembler", MachineType.ASSEMBLER);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER_2 = machine("assembler_2", MachineType.ASSEMBLER_2);
     public static final DeferredBlock<ProcessingMachineBlock> ASSEMBLER_3 = machine("assembler_3", MachineType.ASSEMBLER_3);
+    public static final DeferredBlock<de.craftorio.energy.LampBlock> LAMP = BLOCKS.registerBlock("lamp",
+            de.craftorio.energy.LampBlock::new,
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(0.5F).sound(SoundType.GLASS)
+                    .lightLevel(state -> state.getValue(de.craftorio.energy.LampBlock.LIT) ? 15 : 0));
     public static final DeferredBlock<de.craftorio.module.BeaconBlock> BEACON = BLOCKS.registerBlock("beacon",
             de.craftorio.module.BeaconBlock::new, machineProperties().lightLevel(state -> state.getValue(MachineBaseBlock.ACTIVE) ? 10 : 0));
 

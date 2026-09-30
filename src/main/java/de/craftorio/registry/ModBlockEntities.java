@@ -132,6 +132,10 @@ public final class ModBlockEntities {
                     ModBlocks.OIL_REFINERY.get(), ModBlocks.GREENHOUSE.get(), ModBlocks.CENTRIFUGE.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.energy.LampBlockEntity>> LAMP = BLOCK_ENTITIES.register("lamp",
+            () -> BlockEntityType.Builder.of(de.craftorio.energy.LampBlockEntity::new, ModBlocks.LAMP.get()).build(null));
+
+    @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<de.craftorio.module.BeaconBlockEntity>> BEACON = BLOCK_ENTITIES.register("beacon",
             () -> BlockEntityType.Builder.of(de.craftorio.module.BeaconBlockEntity::new, ModBlocks.BEACON.get()).build(null));
 
@@ -153,6 +157,7 @@ public final class ModBlockEntities {
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, DRILL.get(), (drill, side) -> drill.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CONVEYOR_BELT.get(), ConveyorBeltBlockEntity::handler);
 
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, LAMP.get(), (lamp, side) -> lamp.energy());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, BEACON.get(), (beacon, side) -> beacon.energy());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, REACTOR.get(), (reactor, side) -> reactor.automation());
         event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, STEAM_TURBINE.get(), (turbine, side) -> turbine.energy());

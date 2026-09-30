@@ -24,10 +24,10 @@ public final class Quests {
             build("power_pole", 1, 0).withItem("craftorio:copper_cable", 4),
             // Science and automation
             build("laboratory", 1, 0).withItem("craftorio:red_science", 5),
+            build("terminal", 1, 10),
             build("red_science", 10, 0).withItem("craftorio:circuit", 5),
             unlock("assembler", 0).withItem("craftorio:iron_gear", 10),
             build("assembler", 1, 0).withItem("craftorio:circuit", 5),
-            build("terminal", 1, 10),
             unlock("underground_belt", 0).withItem("craftorio:conveyor_belt", 8),
             build("splitter", 1, 0).withItem("craftorio:circuit", 3),
             // Trade, then defend
