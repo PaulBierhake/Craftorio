@@ -130,24 +130,34 @@ und das Handbuch-Ersatzbuch.
 - **Weg legen**: mit dem **Pfadstab** vom offenen Tor zum Kern (Klick = Wegstück, nächster Klick in derselben
   Reihe/Spalte = gerade Linie, Schleichen + Klick entfernt). Der Pfadstab lehnt Abzweigungen, Kreuzungen und 2×2-Flächen sofort ab; Schleichen +
   Klick in die Luft zeigt eine Route von 100–160 Blöcken als Partikel. Rechtsklick auf den Kern prüft den Weg.
-- **Türme (Paket T3)** frei auf freiem Boden oder Plateaus (+10 % Reichweite): **Armbrustturm** (Bolzen), **Geschützturm** (Magazine:
-  zehn Schüsse je Magazin, panzerbrechende und Uran-Magazine treffen alles), **Flammenwerfer-Turm** (Rohöl aus dem Arena-Vorrat),
-  **Tesla-Turm** und **Laserturm** (Strom). Ein frischer Turm kostet beim Bauen seinen **Grundpreis in Münzen** (Armbrust 200 ⛁,
-  Geschütz 350, Flammenwerfer 260, Tesla 250, Laser 2.500; Schwierigkeitsfaktor inklusive), Türme aus dem Depot sind bezahlt.
+- **Türme (Pakete T3–T5)** frei auf freiem Boden oder Plateaus (+10 % Reichweite), zehn Stück nach den Türmen von Bloons TD 6:
+  **Armbrustturm** (Bolzen), **Geschützturm** (Magazine: zehn Schüsse je Magazin, panzerbrechende und Uran-Magazine treffen alles),
+  **Mörserturm** (Granaten), **Flammenwerfer-Turm** (Rohöl aus dem Arena-Vorrat), **Frostturm** und **Tesla-Turm** und **Laserturm** (Strom),
+  **Leimwerfer** (Kunststoff), **Kommandoposten** (stärkt Türme im Umkreis, macht sie billiger, sieht Tarnung) und das **Nachschublager**
+  (Münzen je Runde, Bank, Kredit; ein Warenkorb Schaltkreise aus dem Arena-Vorrat bringt +50 %). Ein frischer Turm kostet beim Bauen seinen
+  **Grundpreis in Münzen** (Armbrust 200 ⛁, Geschütz 350, Mörser 375, Flammenwerfer 260, Frost 400, Leim 225, Tesla 250, Laser 2.500,
+  Kommandoposten 1.200, Nachschublager 1.250; Schwierigkeitsfaktor inklusive), Türme aus dem Depot sind bezahlt.
   GUI mit **drei Aufrüstpfaden à fünf Stufen** wie in Bloons TD 6 (ein Pfad bis 5, ein zweiter bis 2, der dritte gesperrt; Preise aus dem Wiki,
   in Münzen), **Verkaufen** (70 % des bezahlten Betrags), **Zielmodus** (Erster/Letzter/Nächster/Stärkster) und
   **Fähigkeiten** (Knopf oder Taste V auf den angesehenen Turm). Die Stufen 3, 4 und 5 brauchen die Forschungen
   *Turmtechnik I–III* und Bauteile aus der Fabrik (5 Schaltkreise / 10 fortschrittliche Schaltkreise / 5 Prozessoren + 2 Motoren).
-  Die Wirkungen der Aufrüstungen kommen mit den Paketen T4 und T5. Versorgung per Hand oder über den **Arena-Einspeiser** in der Fabrik
+  Alle 150 Aufrüstungen wirken (Werte aus den Stats-Seiten von bloonswiki.com; Ausnahmen und Ersatz stehen in `docs/TD-UMBAU.md`). Versorgung per Hand oder über den **Arena-Einspeiser** in der Fabrik
   (Strom und Munition per Band/Greifarm → Arena-Vorrat).
   **Wie kommen Strom und Munition in die Arena?** In der Arena kann nichts gebaut werden: Den Einspeiser in der
   Fabrik ans Stromnetz hängen und mit Bolzen/Magazinen füttern und Rohöl per Rohr in den Einspeiser leiten. Das Arena-HUD zeigt Vorrat und warnt rot, wenn
   ein Turm keine Versorgung hat; Tooltips der Türme und der Leitfaden-Schritt *Arena-Einspeiser* erklären es.
-- **Level** im Terminal-Tab *Abwehr* starten (optional automatisch weiter): Karte, Regel, Mutator,
+- **Level** im Terminal-Tab *Abwehr* starten (optional automatisch weiter): Karte, Regel, Herausforderung,
   **Rundenvorschau**, Arena-Vorrat; **Nächste Runde jetzt** startet die nächste Runde jederzeit früher (wie in BTD6, ohne Bonus).
   **Schwierigkeit** (Leicht 200 Leben / Mittel 150 / Schwer 100 / Unbesiegbar 1 Leben; Preis- und Tempofaktoren wie BTD6) wählbar
-  bis zum ersten Level, danach nur nach unten; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); ab Level 6
-  zufällige **Mutatoren** (Nebel, Eilmarsch, Gehärtet) mit mehr Belohnung.
+  bis zum ersten Level, danach nur nach unten; **Sterne** je nach verbliebenen Leben (bis +50 % Belohnung); dazu
+  **Herausforderungen** (Doppelte Boss-HP, Halbe Münzen, Alternative Runden, Apokalypse, CHIMPS) mit mehr Belohnung und einem
+  **Meister-Stern** je Modus (Knopf *Modus* im Terminal).
+- **Endlosmodus, Arena-Wissen, Rangliste (Paket T6)**: Nach Level 50 geht es weiter: Level 51–70 spielen die Runden 101–140 der Wiki-Liste, ab
+  Level 71 werden die Runden pro Rundennummer zufällig gezogen; Boss-HP und Tempo wachsen nach der Freeplay-Tabelle. Sieben Forschungen
+  (*Arena-Wissen*, Militär-Pakete) geben dauerhafte Boni (Kriegsvorrat, Bessere Ausrüstung, Feldlazarett, Starke Bolzen, Sparsame Bauweise,
+  Zinseszins, Wachsamkeit). `/craftorio ranking` zeigt die zehn Teams mit der höchsten Runde.
+- **Handbuch (Paket T7)**: Neben dem Leitfaden hat das Handbuch (Taste G) einen Nachschlageteil: Wirtschaft, Schwierigkeitsgrade,
+  Herausforderungen, Arena-Wissen, alle Gegner (mit Immunitäten) und alle Türme mit ihren drei Pfaden.
 - **Arena-Münzen (⛁, Paket T2)**: Jedes Team startet mit 650 ⛁. Jede zerstörte Schicht bringt 1 ⛁ (ab Runde 51 weniger: 50 %, 20 %, 10 %, 5 %,
   4 %, 2 %), das Rundenende 100 + Rundennummer; ein Golem ab Runde 81 zahlt 87 für seine Schicht. Die Werte stimmen für alle 140 Runden mit der
   Wiki-Spalte „Cash" überein (Unit-Test). Die **Kriegskasse** im Terminal tauscht Credits 1:1 in Münzen (höchstens 100 × Levelnummer pro Level).
@@ -155,7 +165,7 @@ und das Handbuch-Ersatzbuch.
   **Snapshot** Münzen, Depot und Türme vom Levelstart wieder her. Der Pfad muss **100 bis 160 Blöcke** lang sein; jede Karte hat eine
   garantierte Schlangenroute dafür (Pfadstab: Schleichen + Klick in die Luft). Münzen werden ab Paket T3 für Turmkäufe gebraucht.
 - **Gegner (Umbau nach Bloons TD 6, Paket T1)**: Ein Level sind zwei Runden der BTD6-Standardliste (Level L = Runden
-  2L−1 und 2L, Level 50 endet mit der Schwarmkönigin in Runde 100). Die Gegner sind keine Entities mehr, sondern
+  2L−1 und 2L, Level 50 endet mit der Schwarmkönigin in Runde 100, danach der Endlosmodus). Die Gegner sind keine Entities mehr, sondern
   Zahlen in einer Simulation (`TdSimulation`): Krabbler in fünf Stufen, Ruß-, Frost- und Glutkrabbler, Eisenbrecher,
   Zwielicht- und Schimmerkrabbler, Kristallgolems, Brutmutter, Behemoth, Koloss, Schattenjäger und Schwarmkönigin.
   Jeder Gegner hat Schichten und gibt beim Platzen seine Kinder frei; manche sind **getarnt**, **nachwachsend**
@@ -433,7 +443,9 @@ src/main/java/de/craftorio/
 ├── recipe/                 Maschinenrezepte (Ofen mit Mengen, Montage)
 ├── blueprint/              Baupläne (Werkbank-Rezepte), Terminal, Werkbank
 ├── research/               Forschung: Datenmodell, Regeln (rein), Labor, Aktionen
-├── defense/                Tower Defense: Level-Ablauf, Gegner, Türme (LevelPlan/PathTracer/TowerStats = reine Logik)
+├── defense/                Tower Defense: Level-Ablauf, Herausforderungen, Arena-Wissen, Türme (LevelPlan/PathTracer = reine Logik)
+│   └── sim/                Gegner-Simulation, Runden, Türme und Aufrüstungen aus Datenpaketen (reine Logik, Unit-Tests, Balancing-Simulator)
+├── guide/                  Handbuch: Nachschlageteil (Lexikon) aus den Spieldaten
 │   └── arena/              Arena-Dimension, Kartengenerator mit Themen (reine Logik), Bau, Regeln, Pfadstab, Einspeiser
 ├── menu/                   Container-Menüs der Maschinen
 ├── command/                /craftorio-Befehle

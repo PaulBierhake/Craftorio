@@ -288,6 +288,20 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return java.util.Set.of();
     }
 
+    /**
+     * Towers of the old upgrade levels (1 to 5): level n becomes tier n-1 of the first path, the rest lapses; what the tower is
+     * worth for selling is its base price and the upgrades it now has.
+     */
+    private void migrateLevel(int oldLevel) {
+        java.util.Arrays.fill(tiers, 0);
+        tiers[0] = clampTier(oldLevel - 1);
+        long worth = def().cost();
+        for (int tier = 1; tier <= tiers[0]; tier++) {
+            worth += def().upgrade(0, tier).cost();
+        }
+        paid = worth;
+    }
+
     /** Targeting range in blocks, for the GUI and the range display; negative for unlimited. */
     public double range() {
         double base = profile().range;
@@ -733,6 +747,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             tiers[path] = path < saved.length ? clampTier(saved[path]) : 0;
         }
         paid = tag.getLong("paid");
+        if (!tag.contains("tiers") && tag.contains("level")) {
+            migrateLevel(tag.getInt("level"));
+        }
         try {
             targetMode = TargetMode.byId(tag.getString("target"));
         } catch (IllegalArgumentException missing) {

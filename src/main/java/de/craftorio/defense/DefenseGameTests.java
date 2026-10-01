@@ -745,6 +745,34 @@ public final class DefenseGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = EMPTY)
+    public static void towersOfTheOldUpgradeLevelsBecomeTiersOfThePathOne(GameTestHelper helper) {
+        BlockPos pos = new BlockPos(2, 1, 2);
+        helper.setBlock(pos, ModBlocks.CROSSBOW_TOWER.get());
+        TowerBlockEntity tower = helper.getBlockEntity(pos);
+        net.minecraft.nbt.CompoundTag old = new net.minecraft.nbt.CompoundTag();
+        old.putInt("level", 4);
+        tower.loadWithComponents(old, helper.getLevel().registryAccess());
+        helper.assertValueEqual(tower.tier(0), 3, "level 4 is tier 3 of path one");
+        helper.assertValueEqual(tower.tier(1), 0, "the other paths are closed");
+        helper.assertValueEqual(tower.paid(), 200L + 140 + 200 + 320, "paid: the base price and the three upgrades");
+        net.minecraft.nbt.CompoundTag fresh = new net.minecraft.nbt.CompoundTag();
+        fresh.putInt("level", 1);
+        tower.loadWithComponents(fresh, helper.getLevel().registryAccess());
+        helper.assertValueEqual(tower.tier(0), 0, "level 1 is a plain tower");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void theHandbooksReferencePartHasAPageForEverything(GameTestHelper helper) {
+        var pages = de.craftorio.guide.Lexicon.pages();
+        helper.assertValueEqual(pages.size(), 4 + 5 + 10, "economy, difficulties, challenges, knowledge, 17 enemies on five pages, ten towers");
+        for (var page : pages) {
+            helper.assertTrue(!page.lines().isEmpty(), "every page has content");
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 400, batch = "defense_decor")
     public static void decoratedMapsKeepPathsAndTowerSpotsFree(GameTestHelper helper) {
         Setup setup = buildArena(helper, "DecorTest");

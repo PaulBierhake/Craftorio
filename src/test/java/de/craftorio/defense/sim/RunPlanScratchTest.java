@@ -24,7 +24,7 @@ class RunPlanScratchTest {
                 double sum = 0;
                 StringBuilder detail = new StringBuilder();
                 for (int level = 1; level <= layouts2; level++) {
-                    BalanceSimulator s = new BalanceSimulator(ArenaLayout.generate(1234, level).route(), ReferenceSetsTest.plan(String.join(" ", list)), 12);
+                    BalanceSimulator s = new BalanceSimulator(ArenaLayout.generate(1234, level).route(), ReferenceSetsTest.plan(String.join(" ", list)), 16);
                     var r = s.play(1, 100, true);
                     int round = r.clean() ? 101 : r.firstLeakRound();
                     sum += round;

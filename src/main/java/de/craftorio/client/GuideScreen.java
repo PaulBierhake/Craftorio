@@ -50,6 +50,14 @@ public final class GuideScreen extends Screen {
     private static final int GREEN = 0x7CFC7C;
 
     private int page;
+    /** The reference part of the book (economy, enemies, towers) instead of the guide steps. */
+    private boolean reference;
+    private int referencePage;
+    private Button toggle;
+    /** Wrapped lines of a long reference page that are scrolled out of view, and the most that can be. */
+    private int scroll;
+    private int scrollMax;
+    private final List<de.craftorio.guide.Lexicon.Page> lexicon = de.craftorio.guide.Lexicon.pages();
     private int left;
     private int top;
     private final List<Icon> icons = new ArrayList<>();
@@ -73,7 +81,14 @@ public final class GuideScreen extends Screen {
     protected void init() {
         left = (width - WIDTH) / 2;
         top = (height - HEIGHT) / 2;
-        addRenderableWidget(Button.builder(Component.literal("◀"), button -> page = Math.max(0, page - 1))
+        addRenderableWidget(Button.builder(Component.literal("◀"), button -> {
+                    if (reference) {
+                        referencePage = Math.max(0, referencePage - 1);
+                        scroll = 0;
+                    } else {
+                        page = Math.max(0, page - 1);
+                    }
+                })
                 .bounds(left + 8, top + HEIGHT - 24, 30, 16).build());
         middle = addRenderableWidget(Button.builder(Component.translatable("craftorio.guide.current"), button -> {
                     if (claimable()) {
@@ -83,8 +98,17 @@ public final class GuideScreen extends Screen {
                         page = Quests.current(ClientTeamState.claimedQuests()).orElse(page);
                     }
                 })
-                .bounds(left + WIDTH / 2 - 50, top + HEIGHT - 24, 100, 16).build());
-        addRenderableWidget(Button.builder(Component.literal("▶"), button -> page = Math.min(Quests.ALL.size() - 1, page + 1))
+                .bounds(left + 42, top + HEIGHT - 24, 80, 16).build());
+        toggle = addRenderableWidget(Button.builder(Component.translatable("craftorio.lexicon.button.reference"), button -> reference = !reference)
+                .bounds(left + 126, top + HEIGHT - 24, 92, 16).build());
+        addRenderableWidget(Button.builder(Component.literal("▶"), button -> {
+                    if (reference) {
+                        referencePage = Math.min(lexicon.size() - 1, referencePage + 1);
+                        scroll = 0;
+                    } else {
+                        page = Math.min(Quests.ALL.size() - 1, page + 1);
+                    }
+                })
                 .bounds(left + WIDTH - 38, top + HEIGHT - 24, 30, 16).build());
     }
 
@@ -110,6 +134,13 @@ public final class GuideScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        toggle.setMessage(Component.translatable(reference ? "craftorio.lexicon.button.guide" : "craftorio.lexicon.button.reference"));
+        middle.visible = !reference;
+        if (reference) {
+            super.render(graphics, mouseX, mouseY, partialTick);
+            renderReference(graphics);
+            return;
+        }
         middle.setMessage(claimable()
                 ? Component.translatable("craftorio.guide.claim").withStyle(ChatFormatting.GREEN)
                 : Component.translatable("craftorio.guide.current"));
@@ -151,6 +182,41 @@ public final class GuideScreen extends Screen {
                 graphics.renderTooltip(font, icon.stack, mouseX, mouseY);
             }
         }
+    }
+
+    /** One page of the reference part: the title and the lines of text, wrapped. */
+    private void renderReference(GuiGraphics graphics) {
+        de.craftorio.guide.Lexicon.Page lexiconPage = lexicon.get(referencePage);
+        int x = left + 10;
+        int y = top + 8;
+        graphics.drawString(font, Component.translatable("craftorio.lexicon.page", referencePage + 1, lexicon.size()), x, y, GRAY, false);
+        y += 13;
+        graphics.drawString(font, lexiconPage.title().copy().withStyle(ChatFormatting.BOLD), x, y, GOLD, false);
+        y += 14;
+        int bottom = top + HEIGHT - 30;
+        List<FormattedCharSequence> wrapped = new ArrayList<>();
+        for (Component line : lexiconPage.lines()) {
+            wrapped.addAll(font.split(line, WIDTH - 20));
+        }
+        int capacity = (bottom - y) / 10;
+        scrollMax = Math.max(0, wrapped.size() - capacity);
+        scroll = Math.min(scroll, scrollMax);
+        for (int i = scroll; i < wrapped.size() && y + 9 <= bottom; i++) {
+            graphics.drawString(font, wrapped.get(i), x, y, 0xFFFFFF, false);
+            y += 10;
+        }
+        if (scrollMax > 0) {
+            graphics.drawString(font, scroll < scrollMax ? "▼" : "▲", left + WIDTH - 18, bottom - 8, GRAY, false);
+        }
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (reference && scrollMax > 0) {
+            scroll = Math.max(0, Math.min(scrollMax, scroll - (int) Math.signum(scrollY)));
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override

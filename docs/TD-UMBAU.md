@@ -628,7 +628,7 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 | **T4 – Türme Teil 1** ✅ | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
 | **T5 – Türme Teil 2** ✅ | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |
 | **T6 – Modi und Endlos** ✅ | Herausforderungen §7, Endlosmodus ab Runde 101 mit §3.6, Arena-Wissen §8, Rangliste (höchste Runde pro Team) | GameTest je Modus; Freeplay-Skalierung als Unit-Test |
-| **T7 – Leitfaden, Handbuch, Feinschliff** | Handbuch-Seiten: Gegner (mit Immunitäten), Türme (Pfade), Wirtschaft; Leitfaden-Hinweise; README; Migration §10 | Alle Tests grün; Kampagne im Simulator mit Referenz-Sets bis Runde 100 schaffbar |
+| **T7 – Leitfaden, Handbuch, Feinschliff** ✅ (bis auf Runde 90–100 des Referenz-Satzes) | Handbuch-Seiten: Gegner (mit Immunitäten), Türme (Pfade), Wirtschaft; Leitfaden-Hinweise; README; Migration §10 | Alle Tests grün; Kampagne im Simulator mit Referenz-Sets bis Runde 100 schaffbar |
 
 ### T4 – Umsetzungsnotizen
 
@@ -688,6 +688,21 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
   Sparsame Bauweise, Zinseszins, Wachsamkeit. Die Wirkung auf Türme steckt in einem eigenen Profil jedes Turms (Kopie des geteilten Profils),
   das neu gebaut wird, wenn sich das Wissen des Teams ändert.
 - **Rangliste:** `/craftorio ranking` zeigt die zehn Teams mit der höchsten abgeschlossenen Runde; die Terminal-Zeile zeigt die eigene beste Runde.
+
+### T7 – Umsetzungsnotizen
+
+- **Handbuch:** Neben den Leitfaden-Schritten hat das Buch einen Nachschlageteil (`Lexicon`, aus den Spieldaten gebaut): Wirtschaft, Schwierigkeitsgrade,
+  Herausforderungen, Arena-Wissen, alle 17 Gegner mit Leben, Tempo, erster Runde und Immunitäten (vier je Seite) und alle zehn Türme mit Preis,
+  Reichweite, Versorgung und den drei Pfaden samt Preisen. Knopf *Nachschlagen* / *Leitfaden*, lange Seiten lassen sich mit dem Mausrad scrollen.
+- **Leitfaden-Hinweise:** die Texte der Tower-Defense-Schritte (Level 1, 10, 20, 30, 40, 50) und des Schritts „Verteidigung“ sind auf die neuen Regeln
+  umgestellt (Münzen, Gegner greifen keine Türme an, Immunitäten, Kreuzpfad-Regel, Endlosmodus).
+- **Migration (§10):** Türme der alten Aufrüststufen (NBT „level“) laden als Pfad 1, Stufe n−1; ihr Wert zum Verkaufen ist der Grundpreis plus die Preise der
+  übrigen Stufen. Die Startmünzen alter Arenen gibt `Coins.migratedStart`, der Münzstand und die Kampagnen-Flags kommen aus T2. Ruinen gibt es nicht mehr.
+- **Referenz-Aufstellungen:** `PLAN_1_40` (Runde 1–40, zehn Layouts, sechs weitere mit höchstens einem Leben Verlust) und `PLAN_1_89` (Runde 1–89,
+  sechs Layouts) ohne Leak; ein bewusst zu schwacher Satz ohne Tarnungserkennung scheitert genau in Runde 24. **Runde 90–100 sind offen:** Schattenjäger
+  (Runde 90 und 93) und die zehn verstärkten Behemoths von Runde 93 überfordern jede Aufstellung, die das Hill-Climbing findet; mehrere Nachschublager,
+  Kältetechnik (Absoluter Nullpunkt) und Attentäter-Mörser helfen in der Simulation allein nicht genug. Hier fehlt eine bewusst gebaute Wirtschaftsphase
+  mit Zeitplan (Farmen zwischen Runde 30 und 50) und ein Satz aus mehreren Boss-Konterntürmen; das ist die Nacharbeit für das Balancing.
 
 ---
 
