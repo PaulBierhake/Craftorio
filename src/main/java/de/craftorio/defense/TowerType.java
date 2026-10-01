@@ -11,6 +11,8 @@ public enum TowerType {
     CROSSBOW("crossbow_tower"),
     GUN("gun_turret"),
     FLAME("flamethrower_turret"),
+    MORTAR("mortar_turret"),
+    DEPOT("supply_depot"),
     TESLA("tesla_tower"),
     LASER("laser_tower");
 

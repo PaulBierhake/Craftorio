@@ -39,6 +39,8 @@ public final class ModBlockLootProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.POWER_POLE.get());
         dropSelf(ModBlocks.STONE_WALL.get());
         tower(ModBlocks.FLAMETHROWER_TURRET.get());
+        tower(ModBlocks.MORTAR_TURRET.get());
+        tower(ModBlocks.SUPPLY_DEPOT.get());
         dropSelf(ModBlocks.PUMPJACK.get());
         dropSelf(ModBlocks.CONCRETE.get());
         dropSelf(ModBlocks.GREENHOUSE.get());

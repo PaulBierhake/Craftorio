@@ -25,6 +25,18 @@ public final class SimEnemy {
     double rbe;
     /** Slowdown and similar effects: multiplies the speed. */
     double speedFactor = 1;
+    /** Ticks the enemy stands still (stun) or is frozen; frozen enemies shrug off sharp damage. */
+    int stunTicks;
+    int freezeTicks;
+    /** Glue and the like: speed factor while {@code slowTicks} last. */
+    int slowTicks;
+    double slowFactor = 1;
+    /** Ticks of damage over time and the damage per second. */
+    int burnTicks;
+    double burnDps;
+    /** Extra damage taken per hit while brittle. */
+    int brittleTicks;
+    double brittleBonus;
 
     SimEnemy(int id) {
         this.id = id;
@@ -52,6 +64,18 @@ public final class SimEnemy {
 
     public boolean fortified() {
         return fortified;
+    }
+
+    public boolean frozen() {
+        return freezeTicks > 0;
+    }
+
+    public boolean stunned() {
+        return stunTicks > 0;
+    }
+
+    public boolean slowed() {
+        return slowTicks > 0;
     }
 
     public boolean alive() {

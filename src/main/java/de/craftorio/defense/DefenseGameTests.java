@@ -553,6 +553,63 @@ public final class DefenseGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void aSupplyDepotPaysItsIncomeAtTheEndOfARound(GameTestHelper helper) {
+        BlockPos depotPos = new BlockPos(3, 1, 3);
+        helper.setBlock(depotPos, ModBlocks.SUPPLY_DEPOT.get());
+        TowerBlockEntity depot = helper.getBlockEntity(depotPos);
+        LevelRun run = track(helper, 1);
+        depot.roundEnded(run);
+        helper.assertValueEqual(run.takeCoins(), 80.0, "a plain depot: 4 bananas of 20");
+        depot.setTiers(2, 2, 0);
+        depot.roundEnded(run);
+        helper.assertValueEqual(run.takeCoins(), 200.0, "2-2-0 pays 200 a round");
+        depot.setTiers(0, 3, 0);
+        depot.roundEnded(run);
+        run.takeCoins();
+        depot.roundEnded(run);
+        helper.assertTrue(depot.depot().bank() > 800, "the bank keeps 400 a round with interest");
+        run.end(helper.getLevel());
+        helper.succeed();
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 300)
+    public static void aMortarThrowsGrenadesAtCrawlers(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(7, 1, 4);
+        helper.setBlock(towerPos, ModBlocks.MORTAR_TURRET.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        helper.assertTrue(tower.ammo().isItemValid(0, new ItemStack(ModItems.GRENADE.get())), "it takes grenades");
+        helper.assertFalse(tower.ammo().isItemValid(0, new ItemStack(ModItems.BOLT.get())), "but no bolts");
+        tower.ammo().insertItem(0, new ItemStack(ModItems.GRENADE.get(), 2), false);
+        LevelRun run = track(helper, 1);
+        run.simulation().spawn("red_crawler");
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(run.simulation().count() == 0 && run.simulation().paidPops() == 1, "crawler not popped");
+            helper.assertTrue(tower.ammo().getStackInSlot(0).getCount() < 2, "the mortar used a grenade");
+            run.end(helper.getLevel());
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 100)
+    public static void theFanClubBuffsCrossbowTowersAround(GameTestHelper helper) {
+        BlockPos masterPos = new BlockPos(3, 1, 3);
+        BlockPos otherPos = new BlockPos(5, 1, 3);
+        helper.setBlock(masterPos, ModBlocks.CROSSBOW_TOWER.get());
+        helper.setBlock(otherPos, ModBlocks.CROSSBOW_TOWER.get());
+        TowerBlockEntity master = helper.getBlockEntity(masterPos);
+        TowerBlockEntity other = helper.getBlockEntity(otherPos);
+        master.setTiers(0, 4, 0);
+        LevelRun run = track(helper, 1);
+        ServerPlayer player = helper.makeMockServerPlayerInLevel();
+        helper.assertTrue(master.activateAbility(player, 0), "the ability can be used");
+        helper.assertTrue(master.hasAbilityBuff("fan_club"), "the tower itself is buffed");
+        helper.assertTrue(other.hasAbilityBuff("fan_club"), "so is the crossbow tower next to it");
+        helper.assertFalse(master.activateAbility(player, 0), "and it needs time to recharge");
+        run.end(helper.getLevel());
+        helper.succeed();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 400, batch = "defense_decor")
     public static void decoratedMapsKeepPathsAndTowerSpotsFree(GameTestHelper helper) {
         Setup setup = buildArena(helper, "DecorTest");

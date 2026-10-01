@@ -15,88 +15,306 @@
     "damage": 1,
     "damage_kind": "sharp",
     "length": 3.2,
-    "radius": 0.05
+    "radius": 0.05,
+    "follow_range": true
   },
   "paths": [
     [
       {
         "btd6": "Faster Shooting",
         "cost": 150,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.75
+            }
+          }
+        ]
       },
       {
         "btd6": "Even Faster Shooting",
         "cost": 220,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.75
+            }
+          }
+        ]
       },
       {
         "btd6": "Hot Shots",
         "cost": 600,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 2,
+              "damage_kind": "normal"
+            }
+          }
+        ]
       },
       {
         "btd6": "Ring of Fire",
         "cost": 3500,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "kind": "aura",
+              "projectiles": 1,
+              "pierce": 30,
+              "damage": 5,
+              "damage_kind": "fire"
+            },
+            "mul": {
+              "cooldown": 0.5
+            },
+            "radius_from_range": 0.2
+          }
+        ]
       },
       {
         "btd6": "Inferno Ring",
         "cost": 45500,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.15
+          },
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 45,
+              "damage": 8
+            },
+            "mul": {
+              "cooldown": 0.3174603174603175
+            },
+            "bonus": {
+              "moab": 4
+            }
+          },
+          {
+            "type": "new_attack",
+            "id": "meteor",
+            "attack": {
+              "kind": "area",
+              "cooldown": 4,
+              "pierce": 1,
+              "damage": 700,
+              "damage_kind": "fire",
+              "radius": 0.5,
+              "unlimited_range": true,
+              "burn": 50,
+              "burn_seconds": 4.1,
+              "children": [
+                {
+                  "kind": "area",
+                  "cooldown": 1,
+                  "pierce": 10,
+                  "damage": 50,
+                  "damage_kind": "explosion",
+                  "id": "blast",
+                  "radius": 1.8
+                }
+              ]
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Long Range Tacks",
         "cost": 100,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.391
+          }
+        ]
       },
       {
         "btd6": "Super Range Tacks",
         "cost": 225,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.391
+          },
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 4
+            }
+          }
+        ]
       },
       {
         "btd6": "Blade Shooter",
         "cost": 550,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.518
+          },
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 8,
+              "damage_kind": "normal",
+              "radius": 0.4
+            }
+          }
+        ]
       },
       {
         "btd6": "Blade Maelstrom",
         "cost": 2700,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 2
+            }
+          },
+          {
+            "type": "ability",
+            "id": "blade_maelstrom",
+            "cooldown": 20,
+            "duration": 3
+          },
+          {
+            "type": "new_attack",
+            "id": "maelstrom",
+            "attack": {
+              "kind": "projectile",
+              "cooldown": 0.05,
+              "projectiles": 2,
+              "spread": 180,
+              "pierce": 100,
+              "damage": 2,
+              "damage_kind": "normal",
+              "radius": 0.4,
+              "length": 4.6,
+              "ability_id": "blade_maelstrom",
+              "no_target": true,
+              "follow_range": true
+            }
+          }
+        ]
       },
       {
         "btd6": "Super Maelstrom",
         "cost": 15000,
-        "effects": []
+        "effects": [
+          {
+            "type": "ability",
+            "id": "blade_maelstrom",
+            "cooldown": 20,
+            "duration": 9
+          },
+          {
+            "type": "attack",
+            "set": {
+              "damage": 5,
+              "damage_kind": "normal"
+            },
+            "bonus": {
+              "ceramic": 5
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "maelstrom",
+            "set": {
+              "projectiles": 4,
+              "spread": 360,
+              "pierce": 300,
+              "radius": 0.2
+            },
+            "bonus": {
+              "ceramic": 8
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "More Tacks",
         "cost": 150,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "projectiles": 10
+            }
+          }
+        ]
       },
       {
         "btd6": "Even More Tacks",
         "cost": 150,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "projectiles": 12
+            }
+          }
+        ]
       },
       {
         "btd6": "Tack Sprayer",
         "cost": 450,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "projectiles": 16,
+              "pierce": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Overdrive",
         "cost": 3200,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.3333333333333333
+            }
+          }
+        ]
       },
       {
         "btd6": "The Tack Zone",
         "cost": 20000,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.7
+          },
+          {
+            "type": "attack",
+            "set": {
+              "projectiles": 32
+            },
+            "mul": {
+              "cooldown": 0.6
+            },
+            "bonus": {
+              "moab": 1
+            }
+          }
+        ]
       }
     ]
   ]

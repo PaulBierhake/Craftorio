@@ -248,6 +248,8 @@ public final class ModBlocks {
     public static final DeferredBlock<TowerBlock> TESLA_TOWER = tower("tesla_tower", TowerType.TESLA, SoundType.COPPER);
     public static final DeferredBlock<TowerBlock> LASER_TOWER = tower("laser_tower", TowerType.LASER, SoundType.METAL);
     public static final DeferredBlock<TowerBlock> FLAMETHROWER_TURRET = tower("flamethrower_turret", TowerType.FLAME, SoundType.METAL);
+    public static final DeferredBlock<TowerBlock> MORTAR_TURRET = tower("mortar_turret", TowerType.MORTAR, SoundType.METAL);
+    public static final DeferredBlock<TowerBlock> SUPPLY_DEPOT = tower("supply_depot", TowerType.DEPOT, SoundType.WOOD);
     public static final DeferredBlock<net.minecraft.world.level.block.WallBlock> STONE_WALL = BLOCKS.registerBlock("stone_wall",
             net.minecraft.world.level.block.WallBlock::new,
             BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.STONE));
@@ -259,6 +261,8 @@ public final class ModBlocks {
             case TESLA -> TESLA_TOWER;
             case LASER -> LASER_TOWER;
             case FLAME -> FLAMETHROWER_TURRET;
+            case MORTAR -> MORTAR_TURRET;
+            case DEPOT -> SUPPLY_DEPOT;
         };
     }
 

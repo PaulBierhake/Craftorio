@@ -19,6 +19,13 @@ public final class Abilities {
 
     private static final Map<String, Handler> HANDLERS = new HashMap<>();
 
+    static {
+        register("supply_drop", (tower, run, ability) -> run.addCoins(tower.profile().number("supply_drop")));
+        register("bank_withdraw", (tower, run, ability) -> run.addCoins(tower.depot().withdraw()));
+        register("imf_loan", (tower, run, ability) -> run.addCoins(tower.depot().loan(tower.profile())));
+        register("monkey_nomics", (tower, run, ability) -> run.addCoins(tower.depot().loan(tower.profile())));
+    }
+
     private Abilities() {
     }
 

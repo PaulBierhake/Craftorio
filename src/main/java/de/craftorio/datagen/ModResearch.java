@@ -38,7 +38,7 @@ public final class ModResearch {
         add(context, "fast_inserters", 30, 15, List.of("electronics"), List.of("fast_inserter", "filter_inserter"));
         add(context, "steel_processing", 50, 5, List.of(), List.of("smelting/steel_plate"));
         add(context, "logistic_science_pack", 75, 5, List.of(), List.of("green_science", "assembling/green_science"), key(ModItems.BRONZE_SEAL.get()));
-        add(context, "turrets", 10, 10, List.of(), List.of("gun_turret", "magazine", "arena_feeder"));
+        add(context, "turrets", 10, 10, List.of(), List.of("gun_turret", "magazine", "arena_feeder", "supply_depot"));
         add(context, "engines", 100, 15, R_G, List.of("steel_processing", "logistic_science_pack"), List.of("assembling/motor"));
         add(context, "automation_2", 40, 15, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"), List.of("assembler_2"));
         add(context, "electric_energy_distribution_1", 120, 30, R_G, List.of("electronics", "steel_processing", "logistic_science_pack"),
@@ -57,7 +57,7 @@ public final class ModResearch {
         add(context, "advanced_electronics", 200, 30, R_G, List.of("plastics"), List.of("assembling/advanced_circuit"));
         add(context, "battery", 150, 30, R_G, List.of("sulfur_processing"), List.of("chem/battery"));
         add(context, "military_2", 20, 15, R_G, List.of("turrets", "logistic_science_pack"),
-                List.of("ap_magazine", "grenade", "assembling/ap_magazine", "assembling/grenade"));
+                List.of("ap_magazine", "grenade", "assembling/ap_magazine", "assembling/grenade", "mortar_turret"));
         add(context, "stone_walls", 10, 10, List.of(), List.of("stone_wall", "assembling/stone_wall"));
         // Tower technology (T3): upgrade tiers 3, 4 and 5 of every tower need these (replacing the XP of Bloons TD 6).
         add(context, "tower_tech_1", 75, 30, R_G, List.of("turrets", "logistic_science_pack"), List.of());

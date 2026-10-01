@@ -109,6 +109,38 @@ public final class TowerDefs {
         attack.glue = json.has("glue") ? json.get("glue").getAsDouble() : 0;
         attack.glueDuration = json.has("glue_duration") ? json.get("glue_duration").getAsDouble() : 0;
         attack.glueLayers = json.has("glue_layers") ? json.get("glue_layers").getAsInt() : 3;
+        attack.noTarget = json.has("no_target") && json.get("no_target").getAsBoolean();
+        attack.unlimitedRange = json.has("unlimited_range") && json.get("unlimited_range").getAsBoolean();
+        attack.abilityId = json.has("ability_id") ? json.get("ability_id").getAsString() : "";
+        attack.soak = json.has("soak") && json.get("soak").getAsBoolean();
+        attack.followRange = json.has("follow_range") && json.get("follow_range").getAsBoolean();
+        attack.maim = json.has("maim") ? json.get("maim").getAsInt() : 0;
+        attack.homing = json.has("homing") && json.get("homing").getAsBoolean();
+        attack.stripCamo = json.has("strip_camo") && json.get("strip_camo").getAsBoolean();
+        attack.skipFrozen = json.has("skip_frozen") && json.get("skip_frozen").getAsBoolean();
+        attack.bossOnly = json.has("boss_only") && json.get("boss_only").getAsBoolean();
+        attack.critEvery = json.has("crit_every") ? json.get("crit_every").getAsInt() : 0;
+        attack.critDamage = json.has("crit_damage") ? json.get("crit_damage").getAsDouble() : 0;
+        attack.stun = json.has("stun") ? json.get("stun").getAsDouble() : 0;
+        attack.stunBoss = json.has("stun_boss") ? json.get("stun_boss").getAsDouble() : 0;
+        attack.pushback = json.has("pushback") ? json.get("pushback").getAsDouble() : 0;
+        attack.pushbackBoss = json.has("pushback_boss") ? json.get("pushback_boss").getAsDouble() : 1;
+        attack.bounces = json.has("bounces") ? json.get("bounces").getAsInt() : 0;
+        attack.bounceRadius = json.has("bounce_radius") ? json.get("bounce_radius").getAsDouble() : 4;
+        attack.burn = json.has("burn") ? json.get("burn").getAsDouble() : 0;
+        attack.burnSeconds = json.has("burn_seconds") ? json.get("burn_seconds").getAsDouble() : 0;
+        attack.coinsPerHit = json.has("coins_per_hit") ? json.get("coins_per_hit").getAsDouble() : 0;
+        attack.scatterMin = json.has("scatter_min") ? json.get("scatter_min").getAsDouble() : 0;
+        attack.scatterMax = json.has("scatter_max") ? json.get("scatter_max").getAsDouble() : 0;
+        if (json.has("trigger")) {
+            attack.trigger = json.get("trigger").getAsString();
+        }
+        if (json.has("children")) {
+            for (JsonElement child : json.getAsJsonArray("children")) {
+                JsonObject childJson = child.getAsJsonObject();
+                attack.children.add(parseAttack(childJson, childJson.get("id").getAsString()));
+            }
+        }
         if (json.has("bonus")) {
             for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject("bonus").entrySet()) {
                 attack.bonus.put(entry.getKey(), entry.getValue().getAsDouble());

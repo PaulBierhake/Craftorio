@@ -19,7 +19,7 @@ public enum BlueprintCategory {
         add(POWER, "boiler", "steam_engine", "offshore_pump", "power_pole", "medium_power_pole", "solar_panel", "accumulator", "reactor",
                 "heat_pipe", "heat_exchanger", "steam_turbine", "lamp");
         add(FLUIDS, "underground_pipe", "fluid_pump", "storage_tank", "pumpjack", "oil_refinery", "chemical_plant");
-        add(DEFENSE, "arena_gate", "arena_feeder", "crossbow_tower", "gun_turret", "tesla_tower", "laser_tower", "flamethrower_turret",
+        add(DEFENSE, "arena_gate", "arena_feeder", "crossbow_tower", "gun_turret", "tesla_tower", "laser_tower", "flamethrower_turret", "mortar_turret", "supply_depot",
                 "stone_wall", "bolt", "magazine", "ap_magazine", "grenade");
     }
 

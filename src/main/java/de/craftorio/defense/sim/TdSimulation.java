@@ -170,7 +170,7 @@ public final class TdSimulation {
                     regrow(enemy);
                 }
             }
-            enemy.distance += enemy.def.blocksPerTick() * enemy.speedFactor * factor;
+            enemy.distance += enemy.def.blocksPerTick() * enemy.speedFactor * factor * statusSpeed(enemy);
             if (enemy.distance >= path.length()) {
                 leaked += lifeCost(enemy);
                 retire(enemy);
@@ -184,10 +184,50 @@ public final class TdSimulation {
             enemy.z = out[2];
         }
         dirty |= removed;
+        if (!burns.isEmpty()) {
+            for (SimEnemy burning : new ArrayList<>(burns)) {
+                if (burning.alive) {
+                    hit(burning, burning.burnDps, DamageKind.NORMAL);
+                }
+            }
+            burns.clear();
+        }
         compact();
     }
 
     private final double[] scratch = new double[3];
+
+    /** Speed share from status effects this tick; also runs the timers down. */
+    private double statusSpeed(SimEnemy enemy) {
+        double share = 1;
+        if (enemy.stunTicks > 0) {
+            enemy.stunTicks--;
+            share = 0;
+        }
+        if (enemy.freezeTicks > 0) {
+            enemy.freezeTicks--;
+            share = 0;
+        }
+        if (enemy.slowTicks > 0) {
+            enemy.slowTicks--;
+            share *= enemy.slowFactor;
+            if (enemy.slowTicks == 0) {
+                enemy.slowFactor = 1;
+            }
+        }
+        if (enemy.brittleTicks > 0 && --enemy.brittleTicks == 0) {
+            enemy.brittleBonus = 0;
+        }
+        if (enemy.burnTicks > 0) {
+            enemy.burnTicks--;
+            if (enemy.burnTicks % TdUnits.TICKS_PER_SECOND == 0 && enemy.alive) {
+                burns.add(enemy);
+            }
+        }
+        return share;
+    }
+
+    private final List<SimEnemy> burns = new ArrayList<>();
 
     private void regrow(SimEnemy enemy) {
         String next = EnemyDefs.regrowStep(enemy.regrowTop, enemy.def.id());
@@ -229,6 +269,62 @@ public final class TdSimulation {
         }
     }
 
+    // --- status effects
+
+    /** Stops the enemy for a while; MOAB-class enemies for {@code bossSeconds} (often 0). */
+    public void stun(SimEnemy enemy, double seconds, double bossSeconds) {
+        double length = enemy.def.boss() ? bossSeconds : seconds;
+        enemy.stunTicks = Math.max(enemy.stunTicks, TdUnits.ticks(length));
+    }
+
+    /** Freezes the enemy: it stands still and sharp damage does nothing; not for MOAB-class enemies. */
+    public boolean freeze(SimEnemy enemy, double seconds) {
+        if (enemy.def.boss()) {
+            return false;
+        }
+        enemy.freezeTicks = Math.max(enemy.freezeTicks, TdUnits.ticks(seconds));
+        return true;
+    }
+
+    /** Slows the enemy to {@code factor} of its speed; MOAB-class enemies only if {@code boss} allows it. */
+    public void slow(SimEnemy enemy, double factor, double seconds, boolean boss) {
+        if (enemy.def.boss() && !boss) {
+            return;
+        }
+        if (enemy.slowTicks <= 0 || factor < enemy.slowFactor) {
+            enemy.slowFactor = factor;
+        }
+        enemy.slowTicks = Math.max(enemy.slowTicks, TdUnits.ticks(seconds));
+    }
+
+    /** Pushes the enemy back along the path (negative: forward). */
+    public void push(SimEnemy enemy, double blocks) {
+        enemy.distance = Math.max(0, enemy.distance - blocks);
+        double[] out = scratch;
+        enemy.segment = path.position(enemy.distance, enemy.segment, out);
+        enemy.x = out[0];
+        enemy.y = out[1];
+        enemy.z = out[2];
+    }
+
+    /** Removes camouflage and regrowing (ice shards, grow blocker). */
+    public void stripModifiers(SimEnemy enemy) {
+        enemy.camo = enemy.def.camo();
+        enemy.regrow = false;
+    }
+
+    /** Damage over time: {@code dps} per second for the given seconds. */
+    public void burn(SimEnemy enemy, double dps, double seconds) {
+        enemy.burnDps = Math.max(enemy.burnDps, dps);
+        enemy.burnTicks = Math.max(enemy.burnTicks, TdUnits.ticks(seconds));
+    }
+
+    /** The enemy takes {@code bonus} more damage per hit for a while. */
+    public void makeBrittle(SimEnemy enemy, double bonus, double seconds) {
+        enemy.brittleBonus = Math.max(enemy.brittleBonus, bonus);
+        enemy.brittleTicks = Math.max(enemy.brittleTicks, TdUnits.ticks(seconds));
+    }
+
     // --- damage
 
     private record Work(SimEnemy enemy, double damage) {
@@ -241,6 +337,11 @@ public final class TdSimulation {
      * @return the layers that paid a coin (regrown layers do not)
      */
     public int hit(SimEnemy target, double damage, DamageKind kind) {
+        return hit(target, damage, kind, false);
+    }
+
+    /** As {@link #hit(SimEnemy, double, DamageKind)}; with {@code soak} the excess damage goes on through MOAB-class layers. */
+    public int hit(SimEnemy target, double damage, DamageKind kind, boolean soak) {
         if (!target.alive || damage <= 0) {
             return 0;
         }
@@ -250,10 +351,10 @@ public final class TdSimulation {
         while (!work.isEmpty()) {
             Work item = work.remove(work.size() - 1);
             SimEnemy enemy = item.enemy;
-            if (!enemy.alive || enemy.def.isImmune(kind)) {
+            if (!enemy.alive || enemy.def.isImmune(kind) || enemy.freezeTicks > 0 && kind == DamageKind.SHARP) {
                 continue;
             }
-            enemy.hp -= item.damage;
+            enemy.hp -= item.damage + (enemy.brittleTicks > 0 ? enemy.brittleBonus : 0);
             if (enemy.hp > EPSILON) {
                 refreshRbe(enemy);
                 continue;
@@ -267,9 +368,11 @@ public final class TdSimulation {
                 paidPops++;
                 coins += enemy.def.popCash(late) * RoundRules.incomeFactor(enemy.spawnRound);
             }
-            if (excess > EPSILON && !enemy.def.boss()) {
+            if (excess > EPSILON && (!enemy.def.boss() || soak)) {
                 for (SimEnemy child : children) {
-                    work.add(new Work(child, excess));
+                    if (!enemy.def.boss() || child.def.boss()) {
+                        work.add(new Work(child, excess));
+                    }
                 }
             }
         }
@@ -299,6 +402,11 @@ public final class TdSimulation {
             aliveByRound.merge(child.spawnRound, 1, Integer::sum);
             child.hp = layerHp(def, child.fortified);
             child.speedFactor = enemy.speedFactor;
+            child.slowTicks = enemy.slowTicks;
+            child.slowFactor = enemy.slowFactor;
+            child.freezeTicks = enemy.freezeTicks;
+            child.brittleTicks = enemy.brittleTicks;
+            child.brittleBonus = enemy.brittleBonus;
             place(child, enemy.distance, enemy.segment);
             refreshRbe(child);
             enemies.add(child);

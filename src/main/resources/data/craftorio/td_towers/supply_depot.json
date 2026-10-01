@@ -10,61 +10,171 @@
       {
         "btd6": "Increased Production",
         "cost": 500,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "income",
+            "set": 120
+          }
+        ]
       },
       {
         "btd6": "Greater Production",
         "cost": 600,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "income",
+            "set": 160
+          }
+        ]
       },
       {
         "btd6": "Banana Plantation",
         "cost": 3000,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "income",
+            "set": 320
+          }
+        ]
       },
       {
         "btd6": "Banana Research Facility",
         "cost": 19000,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "income",
+            "set": 1500
+          }
+        ]
       },
       {
         "btd6": "Banana Central",
         "cost": 115000,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "income",
+            "set": 6000
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Long Life Bananas",
         "cost": 300,
-        "effects": []
+        "effects": [
+          {
+            "type": "flag",
+            "name": "long_life"
+          }
+        ]
       },
       {
         "btd6": "Valuable Bananas",
         "cost": 800,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "income_factor",
+            "set": 1.25
+          }
+        ]
       },
       {
         "btd6": "Monkey Bank",
         "cost": 3650,
-        "effects": []
+        "effects": [
+          {
+            "type": "flag",
+            "name": "bank"
+          },
+          {
+            "type": "number",
+            "name": "bank_income",
+            "set": 400
+          },
+          {
+            "type": "number",
+            "name": "bank_cap",
+            "set": 7000
+          },
+          {
+            "type": "number",
+            "name": "bank_interest",
+            "set": 0.15
+          },
+          {
+            "type": "ability",
+            "id": "bank_withdraw",
+            "cooldown": 1,
+            "duration": 0
+          }
+        ]
       },
       {
         "btd6": "IMF Loan",
         "cost": 7200,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "bank_cap",
+            "set": 10000
+          },
+          {
+            "type": "number",
+            "name": "loan",
+            "set": 9000
+          },
+          {
+            "type": "ability",
+            "id": "imf_loan",
+            "cooldown": 60,
+            "duration": 0
+          }
+        ]
       },
       {
         "btd6": "Monkey-Nomics",
         "cost": 100000,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "bank_cap",
+            "set": 20000
+          },
+          {
+            "type": "number",
+            "name": "loan",
+            "set": 25000
+          },
+          {
+            "type": "remove_ability",
+            "id": "imf_loan"
+          },
+          {
+            "type": "ability",
+            "id": "monkey_nomics",
+            "cooldown": 180,
+            "duration": 0
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "EZ Collect",
         "cost": 250,
-        "effects": []
+        "effects": [
+          {
+            "type": "flag",
+            "name": "ez_collect"
+          }
+        ]
       },
       {
         "btd6": "Banana Salvage",
@@ -80,17 +190,35 @@
       {
         "btd6": "Marketplace",
         "cost": 2700,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "market",
+            "set": 320
+          }
+        ]
       },
       {
         "btd6": "Central Market",
         "cost": 15000,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "market",
+            "set": 1120
+          }
+        ]
       },
       {
         "btd6": "Monkey Wall Street",
         "cost": 70000,
-        "effects": []
+        "effects": [
+          {
+            "type": "number",
+            "name": "bonus",
+            "set": 4000
+          }
+        ]
       }
     ]
   ]

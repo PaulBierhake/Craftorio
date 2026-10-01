@@ -2,6 +2,7 @@ package de.craftorio.defense;
 
 import de.craftorio.defense.arena.ArenaLayout;
 import de.craftorio.defense.arena.Mutator;
+import de.craftorio.defense.sim.Buffs;
 import de.craftorio.defense.sim.RoundDef;
 import de.craftorio.defense.sim.RoundRules;
 import de.craftorio.defense.sim.TdPath;
@@ -13,8 +14,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -62,6 +65,8 @@ public final class LevelRun {
     private final TdSimulation sim;
     private final Set<Long> forcedChunks = new HashSet<>();
     private final List<Started> started = new ArrayList<>();
+    /** Towers that fight on this run (they register while they tick); auras and abilities look them up. */
+    private final Map<BlockPos, TowerBlockEntity> towers = new HashMap<>();
     private @Nullable ServerLevel registeredIn;
     /** Index of the next round to start. */
     private int nextRound;
@@ -87,6 +92,39 @@ public final class LevelRun {
         path.forEach(point -> walk.add(new double[]{point.x, point.y, point.z}));
         this.sim = new TdSimulation(new TdPath(walk));
         sim.setExternalSpeed(difficulty.speedFactor() * (arena != null ? arena.mutator().speedFactor() : 1));
+    }
+
+    /** Coins from outside the simulation (supply drops, depots). */
+    public void addCoins(double amount) {
+        coins += amount;
+    }
+
+    public void register(TowerBlockEntity tower) {
+        towers.put(tower.getBlockPos(), tower);
+    }
+
+    /** The towers of this run that are still standing. */
+    public java.util.Collection<TowerBlockEntity> towers() {
+        towers.values().removeIf(TowerBlockEntity::isRemoved);
+        return towers.values();
+    }
+
+    /** What the auras of all towers on this run give {@code tower} (horizontal distance between block centres). */
+    public Buffs aurasFor(TowerBlockEntity tower) {
+        Buffs total = Buffs.NONE;
+        for (TowerBlockEntity other : towers()) {
+            for (var aura : other.profile().auras) {
+                if (other == tower && !aura.self() || !aura.towers().isEmpty() && !aura.towers().equals(tower.type().defId())) {
+                    continue;
+                }
+                double dx = other.getBlockPos().getX() - tower.getBlockPos().getX();
+                double dz = other.getBlockPos().getZ() - tower.getBlockPos().getZ();
+                if (aura.radius() < 0 || dx * dx + dz * dz <= aura.radius() * aura.radius()) {
+                    total = total.merge(aura.buff());
+                }
+            }
+        }
+        return total;
     }
 
     public @Nullable Arena arena() {
@@ -219,7 +257,11 @@ public final class LevelRun {
     Outcome tick(ServerLevel level) {
         tickRounds();
         sim.tick();
-        lives = Math.max(0, lives - sim.takeLeaked());
+        int leaked = sim.takeLeaked();
+        lives = Math.max(0, lives - leaked);
+        if (leaked > 0) {
+            towers().forEach(TowerBlockEntity::lifeLost);
+        }
         payRoundBonuses();
         if (lives <= 0) {
             return Outcome.LOST;
@@ -267,6 +309,7 @@ public final class LevelRun {
             if (!round.paid && !round.spawning() && sim.aliveOfRound(round.def.round()) == 0) {
                 round.paid = true;
                 coins += RoundRules.roundBonus(round.def.round());
+                towers().forEach(tower -> tower.roundEnded(this));
             }
         }
     }

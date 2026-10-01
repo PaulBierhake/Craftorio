@@ -12,7 +12,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class TowerMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 12;
+    public static final int DATA_COUNT = 15;
     /** Button ids 0 to 2 buy the next tier of the path with that index. */
     public static final int BUTTON_UPGRADE = 0;
     public static final int BUTTON_TARGET = 3;
@@ -78,6 +78,19 @@ public final class TowerMenu extends MachineMenuBase {
     /** Seconds ability {@code index} is still active. */
     public int abilityActive(int index) {
         return data.get(9 + 2 * index);
+    }
+
+    /** Coins in the bank of a supply depot, and the loan still owed. */
+    public int bank() {
+        return data.get(12);
+    }
+
+    public int debt() {
+        return data.get(13);
+    }
+
+    public boolean basketDelivered() {
+        return data.get(14) != 0;
     }
 
     @Override

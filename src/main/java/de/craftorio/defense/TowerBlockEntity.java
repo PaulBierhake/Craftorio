@@ -6,6 +6,9 @@ import de.craftorio.defense.sim.Attack;
 import de.craftorio.defense.sim.AttackKind;
 import de.craftorio.defense.sim.TargetMode;
 import de.craftorio.defense.sim.TowerDef;
+import de.craftorio.defense.sim.Buffs;
+import de.craftorio.defense.sim.DepotEconomy;
+import de.craftorio.defense.sim.TdUnits;
 import de.craftorio.defense.sim.TowerProfile;
 import de.craftorio.defense.sim.TowerRules;
 import de.craftorio.defense.sim.TowerUnit;
@@ -59,6 +62,9 @@ import java.util.List;
 public final class TowerBlockEntity extends BlockEntity implements MenuProvider {
     /** +10 % range on a plateau, the only terrain effect. */
     public static final double PLATEAU_RANGE = 1.1;
+    /** Basket of goods of a supply depot per round: circuits (processors from tier 4 of path 1, advanced circuits at tier 3). */
+    public static final int BASKET_CIRCUITS = 10;
+    public static final int BASKET_PROCESSORS = 5;
 
     private final TowerType type;
     private final int[] tiers = new int[TowerDef.PATHS];
@@ -85,6 +91,10 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         }
     };
 
+    /** Bank and loan of a supply depot, and whether it got its basket of goods at the end of the last round. */
+    private final DepotEconomy depot = new DepotEconomy();
+    private boolean basketDelivered;
+
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
@@ -97,6 +107,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
                 case 7 -> SplitIntData.high((int) Math.min(Integer.MAX_VALUE, paid));
                 case 8, 9 -> abilitySeconds(0, index == 9);
                 case 10, 11 -> abilitySeconds(1, index == 11);
+                case 12 -> (int) Math.min(Short.MAX_VALUE, depot.bank());
+                case 13 -> (int) Math.min(Short.MAX_VALUE, depot.debt());
+                case 14 -> basketDelivered ? 1 : 0;
                 default -> 0;
             };
         }
@@ -191,7 +204,11 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     public Item ammoItem() {
-        return type == TowerType.GUN ? ModItems.MAGAZINE.get() : ModItems.BOLT.get();
+        return switch (type) {
+            case GUN -> ModItems.MAGAZINE.get();
+            case MORTAR -> ModItems.GRENADE.get();
+            default -> ModItems.BOLT.get();
+        };
     }
 
     /** Neither the tower itself nor the arena reserve can supply its next shot. */
@@ -264,18 +281,32 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, TowerBlockEntity tower) {
-        if (level instanceof ServerLevel serverLevel && tower.type.attacks()) {
-            tower.shoot(serverLevel);
+        if (level instanceof ServerLevel serverLevel) {
+            tower.work(serverLevel);
         }
     }
 
-    private void shoot(ServerLevel serverLevel) {
+    /** Auras from other towers, renewed twice a second. */
+    private Buffs outside = Buffs.NONE;
+
+    private void work(ServerLevel serverLevel) {
         LevelRun run = LevelRun.runFor(serverLevel, worldPosition);
         if (run == null) {
             return;
         }
+        run.register(this);
+        if ((serverLevel.getGameTime() + worldPosition.asLong()) % 10 == 0) {
+            outside = run.aurasFor(this);
+        }
+        if (type.attacks()) {
+            shoot(serverLevel, run);
+        }
+    }
+
+    private void shoot(ServerLevel serverLevel, LevelRun run) {
         TowerUnit tower = unit();
-        List<TowerUnit.Shot> shots = tower.tick(run.simulation(), (def, attack) -> payForShot(), rangeFactor(), false);
+        List<TowerUnit.Shot> shots = tower.tick(run.simulation(), (def, attack) -> payForShot(), rangeFactor(), outside);
+        run.addCoins(tower.takeCoins());
         if (shots.isEmpty()) {
             return;
         }
@@ -289,6 +320,8 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             case TESLA -> SoundEvents.BEACON_POWER_SELECT;
             case LASER -> SoundEvents.GUARDIAN_ATTACK;
             case FLAME -> SoundEvents.FIRECHARGE_USE;
+            case MORTAR -> SoundEvents.GENERIC_EXPLODE.value();
+            case DEPOT -> SoundEvents.EXPERIENCE_ORB_PICKUP;
         };
         serverLevel.playSound(null, worldPosition, sound, SoundSource.BLOCKS, 0.4F, 1.2F);
     }
@@ -302,6 +335,8 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             case TESLA -> ParticleTypes.ELECTRIC_SPARK;
             case LASER -> ParticleTypes.END_ROD;
             case FLAME -> ParticleTypes.FLAME;
+            case MORTAR -> ParticleTypes.SMOKE;
+            case DEPOT -> ParticleTypes.HAPPY_VILLAGER;
         };
         double y = worldPosition.getY() + 1.2;
         if (attack.kind == AttackKind.AURA) {
@@ -461,7 +496,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             return false;
         }
         TowerUnit tower = unit();
-        if (index < 0 || index >= tower.abilityCount()) {
+        if (index < 0 || index >= tower.abilityCount() || tower.profile().abilities.get(index).passive()) {
             return false;
         }
         LevelRun run = LevelRun.runFor(serverLevel, worldPosition);
@@ -474,6 +509,13 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             player.displayClientMessage(Component.translatable("craftorio.tower.ability.cooling", abilitySeconds(index, false)).withStyle(ChatFormatting.RED), true);
             return false;
         }
+        if (ability.buff() != null) {
+            int ticks = (int) Math.round(ability.duration() * TdUnits.TICKS_PER_SECOND);
+            tower.grantBuff("ability:" + ability.id(), ticks, ability.buff());
+            if (ability.shareRadius() > 0) {
+                shareBuff(serverLevel, "ability:" + ability.id(), ticks, ability);
+            }
+        }
         Abilities.Handler handler = Abilities.handler(ability.id());
         if (handler != null) {
             handler.activate(this, run, ability);
@@ -481,6 +523,61 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         setChanged();
         player.displayClientMessage(Component.translatable("craftorio.tower.ability.used", Component.translatable("craftorio.ability." + ability.id())), true);
         return true;
+    }
+
+    /** Does an ability's buff (see {@link TowerProfile.Ability#buff()}) run on this tower now? */
+    public boolean hasAbilityBuff(String abilityId) {
+        return unit().hasBuff("ability:" + abilityId);
+    }
+
+    public DepotEconomy depot() {
+        return depot;
+    }
+
+    public boolean basketDelivered() {
+        return basketDelivered;
+    }
+
+    /** The end of a round: a supply depot pays its income, with the basket of goods from the arena reserve if it is complete. */
+    void roundEnded(LevelRun run) {
+        if (type != TowerType.DEPOT || !(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        int tier = tiers[0];
+        Item goods = tier >= 4 ? ModItems.PROCESSING_UNIT.get() : tier == 3 ? ModItems.ADVANCED_CIRCUIT.get() : ModItems.CIRCUIT.get();
+        int count = tier >= 4 ? BASKET_PROCESSORS : BASKET_CIRCUITS;
+        basketDelivered = drawFromArena(defense -> defense.drawGoods(Arenas.slotAt(worldPosition), goods, count));
+        run.addCoins(depot.roundEnd(profile(), basketDelivered));
+        setChanged();
+        serverLevel.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+    }
+
+    /** Passive abilities (Elite Defender) start when the team loses lives. */
+    public void lifeLost() {
+        if (unit == null) {
+            return;
+        }
+        for (int i = 0; i < unit.abilityCount(); i++) {
+            TowerProfile.Ability ability = unit.profile().abilities.get(i);
+            if (ability.passive() && unit.activate(i, 1.0) != null && ability.buff() != null) {
+                unit.grantBuff("ability:" + ability.id(), (int) Math.round(ability.duration() * TdUnits.TICKS_PER_SECOND), ability.buff());
+            }
+        }
+    }
+
+    /** Gives towers of the same kind around this one the ability's buff. */
+    private void shareBuff(ServerLevel serverLevel, String id, int ticks, TowerProfile.Ability ability) {
+        int r = (int) Math.ceil(ability.shareRadius());
+        int left = ability.shareMax() > 0 ? ability.shareMax() : Integer.MAX_VALUE;
+        for (BlockPos pos : BlockPos.betweenClosed(worldPosition.offset(-r, -3, -r), worldPosition.offset(r, 3, r))) {
+            if (pos.equals(worldPosition) || pos.distSqr(worldPosition) > ability.shareRadius() * ability.shareRadius()) {
+                continue;
+            }
+            if (left > 0 && serverLevel.getBlockEntity(pos) instanceof TowerBlockEntity other && other.type() == type) {
+                other.unit().grantBuff(id, ticks, ability.buff());
+                left--;
+            }
+        }
     }
 
     /** Sells the tower: a share of everything paid goes back to the team's coins, the plain tower item to the player. */
@@ -554,6 +651,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         tag.putInt("energy", energy.getEnergyStored());
         tag.put("ammo", ammo.serializeNBT(registries));
         tag.putInt("shots_left", shotsLeft);
+        tag.putDouble("bank", depot.bank());
+        tag.putDouble("debt", depot.debt());
+        tag.putBoolean("basket", basketDelivered);
         tag.putString("magazine", magazine.name());
         if (unit != null) {
             tag.putIntArray("ability_cooldown", unit.abilityCooldowns());
@@ -583,6 +683,8 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         energy.setEnergy(tag.getInt("energy"));
         ammo.deserializeNBT(registries, tag.getCompound("ammo"));
         shotsLeft = tag.getInt("shots_left");
+        depot.restore(tag.getDouble("bank"), tag.getDouble("debt"));
+        basketDelivered = tag.getBoolean("basket");
         try {
             magazine = tag.contains("magazine") ? Magazine.valueOf(tag.getString("magazine"))
                     : tag.getBoolean("armour_piercing") ? Magazine.ARMOUR_PIERCING : Magazine.NORMAL;

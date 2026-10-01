@@ -36,6 +36,49 @@ public final class Attack {
     public double glueDuration;
     public int glueLayers = 3;
 
+    /** Attacks that start where this one hits ({@code trigger} "hit": at every enemy hit; "shot": once, at the first hit). */
+    public final java.util.List<Attack> children = new java.util.ArrayList<>();
+    public String trigger = "hit";
+    /** A child starts a random distance from its parent's impact (cluster bombs): between these two. */
+    public double scatterMin;
+    public double scatterMax;
+    /** Every {@code critEvery}th shot does {@code critDamage} instead of its damage (0: never). */
+    public int critEvery;
+    public double critDamage;
+    /** Stun in seconds (and for MOAB-class enemies), pushback in blocks (and the factor for MOAB-class), knockback as a speed multiplier. */
+    public double stun;
+    public double stunBoss;
+    public double pushback;
+    public double pushbackBoss = 1;
+    /** Extra targets the shot bounces to (sniper) within {@code bounceRadius}. */
+    public int bounces;
+    public double bounceRadius = 4;
+    /** Flies straight to its targets whatever stands in between (seeking shots, bullets). */
+    public boolean homing;
+    /** Damage over time: damage per second and how long. */
+    public double burn;
+    public double burnSeconds;
+    /** Enemies that are not MOAB-class lose their camo and regrow when hit. */
+    public boolean stripCamo;
+    /** Ignores enemies that are frozen (the frost tower cannot hit them). */
+    public boolean skipFrozen;
+    /** Coins per hit enemy (supply drops are handled elsewhere). */
+    public double coinsPerHit;
+    /** Whether only MOAB-class enemies can be hit. */
+    public boolean bossOnly;
+    /** Only fires while this ability of the tower is active (blade storms); empty for ordinary attacks. */
+    public String abilityId = "";
+    /** Fires without a target, turning around (blade storms). */
+    public boolean noTarget;
+    /** Aims at enemies anywhere, whatever the tower's range (meteors). */
+    public boolean unlimitedRange;
+    /** Maim (sniper): immobilises MOAB-class enemies; 4 or 5 picks the table of the upgrade, 0 none. */
+    public int maim;
+    /** Reach (length of the shots, radius of an aura) grows with the tower's range upgrades. */
+    public boolean followRange;
+    /** Damage that is left over after a MOAB-class layer pops goes on to its MOAB-class children (assassins). */
+    public boolean soak;
+
     public Attack copy() {
         Attack copy = new Attack();
         copy.id = id;
@@ -57,6 +100,31 @@ public final class Attack {
         copy.glue = glue;
         copy.glueDuration = glueDuration;
         copy.glueLayers = glueLayers;
+        children.forEach(child -> copy.children.add(child.copy()));
+        copy.trigger = trigger;
+        copy.scatterMin = scatterMin;
+        copy.scatterMax = scatterMax;
+        copy.critEvery = critEvery;
+        copy.critDamage = critDamage;
+        copy.stun = stun;
+        copy.stunBoss = stunBoss;
+        copy.pushback = pushback;
+        copy.pushbackBoss = pushbackBoss;
+        copy.bounces = bounces;
+        copy.bounceRadius = bounceRadius;
+        copy.homing = homing;
+        copy.burn = burn;
+        copy.burnSeconds = burnSeconds;
+        copy.stripCamo = stripCamo;
+        copy.skipFrozen = skipFrozen;
+        copy.coinsPerHit = coinsPerHit;
+        copy.bossOnly = bossOnly;
+        copy.abilityId = abilityId;
+        copy.noTarget = noTarget;
+        copy.unlimitedRange = unlimitedRange;
+        copy.maim = maim;
+        copy.followRange = followRange;
+        copy.soak = soak;
         return copy;
     }
 

@@ -162,6 +162,11 @@ public final class ModBlueprints {
         add(context, "flamethrower_turret", stack(ModItems.FLAMETHROWER_TURRET.get(), 1),
                 SizedIngredient.of(ModItems.STEEL_PLATE.get(), 30), SizedIngredient.of(ModItems.IRON_GEAR.get(), 15),
                 SizedIngredient.of(ModItems.PIPE.get(), 10), SizedIngredient.of(ModItems.MOTOR.get(), 5));
+        add(context, "mortar_turret", stack(ModItems.MORTAR_TURRET.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 10), SizedIngredient.of(ModItems.IRON_GEAR.get(), 12),
+                SizedIngredient.of(ModItems.PIPE.get(), 4), iron(10));
+        add(context, "supply_depot", stack(ModItems.SUPPLY_DEPOT.get(), 1),
+                SizedIngredient.of(ItemTags.PLANKS, 20), iron(10), SizedIngredient.of(ModItems.CIRCUIT.get(), 5));
         add(context, "tesla_tower", stack(ModItems.TESLA_TOWER.get(), 1),
                 SizedIngredient.of(ModItems.COPPER_CABLE.get(), 24), iron(8), SizedIngredient.of(ModItems.CIRCUIT.get(), 4));
 

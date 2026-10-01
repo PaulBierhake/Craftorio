@@ -625,10 +625,34 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 | **T1 – Gegner-Engine** ✅ | `TdSimulation` (Bewegung, Schichten, Kinder, Überschaden, Eigenschaften, Immunitäten, Leaks, spätes Spiel), Gegnerdaten §3 als JSON, Netzwerkpaket, Client-Renderer, Entfernen der Gegner-Entities | Unit-Tests für jeden Gegner (RBE aus Kindern = Tabelle), Nachwachsen alle 3 s, Tarnung; Leistungstest 1.000 Gegner |
 | **T2 – Runden, Münzen, Leben** ✅ | Rundendaten 1–100, Level = 2 Runden, Münzen und Einkommensfaktor, Rundenbonus, Schwierigkeitsgrade, Leben pro Level, Snapshot/Wiederholung, Kriegskasse, Siegel-Zuordnung, Entfernen von Turm-HP/Ruinen/Reparatur und Spieler-Skalierung, Pfadlängen-Fenster | Unit-Test Rundeneinnahmen gegen Wiki (±2 %); GameTest Level 1 komplett; Pfad < 100 Blöcke wird abgelehnt |
 | **T3 – Turmsystem** ✅ | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
-| **T4 – Türme Teil 1** | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
+| **T4 – Türme Teil 1** ✅ | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
 | **T5 – Türme Teil 2** | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |
 | **T6 – Modi und Endlos** | Herausforderungen §7, Endlosmodus ab Runde 101 mit §3.6, Arena-Wissen §8, Rangliste (höchste Runde pro Team) | GameTest je Modus; Freeplay-Skalierung als Unit-Test |
 | **T7 – Leitfaden, Handbuch, Feinschliff** | Handbuch-Seiten: Gegner (mit Immunitäten), Türme (Pfade), Wirtschaft; Leitfaden-Hinweise; README; Migration §10 | Alle Tests grün; Kampagne im Simulator mit Referenz-Sets bis Runde 100 schaffbar |
+
+### T4 – Umsetzungsnotizen
+
+- **Zuordnung** (Stats-Seiten der Wiki, Version 55.1, 10 Einheiten = 1 Block): Armbrust = Dart Monkey, Geschütz = Sniper Monkey,
+  Flammenwerfer = Tack Shooter, **Mörser = Bomb Shooter (neu, Munition: Granaten)**, **Nachschublager = Banana Farm (neu)**.
+  Alle 15 Aufrüstungen je Turm stehen als Effekte in `td_towers/*.json` (Abkühlzeit-Faktoren relativ zur Vorstufe, damit Pfade
+  multiplikativ zusammenwirken; Reichweite in Blöcken).
+- **Engine-Erweiterungen:** Fähigkeiten mit Buff für den Turm selbst und bis zu *n* Türme der gleichen Art im Umkreis (Fan Club: 10, Plasma:
+  19), Auren (`aura`: Buff für Türme im Umkreis oder überall, z. B. Elite-Scharfschütze ×0,75 Abklingzeit für alle Geschütze), passive
+  Fähigkeiten (Elite-Verteidiger startet bei Lebensverlust), Fähigkeits-Angriffe ohne Ziel (Klingensturm), unbegrenzte Reichweite
+  (Meteor, Attentäter), `soak` (Schaden geht durch Behemoth-Schichten), `follow_range` (Ring des Feuers wächst mit der Reichweite),
+  Turm-Register je Lauf (`LevelRun.towers()`), Münzen aus Fähigkeiten (`addCoins`).
+- **Nachschublager:** Einkommen pro Rundenende aus Pfad 1 (80/120/160/320/1.500/6.000) × Wertfaktor Pfad 2 (1,25) + Markt Pfad 3
+  (320/1.120) + Börse (4.000); Werte gegen die Einkommenstabelle der Wiki geprüft. **Bank** (Pfad 2, ab Stufe 3): 400 pro Runde,
+  15 % Zinsen, Obergrenze 7.000/10.000/20.000, Fähigkeit „Bank leeren“; **Kredit** (Stufe 4: 9.000, Stufe 5: 25.000) wird zuerst vom Einkommen
+  zurückgezahlt. **Warenkorb:** 10 Schaltkreise (Stufe 3 von Pfad 1: fortschrittliche, ab Stufe 4: 5 Prozessoren) aus der Arena-Reserve am Rundenende
+  geben +50 % (Einspeiser nimmt Schaltkreise, Prozessoren und Granaten an).
+- **Vereinfachungen** (gleichwertiger Ersatz, TD-E5): Elite-Verteidiger ohne Geschwindigkeitsbonus nach Streckenfortschritt;
+  „Elite“-Zielmodus des Scharfschützen entfällt; Nachschubabwurf zahlt sofort aus (kein Einsammeln); Kreuzpfad-Bonusse einzelner
+  Stufen (z. B. mehr Splitter beim Mörser) entfallen.
+- **Akzeptanz:** `ReferenceSetsTest` spielt Runde 1–40 mit einem festen Kaufplan (Simulator `BalanceSimulator`: echte Arena-Routen aus
+  `ArenaLayout`, Türme auf den Stellen mit der größten Pfadabdeckung, Runden nacheinander, Plan wird gekauft, sobald die Münzen
+  reichen) auf zehn Layouts; der Plan wurde mit `PlanSearchScratchTest` (Hill-Climbing über Kaufreihenfolgen auf den Layouts 1–10) gefunden und hält auch auf sechs weiteren Layouts mit höchstens einem Leak. Das **Ziel
+  „ohne Leak“** gilt für diese Aufstellung; ein Spieler ohne Plan verliert in den Runden 4, 9 und 12 vereinzelt Leben.
 
 ---
 

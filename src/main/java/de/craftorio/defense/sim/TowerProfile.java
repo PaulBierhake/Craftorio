@@ -25,9 +25,21 @@ public final class TowerProfile {
     /** Named numbers (income per round, radius of an aura, ...). */
     public final Map<String, Double> numbers = new LinkedHashMap<>();
     public final List<Ability> abilities = new ArrayList<>();
+    /** Buffs this tower gives other towers around it (villages, the elite sniper) as long as it stands. */
+    public final List<Aura> auras = new ArrayList<>();
+
+    /**
+     * An aura: the buff, the radius in blocks (negative: everywhere on the level) and which towers get it (a tower id, or
+     * empty for all towers, including the one that gives it if {@code self}).
+     */
+    public record Aura(String id, Buffs buff, double radius, String towers, boolean self) {
+    }
 
     /** An activated ability: its id, cooldown and duration in seconds. */
-    public record Ability(String id, double cooldown, double duration) {
+    public record Ability(String id, double cooldown, double duration, Buffs buff, double shareRadius, int shareMax, boolean passive) {
+        public Ability(String id, double cooldown, double duration) {
+            this(id, cooldown, duration, null, 0, 0, false);
+        }
     }
 
     public static TowerProfile of(TowerDef def, int[] tiers) {
@@ -46,7 +58,18 @@ public final class TowerProfile {
         return profile;
     }
 
+    /** An attack by id; "main.shrapnel" is the child "shrapnel" of the attack "main". */
     public Attack attack(String id) {
+        int dot = id.indexOf('.');
+        if (dot > 0) {
+            Attack parent = attack(id.substring(0, dot));
+            for (Attack child : parent.children) {
+                if (child.id.equals(id.substring(dot + 1))) {
+                    return child;
+                }
+            }
+            throw new IllegalArgumentException("no child attack " + id);
+        }
         for (Attack attack : attacks) {
             if (attack.id.equals(id)) {
                 return attack;
@@ -79,9 +102,16 @@ public final class TowerProfile {
     public void apply(JsonObject effect) {
         String type = effect.get("type").getAsString();
         switch (type) {
-            case "attack" -> applyToAttack(attack(effect.has("attack") ? effect.get("attack").getAsString() : "main"), effect);
+            case "attack" -> {
+                Attack attack = attack(effect.has("attack") ? effect.get("attack").getAsString() : "main");
+                applyToAttack(attack, effect);
+                if (effect.has("radius_from_range")) {
+                    attack.radius = range + effect.get("radius_from_range").getAsDouble();
+                }
+            }
             case "range" -> {
                 if (range >= 0) {
+                    double before = range;
                     if (effect.has("set")) {
                         range = effect.get("set").getAsDouble();
                     }
@@ -90,6 +120,15 @@ public final class TowerProfile {
                     }
                     if (effect.has("mul")) {
                         range *= effect.get("mul").getAsDouble();
+                    }
+                    for (Attack attack : attacks) {
+                        if (attack.followRange) {
+                            if (attack.kind == AttackKind.AURA) {
+                                attack.radius += range - before;
+                            } else {
+                                attack.length += range - before;
+                            }
+                        }
                     }
                 }
             }
@@ -109,8 +148,37 @@ public final class TowerProfile {
                 }
                 numbers.put(name, value);
             }
-            case "ability" -> abilities.add(new Ability(effect.get("id").getAsString(), effect.get("cooldown").getAsDouble(),
-                    effect.has("duration") ? effect.get("duration").getAsDouble() : 0));
+            case "ability" -> {
+                String id = effect.get("id").getAsString();
+                abilities.removeIf(ability -> ability.id().equals(id));
+                abilities.add(new Ability(id, effect.get("cooldown").getAsDouble(),
+                        effect.has("duration") ? effect.get("duration").getAsDouble() : 0,
+                        effect.has("buff") ? buff(effect.getAsJsonObject("buff")) : null,
+                        effect.has("share_radius") ? effect.get("share_radius").getAsDouble() : 0,
+                        effect.has("share_max") ? effect.get("share_max").getAsInt() : 0,
+                        effect.has("passive") && effect.get("passive").getAsBoolean()));
+            }
+            case "child" -> {
+                Attack parent = attack(effect.has("attack") ? effect.get("attack").getAsString() : "main");
+                String id = effect.get("id").getAsString();
+                parent.children.removeIf(child -> child.id.equals(id));
+                Attack child = TowerDefs.parseAttack(effect.getAsJsonObject("child"), id);
+                if (effect.has("trigger")) {
+                    child.trigger = effect.get("trigger").getAsString();
+                }
+                parent.children.add(child);
+            }
+            case "remove_child" -> attack(effect.has("attack") ? effect.get("attack").getAsString() : "main").children
+                    .removeIf(child -> child.id.equals(effect.get("id").getAsString()));
+            case "aura" -> {
+                String id = effect.get("id").getAsString();
+                auras.removeIf(aura -> aura.id().equals(id));
+                auras.add(new Aura(id, buff(effect.getAsJsonObject("buff")), effect.has("radius") ? effect.get("radius").getAsDouble() : -1,
+                        effect.has("towers") ? effect.get("towers").getAsString() : "", !effect.has("self") || effect.get("self").getAsBoolean()));
+            }
+            case "remove_aura" -> auras.removeIf(aura -> aura.id().equals(effect.get("id").getAsString()));
+            case "remove_ability" -> abilities.removeIf(ability -> ability.id().equals(effect.get("id").getAsString()));
+            case "remove_attack" -> attacks.removeIf(attack -> attack.id.equals(effect.get("id").getAsString()));
             case "new_attack" -> attacks.add(TowerDefs.parseAttack(effect.getAsJsonObject("attack"), effect.get("id").getAsString()));
             case "replace_attack" -> {
                 String id = effect.has("id") ? effect.get("id").getAsString() : "main";
@@ -125,6 +193,14 @@ public final class TowerProfile {
             }
             default -> throw new IllegalArgumentException("unknown effect type " + type);
         }
+    }
+
+    /** A buff from JSON: cooldown (factor), range (factor), pierce, damage, camo, kind and radius. */
+    public static Buffs buff(JsonObject json) {
+        return new Buffs(json.has("cooldown") ? json.get("cooldown").getAsDouble() : 1, json.has("range") ? json.get("range").getAsDouble() : 1,
+                json.has("pierce") ? json.get("pierce").getAsInt() : 0, json.has("damage") ? json.get("damage").getAsDouble() : 0,
+                json.has("camo") && json.get("camo").getAsBoolean(), json.has("kind") ? DamageKind.byId(json.get("kind").getAsString()) : null,
+                json.has("radius") ? json.get("radius").getAsDouble() : 0);
     }
 
     private static void applyToAttack(Attack attack, JsonObject effect) {
@@ -148,6 +224,30 @@ public final class TowerProfile {
             case "kind" -> attack.kind = AttackKind.valueOf(value.getAsString().toUpperCase(java.util.Locale.ROOT));
             case "damage_kind" -> attack.damageKind = DamageKind.byId(value.getAsString());
             case "hits_camo" -> attack.hitsCamo = value.getAsBoolean();
+            case "homing" -> attack.homing = value.getAsBoolean();
+            case "no_target" -> attack.noTarget = value.getAsBoolean();
+            case "unlimited_range" -> attack.unlimitedRange = value.getAsBoolean();
+            case "ability_id" -> attack.abilityId = value.getAsString();
+            case "maim" -> attack.maim = (int) Math.round(number(attack.maim, operation, value));
+            case "soak" -> attack.soak = value.getAsBoolean();
+            case "follow_range" -> attack.followRange = value.getAsBoolean();
+            case "strip_camo" -> attack.stripCamo = value.getAsBoolean();
+            case "skip_frozen" -> attack.skipFrozen = value.getAsBoolean();
+            case "boss_only" -> attack.bossOnly = value.getAsBoolean();
+            case "trigger" -> attack.trigger = value.getAsString();
+            case "crit_every" -> attack.critEvery = (int) Math.round(number(attack.critEvery, operation, value));
+            case "crit_damage" -> attack.critDamage = number(attack.critDamage, operation, value);
+            case "stun" -> attack.stun = number(attack.stun, operation, value);
+            case "stun_boss" -> attack.stunBoss = number(attack.stunBoss, operation, value);
+            case "pushback" -> attack.pushback = number(attack.pushback, operation, value);
+            case "pushback_boss" -> attack.pushbackBoss = number(attack.pushbackBoss, operation, value);
+            case "bounces" -> attack.bounces = (int) Math.round(number(attack.bounces, operation, value));
+            case "bounce_radius" -> attack.bounceRadius = number(attack.bounceRadius, operation, value);
+            case "burn" -> attack.burn = number(attack.burn, operation, value);
+            case "burn_seconds" -> attack.burnSeconds = number(attack.burnSeconds, operation, value);
+            case "coins_per_hit" -> attack.coinsPerHit = number(attack.coinsPerHit, operation, value);
+            case "scatter_min" -> attack.scatterMin = number(attack.scatterMin, operation, value);
+            case "scatter_max" -> attack.scatterMax = number(attack.scatterMax, operation, value);
             case "skip_boss" -> attack.skipBoss = value.getAsBoolean();
             case "cooldown" -> attack.cooldown = number(attack.cooldown, operation, value);
             case "projectiles" -> attack.projectiles = (int) Math.round(number(attack.projectiles, operation, value));

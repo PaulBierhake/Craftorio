@@ -18,6 +18,7 @@ public final class ModLanguageProvider {
 
         @Override
         protected void addTranslations() {
+            TowerTexts.english(this);
             add("itemGroup." + Craftorio.MOD_ID, "Craftorio");
             add(ModBlocks.CAP_ROCK.get(), "Cap Rock");
             add(ModBlocks.TRADING_POST.get(), "Trading Post");
@@ -111,6 +112,8 @@ public final class ModLanguageProvider {
             add(ModItems.GRENADE.get(), "Grenade");
             add(ModItems.STONE_WALL.get(), "Stone Wall");
             add(ModBlocks.FLAMETHROWER_TURRET.get(), "Flamethrower Turret");
+            add(ModBlocks.MORTAR_TURRET.get(), "Mortar Turret");
+            add(ModBlocks.SUPPLY_DEPOT.get(), "Supply Depot");
             add("craftorio.tooltip.tower.fluid", "Burns crude oil from the arena reserve – pipe it into the arena feeder");
             add("craftorio.research.military_2", "Military 2");
             add("craftorio.research.stone_walls", "Stone Walls");
@@ -340,6 +343,8 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.grenade.desc", "Grenade: 5 coal and 5 iron plates; an ingredient of the military science pack.");
             add("craftorio.blueprint.stone_wall.desc", "Stone wall: 5 stone bricks; an ingredient of the military science pack.");
             add("craftorio.blueprint.military_science.desc", "Military science pack: an armour-piercing magazine, a grenade and 2 walls make two packs.");
+            add("craftorio.blueprint.mortar_turret.desc", "Mortar turret: lobs grenades from the arena reserve, an explosion that hits many enemies and, upgraded, stuns or flattens them.");
+            add("craftorio.blueprint.supply_depot.desc", "Supply depot: brings coins every round (more with a basket of circuits from the arena reserve) and can run a bank.");
             add("craftorio.blueprint.flamethrower_turret.desc", "Flamethrower turret: burns crude oil from the arena reserve, short range, hits several enemies.");
             add("craftorio.blueprint.tesla_tower.desc", "Tesla tower: lightning that jumps to up to three enemies; runs on grid power via the arena feeder.");
             add("craftorio.blueprint.cave_entrance.desc", "Cave entrance: build it on the surface, deliver the materials and it drills down into the caves.");
@@ -867,6 +872,7 @@ public final class ModLanguageProvider {
 
         @Override
         protected void addTranslations() {
+            TowerTexts.german(this);
             add("itemGroup." + Craftorio.MOD_ID, "Craftorio");
             add(ModBlocks.CAP_ROCK.get(), "Deckgestein");
             add(ModBlocks.TRADING_POST.get(), "Handelsposten");
@@ -960,6 +966,8 @@ public final class ModLanguageProvider {
             add(ModItems.GRENADE.get(), "Granate");
             add(ModItems.STONE_WALL.get(), "Steinmauer");
             add(ModBlocks.FLAMETHROWER_TURRET.get(), "Flammenwerfer-Turm");
+            add(ModBlocks.MORTAR_TURRET.get(), "Mörser-Turm");
+            add(ModBlocks.SUPPLY_DEPOT.get(), "Nachschublager");
             add("craftorio.tooltip.tower.fluid", "Verbrennt Rohöl aus dem Arena-Vorrat – per Rohr in den Arena-Einspeiser leiten");
             add("craftorio.research.military_2", "Militär 2");
             add("craftorio.research.stone_walls", "Steinmauern");
@@ -1188,6 +1196,8 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.grenade.desc", "Granate: 5 Kohle und 5 Eisenplatten; Zutat des Militärpakets.");
             add("craftorio.blueprint.stone_wall.desc", "Steinmauer: 5 Steinziegel; Zutat des Militärpakets.");
             add("craftorio.blueprint.military_science.desc", "Militärpaket (grau): ein panzerbrechendes Magazin, eine Granate und 2 Mauern ergeben zwei Pakete.");
+            add("craftorio.blueprint.mortar_turret.desc", "Mörser-Turm: wirft Granaten aus dem Arena-Vorrat, eine Explosion trifft viele Gegner und betäubt oder wirft sie, aufgerüstet, zurück.");
+            add("craftorio.blueprint.supply_depot.desc", "Nachschublager: bringt jede Runde Münzen (mehr mit einem Warenkorb Schaltkreise aus dem Arena-Vorrat) und kann eine Bank betreiben.");
             add("craftorio.blueprint.flamethrower_turret.desc", "Flammenwerfer-Turm: verbrennt Rohöl aus dem Arena-Vorrat, kurze Reichweite, trifft mehrere Gegner.");
             add("craftorio.blueprint.tesla_tower.desc", "Tesla-Turm: Blitze, die auf bis zu drei Gegner überspringen; läuft mit Netzstrom über den Arena-Einspeiser.");
             add("craftorio.blueprint.cave_entrance.desc", "Höhleneingang: an der Oberfläche bauen, Material liefern, dann bohrt er sich in die Höhlen.");

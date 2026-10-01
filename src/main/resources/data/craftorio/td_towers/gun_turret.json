@@ -23,81 +23,286 @@
       {
         "btd6": "Full Metal Jacket",
         "cost": 350,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 4,
+              "damage_kind": "normal"
+            }
+          }
+        ]
       },
       {
         "btd6": "Large Calibre",
         "cost": 1300,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 7
+            }
+          }
+        ]
       },
       {
         "btd6": "Deadly Precision",
         "cost": 2200,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 20
+            },
+            "bonus": {
+              "ceramic": 50
+            }
+          }
+        ]
       },
       {
         "btd6": "Maim MOAB",
         "cost": 6300,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 30,
+              "maim": 4
+            }
+          }
+        ]
       },
       {
         "btd6": "Cripple MOAB",
         "cost": 32000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 140,
+              "maim": 5
+            }
+          },
+          {
+            "type": "child",
+            "id": "blast",
+            "child": {
+              "kind": "area",
+              "cooldown": 1,
+              "pierce": 10,
+              "damage": 28,
+              "damage_kind": "explosion",
+              "radius": 0.8
+            },
+            "trigger": "hit"
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Night Vision Goggles",
         "cost": 250,
-        "effects": []
+        "effects": [
+          {
+            "type": "camo"
+          },
+          {
+            "type": "attack",
+            "set": {
+              "hits_camo": true
+            },
+            "bonus": {
+              "camo": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Shrapnel Shot",
         "cost": 450,
-        "effects": []
+        "effects": [
+          {
+            "type": "child",
+            "id": "shrapnel",
+            "child": {
+              "kind": "projectile",
+              "cooldown": 1,
+              "projectiles": 5,
+              "spread": 45,
+              "pierce": 2,
+              "damage": 1,
+              "damage_kind": "sharp",
+              "radius": 0.2,
+              "length": 5,
+              "bonus": {
+                "camo": 2
+              },
+              "hits_camo": true
+            },
+            "trigger": "hit"
+          }
+        ]
       },
       {
         "btd6": "Bouncing Bullet",
         "cost": 2100,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "bounce_radius": 4.0
+            },
+            "add": {
+              "bounces": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Supply Drop",
         "cost": 7600,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage_kind": "normal"
+            },
+            "add": {
+              "bounces": 2
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "main.shrapnel",
+            "add": {
+              "pierce": 3
+            }
+          },
+          {
+            "type": "ability",
+            "id": "supply_drop",
+            "cooldown": 90,
+            "duration": 0
+          },
+          {
+            "type": "number",
+            "name": "supply_drop",
+            "set": 1100
+          }
+        ]
       },
       {
         "btd6": "Elite Sniper",
         "cost": 12000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.4
+            }
+          },
+          {
+            "type": "ability",
+            "id": "supply_drop",
+            "cooldown": 90,
+            "duration": 0
+          },
+          {
+            "type": "number",
+            "name": "supply_drop",
+            "set": 3000
+          },
+          {
+            "type": "aura",
+            "id": "elite_sniper",
+            "buff": {
+              "cooldown": 0.75
+            },
+            "radius": -1,
+            "towers": "gun_turret",
+            "self": false
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Fast Firing",
         "cost": 450,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.7
+            }
+          }
+        ]
       },
       {
         "btd6": "Even Faster Firing",
         "cost": 450,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.7
+            }
+          }
+        ]
       },
       {
         "btd6": "Semi-Automatic",
         "cost": 2700,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.3333333333333333
+            }
+          }
+        ]
       },
       {
         "btd6": "Full Auto Rifle",
         "cost": 4100,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.5
+            },
+            "bonus": {
+              "moab": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Elite Defender",
         "cost": 14900,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.5
+            },
+            "bonus": {
+              "moab": 2
+            }
+          },
+          {
+            "type": "ability",
+            "id": "elite_defender",
+            "cooldown": 10,
+            "duration": 7,
+            "buff": {
+              "cooldown": 0.25
+            },
+            "passive": true
+          }
+        ]
       }
     ]
   ]

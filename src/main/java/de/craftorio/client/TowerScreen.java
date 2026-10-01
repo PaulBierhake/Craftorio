@@ -141,14 +141,17 @@ public final class TowerScreen extends AbstractContainerScreen<TowerMenu> {
                 String id = profile().abilities.get(i).id();
                 int cooldown = menu.abilityCooldown(i);
                 int active = menu.abilityActive(i);
-                ability[i].active = cooldown <= 0;
-                ability[i].setMessage(active > 0 ? Component.translatable("craftorio.tower.ability.active", active)
+                boolean passive = profile().abilities.get(i).passive();
+                ability[i].active = cooldown <= 0 && !passive;
+                ability[i].setMessage(passive ? Component.translatable("craftorio.tower.ability.passive",
+                        Component.translatableWithFallback("craftorio.ability." + id, id)) : active > 0 ? Component.translatable("craftorio.tower.ability.active", active)
                         : cooldown > 0 ? Component.translatable("craftorio.tower.ability.wait", cooldown)
                         : Component.translatableWithFallback("craftorio.ability." + id, id));
             }
         }
         target.setMessage(Component.translatable("craftorio.tower.target." + menu.targetMode().id()));
         target.active = def.targets().size() > 1;
+        target.visible = !def.targets().isEmpty();
         sell.setMessage(Component.translatable("craftorio.tower.sell", Credits.formatNumber(TowerRules.sellValue(menu.paid(), RoundRules.SELL_SHARE))));
     }
 
@@ -204,6 +207,16 @@ public final class TowerScreen extends AbstractContainerScreen<TowerMenu> {
                 : Component.translatable("craftorio.tower.range", String.format(java.util.Locale.ROOT, "%.1f", range));
         if (type.usesEnergy()) {
             return reach.copy().append(Component.literal(" · " + Credits.formatNumber(menu.energy()) + " FE"));
+        }
+        if (type == de.craftorio.defense.TowerType.DEPOT) {
+            Component line = Component.translatable("craftorio.tower.depot.income", Credits.formatNumber((long) de.craftorio.defense.sim.DepotEconomy.production(profile())));
+            if (profile().has("bank")) {
+                line = line.copy().append(Component.translatable("craftorio.tower.depot.bank", Credits.formatNumber(menu.bank())));
+            }
+            if (menu.debt() > 0) {
+                line = line.copy().append(Component.translatable("craftorio.tower.depot.debt", Credits.formatNumber(menu.debt())));
+            }
+            return line.copy().append(Component.translatable(menu.basketDelivered() ? "craftorio.tower.depot.basket_yes" : "craftorio.tower.depot.basket_no"));
         }
         return reach;
     }

@@ -612,6 +612,17 @@ public final class TowerDefense extends SavedData {
         return true;
     }
 
+    /** Takes {@code count} of an item from the reserve if all of it is there (the supply depots' basket of goods). */
+    boolean drawGoods(int slot, Item item, int count) {
+        Zone zone = zoneAt(slot).orElse(null);
+        if (zone == null || zone.ammo(item) < count) {
+            return false;
+        }
+        zone.ammo.merge(item, -count, Integer::sum);
+        setDirty();
+        return true;
+    }
+
     public Component reserves(UUID team) {
         return zone(team).map(zone -> (Component) Component.translatable("craftorio.arena.feeder.status", zone.energy, ENERGY_CAPACITY,
                         zone.ammo(ModItems.BOLT.get()), magazines(zone), zone.fluid))
@@ -1137,6 +1148,10 @@ public final class TowerDefense extends SavedData {
             entry.putInt("cartridges", zone.ammo(ModItems.MAGAZINE.get()));
             entry.putInt("ap_magazines", zone.ammo(ModItems.AP_MAGAZINE.get()));
             entry.putInt("uranium_magazines", zone.ammo(ModItems.URANIUM_MAGAZINE.get()));
+            entry.putInt("grenades", zone.ammo(ModItems.GRENADE.get()));
+            entry.putInt("circuits", zone.ammo(ModItems.CIRCUIT.get()));
+            entry.putInt("advanced_circuits", zone.ammo(ModItems.ADVANCED_CIRCUIT.get()));
+            entry.putInt("processing_units", zone.ammo(ModItems.PROCESSING_UNIT.get()));
             entry.putInt("fluid", zone.fluid);
             list.add(entry);
         });
@@ -1177,6 +1192,10 @@ public final class TowerDefense extends SavedData {
             zone.ammo.put(ModItems.MAGAZINE.get(), entry.getInt("cartridges"));
             zone.ammo.put(ModItems.AP_MAGAZINE.get(), entry.getInt("ap_magazines"));
             zone.ammo.put(ModItems.URANIUM_MAGAZINE.get(), entry.getInt("uranium_magazines"));
+            zone.ammo.put(ModItems.GRENADE.get(), entry.getInt("grenades"));
+            zone.ammo.put(ModItems.CIRCUIT.get(), entry.getInt("circuits"));
+            zone.ammo.put(ModItems.ADVANCED_CIRCUIT.get(), entry.getInt("advanced_circuits"));
+            zone.ammo.put(ModItems.PROCESSING_UNIT.get(), entry.getInt("processing_units"));
             zone.fluid = entry.getInt("fluid");
             UUID team = entry.getUUID("team");
             data.zones.put(team, zone);

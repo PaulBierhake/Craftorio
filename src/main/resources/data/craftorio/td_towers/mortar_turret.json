@@ -24,81 +24,314 @@
       {
         "btd6": "Bigger Bombs",
         "cost": 250,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "radius": 1.8,
+              "pierce": 28
+            }
+          }
+        ]
       },
       {
         "btd6": "Heavy Bombs",
         "cost": 650,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 38,
+              "damage": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Really Big Bombs",
         "cost": 1100,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 80,
+              "damage": 4,
+              "radius": 2.7,
+              "pushback": 2.0,
+              "pushback_boss": 0
+            }
+          }
+        ]
       },
       {
         "btd6": "Bloon Impact",
         "cost": 2800,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.3
+          },
+          {
+            "type": "attack",
+            "set": {
+              "stun": 1.4,
+              "stun_boss": 0
+            }
+          }
+        ]
       },
       {
         "btd6": "Bloon Crush",
         "cost": 55000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 24,
+              "damage_kind": "normal",
+              "radius": 3.348,
+              "pushback_boss": 0.25,
+              "stun": 2,
+              "stun_boss": 2
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Faster Reload",
         "cost": 250,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.75
+            }
+          }
+        ]
       },
       {
         "btd6": "Missile Launcher",
         "cost": 400,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.4
+          },
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.7333333333333333
+            }
+          }
+        ]
       },
       {
         "btd6": "MOAB Mauler",
         "cost": 1000,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.5
+          },
+          {
+            "type": "attack",
+            "bonus": {
+              "moab": 15
+            }
+          }
+        ]
       },
       {
         "btd6": "MOAB Assassin",
         "cost": 3450,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.5
+          },
+          {
+            "type": "attack",
+            "bonus": {
+              "moab": 15
+            }
+          },
+          {
+            "type": "ability",
+            "id": "moab_assassin",
+            "cooldown": 30,
+            "duration": 0.1
+          },
+          {
+            "type": "new_attack",
+            "id": "assassin",
+            "attack": {
+              "kind": "area",
+              "cooldown": 0.05,
+              "pierce": 1,
+              "damage": 750,
+              "damage_kind": "explosion",
+              "radius": 2.0,
+              "boss_only": true,
+              "soak": true,
+              "unlimited_range": true,
+              "ability_id": "moab_assassin",
+              "children": [
+                {
+                  "kind": "area",
+                  "cooldown": 1,
+                  "pierce": 100,
+                  "damage": 3,
+                  "damage_kind": "explosion",
+                  "id": "blast",
+                  "radius": 3.0
+                }
+              ]
+            }
+          }
+        ]
       },
       {
         "btd6": "MOAB Eliminator",
         "cost": 26000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "bonus": {
+              "moab": 69
+            }
+          },
+          {
+            "type": "ability",
+            "id": "moab_assassin",
+            "cooldown": 10,
+            "duration": 0.1
+          },
+          {
+            "type": "attack",
+            "attack": "assassin",
+            "set": {
+              "damage": 4500
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Extra Range",
         "cost": 200,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.2
+          }
+        ]
       },
       {
         "btd6": "Frag Bombs",
         "cost": 300,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.2
+          },
+          {
+            "type": "child",
+            "id": "frag",
+            "child": {
+              "kind": "ring",
+              "cooldown": 1,
+              "projectiles": 8,
+              "pierce": 1,
+              "damage": 1,
+              "damage_kind": "sharp",
+              "radius": 0.2,
+              "length": 3.0
+            },
+            "trigger": "hit"
+          }
+        ]
       },
       {
         "btd6": "Cluster Bombs",
         "cost": 700,
-        "effects": []
+        "effects": [
+          {
+            "type": "remove_child",
+            "id": "frag"
+          },
+          {
+            "type": "child",
+            "id": "cluster",
+            "child": {
+              "kind": "area",
+              "cooldown": 1,
+              "projectiles": 8,
+              "pierce": 8,
+              "damage": 1,
+              "damage_kind": "explosion",
+              "radius": 1.5,
+              "scatter_min": 2.2,
+              "scatter_max": 4.0
+            },
+            "trigger": "hit"
+          }
+        ]
       },
       {
         "btd6": "Recursive Cluster",
         "cost": 2500,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 2
+            },
+            "add": {
+              "pierce": -4
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "main.cluster",
+            "set": {
+              "damage": 2,
+              "scatter_min": 2.0,
+              "scatter_max": 3.0
+            }
+          },
+          {
+            "type": "child",
+            "id": "secondary",
+            "child": {
+              "kind": "area",
+              "cooldown": 1,
+              "pierce": 24,
+              "damage": 2,
+              "damage_kind": "explosion",
+              "radius": 3.4
+            },
+            "attack": "main.cluster",
+            "trigger": "hit"
+          }
+        ]
       },
       {
         "btd6": "Bomb Blitz",
         "cost": 30000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "add": {
+              "damage": 3
+            },
+            "mul": {
+              "cooldown": 0.6
+            }
+          }
+        ]
       }
     ]
   ]

@@ -25,81 +25,284 @@
       {
         "btd6": "Sharp Shots",
         "cost": 140,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "add": {
+              "pierce": 1
+            }
+          }
+        ]
       },
       {
         "btd6": "Razor Sharp Shots",
         "cost": 200,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "add": {
+              "pierce": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Spike-o-pult",
         "cost": 320,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.48
+          },
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 18,
+              "damage": 2,
+              "damage_kind": "normal",
+              "radius": 0.5,
+              "length": 15
+            },
+            "mul": {
+              "cooldown": 1.2105263157894737
+            }
+          }
+        ]
       },
       {
         "btd6": "Juggernaut",
         "cost": 1800,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 60,
+              "damage": 2,
+              "radius": 0.7,
+              "length": 30,
+              "pushback": 0.3,
+              "pushback_boss": 0
+            },
+            "mul": {
+              "cooldown": 0.8695652173913044
+            },
+            "bonus": {
+              "ceramic": 3,
+              "fortified": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Ultra-Juggernaut",
         "cost": 15000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 210,
+              "damage": 5,
+              "radius": 0.9
+            },
+            "bonus": {
+              "lead": 20,
+              "ceramic": 8,
+              "fortified": 5
+            }
+          },
+          {
+            "type": "child",
+            "id": "mini",
+            "child": {
+              "projectiles": 6,
+              "spread": 360,
+              "kind": "projectile",
+              "cooldown": 1,
+              "pierce": 50,
+              "damage": 2,
+              "damage_kind": "normal",
+              "radius": 0.7,
+              "length": 8,
+              "bonus": {
+                "ceramic": 3,
+                "fortified": 2
+              }
+            },
+            "trigger": "hit"
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Quick Shots",
         "cost": 100,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.85
+            }
+          }
+        ]
       },
       {
         "btd6": "Very Quick Shots",
         "cost": 190,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.788235294117647
+            }
+          }
+        ]
       },
       {
         "btd6": "Triple Shot",
         "cost": 450,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "projectiles": 3,
+              "spread": 30
+            },
+            "mul": {
+              "cooldown": 0.75
+            }
+          }
+        ]
       },
       {
         "btd6": "Super Monkey Fan Club",
         "cost": 7200,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.5
+            }
+          },
+          {
+            "type": "ability",
+            "id": "fan_club",
+            "cooldown": 50,
+            "duration": 15,
+            "buff": {
+              "cooldown": 0.0632
+            },
+            "share_radius": 10,
+            "share_max": 9
+          }
+        ]
       },
       {
         "btd6": "Plasma Monkey Fan Club",
         "cost": 45000,
-        "effects": []
+        "effects": [
+          {
+            "type": "ability",
+            "id": "fan_club",
+            "cooldown": 50,
+            "duration": 15,
+            "buff": {
+              "cooldown": 0.0316,
+              "damage": 1,
+              "pierce": 3,
+              "kind": "normal",
+              "radius": 0.4
+            },
+            "share_radius": 10,
+            "share_max": 18
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Long Range Darts",
         "cost": 90,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.8
+          }
+        ]
       },
       {
         "btd6": "Enhanced Eyesight",
         "cost": 200,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.8
+          },
+          {
+            "type": "camo"
+          }
+        ]
       },
       {
         "btd6": "Crossbow",
         "cost": 575,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.2
+          },
+          {
+            "type": "attack",
+            "set": {
+              "damage": 3
+            },
+            "add": {
+              "pierce": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Sharp Shooter",
         "cost": 2050,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 6,
+              "crit_every": 10,
+              "crit_damage": 50
+            },
+            "mul": {
+              "cooldown": 0.5
+            }
+          }
+        ]
       },
       {
         "btd6": "Crossbow Master",
         "cost": 21500,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 2.0
+          },
+          {
+            "type": "attack",
+            "set": {
+              "damage": 8,
+              "crit_every": 5,
+              "crit_damage": 80,
+              "damage_kind": "normal"
+            },
+            "add": {
+              "pierce": 4
+            },
+            "mul": {
+              "cooldown": 0.5
+            }
+          }
+        ]
       }
     ]
   ]
