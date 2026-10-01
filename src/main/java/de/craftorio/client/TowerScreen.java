@@ -2,6 +2,7 @@ package de.craftorio.client;
 
 import de.craftorio.Craftorio;
 import de.craftorio.defense.Difficulty;
+import de.craftorio.defense.Knowledge;
 import de.craftorio.defense.TowerBlockEntity;
 import de.craftorio.defense.sim.RoundRules;
 import de.craftorio.defense.sim.TowerDef;
@@ -114,6 +115,7 @@ public final class TowerScreen extends AbstractContainerScreen<TowerMenu> {
             if (tier + 1 <= TowerBlockEntity.DISCOUNT_TIERS) {
                 price = TowerRules.discounted(price, menu.discountPercent() / 100.0);
             }
+            price = TowerRules.discounted(price, Knowledge.upgradeDiscount(researched, tier + 1));
             String reason = TowerRules.lockReason(tiers, path);
             int tech = TowerRules.techRequired(tier + 1);
             if (reason == null && tech > 0 && !researched.contains(TowerBlockEntity.techResearch(tech))) {
@@ -155,7 +157,7 @@ public final class TowerScreen extends AbstractContainerScreen<TowerMenu> {
         target.setMessage(Component.translatable("craftorio.tower.target." + menu.targetMode().id()));
         target.active = def.targets().size() > 1;
         target.visible = !def.targets().isEmpty();
-        sell.setMessage(Component.translatable("craftorio.tower.sell", Credits.formatNumber(TowerRules.sellValue(menu.paid(), RoundRules.SELL_SHARE))));
+        sell.setMessage(Component.translatable("craftorio.tower.sell", Credits.formatNumber((de.craftorio.defense.Challenge.byOrdinal(ClientTdState.status().challenge()).noSelling() ? 0 : TowerRules.sellValue(menu.paid(), Knowledge.sellShare(ClientTeamState.researched(), profile().sellShare()))))));
     }
 
     private static Component parts(List<SizedIngredient> materials) {

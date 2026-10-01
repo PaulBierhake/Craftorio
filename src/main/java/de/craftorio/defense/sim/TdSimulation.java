@@ -21,6 +21,7 @@ public final class TdSimulation {
     private int round = 1;
     private boolean late;
     private double hpFactor = 1;
+    private double bossHpMultiplier = 1;
     private double speedFactor = 1;
     private double externalSpeed = 1;
     private boolean dirty;
@@ -51,7 +52,7 @@ public final class TdSimulation {
     public void setRound(int round) {
         this.round = round;
         this.late = round >= LATE_GAME_ROUND;
-        this.hpFactor = lateHpFactor(round);
+        this.hpFactor = lateHpFactor(round) * bossHpMultiplier;
         this.speedFactor = lateSpeedFactor(round);
     }
 
@@ -66,6 +67,12 @@ public final class TdSimulation {
 
     public boolean lateGame() {
         return late;
+    }
+
+    /** Multiplies the hit points of MOAB-class enemies spawned from now on (the double HP challenge); 1 is normal. */
+    public void setBossHpMultiplier(double factor) {
+        this.bossHpMultiplier = factor;
+        this.hpFactor = lateHpFactor(round) * factor;
     }
 
     public double hpFactor() {

@@ -627,7 +627,7 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 | **T3 – Turmsystem** ✅ | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
 | **T4 – Türme Teil 1** ✅ | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
 | **T5 – Türme Teil 2** ✅ | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |
-| **T6 – Modi und Endlos** | Herausforderungen §7, Endlosmodus ab Runde 101 mit §3.6, Arena-Wissen §8, Rangliste (höchste Runde pro Team) | GameTest je Modus; Freeplay-Skalierung als Unit-Test |
+| **T6 – Modi und Endlos** ✅ | Herausforderungen §7, Endlosmodus ab Runde 101 mit §3.6, Arena-Wissen §8, Rangliste (höchste Runde pro Team) | GameTest je Modus; Freeplay-Skalierung als Unit-Test |
 | **T7 – Leitfaden, Handbuch, Feinschliff** | Handbuch-Seiten: Gegner (mit Immunitäten), Türme (Pfade), Wirtschaft; Leitfaden-Hinweise; README; Migration §10 | Alle Tests grün; Kampagne im Simulator mit Referenz-Sets bis Runde 100 schaffbar |
 
 ### T4 – Umsetzungsnotizen
@@ -664,14 +664,30 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
   schwächeren, ein Leimwerfer ignoriert schon gleich stark verleimte Gegner), Leim auf Behemoth-Klasse, Versprödung, reine Tarnungsziele (Flimmern),
   Angriffe ohne Verbrauch (`free`), Kommandoposten-Auren (Reichweite, Tempo, Tarnung, Normal-Schaden, Training für „primäre“ Türme), Preisnachlass
   und Einkommen des Kommandopostens (wirken auch zwischen den Leveln, weil gebaut wird, wenn keine Runde läuft).
-- **Akzeptanz:** Die Aufstellung `PLAN_1_89` (aus dem Hill-Climbing über Kaufreihenfolgen, `PlanSearchScratchTest`) schafft auf sechs Layouts die Runden
-  1–89 **ohne Leak**. Ab Runde 90 (Schattenjäger, in Runde 93 zehn verstärkte Behemoths) reicht das Einkommen dieser Aufstellung nicht mehr; ein Satz
-  bis Runde 100 ist **noch offen** (die Zufallssuche findet ihn nicht, es fehlt eine bewusst gebaute Wirtschaftsphase mit mehreren Nachschublagern).
 - **Immunitätstabelle §6.4** ist jetzt ein Test (`T5TowersTest.whoGetsHitByWhatFollowsTheTableOfTheConcept`).
 - **Vereinfachungen** (gleichwertiger Ersatz, TD-E5): Nekromant (Untote Armee) als zusätzliche Flächenangriffe, Phönix als freier Angriff,
   Sonnentempel ohne Opfermechanik, „Dunkler Ritter“-Fähigkeiten und Entfernen von Immunitäten (Frost/Leim) entfallen, Gefrieren der
   Behemoth-Klasse nur über Verlangsamung, Kommandoposten-Pfad 3 als Rabatt (10/15 %), Einkommen (700/1.250/2.250 ⛁ je Runde) und Bonus für
   Nachschublager (+50/+100 %).
+
+### T6 – Umsetzungsnotizen
+
+- **Herausforderungen (§7)** ersetzen die Mutatoren (Klasse `Mutator` entfernt): `Challenge` mit Doppelte Boss-HP (×2 HP der Boss-Klasse, +50 %),
+  Halbe Münzen (+50 %), Alternative Runden (+30 %), Apokalypse (keine Pause, kein frühes Rufen, +40 %) und CHIMPS (1 Leben, Verkauf 0,
+  keine Kriegskasse, kein Nachschublager, +100 %). Das Terminal hat einen Knopf „Modus“; ein gewonnenes Level bringt einen **Meister-Stern**
+  für den Modus (Bitmaske je Team, Anzeige „Meister-Sterne n/5“). Der Status-Netzwerkpaket-Protokoll steigt auf „3“.
+- **Alternative Runden:** `td_rounds/alternate.json` (Runden 1–140) aus der Seite „Alternate Bloons Rounds“. **bloonswiki.com war beim Einlesen
+  mit Fehler 521 nicht erreichbar**, die Daten stammen deshalb aus der Fandom-Kopie `bloons.fandom.com` (Stand 24.08.2026) und müssen bei
+  Gelegenheit noch einmal gegen bloonswiki.com geprüft werden. Der Test vergleicht die RBE jeder Runde 3–100 mit dem Wiki-Wert (±0,1 %). Die Runden
+  1 und 2 der Alternativliste kommen nur in Herausforderungen vor; die Dauer je Runde übernimmt die Standardliste.
+- **Endlosmodus:** Level 71 an (Runde 141) zieht `FreeplayRounds` zufällig, aber pro Runde fest (Seed = Rundennummer, für alle Teams gleich): Budget
+  800.000 RBE × 1,03 je Runde, Gruppen aus Behemoth-Klasse, Schattenjägern, Kristall-Golems und Glut/Eisenbrechern mit Tarnung, jede zehnte Runde
+  Schwarmkönigin. Die Skalierung nach §3.6 (HP, Tempo) ist als Unit-Test gegen die Wiki-Tabelle hinterlegt. Die Zusammensetzung der Zufallsrunden ist
+  ein **gleichwertiger Ersatz** (die Wiki nennt dafür keine Gruppentabelle).
+- **Arena-Wissen (§8):** sieben Forschungen mit Militär-Paketen (`Knowledge`): Kriegsvorrat, Bessere Ausrüstung, Feldlazarett, Starke Bolzen,
+  Sparsame Bauweise, Zinseszins, Wachsamkeit. Die Wirkung auf Türme steckt in einem eigenen Profil jedes Turms (Kopie des geteilten Profils),
+  das neu gebaut wird, wenn sich das Wissen des Teams ändert.
+- **Rangliste:** `/craftorio ranking` zeigt die zehn Teams mit der höchsten abgeschlossenen Runde; die Terminal-Zeile zeigt die eigene beste Runde.
 
 ---
 

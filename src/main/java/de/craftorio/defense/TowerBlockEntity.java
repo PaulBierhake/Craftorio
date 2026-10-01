@@ -166,7 +166,11 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
 
     /** What selling the tower pays: 70 % of everything paid for it (80 % for a supply depot with Banana Salvage). */
     public long sellValue() {
-        return TowerRules.sellValue(paid, profile().sellShare());
+        if (level instanceof ServerLevel serverLevel && TowerDefense.isArenaLevel(serverLevel)
+                && TowerDefense.get(serverLevel.getServer()).challengeAt(Arenas.slotAt(worldPosition)).noSelling()) {
+            return 0;
+        }
+        return TowerRules.sellValue(paid, Knowledge.sellShare(ownerResearch(), profile().sellShare()));
     }
 
     /** Sets the upgrades (towers taken out of the depot, tests); paid is kept. */
@@ -249,6 +253,8 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (unit == null) {
             unit = new TowerUnit(def(), worldPosition.getX() + 0.5, worldPosition.getY(), worldPosition.getZ() + 0.5, worldPosition.asLong());
             unit.setTiers(tiers);
+            java.util.Set<String> researched = ownerResearch();
+            unit.customize(profile -> Knowledge.apply(profile, type.defId(), researched));
             unit.setMode(targetMode);
             unit.restoreAbilities(abilityCooldowns, abilityActives);
             abilityCooldowns = new int[0];
@@ -264,16 +270,22 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         }
     }
 
-    /** Plateau +10 %, and whatever the arena's mutator does to ranges. */
+    /** Plateau +10 %. */
     public double rangeFactor() {
         double factor = 1;
         if (level != null && level.getBlockState(worldPosition.below()).is(ModBlocks.ARENA_CLIFF.get())) {
             factor *= PLATEAU_RANGE;
         }
-        if (level instanceof ServerLevel serverLevel && TowerDefense.isArenaLevel(serverLevel)) {
-            factor *= TowerDefense.get(serverLevel.getServer()).activeMutator(Arenas.slotAt(worldPosition)).rangeFactor();
-        }
         return factor;
+    }
+
+    /** The research of the team that owns the tower (its arena knowledge changes what the tower can do). */
+    private java.util.Set<String> ownerResearch() {
+        if (level instanceof ServerLevel serverLevel) {
+            return de.craftorio.protection.BlockOwnership.get(serverLevel).owner(serverLevel, worldPosition).map(Team::researched)
+                    .orElse(java.util.Set.of());
+        }
+        return java.util.Set.of();
     }
 
     /** Targeting range in blocks, for the GUI and the range display; negative for unlimited. */
@@ -290,6 +302,8 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
 
     /** Auras from other towers, renewed twice a second. */
     private Buffs outside = Buffs.NONE;
+    /** Arena knowledge the profile was built with; when it changes the tower builds its profile again. */
+    private int knowledgeKey = -1;
 
     private void work(ServerLevel serverLevel) {
         LevelRun run = LevelRun.runFor(serverLevel, worldPosition);
@@ -299,6 +313,17 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         run.register(this);
         if ((serverLevel.getGameTime() + worldPosition.asLong()) % 10 == 0) {
             outside = run.aurasFor(this);
+        }
+        if ((serverLevel.getGameTime() + worldPosition.asLong()) % 100 == 0) {
+            int key = Knowledge.key(ownerResearch());
+            if (key != knowledgeKey) {
+                knowledgeKey = key;
+                if (unit != null) {
+                    abilityCooldowns = unit.abilityCooldowns();
+                    abilityActives = unit.abilityActives();
+                    unit = null;
+                }
+            }
         }
         if (type.attacks()) {
             shoot(serverLevel, run);
@@ -487,6 +512,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         if (toTier <= DISCOUNT_TIERS) {
             price = TowerRules.discounted(price, villageNumber(serverLevel, worldPosition, "discount", true));
         }
+        price = TowerRules.discounted(price, Knowledge.upgradeDiscount(team.researched(), toTier));
         if (!defense.spend(Arenas.slotAt(worldPosition), price)) {
             player.displayClientMessage(Component.translatable("craftorio.tower.not_enough_coins", price).withStyle(ChatFormatting.RED), true);
             return false;

@@ -86,6 +86,7 @@ public final class CraftorioCommands {
                     return 1;
                 }))
                 // Admin shortcut for tests: lays the shortest possible path in the own arena.
+                .then(literal("ranking").executes(ctx -> run(ctx, CraftorioCommands::ranking)))
                 .then(literal("arena").requires(source -> source.hasPermission(2))
                         .then(literal("route").executes(ctx -> run(ctx, CraftorioCommands::arenaRoute)))
                         .then(literal("clear").executes(ctx -> clearLevels(ctx, -1))
@@ -104,6 +105,25 @@ public final class CraftorioCommands {
                         .then(literal("unlock")
                                 .then(literal("caves").executes(ctx -> unlockLayer(ctx, Layer.CAVES)))
                                 .then(literal("mines").executes(ctx -> unlockLayer(ctx, Layer.MINES))))));
+    }
+
+    /** The tower defense ranking: teams by the highest round they completed (top ten). */
+    private static int ranking(CommandContext<CommandSourceStack> ctx) {
+        var ranking = de.craftorio.defense.TowerDefense.get(ctx.getSource().getServer()).ranking();
+        if (ranking.isEmpty()) {
+            ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.ranking.empty"), false);
+            return 0;
+        }
+        int place = 0;
+        for (var entry : ranking) {
+            if (++place > 10) {
+                break;
+            }
+            int shown = place;
+            String name = registry(ctx).team(entry.getKey()).map(Team::name).orElse("?");
+            ctx.getSource().sendSuccess(() -> Component.translatable("craftorio.command.ranking.entry", shown, name, entry.getValue()), false);
+        }
+        return Math.min(10, ranking.size());
     }
 
     private static int arenaRoute(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

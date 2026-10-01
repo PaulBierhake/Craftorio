@@ -13,7 +13,9 @@ import java.util.List;
 
 /** The round lists, read from {@code data/craftorio/td_rounds}. */
 public final class RoundDefs {
-    private static final List<RoundDef> ROUNDS = load();
+    private static final List<RoundDef> ROUNDS = load("/data/craftorio/td_rounds/standard.json");
+    /** The harder list of the "Alternate Rounds" challenge (Alternate Bloons Rounds). */
+    private static final List<RoundDef> ALTERNATE = load("/data/craftorio/td_rounds/alternate.json");
 
     private RoundDefs() {
     }
@@ -23,12 +25,28 @@ public final class RoundDefs {
         return ROUNDS.size();
     }
 
-    /** Round {@code number} (from 1); numbers past the end repeat the last round. */
+    private static final java.util.Map<Integer, RoundDef> ENDLESS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** Round {@code number} of the list the challenge uses (the standard one, or the alternate rounds). */
+    public static RoundDef get(int number, boolean alternate) {
+        if (!alternate || number > ALTERNATE.size()) {
+            return get(number);
+        }
+        if (number < 1) {
+            throw new IllegalArgumentException("round numbers start at 1: " + number);
+        }
+        return ALTERNATE.get(number - 1);
+    }
+
+    /** Round {@code number} (from 1); past the end of the list the endless mode draws them ({@link FreeplayRounds}). */
     public static RoundDef get(int number) {
         if (number < 1) {
             throw new IllegalArgumentException("round numbers start at 1: " + number);
         }
-        return ROUNDS.get(Math.min(number, ROUNDS.size()) - 1);
+        if (number > ROUNDS.size()) {
+            return ENDLESS.computeIfAbsent(number, FreeplayRounds::round);
+        }
+        return ROUNDS.get(number - 1);
     }
 
     /** RBE of a round calculated from the enemy data (late-game rules from round 81 on). */
@@ -42,8 +60,7 @@ public final class RoundDefs {
         return total;
     }
 
-    private static List<RoundDef> load() {
-        String path = "/data/craftorio/td_rounds/standard.json";
+    private static List<RoundDef> load(String path) {
         try (InputStream stream = RoundDefs.class.getResourceAsStream(path)) {
             if (stream == null) {
                 throw new IllegalStateException("missing round data " + path);

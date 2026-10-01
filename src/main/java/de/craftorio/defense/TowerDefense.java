@@ -4,7 +4,6 @@ import de.craftorio.Craftorio;
 import de.craftorio.defense.arena.ArenaBuilder;
 import de.craftorio.defense.arena.ArenaLayout;
 import de.craftorio.defense.arena.Arenas;
-import de.craftorio.defense.arena.Mutator;
 import de.craftorio.defense.arena.Tile;
 import de.craftorio.economy.Credits;
 import de.craftorio.defense.sim.RoundRules;
@@ -101,6 +100,10 @@ public final class TowerDefense extends SavedData {
         /** The team's arena coins ⛁: earned by popping and at the end of rounds, valid across levels. */
         private double coins = RoundRules.START_COINS;
         private Difficulty difficulty = Difficulty.MEDIUM;
+        /** The challenge chosen for the next level, the challenges the team has mastered (bit mask) and the highest round it reached. */
+        private Challenge challenge = Challenge.NONE;
+        private int masteredMask;
+        private int bestRound;
         /** Has a level been started? The difficulty can only be made easier from then on. */
         private boolean campaignStarted;
         /** Credits exchanged for coins in the current level (the war chest is limited per level). */
@@ -144,13 +147,27 @@ public final class TowerDefense extends SavedData {
             return difficulty;
         }
 
+        public Challenge challenge() {
+            return challenge;
+        }
+
+        /** Master stars: the challenges a level has been won with, as a bit mask over {@link Challenge#ordinal()}. */
+        public int masteredMask() {
+            return masteredMask;
+        }
+
+        /** The highest round the team has completed. */
+        public int bestRound() {
+            return bestRound;
+        }
+
         public boolean campaignStarted() {
             return campaignStarted;
         }
 
         /** Credits that can still be exchanged for coins in this level. */
         public long warChestLeft() {
-            return Math.max(0, WAR_CHEST_PER_LEVEL * level - warChestUsed);
+            return challenge.noWarChest() ? 0 : Math.max(0, WAR_CHEST_PER_LEVEL * level - warChestUsed);
         }
 
         public long energy() {
@@ -219,13 +236,9 @@ public final class TowerDefense extends SavedData {
         return zoneAt(slot).map(this::layout).orElseGet(() -> ArenaLayout.generate(slot, 1));
     }
 
-    public Mutator mutator(Zone zone) {
-        return Mutator.forLevel(arenaSeed(zone), zone.level);
-    }
-
-    /** Mutator of the level running in this slot, if any. */
-    public Mutator activeMutator(int slot) {
-        return zoneAt(slot).filter(zone -> zone.run != null).map(this::mutator).orElse(Mutator.NONE);
+    /** The challenge chosen for the zone in this slot (it counts for selling and placing towers whether or not a level is running). */
+    public Challenge challengeAt(int slot) {
+        return zoneAt(slot).map(zone -> zone.challenge).orElse(Challenge.NONE);
     }
 
     /**
@@ -294,9 +307,8 @@ public final class TowerDefense extends SavedData {
                 Component.translatable("craftorio.arena.theme." + layout.theme().name().toLowerCase()),
                 Component.translatable("craftorio.arena.theme." + layout.theme().name().toLowerCase() + ".rule"))
                 .withStyle(ChatFormatting.GOLD));
-        Mutator mutator = mutator(zone);
-        if (mutator != Mutator.NONE) {
-            player.sendSystemMessage(Component.translatable("craftorio.arena.mutator." + mutator.name().toLowerCase())
+        if (zone.challenge != Challenge.NONE) {
+            player.sendSystemMessage(Component.translatable("craftorio.td.challenge." + zone.challenge.name().toLowerCase())
                     .withStyle(ChatFormatting.LIGHT_PURPLE));
         }
     }
@@ -450,6 +462,10 @@ public final class TowerDefense extends SavedData {
 
     /** A tower from the depot is already paid for; a fresh one costs its base price in coins. */
     @Nullable String placementCoinsError(int slot, ItemStack stack) {
+        if (challengeAt(slot).noDepots() && stack.getItem() instanceof net.minecraft.world.item.BlockItem depot
+                && depot.getBlock() instanceof TowerBlock tower && tower.towerType() == TowerType.DEPOT) {
+            return "craftorio.tower.place.no_depot";
+        }
         if (!stack.has(ModDataComponents.TOWER_STATE.get()) && stack.getItem() instanceof net.minecraft.world.item.BlockItem item
                 && item.getBlock() instanceof TowerBlock tower) {
             Zone zone = zoneAt(slot).orElse(null);
@@ -670,11 +686,17 @@ public final class TowerDefense extends SavedData {
         if (check.path() == null) {
             return check.message();
         }
-        Mutator mutator = mutator(zone);
+        java.util.Set<String> researched = TeamData.registry(server).team(team).map(Team::researched).orElse(java.util.Set.of());
+        if (!zone.campaignStarted && Knowledge.has(researched, Knowledge.WAR_SUPPLIES)) {
+            zone.coins += Knowledge.START_COINS;
+        }
         zone.snapshot = takeSnapshot(level, zone);
         zone.campaignStarted = true;
-        zone.run = new LevelRun(LevelPlan.of(zone.level, 1), check.path(), zone.core(),
-                new LevelRun.Arena(zone.slot, layout(zone), mutator), zone.difficulty);
+        zone.run = new LevelRun(LevelPlan.of(zone.level, zone.challenge), check.path(), zone.core(),
+                new LevelRun.Arena(zone.slot, layout(zone), zone.challenge), zone.difficulty);
+        if (!zone.challenge.oneLife() && Knowledge.has(researched, Knowledge.FIELD_HOSPITAL)) {
+            zone.run.addLives(Knowledge.FIELD_HOSPITAL_LIVES);
+        }
         zone.run.begin(level);
         zone.autoStartIn = -1;
         setDirty();
@@ -700,6 +722,33 @@ public final class TowerDefense extends SavedData {
             return Component.translatable("craftorio.td.call.not_now");
         }
         return Component.translatable("craftorio.td.call.done");
+    }
+
+    /** The challenge for the next level, set by the terminal. */
+    public Component setChallenge(UUID team, Challenge wanted) {
+        Zone zone = zones.get(team);
+        if (zone == null) {
+            return Component.translatable("craftorio.td.error.no_zone");
+        }
+        if (zone.run != null) {
+            return Component.translatable("craftorio.td.error.running");
+        }
+        zone.challenge = wanted;
+        setDirty();
+        return Component.translatable("craftorio.td.challenge.set", Component.translatable("craftorio.td.challenge." + wanted.name().toLowerCase()));
+    }
+
+    public Component cycleChallenge(UUID team) {
+        Zone zone = zones.get(team);
+        return zone == null ? Component.translatable("craftorio.td.error.no_zone") : setChallenge(team, zone.challenge.next());
+    }
+
+    /** Teams by the highest round they have completed, best first (the ranking). */
+    public List<Map.Entry<UUID, Integer>> ranking() {
+        List<Map.Entry<UUID, Integer>> list = new ArrayList<>();
+        zones.forEach((team, zone) -> list.add(Map.entry(team, zone.bestRound)));
+        list.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));
+        return list;
     }
 
     /** The team's difficulty: any before the first level starts, afterwards only an easier one. */
@@ -1008,9 +1057,11 @@ public final class TowerDefense extends SavedData {
         TdEnemiesPayload none = TdEnemiesPayload.empty(zone.slot);
         level.players().stream().filter(player -> Arenas.slotAt(player.blockPosition()) == zone.slot).forEach(player -> send(player, none));
         if (won) {
-            Mutator mutator = mutator(zone);
-            long reward = Math.round(plan.reward() * mutator.rewardFactor() * zone.difficulty.rewardFactor());
-            int stars = LevelPlan.stars(lives, zone.difficulty.lives());
+            Challenge played = zone.challenge;
+            long reward = Math.round(plan.reward() * played.rewardFactor() * zone.difficulty.rewardFactor());
+            int stars = LevelPlan.stars(lives, maxLives);
+            zone.masteredMask |= played == Challenge.NONE ? 0 : 1 << played.ordinal();
+            zone.bestRound = Math.max(zone.bestRound, LevelPlan.firstRound(plan.level()) + 1);
             zone.snapshot = null;
             zone.warChestUsed = 0;
             long total = reward + LevelPlan.starBonus(reward, stars);
@@ -1032,6 +1083,7 @@ public final class TowerDefense extends SavedData {
                 zone.autoStartIn = AUTO_START_DELAY;
             }
         } else {
+            zone.bestRound = Math.max(zone.bestRound, LevelPlan.firstRound(plan.level()) - 1 + wave - 1);
             restoreSnapshot(level, zone);
             broadcast(server, team, Component.translatable("craftorio.td.lost", plan.level()).withStyle(ChatFormatting.RED));
         }
@@ -1061,7 +1113,7 @@ public final class TowerDefense extends SavedData {
 
     private TdStatusPayload status(ServerLevel level, Zone zone) {
         LevelRun run = zone.run;
-        LevelPlan plan = run != null ? run.plan() : LevelPlan.of(zone.level, 1);
+        LevelPlan plan = run != null ? run.plan() : LevelPlan.of(zone.level, zone.challenge);
         int previewWave = run == null ? 0 : run.upcomingWave();
         List<Integer> preview = new ArrayList<>();
         if (previewWave < plan.rounds().size()) {
@@ -1072,10 +1124,11 @@ public final class TowerDefense extends SavedData {
         }
         ArenaLayout layout = layout(zone);
         return new TdStatusPayload(true, zone.level, run != null, run == null ? 0 : run.wave(), plan.rounds().size(),
-                run == null ? zone.difficulty.lives() : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.coins(),
-                layout.theme().ordinal(), mutator(zone).ordinal(), zone.lastStars, preview, zone.energy,
+                run == null ? (zone.challenge.oneLife() ? 1 : zone.difficulty.lives()) : run.lives(), run == null ? 0 : run.enemiesLeft(), zone.auto, zone.coins(),
+                layout.theme().ordinal(), zone.challenge.ordinal(), zone.lastStars, preview, zone.energy,
                 zone.ammo(ModItems.BOLT.get()), magazines(zone), run != null && run.canCallWave(), unsupplied(level, zone),
-                zone.difficulty.ordinal(), zone.difficulty.lives(), zone.warChestLeft(), zone.campaignStarted);
+                zone.difficulty.ordinal(), zone.challenge.oneLife() ? 1 : zone.difficulty.lives(), zone.warChestLeft(), zone.campaignStarted,
+                zone.masteredMask, zone.bestRound);
     }
 
     private int unsupplied(ServerLevel level, Zone zone) {
@@ -1137,6 +1190,9 @@ public final class TowerDefense extends SavedData {
             entry.putInt("last_stars", zone.lastStars);
             entry.putDouble("coins", zone.coins);
             entry.putString("difficulty", zone.difficulty.name());
+            entry.putString("challenge", zone.challenge.name());
+            entry.putInt("mastered", zone.masteredMask);
+            entry.putInt("best_round", zone.bestRound);
             entry.putBoolean("campaign_started", zone.campaignStarted);
             entry.putLong("war_chest_used", zone.warChestUsed);
             if (zone.home != null) {
@@ -1181,6 +1237,13 @@ public final class TowerDefense extends SavedData {
             } catch (IllegalArgumentException missing) {
                 zone.difficulty = Difficulty.MEDIUM;
             }
+            try {
+                zone.challenge = Challenge.valueOf(entry.getString("challenge"));
+            } catch (IllegalArgumentException missing) {
+                zone.challenge = Challenge.NONE;
+            }
+            zone.masteredMask = entry.getInt("mastered");
+            zone.bestRound = Math.max(entry.getInt("best_round"), 2 * (zone.level - 1));
             zone.campaignStarted = entry.contains("campaign_started") ? entry.getBoolean("campaign_started") : zone.level > 1;
             zone.warChestUsed = entry.getLong("war_chest_used");
             zone.home = NbtUtils.readBlockPos(entry, "home").orElse(null);

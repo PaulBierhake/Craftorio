@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Server to client, a few times a second: every enemy of an arena as (id, kind, modifier bits, distance along the path).
  * Between two snapshots the client lets them walk on at {@code speed} times their own speed, so little has to be sent.
  *
- * @param speed  factor on the enemies' own speed (late game, mutators)
+ * @param speed  factor on the enemies' own speed (late game)
  * @param ids    enemy ids, ascending
  * @param kinds  {@code EnemyDef.index()} per enemy
  * @param flags  per enemy: 1 camo, 2 regrow, 4 fortified

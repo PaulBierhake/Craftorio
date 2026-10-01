@@ -71,6 +71,15 @@ public final class ModResearch {
         add(context, "tower_tech_3", 300, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY, Pack.BLUE), List.of("tower_tech_2", "chemical_science_pack"), List.of());
         add(context, "laser_turrets", 150, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY), List.of("lasers", "military_science_pack"),
                 List.of("laser_tower"));
+        // Arena knowledge (T6): lasting bonuses for the tower defense, researched with military packs
+        List<Pack> military = List.of(Pack.RED, Pack.GREEN, Pack.MILITARY);
+        add(context, "arena_war_supplies", 50, 30, military, List.of("military_science_pack"), List.of());
+        add(context, "arena_better_gear", 75, 30, military, List.of("military_science_pack"), List.of());
+        add(context, "arena_field_hospital", 100, 30, military, List.of("military_science_pack"), List.of());
+        add(context, "arena_strong_bolts", 60, 30, military, List.of("tower_tech_1", "military_science_pack"), List.of());
+        add(context, "arena_thrifty", 120, 30, military, List.of("arena_war_supplies"), List.of());
+        add(context, "arena_compound_interest", 150, 30, military, List.of("arena_better_gear"), List.of());
+        add(context, "arena_vigilance", 200, 30, military, List.of("tower_tech_2"), List.of());
         add(context, "agriculture", 30, 15, List.of(), List.of("greenhouse", "farm/wheat", "farm/carrot", "farm/potato",
                 "farm/pumpkin", "farm/sugar_cane", "farm/tree"));
         add(context, "bio_fuel", 50, 30, R_G, List.of("agriculture", "logistic_science_pack"), List.of("assembling/bio_fuel"));

@@ -23,6 +23,8 @@ public final class TerminalMenu extends AbstractContainerMenu {
     public static final int TD_TOGGLE_AUTO = 10_001;
     /** Next difficulty; before the first level any, afterwards only an easier one. */
     public static final int TD_DIFFICULTY = 10_002;
+    /** Next challenge for the next level. */
+    public static final int TD_CHALLENGE = 10_008;
     public static final int TD_CALL_WAVE = 10_003;
     /** Credits for coins at 1:1, 100 or 1,000 at a time (limited per level). */
     public static final int TD_WAR_CHEST_SMALL = 10_006;
@@ -79,6 +81,7 @@ public final class TerminalMenu extends AbstractContainerMenu {
                 serverPlayer.displayClientMessage(Component.translatable(has ? "craftorio.terminal.claim.has_handbook" : "craftorio.terminal.claim.handbook"), true);
             }
             case TD_DIFFICULTY -> serverPlayer.displayClientMessage(defense.cycleDifficulty(team), true);
+            case TD_CHALLENGE -> serverPlayer.displayClientMessage(defense.cycleChallenge(team), true);
             case TD_WAR_CHEST_SMALL, TD_WAR_CHEST_LARGE -> {
                 if (TeamData.maySpend(serverPlayer)) {
                     serverPlayer.displayClientMessage(defense.exchangeCredits(serverPlayer.server, team, id == TD_WAR_CHEST_SMALL ? 100 : 1_000), true);

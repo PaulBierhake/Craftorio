@@ -78,23 +78,6 @@ class ArenaLayoutTest {
     }
 
     @Test
-    void mutatorsStartAtLevelSixAndSkipBosses() {
-        int withMutator = 0;
-        for (long seed = 0; seed < 50; seed++) {
-            for (int level = 1; level <= 40; level++) {
-                Mutator mutator = Mutator.forLevel(seed, level);
-                if (level < 6 || level % 10 == 0) {
-                    assertEquals(Mutator.NONE, mutator);
-                } else if (mutator != Mutator.NONE) {
-                    withMutator++;
-                    assertTrue(mutator.rewardFactor() > 1);
-                }
-            }
-        }
-        assertTrue(withMutator > 300 && withMutator < 900, "about a third of the levels: " + withMutator);
-    }
-
-    @Test
     void starsBonusesAndPreview() {
         assertEquals(3, LevelPlan.stars(LevelPlan.LIVES));
         assertEquals(2, LevelPlan.stars(LevelPlan.LIVES / 2));

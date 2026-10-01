@@ -10,7 +10,7 @@ import de.craftorio.defense.sim.EnemyDefs;
 import de.craftorio.defense.Difficulty;
 import de.craftorio.defense.LevelPlan;
 import de.craftorio.defense.arena.ArenaTheme;
-import de.craftorio.defense.arena.Mutator;
+import de.craftorio.defense.Challenge;
 import de.craftorio.economy.Credits;
 import de.craftorio.network.TdStatusPayload;
 import de.craftorio.menu.TerminalMenu;
@@ -37,6 +37,7 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
     private Button startButton;
     private Button autoButton;
     private Button difficultyButton;
+    private Button challengeButton;
     private Button warChestSmallButton;
     private Button warChestLargeButton;
     private Button callButton;
@@ -78,7 +79,10 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         autoButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_TOGGLE_AUTO))
                 .bounds(leftPos + 128, topPos + 138, 116, 18).build());
         callButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.td.button.call"), button -> sendButton(TerminalMenu.TD_CALL_WAVE))
-                .bounds(leftPos + 12, topPos + 160, 232, 18).build());
+                .bounds(leftPos + 12, topPos + 160, 110, 18).build());
+        challengeButton = addRenderableWidget(Button.builder(Component.empty(), button -> sendButton(TerminalMenu.TD_CHALLENGE))
+                .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.td.challenge.hint")))
+                .bounds(leftPos + 128, topPos + 160, 116, 18).build());
         sealsButton = addRenderableWidget(Button.builder(Component.translatable("craftorio.terminal.claim.seals_button"), button -> sendButton(TerminalMenu.CLAIM_SEALS))
                 .tooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("craftorio.terminal.claim.seals_hint")))
                 .bounds(leftPos + 12, topPos + 183, 110, 14).build());
@@ -98,7 +102,7 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         TdStatusPayload td = ClientTdState.status();
         boolean defense = tab == Tab.DEFENSE;
         startButton.visible = autoButton.visible = callButton.visible = defense;
-        difficultyButton.visible = warChestSmallButton.visible = warChestLargeButton.visible = defense;
+        difficultyButton.visible = warChestSmallButton.visible = warChestLargeButton.visible = challengeButton.visible = defense;
         sealsButton.visible = handbookButton.visible = defense;
         callButton.active = td.canCallWave();
         startButton.active = td.hasZone() && !td.running();
@@ -110,6 +114,10 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         difficultyButton.setMessage(Component.translatable("craftorio.td.button.difficulty",
                 Component.translatable("craftorio.td.difficulty." + difficulty.name().toLowerCase())));
         warChestSmallButton.active = warChestLargeButton.active = td.hasZone() && td.warChestLeft() > 0;
+        Challenge challenge = Challenge.byOrdinal(td.challenge());
+        challengeButton.active = td.hasZone() && !td.running();
+        challengeButton.setMessage(Component.translatable("craftorio.td.button.challenge",
+                Component.translatable("craftorio.td.challenge." + challenge.name().toLowerCase())));
     }
 
     /** The terminal has no blueprint list; its research rows are drawn by {@link #renderResearch}. */
@@ -356,9 +364,9 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         line(graphics, "craftorio.td.next_level", td.level() + " · " + Component.translatable("craftorio.td.difficulty."
                 + difficulty.name().toLowerCase()).getString(), x, y);
         line(graphics, "craftorio.td.map", Component.translatable("craftorio.arena.theme." + theme).getString(), x, y + 11);
-        Mutator mutator = Mutator.values()[Math.floorMod(td.mutator(), Mutator.values().length)];
-        if (mutator != Mutator.NONE) {
-            graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.arena.mutator." + mutator.name().toLowerCase())
+        Challenge challenge = Challenge.byOrdinal(td.challenge());
+        if (challenge != Challenge.NONE) {
+            graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.td.challenge." + challenge.name().toLowerCase())
                     .getString(), imageWidth - 24), x, y + 22, 0xD68CFF, false);
         } else {
             graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.arena.theme." + theme + ".rule").getString(),
@@ -372,7 +380,8 @@ public final class TerminalScreen extends BlueprintListScreen<TerminalMenu> {
         } else {
             String stars = td.lastStars() > 0 ? "  " + "★".repeat(td.lastStars()) + "☆".repeat(3 - td.lastStars()) : "";
             graphics.drawString(font, font.plainSubstrByWidth(Component.translatable("craftorio.td.reward_line",
-                    Credits.format(Math.round(LevelPlan.of(td.level(), 1).reward() * difficulty.rewardFactor())), td.maxLives()).getString() + stars,
+                    Credits.format(Math.round(LevelPlan.of(td.level(), 1).reward() * difficulty.rewardFactor() * challenge.rewardFactor())), td.maxLives()).getString() + stars
+                            + Component.translatable("craftorio.td.best_round", td.bestRound(), Integer.bitCount(td.masters())).getString(),
                     imageWidth - 24), x, y + 44, 0xFFFFFF, false);
         }
         StringBuilder preview = new StringBuilder();

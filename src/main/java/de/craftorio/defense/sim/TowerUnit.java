@@ -83,6 +83,12 @@ public final class TowerUnit {
         return profile;
     }
 
+    /** Gives the unit a profile of its own (a copy of the shared one) and lets {@code tweak} change it. */
+    public void customize(java.util.function.Consumer<TowerProfile> tweak) {
+        profile = profile.copy();
+        tweak.accept(profile);
+    }
+
     /** Sets what the loaded ammunition does: the damage kind it deals (null keeps the attack's own) and a factor on the damage. */
     public void setAmmo(DamageKind kind, double factor) {
         this.ammoKind = kind;

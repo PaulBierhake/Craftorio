@@ -73,6 +73,19 @@ public final class TowerProfile {
         return profile;
     }
 
+    /** A copy that can be changed without touching the shared one (arena knowledge tweaks a tower's own profile). */
+    public TowerProfile copy() {
+        TowerProfile copy = new TowerProfile();
+        copy.range = range;
+        attacks.forEach(attack -> copy.attacks.add(attack.copy()));
+        copy.detectsCamo = detectsCamo;
+        copy.flags.addAll(flags);
+        copy.numbers.putAll(numbers);
+        copy.abilities.addAll(abilities);
+        copy.auras.addAll(auras);
+        return copy;
+    }
+
     /** An attack by id; "main.shrapnel" is the child "shrapnel" of the attack "main". */
     public Attack attack(String id) {
         int dot = id.indexOf('.');

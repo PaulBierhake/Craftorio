@@ -72,6 +72,31 @@ class RoundDefsTest {
             assertTrue(spawns.get(i).tick() >= spawns.get(i - 1).tick());
         }
         assertEquals(0, RoundDefs.get(100).spawns().get(0).tick());
-        assertEquals(RoundDefs.get(140).round(), RoundDefs.get(500).round(), "past the list the last round repeats");
+        assertEquals(500, RoundDefs.get(500).round(), "past the list the endless mode draws the rounds");
+    }
+
+    @Test
+    void alternateRoundsAreHarderAndMatchTheWikiRbe() {
+        for (int round = 1; round <= 140; round++) {
+            RoundDef def = RoundDefs.get(round, true);
+            assertEquals(round, def.round());
+            double rbe = RoundDefs.rbe(def);
+            if (round >= 3 && round <= 100) {
+                assertEquals(def.rbe(), rbe, Math.max(1, def.rbe() * 0.001), "round " + round);
+            }
+        }
+        assertEquals(5, firstAlternate(g -> g.camo()), "camouflage comes at round 5 instead of 24");
+        assertEquals(7, firstAlternate(g -> g.enemy().equals("soot_crawler")));
+        assertTrue(RoundDefs.get(30, true).rbe() > 0);
+        assertEquals(RoundDefs.get(141), RoundDefs.get(141, true), "past 140 both lists use the endless rounds");
+    }
+
+    private static int firstAlternate(java.util.function.Predicate<RoundDef.Group> test) {
+        for (int round = 1; round <= 140; round++) {
+            if (RoundDefs.get(round, true).groups().stream().anyMatch(test)) {
+                return round;
+            }
+        }
+        return -1;
     }
 }

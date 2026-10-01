@@ -23,11 +23,17 @@ public record LevelPlan(int level, List<RoundDef> rounds, long reward, KeyReward
     }
 
     public static LevelPlan of(int level, int players) {
+        return of(level, Challenge.NONE);
+    }
+
+    /** The level with the rounds of the challenge's list (the alternate rounds for that challenge). */
+    public static LevelPlan of(int level, Challenge challenge) {
         if (level < 1) {
             throw new IllegalArgumentException("level must be at least 1: " + level);
         }
-        RoundDef first = RoundDefs.get(firstRound(level));
-        RoundDef second = RoundDefs.get(firstRound(level) + 1);
+        boolean alternate = challenge.alternateRounds();
+        RoundDef first = RoundDefs.get(firstRound(level), alternate);
+        RoundDef second = RoundDefs.get(firstRound(level) + 1, alternate);
         long reward = 100 + 40L * level + (level % 10 == 0 ? 50L * level : 0);
         return new LevelPlan(level, List.of(first, second), reward, keyReward(level));
     }

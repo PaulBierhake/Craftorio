@@ -1,7 +1,6 @@
 package de.craftorio.defense;
 
 import de.craftorio.defense.arena.ArenaLayout;
-import de.craftorio.defense.arena.Mutator;
 import de.craftorio.defense.sim.Buffs;
 import de.craftorio.defense.sim.RoundDef;
 import de.craftorio.defense.sim.RoundRules;
@@ -35,8 +34,8 @@ public final class LevelRun {
     /** A tower outside an arena fights on a run whose path comes this close (blocks). */
     private static final double NEAR_PATH = 8;
 
-    /** Where the level is fought: arena slot, map and mutator. Null in tests that build their own track. */
-    public record Arena(int slot, ArenaLayout layout, Mutator mutator) {
+    /** Where the level is fought: arena slot, map and challenge. Null in tests that build their own track. */
+    public record Arena(int slot, ArenaLayout layout, Challenge challenge) {
     }
 
     /** A round that has started: its enemies enter one after the other. */
@@ -62,6 +61,7 @@ public final class LevelRun {
     private final List<Vec3> points;
     private final BlockPos core;
     private final @Nullable Arena arena;
+    private final Challenge challenge;
     private final TdSimulation sim;
     private final Set<Long> forcedChunks = new HashSet<>();
     private final List<Started> started = new ArrayList<>();
@@ -74,6 +74,7 @@ public final class LevelRun {
     /** The last started round has sent all its enemies and the rest before the next one is running. */
     private boolean resting;
     private int lives;
+    private int livesBonus;
     private double coins;
     private boolean finished;
 
@@ -87,11 +88,13 @@ public final class LevelRun {
         this.points = List.copyOf(path);
         this.core = core;
         this.arena = arena;
-        this.lives = difficulty.lives();
+        this.challenge = arena != null ? arena.challenge() : Challenge.NONE;
+        this.lives = maxLives();
         List<double[]> walk = new ArrayList<>(path.size());
         path.forEach(point -> walk.add(new double[]{point.x, point.y, point.z}));
         this.sim = new TdSimulation(new TdPath(walk));
-        sim.setExternalSpeed(difficulty.speedFactor() * (arena != null ? arena.mutator().speedFactor() : 1));
+        sim.setExternalSpeed(difficulty.speedFactor());
+        sim.setBossHpMultiplier(challenge.bossHpFactor());
     }
 
     /** Coins from outside the simulation (supply drops, depots). */
@@ -163,7 +166,17 @@ public final class LevelRun {
     }
 
     public int maxLives() {
-        return difficulty.lives();
+        return challenge.oneLife() ? 1 : difficulty.lives() + livesBonus;
+    }
+
+    public Challenge challenge() {
+        return challenge;
+    }
+
+    /** Extra lives from the team's research (field hospital). */
+    public void addLives(int extra) {
+        livesBonus += extra;
+        lives += extra;
     }
 
     public int enemiesLeft() {
@@ -183,7 +196,7 @@ public final class LevelRun {
 
     /** Coins earned since the last call: pops and round bonuses (with fractions). */
     double takeCoins() {
-        double earned = coins + sim.takeCoins();
+        double earned = (coins + sim.takeCoins()) * challenge.coinFactor();
         coins = 0;
         return earned;
     }
@@ -279,7 +292,7 @@ public final class LevelRun {
             } else {
                 if (!resting) { // the last round has just sent its final enemy: rest before the next one
                     resting = true;
-                    cooldown = LevelPlan.ROUND_DELAY;
+                    cooldown = challenge.continuous() ? 0 : LevelPlan.ROUND_DELAY;
                 }
                 if (cooldown > 0) {
                     cooldown--;
@@ -317,7 +330,7 @@ public final class LevelRun {
 
     /** The next round can be started at any time, even while the last one is still going. */
     public boolean canCallWave() {
-        return nextRound < plan.rounds().size() && !finished;
+        return nextRound < plan.rounds().size() && !finished && !challenge.continuous();
     }
 
     /** Starts the next round now; returns the ticks of waiting time skipped. */

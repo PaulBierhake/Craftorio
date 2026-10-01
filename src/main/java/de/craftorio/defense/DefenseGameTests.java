@@ -658,6 +658,93 @@ public final class DefenseGameTests {
         helper.succeed();
     }
 
+    private static LevelRun challengeRun(GameTestHelper helper, Challenge challenge) {
+        List<Vec3> path = new ArrayList<>();
+        for (int x = 1; x <= 15; x++) {
+            path.add(Vec3.atBottomCenterOf(helper.absolutePos(new BlockPos(x, 1, 6))));
+        }
+        return new LevelRun(LevelPlan.of(3, challenge), path, helper.absolutePos(new BlockPos(15, 1, 8)),
+                new LevelRun.Arena(900, de.craftorio.defense.arena.ArenaLayout.generate(1, 3), challenge), Difficulty.MEDIUM);
+    }
+
+    @GameTest(template = EMPTY)
+    public static void doubleBossHitPointsDoubleTheBossesHealth(GameTestHelper helper) {
+        LevelRun plain = challengeRun(helper, Challenge.NONE);
+        LevelRun doubled = challengeRun(helper, Challenge.DOUBLE_BOSS_HP);
+        plain.simulation().setRound(40);
+        doubled.simulation().setRound(40);
+        helper.assertValueEqual(doubled.simulation().spawn("brood_mother").hp(), 2 * plain.simulation().spawn("brood_mother").hp(), "twice the hit points");
+        helper.assertValueEqual(doubled.simulation().spawn("red_crawler").hp(), 1.0, "ordinary enemies are not affected");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void halfCashHalvesWhatPopsEarn(GameTestHelper helper) {
+        LevelRun run = challengeRun(helper, Challenge.HALF_CASH);
+        var enemy = run.simulation().spawn("red_crawler");
+        run.simulation().hit(enemy, 5, de.craftorio.defense.sim.DamageKind.NORMAL);
+        helper.assertValueEqual(run.takeCoins(), 0.5, "half a coin for the pop");
+        LevelRun plain = challengeRun(helper, Challenge.NONE);
+        plain.simulation().hit(plain.simulation().spawn("red_crawler"), 5, de.craftorio.defense.sim.DamageKind.NORMAL);
+        helper.assertValueEqual(plain.takeCoins(), 1.0, "one coin without the challenge");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void theApocalypseCannotBeCalledEarlyAndHasNoBreaks(GameTestHelper helper) {
+        LevelRun run = challengeRun(helper, Challenge.APOCALYPSE);
+        helper.assertFalse(run.canCallWave(), "no calling rounds early");
+        helper.assertTrue(challengeRun(helper, Challenge.NONE).canCallWave(), "but normally one can");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void chimpsMeansOneLifeNoSellingNoWarChestAndNoDepots(GameTestHelper helper) {
+        LevelRun run = challengeRun(helper, Challenge.CHIMPS);
+        helper.assertValueEqual(run.lives(), 1, "one life");
+        helper.assertValueEqual(run.maxLives(), 1, "of one");
+        Setup setup = buildArena(helper, "ChimpsTest");
+        setup.defense.setChallenge(setup.team.id(), Challenge.CHIMPS);
+        helper.assertValueEqual(setup.zone().warChestLeft(), 0L, "no war chest");
+        helper.assertTrue(setup.defense.placementCoinsError(setup.zone().slot(), new ItemStack(ModItems.SUPPLY_DEPOT.get())) != null, "no supply depot");
+        TowerBlockEntity tower = arenaTower(setup, TowerType.CROSSBOW, 2, 2);
+        tower.setPaid(1_000);
+        helper.assertValueEqual(tower.sellValue(), 0L, "selling pays nothing");
+        setup.defense.setChallenge(setup.team.id(), Challenge.NONE);
+        helper.assertValueEqual(tower.sellValue(), 700L, "and 70 % without the challenge");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void alternateRoundsBringCamoEarlier(GameTestHelper helper) {
+        helper.assertTrue(LevelPlan.of(3, Challenge.ALTERNATE).rounds().stream().flatMap(round -> round.groups().stream()).anyMatch(group -> group.camo()),
+                "camouflage in level 3 (round 5) of the alternate rounds");
+        helper.assertFalse(LevelPlan.of(3, Challenge.NONE).rounds().stream().flatMap(round -> round.groups().stream()).anyMatch(group -> group.camo()),
+                "but not in the standard rounds");
+        Setup setup = buildArena(helper, "ChallengeTest");
+        helper.assertTrue(setup.defense.cycleChallenge(setup.team.id()).getString() != null, "the terminal cycles the challenge");
+        helper.assertValueEqual(setup.zone().challenge(), Challenge.DOUBLE_BOSS_HP, "next in line");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void arenaKnowledgeChangesSellingPricesLivesAndTowers(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "KnowledgeTest");
+        TeamRegistry registry = TeamData.registry(setup.player.server);
+        TowerBlockEntity tower = arenaTower(setup, TowerType.CROSSBOW, 2, 2);
+        tower.setPaid(1_000);
+        de.craftorio.protection.BlockOwnership.get(TowerDefense.arena(setup.player.server)).claim(tower.getBlockPos(), setup.team.id());
+        helper.assertValueEqual(tower.sellValue(), 700L, "70 % without knowledge");
+        registry.grantResearch(setup.team.id(), de.craftorio.Craftorio.id(Knowledge.BETTER_GEAR).toString());
+        helper.assertValueEqual(tower.sellValue(), 750L, "75 % with better gear");
+        helper.assertValueEqual(tower.profile().main().pierce, 2, "the plain crossbow pierces two");
+        registry.grantResearch(setup.team.id(), de.craftorio.Craftorio.id(Knowledge.STRONG_BOLTS).toString());
+        TowerBlockEntity fresh = arenaTower(setup, TowerType.CROSSBOW, 4, 4);
+        de.craftorio.protection.BlockOwnership.get(TowerDefense.arena(setup.player.server)).claim(fresh.getBlockPos(), setup.team.id());
+        helper.assertValueEqual(fresh.profile().main().pierce, 3, "strong bolts: one more");
+        helper.succeed();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 400, batch = "defense_decor")
     public static void decoratedMapsKeepPathsAndTowerSpotsFree(GameTestHelper helper) {
         Setup setup = buildArena(helper, "DecorTest");
