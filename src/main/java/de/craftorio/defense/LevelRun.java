@@ -114,12 +114,13 @@ public final class LevelRun {
         Buffs total = Buffs.NONE;
         for (TowerBlockEntity other : towers()) {
             for (var aura : other.profile().auras) {
-                if (other == tower && !aura.self() || !aura.towers().isEmpty() && !aura.towers().equals(tower.type().defId())) {
+                if (other == tower && !aura.self() || !aura.appliesTo(tower.type().defId())) {
                     continue;
                 }
                 double dx = other.getBlockPos().getX() - tower.getBlockPos().getX();
                 double dz = other.getBlockPos().getZ() - tower.getBlockPos().getZ();
-                if (aura.radius() < 0 || dx * dx + dz * dz <= aura.radius() * aura.radius()) {
+                double reach = aura.radius() == 0 ? other.profile().range : aura.radius();
+                if (reach < 0 || dx * dx + dz * dz <= reach * reach) {
                     total = total.merge(aura.buff());
                 }
             }

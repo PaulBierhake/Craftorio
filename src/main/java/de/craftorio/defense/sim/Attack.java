@@ -78,6 +78,18 @@ public final class Attack {
     public boolean followRange;
     /** Damage that is left over after a MOAB-class layer pops goes on to its MOAB-class children (assassins). */
     public boolean soak;
+    /** Enemies take {@code brittle} more damage per hit for {@code brittleSeconds} (embrittlement). */
+    public double brittle;
+    public double brittleSeconds;
+    /** Glue of this strength is ignored by enemies that carry glue at least as strong; a stronger glue replaces it. */
+    public int glueLevel = 1;
+    /** Glue on MOAB-class enemies: speed factor and seconds (0: they are not glued). */
+    public double glueBoss;
+    public double glueBossSeconds;
+    /** Only camouflaged enemies can be aimed at (shimmer). */
+    public boolean camoOnly;
+    /** Costs no ammunition, energy or oil (passive effects). */
+    public boolean free;
 
     public Attack copy() {
         Attack copy = new Attack();
@@ -125,6 +137,13 @@ public final class Attack {
         copy.maim = maim;
         copy.followRange = followRange;
         copy.soak = soak;
+        copy.brittle = brittle;
+        copy.brittleSeconds = brittleSeconds;
+        copy.glueLevel = glueLevel;
+        copy.glueBoss = glueBoss;
+        copy.glueBossSeconds = glueBossSeconds;
+        copy.camoOnly = camoOnly;
+        copy.free = free;
         return copy;
     }
 
@@ -151,6 +170,8 @@ public final class Attack {
             case "fortified" -> enemy.fortified();
             case "camo" -> enemy.camo();
             case "regrow" -> enemy.regrow();
+            case "frozen" -> enemy.frozen();
+            case "glued" -> enemy.slowed();
             case "non_boss" -> !def.boss();
             default -> false;
         };

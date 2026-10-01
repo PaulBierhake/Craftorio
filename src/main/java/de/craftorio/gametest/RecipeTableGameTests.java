@@ -90,6 +90,8 @@ public final class RecipeTableGameTests {
             new Object[]{"military_science", 2, List.of(of(ModItems.AP_MAGAZINE.get(), 1), of(ModItems.GRENADE.get(), 1), of(ModItems.STONE_WALL.get(), 2))},
             new Object[]{"flamethrower_turret", 1, List.of(of(ModItems.STEEL_PLATE.get(), 30), of(ModItems.IRON_GEAR.get(), 15), of(ModItems.PIPE.get(), 10), of(ModItems.MOTOR.get(), 5))},
             new Object[]{"mortar_turret", 1, List.of(of(ModItems.STEEL_PLATE.get(), 10), of(ModItems.IRON_GEAR.get(), 12), of(ModItems.PIPE.get(), 4), of(Items.IRON_INGOT, 10))},
+            new Object[]{"frost_tower", 1, List.of(of(ModItems.STEEL_PLATE.get(), 12), of(ModItems.CIRCUIT.get(), 8), of(ModItems.PIPE.get(), 6), of(ModItems.BATTERY.get(), 2))},
+            new Object[]{"glue_turret", 1, List.of(of(ModItems.PLASTIC_BAR.get(), 10), of(ModItems.PIPE.get(), 6), of(Items.IRON_INGOT, 10), of(ModItems.IRON_GEAR.get(), 6))},
             new Object[]{"greenhouse", 1, List.of(of(Items.IRON_INGOT, 15), of(ModItems.IRON_GEAR.get(), 5), of(ModItems.CIRCUIT.get(), 3), of(ModItems.PIPE.get(), 5))},
             new Object[]{"rail", 2, List.of(of(Items.COBBLESTONE, 1), of(ModItems.IRON_STICK.get(), 1), of(ModItems.STEEL_PLATE.get(), 1))},
             new Object[]{"flying_robot_frame", 1, List.of(of(ModItems.ELECTRIC_ENGINE.get(), 1), of(ModItems.BATTERY.get(), 2), of(ModItems.STEEL_PLATE.get(), 1), of(ModItems.CIRCUIT.get(), 3))},

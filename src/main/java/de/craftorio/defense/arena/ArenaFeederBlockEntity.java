@@ -48,7 +48,7 @@ public final class ArenaFeederBlockEntity extends BlockEntity {
     }
 
     public static boolean isAmmo(ItemStack stack) {
-        return stack.is(ModItems.BOLT.get()) || stack.is(ModItems.GRENADE.get()) || isGoods(stack) || de.craftorio.defense.Magazine.of(stack) != null;
+        return stack.is(ModItems.BOLT.get()) || stack.is(ModItems.GRENADE.get()) || stack.is(ModItems.PLASTIC_BAR.get()) || isGoods(stack) || de.craftorio.defense.Magazine.of(stack) != null;
     }
 
     /** Goods for the baskets of the supply depots. */

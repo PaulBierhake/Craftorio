@@ -111,6 +111,9 @@ public final class TowerScreen extends AbstractContainerScreen<TowerMenu> {
             }
             TowerDef.Upgrade next = def.upgrade(path, tier + 1);
             long price = TowerRules.price(next.cost(), factor);
+            if (tier + 1 <= TowerBlockEntity.DISCOUNT_TIERS) {
+                price = TowerRules.discounted(price, menu.discountPercent() / 100.0);
+            }
             String reason = TowerRules.lockReason(tiers, path);
             int tech = TowerRules.techRequired(tier + 1);
             if (reason == null && tech > 0 && !researched.contains(TowerBlockEntity.techResearch(tech))) {

@@ -16,88 +16,378 @@
     "damage_kind": "cold",
     "radius": 2.0,
     "freeze": 1.5,
-    "freeze_layers": 2
+    "freeze_layers": 2,
+    "skip_boss": true,
+    "skip_frozen": true,
+    "follow_range": true
   },
   "paths": [
     [
       {
         "btd6": "Permafrost",
         "cost": 150,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "glue": 0.5,
+              "glue_duration": 9999,
+              "glue_level": 0
+            }
+          }
+        ]
       },
       {
         "btd6": "Cold Snap",
         "cost": 350,
-        "effects": []
+        "effects": [
+          {
+            "type": "camo"
+          },
+          {
+            "type": "attack",
+            "set": {
+              "damage_kind": "glacier"
+            }
+          }
+        ]
       },
       {
         "btd6": "Ice Shards",
         "cost": 1500,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.5
+          },
+          {
+            "type": "attack",
+            "set": {
+              "strip_camo": true
+            }
+          },
+          {
+            "type": "child",
+            "id": "shard",
+            "child": {
+              "kind": "projectile",
+              "cooldown": 1,
+              "projectiles": 3,
+              "spread": 360,
+              "pierce": 3,
+              "damage": 2,
+              "damage_kind": "normal",
+              "radius": 0.2,
+              "length": 2.5
+            },
+            "trigger": "shot"
+          }
+        ]
       },
       {
         "btd6": "Embrittlement",
         "cost": 2300,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "skip_boss": false,
+              "brittle": 1,
+              "brittle_seconds": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Super Brittle",
         "cost": 28000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 5,
+              "damage_kind": "normal",
+              "brittle": 3,
+              "brittle_seconds": 3
+            },
+            "mul": {
+              "cooldown": 0.5
+            },
+            "bonus": {
+              "ceramic": 5
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "main.shard",
+            "set": {
+              "projectiles": 6,
+              "damage": 5
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Enhanced Freeze",
         "cost": 200,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "freeze": 1.75
+            },
+            "mul": {
+              "cooldown": 0.75
+            }
+          }
+        ]
       },
       {
         "btd6": "Deep Freeze",
         "cost": 300,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "freeze": 2.2,
+              "freeze_layers": 3
+            },
+            "add": {
+              "pierce": 5
+            }
+          }
+        ]
       },
       {
         "btd6": "Arctic Wind",
         "cost": 2750,
-        "effects": []
+        "effects": [
+          {
+            "type": "new_attack",
+            "id": "arctic_wind",
+            "attack": {
+              "kind": "aura",
+              "cooldown": 0.5,
+              "pierce": 999,
+              "damage": 0,
+              "damage_kind": "normal",
+              "radius": 2.5,
+              "glue": 0.6,
+              "glue_duration": 1.0,
+              "glue_level": 0,
+              "skip_boss": true,
+              "free": true,
+              "follow_range": true
+            }
+          }
+        ]
       },
       {
         "btd6": "Snowstorm",
         "cost": 4750,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.0
+          },
+          {
+            "type": "attack",
+            "set": {
+              "freeze": 3
+            }
+          },
+          {
+            "type": "ability",
+            "id": "snowstorm",
+            "cooldown": 30,
+            "duration": 0.1
+          },
+          {
+            "type": "new_attack",
+            "id": "snowstorm",
+            "attack": {
+              "kind": "aura",
+              "cooldown": 0.05,
+              "pierce": 9999,
+              "damage": 1,
+              "damage_kind": "sharp",
+              "radius": 60,
+              "freeze": 6,
+              "freeze_layers": 3,
+              "free": true,
+              "stun": 0.05,
+              "stun_boss": 6.0,
+              "ability_id": "snowstorm"
+            }
+          }
+        ]
       },
       {
         "btd6": "Absolute Zero",
         "cost": 21000,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.0
+          },
+          {
+            "type": "attack",
+            "set": {
+              "skip_boss": false,
+              "freeze_layers": 8
+            },
+            "add": {
+              "pierce": 255
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "arctic_wind",
+            "set": {
+              "glue": 0.4,
+              "skip_boss": false,
+              "glue_boss": 0.7,
+              "glue_boss_seconds": 1.0
+            }
+          },
+          {
+            "type": "remove_attack",
+            "id": "snowstorm"
+          },
+          {
+            "type": "ability",
+            "id": "snowstorm",
+            "cooldown": 25,
+            "duration": 0.1
+          },
+          {
+            "type": "new_attack",
+            "id": "absolute_zero",
+            "attack": {
+              "kind": "aura",
+              "cooldown": 0.05,
+              "pierce": 9999,
+              "damage": 1,
+              "damage_kind": "normal",
+              "radius": 60,
+              "freeze": 10,
+              "freeze_layers": 8,
+              "free": true,
+              "stun": 0.05,
+              "stun_boss": 10.0,
+              "ability_id": "snowstorm",
+              "bonus": {
+                "frozen": 4
+              }
+            }
+          },
+          {
+            "type": "new_attack",
+            "id": "global_freeze",
+            "attack": {
+              "kind": "aura",
+              "cooldown": 3.6,
+              "pierce": 999,
+              "damage": 1,
+              "damage_kind": "cold",
+              "radius": 60,
+              "freeze": 0.6,
+              "skip_boss": true,
+              "skip_frozen": true,
+              "free": true,
+              "bonus": {
+                "ceramic": 3
+              }
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Larger Radius",
         "cost": 150,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 0.7
+          }
+        ]
       },
       {
         "btd6": "Re-Freeze",
         "cost": 200,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "skip_frozen": false
+            }
+          }
+        ]
       },
       {
         "btd6": "Cryo Cannon",
         "cost": 1900,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "mul": {
+              "cooldown": 0.5
+            }
+          }
+        ]
       },
       {
         "btd6": "Icicles",
         "cost": 2750,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 2,
+              "skip_boss": false
+            },
+            "mul": {
+              "cooldown": 0.625
+            },
+            "bonus": {
+              "moab": 8
+            }
+          },
+          {
+            "type": "child",
+            "id": "icicle",
+            "child": {
+              "kind": "projectile",
+              "cooldown": 1,
+              "projectiles": 1,
+              "pierce": 6,
+              "damage": 6,
+              "damage_kind": "normal",
+              "radius": 0.2,
+              "length": 3.0
+            },
+            "trigger": "hit"
+          }
+        ]
       },
       {
         "btd6": "Icicle Impale",
         "cost": 30000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage_kind": "normal"
+            },
+            "bonus": {
+              "moab": 40
+            }
+          }
+        ]
       }
     ]
   ]

@@ -1001,6 +1001,8 @@ public final class TowerDefense extends SavedData {
     private void finish(MinecraftServer server, ServerLevel level, UUID team, Zone zone, boolean won) {
         LevelPlan plan = zone.run.plan();
         int lives = zone.run.lives();
+        int maxLives = zone.run.maxLives();
+        int wave = zone.run.wave();
         zone.run.end(level);
         zone.run = null;
         TdEnemiesPayload none = TdEnemiesPayload.empty(zone.slot);
@@ -1149,6 +1151,7 @@ public final class TowerDefense extends SavedData {
             entry.putInt("ap_magazines", zone.ammo(ModItems.AP_MAGAZINE.get()));
             entry.putInt("uranium_magazines", zone.ammo(ModItems.URANIUM_MAGAZINE.get()));
             entry.putInt("grenades", zone.ammo(ModItems.GRENADE.get()));
+            entry.putInt("plastic", zone.ammo(ModItems.PLASTIC_BAR.get()));
             entry.putInt("circuits", zone.ammo(ModItems.CIRCUIT.get()));
             entry.putInt("advanced_circuits", zone.ammo(ModItems.ADVANCED_CIRCUIT.get()));
             entry.putInt("processing_units", zone.ammo(ModItems.PROCESSING_UNIT.get()));
@@ -1193,6 +1196,7 @@ public final class TowerDefense extends SavedData {
             zone.ammo.put(ModItems.AP_MAGAZINE.get(), entry.getInt("ap_magazines"));
             zone.ammo.put(ModItems.URANIUM_MAGAZINE.get(), entry.getInt("uranium_magazines"));
             zone.ammo.put(ModItems.GRENADE.get(), entry.getInt("grenades"));
+            zone.ammo.put(ModItems.PLASTIC_BAR.get(), entry.getInt("plastic"));
             zone.ammo.put(ModItems.CIRCUIT.get(), entry.getInt("circuits"));
             zone.ammo.put(ModItems.ADVANCED_CIRCUIT.get(), entry.getInt("advanced_circuits"));
             zone.ammo.put(ModItems.PROCESSING_UNIT.get(), entry.getInt("processing_units"));

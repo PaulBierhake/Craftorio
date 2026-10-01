@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The round list, read from {@code data/craftorio/td_rounds/standard.json}. */
+/** The round lists, read from {@code data/craftorio/td_rounds}. */
 public final class RoundDefs {
     private static final List<RoundDef> ROUNDS = load();
 

@@ -62,7 +62,12 @@ public record EnemyDef(String id, int index, String btd6, double hp, double fort
     }
 
     public boolean isImmune(DamageKind kind) {
-        return kind != DamageKind.NORMAL && immune.contains(kind);
+        return kind != DamageKind.NORMAL && immune.contains(kind.proxy()) && !(kind.hitsLead() && isLead());
+    }
+
+    /** Leaden enemies: ironbreakers and shadow hunters. */
+    public boolean isLead() {
+        return id.equals("ironbreaker") || id.equals("shadow_hunter");
     }
 
     /** Blocks per tick before any speed factor. */

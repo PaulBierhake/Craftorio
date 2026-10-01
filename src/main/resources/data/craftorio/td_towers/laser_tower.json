@@ -26,81 +26,304 @@
       {
         "btd6": "Laser Blasts",
         "cost": 2000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 2,
+              "radius": 0.5,
+              "damage_kind": "energy"
+            }
+          }
+        ]
       },
       {
         "btd6": "Plasma Blasts",
         "cost": 2500,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage_kind": "plasma",
+              "radius": 0.6
+            },
+            "mul": {
+              "cooldown": 0.6666666666666666
+            }
+          }
+        ]
       },
       {
         "btd6": "Sun Avatar",
         "cost": 20000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "projectiles": 3,
+              "spread": 30,
+              "pierce": 6
+            }
+          }
+        ]
       },
       {
         "btd6": "Sun Temple",
         "cost": 100000,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.5
+          },
+          {
+            "type": "attack",
+            "set": {
+              "cooldown": 0.05,
+              "projectiles": 1,
+              "spread": 0,
+              "pierce": 20,
+              "damage": 5,
+              "damage_kind": "normal",
+              "radius": 0.9
+            }
+          }
+        ]
       },
       {
         "btd6": "True Sun God",
         "cost": 500000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 15
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Super Range",
         "cost": 1500,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.0
+          }
+        ]
       },
       {
         "btd6": "Epic Range",
         "cost": 1900,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.2
+          },
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 4
+            }
+          }
+        ]
       },
       {
         "btd6": "Robo Monkey",
         "cost": 7500,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 5,
+              "crit_every": 17,
+              "crit_damage": 10
+            },
+            "mul": {
+              "cooldown": 0.5
+            }
+          }
+        ]
       },
       {
         "btd6": "Tech Terror",
         "cost": 25000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 7,
+              "damage_kind": "plasma",
+              "radius": 0.7
+            }
+          },
+          {
+            "type": "ability",
+            "id": "tech_terror",
+            "cooldown": 45,
+            "duration": 0.1
+          },
+          {
+            "type": "new_attack",
+            "id": "tech_terror",
+            "attack": {
+              "kind": "aura",
+              "cooldown": 0.05,
+              "pierce": 2000,
+              "damage": 2600,
+              "damage_kind": "normal",
+              "radius": 7.2,
+              "soak": true,
+              "free": true,
+              "ability_id": "tech_terror",
+              "crit_every": 3,
+              "crit_damage": 3900
+            }
+          }
+        ]
       },
       {
         "btd6": "The Anti-Bloon",
         "cost": 70000,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.0
+          },
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 12,
+              "damage": 5,
+              "damage_kind": "normal",
+              "crit_damage": 50,
+              "crit_every": 15
+            }
+          },
+          {
+            "type": "remove_ability",
+            "id": "tech_terror"
+          },
+          {
+            "type": "remove_attack",
+            "id": "tech_terror"
+          },
+          {
+            "type": "ability",
+            "id": "anti_bloon",
+            "cooldown": 30,
+            "duration": 0.1
+          },
+          {
+            "type": "new_attack",
+            "id": "anti_bloon",
+            "attack": {
+              "kind": "aura",
+              "cooldown": 0.05,
+              "pierce": 2000,
+              "damage": 10400,
+              "damage_kind": "normal",
+              "radius": 12.0,
+              "soak": true,
+              "free": true,
+              "ability_id": "anti_bloon",
+              "crit_every": 3,
+              "crit_damage": 15600
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Knockback",
         "cost": 3000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pushback": 0.4,
+              "pushback_boss": 0.7
+            }
+          }
+        ]
       },
       {
         "btd6": "Ultravision",
         "cost": 1200,
-        "effects": []
+        "effects": [
+          {
+            "type": "camo"
+          },
+          {
+            "type": "range",
+            "add": 0.3
+          },
+          {
+            "type": "attack",
+            "bonus": {
+              "camo": 1
+            }
+          }
+        ]
       },
       {
         "btd6": "Dark Knight",
         "cost": 5600,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 4,
+              "radius": 0.4
+            },
+            "bonus": {
+              "moab": 2
+            }
+          }
+        ]
       },
       {
         "btd6": "Dark Champion",
         "cost": 55555,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 8,
+              "damage": 2,
+              "damage_kind": "normal",
+              "pushback": 0.4
+            },
+            "mul": {
+              "cooldown": 0.5
+            },
+            "bonus": {
+              "ceramic": 2,
+              "moab": 1,
+              "camo": 1
+            }
+          }
+        ]
       },
       {
         "btd6": "Legend of the Night",
         "cost": 165650,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "pierce": 16,
+              "damage": 10
+            },
+            "bonus": {
+              "ceramic": 2,
+              "moab": 22,
+              "camo": 2
+            }
+          }
+        ]
       }
     ]
   ]

@@ -30,6 +30,8 @@ public final class SimEnemy {
     int freezeTicks;
     /** Glue and the like: speed factor while {@code slowTicks} last. */
     int slowTicks;
+    /** Strength of the glue on the enemy (0: none); see {@link Attack#glueLevel}. */
+    int glueLevel;
     double slowFactor = 1;
     /** Ticks of damage over time and the damage per second. */
     int burnTicks;
@@ -72,6 +74,11 @@ public final class SimEnemy {
 
     public boolean stunned() {
         return stunTicks > 0;
+    }
+
+    /** Strength of the glue that is on the enemy now. */
+    public int glueLevelNow() {
+        return slowTicks > 0 ? glueLevel : 0;
     }
 
     public boolean slowed() {

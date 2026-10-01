@@ -83,7 +83,7 @@ public final class ModBlockEntities {
             () -> BlockEntityType.Builder.of(TowerBlockEntity::new,
                     ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.GUN_TURRET.get(), ModBlocks.TESLA_TOWER.get(),
                     ModBlocks.LASER_TOWER.get(), ModBlocks.FLAMETHROWER_TURRET.get(), ModBlocks.MORTAR_TURRET.get(),
-                    ModBlocks.SUPPLY_DEPOT.get()).build(null));
+                    ModBlocks.SUPPLY_DEPOT.get(), ModBlocks.FROST_TOWER.get(), ModBlocks.GLUE_TURRET.get(), ModBlocks.COMMAND_POST.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CaveEntranceBlockEntity>> CAVE_ENTRANCE = BLOCK_ENTITIES.register("cave_entrance",

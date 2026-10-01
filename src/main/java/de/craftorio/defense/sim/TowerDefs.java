@@ -112,6 +112,13 @@ public final class TowerDefs {
         attack.noTarget = json.has("no_target") && json.get("no_target").getAsBoolean();
         attack.unlimitedRange = json.has("unlimited_range") && json.get("unlimited_range").getAsBoolean();
         attack.abilityId = json.has("ability_id") ? json.get("ability_id").getAsString() : "";
+        attack.brittle = json.has("brittle") ? json.get("brittle").getAsDouble() : 0;
+        attack.brittleSeconds = json.has("brittle_seconds") ? json.get("brittle_seconds").getAsDouble() : 0;
+        attack.glueBoss = json.has("glue_boss") ? json.get("glue_boss").getAsDouble() : 0;
+        attack.glueBossSeconds = json.has("glue_boss_seconds") ? json.get("glue_boss_seconds").getAsDouble() : 0;
+        attack.glueLevel = json.has("glue_level") ? json.get("glue_level").getAsInt() : 1;
+        attack.camoOnly = json.has("camo_only") && json.get("camo_only").getAsBoolean();
+        attack.free = json.has("free") && json.get("free").getAsBoolean();
         attack.soak = json.has("soak") && json.get("soak").getAsBoolean();
         attack.followRange = json.has("follow_range") && json.get("follow_range").getAsBoolean();
         attack.maim = json.has("maim") ? json.get("maim").getAsInt() : 0;

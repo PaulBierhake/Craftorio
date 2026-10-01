@@ -52,7 +52,7 @@ public final class ModResearch {
         add(context, "oil_processing", 100, 30, R_G, List.of("fluid_handling"),
                 List.of("pumpjack", "oil_refinery", "chemical_plant", "assembling/pumpjack", "assembling/chemical_plant",
                         "oil/basic_oil_processing", "chem/solid_fuel_from_petroleum_gas", "cave_entrance"));
-        add(context, "plastics", 200, 30, R_G, List.of("oil_processing"), List.of("chem/plastic_bar"));
+        add(context, "plastics", 200, 30, R_G, List.of("oil_processing"), List.of("chem/plastic_bar", "glue_turret"));
         add(context, "sulfur_processing", 150, 30, R_G, List.of("oil_processing"), List.of("chem/sulfur", "chem/sulfuric_acid"));
         add(context, "advanced_electronics", 200, 30, R_G, List.of("plastics"), List.of("assembling/advanced_circuit"));
         add(context, "battery", 150, 30, R_G, List.of("sulfur_processing"), List.of("chem/battery"));
@@ -62,8 +62,9 @@ public final class ModResearch {
         // Tower technology (T3): upgrade tiers 3, 4 and 5 of every tower need these (replacing the XP of Bloons TD 6).
         add(context, "tower_tech_1", 75, 30, R_G, List.of("turrets", "logistic_science_pack"), List.of());
         add(context, "military_science_pack", 30, 15, R_G, List.of("military_2", "stone_walls"),
-                List.of("military_science", "assembling/military_science"), key(ModItems.SILVER_SEAL.get()));
+                List.of("military_science", "assembling/military_science", "command_post"), key(ModItems.SILVER_SEAL.get()));
         add(context, "tower_tech_2", 150, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY), List.of("tower_tech_1", "military_science_pack"), List.of());
+        add(context, "cryogenics", 60, 30, R_G, List.of("energy_turrets", "logistic_science_pack"), List.of("frost_tower"));
         add(context, "flammables", 50, 30, List.of(Pack.RED, Pack.GREEN, Pack.MILITARY), List.of("fluid_handling", "military_science_pack"),
                 List.of("flamethrower_turret"));
         add(context, "lasers", 100, 30, List.of(Pack.RED, Pack.GREEN, Pack.BLUE), List.of("chemical_science_pack", "battery"), List.of());

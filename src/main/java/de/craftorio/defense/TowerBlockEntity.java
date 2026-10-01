@@ -110,6 +110,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
                 case 12 -> (int) Math.min(Short.MAX_VALUE, depot.bank());
                 case 13 -> (int) Math.min(Short.MAX_VALUE, depot.debt());
                 case 14 -> basketDelivered ? 1 : 0;
+                case 15 -> level == null ? 0 : (int) Math.round(villageNumber(level, worldPosition, "discount", true) * 100);
                 default -> 0;
             };
         }
@@ -207,6 +208,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return switch (type) {
             case GUN -> ModItems.MAGAZINE.get();
             case MORTAR -> ModItems.GRENADE.get();
+            case GLUE -> ModItems.PLASTIC_BAR.get();
             default -> ModItems.BOLT.get();
         };
     }
@@ -322,6 +324,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             case FLAME -> SoundEvents.FIRECHARGE_USE;
             case MORTAR -> SoundEvents.GENERIC_EXPLODE.value();
             case DEPOT -> SoundEvents.EXPERIENCE_ORB_PICKUP;
+            case FROST -> SoundEvents.GLASS_BREAK;
+            case GLUE -> SoundEvents.SLIME_BLOCK_PLACE;
+            case VILLAGE -> SoundEvents.NOTE_BLOCK_BELL.value();
         };
         serverLevel.playSound(null, worldPosition, sound, SoundSource.BLOCKS, 0.4F, 1.2F);
     }
@@ -337,6 +342,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             case FLAME -> ParticleTypes.FLAME;
             case MORTAR -> ParticleTypes.SMOKE;
             case DEPOT -> ParticleTypes.HAPPY_VILLAGER;
+            case FROST -> ParticleTypes.SNOWFLAKE;
+            case GLUE -> ParticleTypes.ITEM_SLIME;
+            case VILLAGE -> ParticleTypes.NOTE;
         };
         double y = worldPosition.getY() + 1.2;
         if (attack.kind == AttackKind.AURA) {
@@ -476,6 +484,9 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             return false;
         }
         long price = defense.upgradePrice(Arenas.slotAt(worldPosition), next(path));
+        if (toTier <= DISCOUNT_TIERS) {
+            price = TowerRules.discounted(price, villageNumber(serverLevel, worldPosition, "discount", true));
+        }
         if (!defense.spend(Arenas.slotAt(worldPosition), price)) {
             player.displayClientMessage(Component.translatable("craftorio.tower.not_enough_coins", price).withStyle(ChatFormatting.RED), true);
             return false;
@@ -525,6 +536,29 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         return true;
     }
 
+    /** Towers and upgrades up to this tier get a command post's discount. */
+    public static final int DISCOUNT_TIERS = 3;
+
+    /**
+     * A number of the command posts around a place (their range reaches it): the largest of their {@code name}s, or the sum.
+     * Works whether or not a level is running, as towers are placed and upgraded between levels.
+     */
+    public static double villageNumber(Level level, BlockPos pos, String name, boolean largest) {
+        double total = 0;
+        for (BlockPos near : BlockPos.betweenClosed(pos.offset(-8, -3, -8), pos.offset(8, 3, 8))) {
+            if (level.getBlockEntity(near) instanceof TowerBlockEntity village && village.type == TowerType.VILLAGE) {
+                double range = village.profile().range;
+                double dx = near.getX() - pos.getX();
+                double dz = near.getZ() - pos.getZ();
+                if (dx * dx + dz * dz <= range * range) {
+                    double value = village.profile().number(name);
+                    total = largest ? Math.max(total, value) : total + value;
+                }
+            }
+        }
+        return total;
+    }
+
     /** Does an ability's buff (see {@link TowerProfile.Ability#buff()}) run on this tower now? */
     public boolean hasAbilityBuff(String abilityId) {
         return unit().hasBuff("ability:" + abilityId);
@@ -540,6 +574,10 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
 
     /** The end of a round: a supply depot pays its income, with the basket of goods from the arena reserve if it is complete. */
     void roundEnded(LevelRun run) {
+        if (type == TowerType.VILLAGE) {
+            run.addCoins(profile().number("income"));
+            return;
+        }
         if (type != TowerType.DEPOT || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -547,7 +585,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
         Item goods = tier >= 4 ? ModItems.PROCESSING_UNIT.get() : tier == 3 ? ModItems.ADVANCED_CIRCUIT.get() : ModItems.CIRCUIT.get();
         int count = tier >= 4 ? BASKET_PROCESSORS : BASKET_CIRCUITS;
         basketDelivered = drawFromArena(defense -> defense.drawGoods(Arenas.slotAt(worldPosition), goods, count));
-        run.addCoins(depot.roundEnd(profile(), basketDelivered));
+        run.addCoins(depot.roundEnd(profile(), basketDelivered) * (1 + villageNumber(serverLevel, worldPosition, "farm_bonus", true)));
         setChanged();
         serverLevel.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
     }
@@ -573,7 +611,7 @@ public final class TowerBlockEntity extends BlockEntity implements MenuProvider 
             if (pos.equals(worldPosition) || pos.distSqr(worldPosition) > ability.shareRadius() * ability.shareRadius()) {
                 continue;
             }
-            if (left > 0 && serverLevel.getBlockEntity(pos) instanceof TowerBlockEntity other && other.type() == type) {
+            if (left > 0 && serverLevel.getBlockEntity(pos) instanceof TowerBlockEntity other && (other.type() == type || ability.shareTowers().equals("all"))) {
                 other.unit().grantBuff(id, ticks, ability.buff());
                 left--;
             }

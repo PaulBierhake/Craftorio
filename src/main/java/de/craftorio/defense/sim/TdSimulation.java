@@ -25,11 +25,17 @@ public final class TdSimulation {
     private double externalSpeed = 1;
     private boolean dirty;
     private int leaked;
+    private java.util.function.Consumer<SimEnemy> leakListener;
     private int pops;
     private int paidPops;
     private double coins;
     /** Living enemies by the round they came from. */
     private final java.util.Map<Integer, Integer> aliveByRound = new java.util.HashMap<>();
+
+    /** Tests and the balance simulator look at who leaks. */
+    public void onLeak(java.util.function.Consumer<SimEnemy> listener) {
+        this.leakListener = listener;
+    }
 
     public TdSimulation(TdPath path) {
         this.path = path;
@@ -173,6 +179,9 @@ public final class TdSimulation {
             enemy.distance += enemy.def.blocksPerTick() * enemy.speedFactor * factor * statusSpeed(enemy);
             if (enemy.distance >= path.length()) {
                 leaked += lifeCost(enemy);
+                if (leakListener != null) {
+                    leakListener.accept(enemy);
+                }
                 retire(enemy);
                 removed = true;
                 continue;
@@ -288,7 +297,21 @@ public final class TdSimulation {
 
     /** Slows the enemy to {@code factor} of its speed; MOAB-class enemies only if {@code boss} allows it. */
     public void slow(SimEnemy enemy, double factor, double seconds, boolean boss) {
+        slow(enemy, factor, seconds, boss, 0);
+    }
+
+    /** As {@link #slow(SimEnemy, double, double, boolean)} with a glue level: weaker glue does not replace stronger glue. */
+    public void slow(SimEnemy enemy, double factor, double seconds, boolean boss, int level) {
         if (enemy.def.boss() && !boss) {
+            return;
+        }
+        if (level > 0) {
+            if (enemy.slowTicks > 0 && enemy.glueLevel >= level) {
+                return;
+            }
+            enemy.glueLevel = level;
+            enemy.slowFactor = factor;
+            enemy.slowTicks = TdUnits.ticks(seconds);
             return;
         }
         if (enemy.slowTicks <= 0 || factor < enemy.slowFactor) {
@@ -403,6 +426,7 @@ public final class TdSimulation {
             child.hp = layerHp(def, child.fortified);
             child.speedFactor = enemy.speedFactor;
             child.slowTicks = enemy.slowTicks;
+            child.glueLevel = enemy.glueLevel;
             child.slowFactor = enemy.slowFactor;
             child.freezeTicks = enemy.freezeTicks;
             child.brittleTicks = enemy.brittleTicks;

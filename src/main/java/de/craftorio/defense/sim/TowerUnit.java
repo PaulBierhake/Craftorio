@@ -246,8 +246,8 @@ public final class TowerUnit {
             timers[i] = Math.min(timers[i], cooldown) + 1;
             for (int n = 0; n < MAX_SHOTS_PER_TICK && timers[i] >= cooldown; n++) {
                 Predicate<SimEnemy> filter = eligible(attack);
-                SimEnemy target = attack.noTarget ? null : sim.bestTarget(x, z, attack.unlimitedRange ? -1 : range, camo, mode.order(x, y, z), filter);
-                if (target == null && !attack.noTarget || attack.abilityId.isEmpty() && !supply.pay(def, attack)) {
+                SimEnemy target = attack.noTarget ? null : sim.bestTarget(x, z, attack.unlimitedRange ? -1 : range, camo || attack.camoOnly || attack.hitsCamo, mode.order(x, y, z), filter);
+                if (target == null && !attack.noTarget || attack.abilityId.isEmpty() && !attack.free && !supply.pay(def, attack)) {
                     break;
                 }
                 shotCounts[i]++;
@@ -259,10 +259,11 @@ public final class TowerUnit {
     }
 
     private static Predicate<SimEnemy> eligible(Attack attack) {
-        if (!attack.skipBoss && !attack.skipFrozen && !attack.bossOnly) {
+        if (!attack.skipBoss && !attack.skipFrozen && !attack.bossOnly && !attack.camoOnly && !(attack.glue > 0 && attack.glueLevel > 0)) {
             return null;
         }
-        return enemy -> !(attack.skipBoss && enemy.def().boss()) && !(attack.skipFrozen && enemy.frozen()) && !(attack.bossOnly && !enemy.def().boss());
+        return enemy -> !(attack.skipBoss && enemy.def().boss()) && !(attack.skipFrozen && enemy.frozen()) && !(attack.bossOnly && !enemy.def().boss())
+                && !(attack.camoOnly && !enemy.camo()) && !(attack.glue > 0 && attack.glueLevel > 0 && attack.glueLevel <= enemy.glueLevelNow());
     }
 
     /** What a shot needs while it runs: the buffs, how many child attacks may still start, and the enemies hit. */
@@ -441,17 +442,21 @@ public final class TowerUnit {
 
     /** May the attack hit this enemy at all (camouflage, MOAB-class, frozen)? */
     private boolean usable(SimEnemy enemy, Attack a, Context c) {
-        return (c.camo || a.hitsCamo || !enemy.camo()) && !(a.skipBoss && enemy.def().boss()) && !(a.skipFrozen && enemy.frozen())
-                && !(a.bossOnly && !enemy.def().boss());
+        return usable(enemy, a, c, false);
+    }
+
+    /** As above; blasts (explosions) also catch camouflaged enemies next to the one they hit. */
+    private boolean usable(SimEnemy enemy, Attack a, Context c, boolean blast) {
+        return (c.camo || a.hitsCamo || a.camoOnly || !enemy.camo() || blast && a.kind == AttackKind.AREA) && !(a.skipBoss && enemy.def().boss()) && !(a.skipFrozen && enemy.frozen())
+                && !(a.bossOnly && !enemy.def().boss()) && !(a.camoOnly && !enemy.camo())
+                && !(a.glue > 0 && a.glueLevel > 0 && a.glueLevel <= enemy.glueLevelNow());
     }
 
     /** Enemies within a circle, nearest first; camouflaged ones only if the blast may catch them. */
     private List<SimEnemy> within(TdSimulation sim, double cx, double cz, double radius, Attack a, Context c, boolean blast) {
         List<SimEnemy> found = new ArrayList<>();
         for (SimEnemy enemy : sim.enemies()) {
-            if (enemy.flatDistanceSqr(cx, cz) <= Math.pow(radius + enemy.def().radius() * 0.5, 2)
-                    && (blast && (a.kind == AttackKind.AREA || a.kind == AttackKind.AURA) || usable(enemy, a, c) || c.camo)
-                    && !(a.skipBoss && enemy.def().boss()) && !(a.skipFrozen && enemy.frozen()) && !(a.bossOnly && !enemy.def().boss())) {
+            if (enemy.flatDistanceSqr(cx, cz) <= Math.pow(radius + enemy.def().radius() * 0.5, 2) && usable(enemy, a, c, blast)) {
                 found.add(enemy);
             }
         }
@@ -542,7 +547,14 @@ public final class TowerUnit {
             sim.freeze(enemy, attack.freeze);
         }
         if (attack.glue > 0 && enemy.alive()) {
-            sim.slow(enemy, attack.glue, attack.glueDuration, false);
+            if (!def.boss()) {
+                sim.slow(enemy, attack.glue, attack.glueDuration, false, attack.glueLevel);
+            } else if (attack.glueBoss > 0) {
+                sim.slow(enemy, attack.glueBoss, attack.glueBossSeconds, true, attack.glueLevel);
+            }
+        }
+        if (attack.brittle > 0 && enemy.alive()) {
+            sim.makeBrittle(enemy, attack.brittle, attack.brittleSeconds);
         }
         if (attack.burn > 0 && enemy.alive()) {
             sim.burn(enemy, attack.burn, attack.burnSeconds);

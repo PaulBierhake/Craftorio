@@ -50,6 +50,11 @@ public final class TowerRules {
     }
 
     /** What a sold tower pays back: a share of everything paid for it (Bloons TD 6: 70 %, rounded to whole coins). */
+    /** The price after a command post's discount (0.1 = 10 % off). */
+    public static long discounted(long price, double discount) {
+        return discount <= 0 ? price : Math.round(price * (1 - Math.min(discount, 0.9)));
+    }
+
     public static long sellValue(long paid, double share) {
         return java.math.BigDecimal.valueOf(share).multiply(java.math.BigDecimal.valueOf(paid)).setScale(0, java.math.RoundingMode.HALF_UP).longValue();
     }

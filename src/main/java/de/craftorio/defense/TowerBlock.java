@@ -74,7 +74,7 @@ public final class TowerBlock extends BaseEntityBlock {
         }
         TowerDefense defense = TowerDefense.get(player.server);
         int slot = de.craftorio.defense.arena.Arenas.slotAt(pos);
-        long price = defense.price(slot, towerType.def().cost());
+        long price = de.craftorio.defense.sim.TowerRules.discounted(defense.price(slot, towerType.def().cost()), TowerBlockEntity.villageNumber(level, pos, "discount", true));
         if (defense.spend(slot, price)) {
             tower.setPaid(price);
             player.displayClientMessage(Component.translatable("craftorio.tower.placed", price), true);

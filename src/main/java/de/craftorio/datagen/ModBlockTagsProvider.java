@@ -23,7 +23,7 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
         tag(BlockTags.FEATURES_CANNOT_REPLACE).add(ModBlocks.CAP_ROCK.get());
 
         tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.TRADING_POST.get(), ModBlocks.POWER_POLE.get(), ModBlocks.WORKBENCH.get(),
-                ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.SUPPLY_DEPOT.get(), ModBlocks.CAVE_ENTRANCE.get());
+                ModBlocks.CROSSBOW_TOWER.get(), ModBlocks.SUPPLY_DEPOT.get(), ModBlocks.COMMAND_POST.get(), ModBlocks.CAVE_ENTRANCE.get());
         tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.PATH_BLOCK.get());
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(
                 ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get(), ModBlocks.COAL_FIELD.get(),
@@ -41,7 +41,8 @@ public final class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.ACCUMULATOR.get());
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.OIL_WELL.get());
         tag(BlockTags.WALLS).add(ModBlocks.STONE_WALL.get());
-        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.STONE_WALL.get(), ModBlocks.FLAMETHROWER_TURRET.get(), ModBlocks.MORTAR_TURRET.get());
+        tag(BlockTags.MINEABLE_WITH_PICKAXE).add(ModBlocks.STONE_WALL.get(), ModBlocks.FLAMETHROWER_TURRET.get(), ModBlocks.MORTAR_TURRET.get(),
+                ModBlocks.FROST_TOWER.get(), ModBlocks.GLUE_TURRET.get());
         tag(BlockTags.NEEDS_STONE_TOOL).add(ModBlocks.IRON_ORE_FIELD.get(), ModBlocks.COPPER_ORE_FIELD.get());
         tag(BlockTags.WITHER_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());
         tag(BlockTags.DRAGON_IMMUNE).add(ModBlocks.CAVE_RUBBLE.get());

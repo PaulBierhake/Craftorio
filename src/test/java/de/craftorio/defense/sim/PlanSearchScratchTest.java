@@ -13,7 +13,7 @@ class PlanSearchScratchTest {
     static final String TOWERS = System.getenv("TOWERS") != null ? System.getenv("TOWERS") : "DSTB";
     static final int TO = System.getenv("TO") != null ? Integer.parseInt(System.getenv("TO")) : 40;
     static final int FROM = System.getenv("FROM") != null ? Integer.parseInt(System.getenv("FROM")) : 1;
-    static final int SLOTS = 7;
+    static final int SLOTS = System.getenv("SLOTS") != null ? Integer.parseInt(System.getenv("SLOTS")) : 7;
 
     static boolean valid(List<String> plan) {
         int[][] tiers = new int[SLOTS][3];
@@ -44,8 +44,8 @@ class PlanSearchScratchTest {
             ArenaLayout layout = ArenaLayout.generate(1234, level);
             BalanceSimulator s = new BalanceSimulator(layout.route(), ReferenceSetsTest.plan(text), SLOTS);
             try {
-                var r = s.play(FROM, TO, false);
-                return Math.min(r.leaked(), 300);
+                var r = s.play(FROM, TO, true);
+                return r.clean() ? 0 : (TO - r.firstLeakRound() + 1) * 10 + Math.min(r.leaked(), 100) / 10.0;
             } catch (IllegalStateException e) {
                 return 300;
             }
@@ -68,7 +68,7 @@ class PlanSearchScratchTest {
             List<String> candidate = new ArrayList<>(best);
             int mutations = 1 + random.nextInt(3);
             for (int m = 0; m < mutations; m++) {
-                int kind = random.nextInt(4);
+                int kind = random.nextInt(9);
                 if (kind == 0 && candidate.size() > 4) {
                     candidate.remove(random.nextInt(candidate.size()));
                 } else if (kind == 1 && candidate.size() > 2) {
@@ -76,6 +76,55 @@ class PlanSearchScratchTest {
                     String t = candidate.get(i);
                     candidate.set(i, candidate.get(i + 1));
                     candidate.set(i + 1, t);
+                } else if (kind == 2 && candidate.size() > 4) {
+                    // move a token somewhere else
+                    String t = candidate.remove(random.nextInt(candidate.size()));
+                    candidate.add(random.nextInt(candidate.size() + 1), t);
+                } else if (kind == 3) {
+                    // a whole chain of upgrades of one path, at one place
+                    int slot = random.nextInt(SLOTS);
+                    int path = random.nextInt(3);
+                    int at = random.nextInt(candidate.size() + 1);
+                    for (int n = 1 + random.nextInt(5); n > 0; n--) {
+                        candidate.add(at, "u" + slot + "." + path);
+                    }
+                } else if (kind == 7 || kind == 8) {
+                    // a macro: a tower with a chain of upgrades of one path (farm, ice, mortar, sniper, ...)
+                    boolean[] used = new boolean[SLOTS];
+                    for (String word : candidate) {
+                        if (!word.startsWith("u")) {
+                            used[Integer.parseInt(word.substring(1))] = true;
+                        }
+                    }
+                    List<Integer> free = new ArrayList<>();
+                    for (int i = 0; i < SLOTS; i++) {
+                        if (!used[i]) {
+                            free.add(i);
+                        }
+                    }
+                    if (!free.isEmpty()) {
+                        int slot = free.get(random.nextInt(free.size()));
+                        char tower = TOWERS.charAt(random.nextInt(TOWERS.length()));
+                        int path = random.nextInt(3);
+                        int length = tower == 'N' ? 3 : 1 + random.nextInt(5);
+                        List<String> block = new ArrayList<>();
+                        block.add(tower + "" + slot);
+                        for (int n = 0; n < length; n++) {
+                            block.add("u" + slot + "." + (tower == 'N' ? 0 : path));
+                        }
+                        if (tower == 'N') {
+                            block.add("u" + slot + ".1");
+                            block.add("u" + slot + ".1");
+                        }
+                        candidate.addAll(random.nextInt(candidate.size() + 1), block);
+                    }
+                } else if (kind == 4 && candidate.size() > 6) {
+                    // move a block of up to four neighbouring tokens
+                    int length = 1 + random.nextInt(4);
+                    int from = random.nextInt(candidate.size() - length + 1);
+                    List<String> block = new ArrayList<>(candidate.subList(from, from + length));
+                    candidate.subList(from, from + length).clear();
+                    candidate.addAll(random.nextInt(candidate.size() + 1), block);
                 } else {
                     String word;
                     if (random.nextInt(6) == 0) {

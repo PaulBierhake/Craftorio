@@ -249,6 +249,9 @@ public final class ModBlocks {
     public static final DeferredBlock<TowerBlock> LASER_TOWER = tower("laser_tower", TowerType.LASER, SoundType.METAL);
     public static final DeferredBlock<TowerBlock> FLAMETHROWER_TURRET = tower("flamethrower_turret", TowerType.FLAME, SoundType.METAL);
     public static final DeferredBlock<TowerBlock> MORTAR_TURRET = tower("mortar_turret", TowerType.MORTAR, SoundType.METAL);
+    public static final DeferredBlock<TowerBlock> FROST_TOWER = tower("frost_tower", TowerType.FROST, SoundType.GLASS);
+    public static final DeferredBlock<TowerBlock> GLUE_TURRET = tower("glue_turret", TowerType.GLUE, SoundType.SLIME_BLOCK);
+    public static final DeferredBlock<TowerBlock> COMMAND_POST = tower("command_post", TowerType.VILLAGE, SoundType.WOOD);
     public static final DeferredBlock<TowerBlock> SUPPLY_DEPOT = tower("supply_depot", TowerType.DEPOT, SoundType.WOOD);
     public static final DeferredBlock<net.minecraft.world.level.block.WallBlock> STONE_WALL = BLOCKS.registerBlock("stone_wall",
             net.minecraft.world.level.block.WallBlock::new,
@@ -263,6 +266,9 @@ public final class ModBlocks {
             case FLAME -> FLAMETHROWER_TURRET;
             case MORTAR -> MORTAR_TURRET;
             case DEPOT -> SUPPLY_DEPOT;
+            case FROST -> FROST_TOWER;
+            case GLUE -> GLUE_TURRET;
+            case VILLAGE -> COMMAND_POST;
         };
     }
 

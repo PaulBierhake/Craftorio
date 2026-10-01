@@ -121,6 +121,9 @@ public final class ModItems {
     public static final DeferredItem<Item> GRENADE = ITEMS.registerSimpleItem("grenade");
     public static final DeferredItem<BlockItem> STONE_WALL = ITEMS.registerSimpleBlockItem("stone_wall", ModBlocks.STONE_WALL);
     public static final DeferredItem<BlockItem> MORTAR_TURRET = ITEMS.registerSimpleBlockItem("mortar_turret", ModBlocks.MORTAR_TURRET);
+    public static final DeferredItem<BlockItem> FROST_TOWER = ITEMS.registerSimpleBlockItem("frost_tower", ModBlocks.FROST_TOWER);
+    public static final DeferredItem<BlockItem> GLUE_TURRET = ITEMS.registerSimpleBlockItem("glue_turret", ModBlocks.GLUE_TURRET);
+    public static final DeferredItem<BlockItem> COMMAND_POST = ITEMS.registerSimpleBlockItem("command_post", ModBlocks.COMMAND_POST);
     public static final DeferredItem<BlockItem> SUPPLY_DEPOT = ITEMS.registerSimpleBlockItem("supply_depot", ModBlocks.SUPPLY_DEPOT);
     public static final DeferredItem<BlockItem> FLAMETHROWER_TURRET = ITEMS.registerSimpleBlockItem("flamethrower_turret", ModBlocks.FLAMETHROWER_TURRET);
 

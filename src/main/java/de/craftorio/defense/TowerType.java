@@ -12,6 +12,9 @@ public enum TowerType {
     GUN("gun_turret"),
     FLAME("flamethrower_turret"),
     MORTAR("mortar_turret"),
+    FROST("frost_tower"),
+    GLUE("glue_turret"),
+    VILLAGE("command_post"),
     DEPOT("supply_depot"),
     TESLA("tesla_tower"),
     LASER("laser_tower");
@@ -68,6 +71,6 @@ public enum TowerType {
 
     /** Does the tower shoot? Support towers (command post, supply depot) do not. */
     public boolean attacks() {
-        return def().attack() != null;
+        return def().attack() != null || this == VILLAGE;
     }
 }

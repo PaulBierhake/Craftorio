@@ -626,7 +626,7 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 | **T2 – Runden, Münzen, Leben** ✅ | Rundendaten 1–100, Level = 2 Runden, Münzen und Einkommensfaktor, Rundenbonus, Schwierigkeitsgrade, Leben pro Level, Snapshot/Wiederholung, Kriegskasse, Siegel-Zuordnung, Entfernen von Turm-HP/Ruinen/Reparatur und Spieler-Skalierung, Pfadlängen-Fenster | Unit-Test Rundeneinnahmen gegen Wiki (±2 %); GameTest Level 1 komplett; Pfad < 100 Blöcke wird abgelehnt |
 | **T3 – Turmsystem** ✅ | Pfade × Stufen mit Kreuzpfad-Regel, Münzpreis beim Platzieren, Verkauf 70 %, Zielmodi, Tarnungserkennung, Fähigkeiten, Forschung Turmtechnik I–III, Bauteile ab Stufe 3, neues Turm-GUI mit drei Pfaden | Unit-Tests Kreuzpfad-Regel und Verkaufswert; GameTest: Stufe 3 ohne Forschung gesperrt |
 | **T4 – Türme Teil 1** ✅ | Armbrust, Geschütz (mit Magazinarten), Mörser (neu), Flammenwerfer, Nachschublager (neu, mit Warenkorb §4.4) mit allen 15 Aufrüstungen | Simulator: Referenz-Set R1–40 ohne Leak |
-| **T5 – Türme Teil 2** | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |
+| **T5 – Türme Teil 2** ✅ | Frost, Leim, Tesla, Laser, Kommandoposten mit allen Aufrüstungen | Simulator: Referenz-Set R41–100 ohne Leak; Immunitätstabelle §6.4 als Test |
 | **T6 – Modi und Endlos** | Herausforderungen §7, Endlosmodus ab Runde 101 mit §3.6, Arena-Wissen §8, Rangliste (höchste Runde pro Team) | GameTest je Modus; Freeplay-Skalierung als Unit-Test |
 | **T7 – Leitfaden, Handbuch, Feinschliff** | Handbuch-Seiten: Gegner (mit Immunitäten), Türme (Pfade), Wirtschaft; Leitfaden-Hinweise; README; Migration §10 | Alle Tests grün; Kampagne im Simulator mit Referenz-Sets bis Runde 100 schaffbar |
 
@@ -653,6 +653,25 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
   `ArenaLayout`, Türme auf den Stellen mit der größten Pfadabdeckung, Runden nacheinander, Plan wird gekauft, sobald die Münzen
   reichen) auf zehn Layouts; der Plan wurde mit `PlanSearchScratchTest` (Hill-Climbing über Kaufreihenfolgen auf den Layouts 1–10) gefunden und hält auch auf sechs weiteren Layouts mit höchstens einem Leak. Das **Ziel
   „ohne Leak“** gilt für diese Aufstellung; ein Spieler ohne Plan verliert in den Runden 4, 9 und 12 vereinzelt Leben.
+
+### T5 – Umsetzungsnotizen
+
+- **Zuordnung:** Frostturm = Ice Monkey, Leimwerfer = Glue Gunner, Tesla-Turm = Wizard Monkey, Laser-Turm = Super Monkey,
+  Kommandoposten = Monkey Village. Alle 75 Aufrüstungen als Effekte in den Turmdaten; die neuen Blöcke Frostturm, Leimwerfer
+  (nimmt Kunststoffbarren) und Kommandoposten kommen mit Modell, Blaupause, Beute, Forschung (Frost: neue Forschung „Kältetechnik“,
+  Leim: Kunststoffe, Kommandoposten: Militär-Paket) und Namen.
+- **Neue Engine-Bausteine:** Schadensarten *Gletscher* (Kälte, trifft Eisen) und *Plasma* (Energie, trifft Eisen); Leim mit Stufen (stärkerer Leim ersetzt
+  schwächeren, ein Leimwerfer ignoriert schon gleich stark verleimte Gegner), Leim auf Behemoth-Klasse, Versprödung, reine Tarnungsziele (Flimmern),
+  Angriffe ohne Verbrauch (`free`), Kommandoposten-Auren (Reichweite, Tempo, Tarnung, Normal-Schaden, Training für „primäre“ Türme), Preisnachlass
+  und Einkommen des Kommandopostens (wirken auch zwischen den Leveln, weil gebaut wird, wenn keine Runde läuft).
+- **Akzeptanz:** Die Aufstellung `PLAN_1_89` (aus dem Hill-Climbing über Kaufreihenfolgen, `PlanSearchScratchTest`) schafft auf sechs Layouts die Runden
+  1–89 **ohne Leak**. Ab Runde 90 (Schattenjäger, in Runde 93 zehn verstärkte Behemoths) reicht das Einkommen dieser Aufstellung nicht mehr; ein Satz
+  bis Runde 100 ist **noch offen** (die Zufallssuche findet ihn nicht, es fehlt eine bewusst gebaute Wirtschaftsphase mit mehreren Nachschublagern).
+- **Immunitätstabelle §6.4** ist jetzt ein Test (`T5TowersTest.whoGetsHitByWhatFollowsTheTableOfTheConcept`).
+- **Vereinfachungen** (gleichwertiger Ersatz, TD-E5): Nekromant (Untote Armee) als zusätzliche Flächenangriffe, Phönix als freier Angriff,
+  Sonnentempel ohne Opfermechanik, „Dunkler Ritter“-Fähigkeiten und Entfernen von Immunitäten (Frost/Leim) entfallen, Gefrieren der
+  Behemoth-Klasse nur über Verlangsamung, Kommandoposten-Pfad 3 als Rabatt (10/15 %), Einkommen (700/1.250/2.250 ⛁ je Runde) und Bonus für
+  Nachschublager (+50/+100 %).
 
 ---
 

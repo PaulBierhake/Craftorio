@@ -27,6 +27,8 @@ final class BalanceSimulator {
         final double z;
         TowerUnit unit;
         String id;
+        final DepotEconomy depot = new DepotEconomy();
+        Buffs outside = Buffs.NONE;
         final int[] tiers = new int[3];
 
         Slot(double x, double z) {
@@ -47,6 +49,7 @@ final class BalanceSimulator {
     private int next;
     private final List<Step> plan;
     private long spent;
+    final java.util.Map<String, Integer> leaks = new java.util.TreeMap<>();
     int shots;
     int hits;
 
@@ -62,16 +65,52 @@ final class BalanceSimulator {
         }
         sim = new TdSimulation(new TdPath(points));
         sim.setExternalSpeed(1.1);
+        sim.onLeak(enemy -> leaks.merge(enemy.def().id(), 1, Integer::sum));
         for (int i = 0; i < slotCount; i++) {
             slots.add(null);
         }
+    }
+
+    /** Largest discount of the command posts that reach the slot (a new tower is assumed to be built where the best spot is: not known yet). */
+    private double discountNear(Slot target) {
+        double best = 0;
+        for (Slot other : slots) {
+            if (other == null || other.unit == null || !other.id.equals("command_post")) {
+                continue;
+            }
+            TowerProfile profile = other.unit.profile();
+            if (target == null || Math.hypot(other.x - target.x, other.z - target.z) <= profile.range) {
+                best = Math.max(best, profile.number("discount"));
+            }
+        }
+        return best;
+    }
+
+    /** What the auras of the other towers give a tower (as {@link de.craftorio.defense.LevelRun#aurasFor}). */
+    private Buffs aurasFor(Slot target) {
+        Buffs total = Buffs.NONE;
+        for (Slot other : slots) {
+            if (other == null || other.unit == null) {
+                continue;
+            }
+            for (TowerProfile.Aura aura : other.unit.profile().auras) {
+                if (other == target && !aura.self() || !aura.appliesTo(target.id)) {
+                    continue;
+                }
+                double reach = aura.radius() == 0 ? other.unit.profile().range : aura.radius();
+                if (reach < 0 || Math.hypot(other.x - target.x, other.z - target.z) <= reach) {
+                    total = total.merge(aura.buff());
+                }
+            }
+        }
+        return total;
     }
 
     /** The free spot (not on the path, 2 blocks from other towers) with the most path within {@code range}; unlimited range takes the worst. */
     private Slot spot(double range) {
         Slot best = null;
         double bestScore = 0;
-        boolean worst = range < 0;
+        boolean worst = range <= 0;
         double radius = worst ? 3 : range;
         for (int x = 0; x < de.craftorio.defense.arena.ArenaLayout.SIZE; x++) {
             for (int z = 0; z < de.craftorio.defense.arena.ArenaLayout.SIZE; z++) {
@@ -114,6 +153,11 @@ final class BalanceSimulator {
         return sb.toString();
     }
 
+    /** Gives the team coins (what-if experiments: how strong must a defence be at all?). */
+    void addCoins(double extra) {
+        coins += extra;
+    }
+
     long spent() {
         return spent;
     }
@@ -126,7 +170,11 @@ final class BalanceSimulator {
                 throw new IllegalStateException("no tower in slot " + step.slot());
             }
             TowerDef def = TowerDefs.get(step.tower() != null ? step.tower() : slot.id);
-            long price = step.path() < 0 ? def.cost() : def.upgrade(step.path(), slot.tiers[step.path()] + 1).cost();
+            int tier = step.path() < 0 ? 0 : slot.tiers[step.path()] + 1;
+            long price = step.path() < 0 ? def.cost() : def.upgrade(step.path(), tier).cost();
+            if (tier <= 3) {
+                price = TowerRules.discounted(price, step.path() < 0 ? discountNear(null) : discountNear(slot));
+            }
             if (price > coins) {
                 return;
             }
@@ -165,8 +213,11 @@ final class BalanceSimulator {
                 sim.tick();
                 for (Slot slot : slots) {
                     if (slot != null && slot.unit != null) {
-                        abilities(slot.unit);
-                        for (var shot : slot.unit.tick(sim, TowerUnit.Supply.FREE, 1, false)) {
+                        abilities(slot);
+                        if (tick % 10 == 0) {
+                            slot.outside = aurasFor(slot);
+                        }
+                        for (var shot : slot.unit.tick(sim, TowerUnit.Supply.FREE, 1, slot.outside)) {
                             shots++;
                             hits += shot.hits().size();
                         }
@@ -187,6 +238,14 @@ final class BalanceSimulator {
                 }
             }
             coins += RoundRules.roundBonus(round);
+            for (Slot slot : slots) {
+                if (slot != null && slot.unit != null && slot.id.equals("supply_depot")) {
+                    coins += slot.depot.roundEnd(slot.unit.profile(), false);
+                }
+                if (slot != null && slot.unit != null && slot.id.equals("command_post")) {
+                    coins += slot.unit.profile().number("income");
+                }
+            }
             if (first >= 0 && stopAtLeak) {
                 return new Result(first, leaked, (long) coins, round);
             }
@@ -194,7 +253,8 @@ final class BalanceSimulator {
         return new Result(first, leaked, (long) coins, to);
     }
 
-    private void abilities(TowerUnit unit) {
+    private void abilities(Slot slot) {
+        TowerUnit unit = slot.unit;
         for (int i = 0; i < unit.abilityCount(); i++) {
             if (!unit.profile().abilities.get(i).passive() && sim.count() > 0) {
                 TowerProfile.Ability used = unit.activate(i, 1);
@@ -202,8 +262,12 @@ final class BalanceSimulator {
                     if (used.buff() != null) {
                         unit.grantBuff("ability:" + used.id(), (int) Math.round(used.duration() * TdUnits.TICKS_PER_SECOND), used.buff());
                     }
-                    if (used.id().equals("supply_drop")) {
-                        coins += unit.profile().number("supply_drop");
+                    switch (used.id()) {
+                        case "supply_drop" -> coins += unit.profile().number("supply_drop");
+                        case "bank_withdraw" -> coins += slot.depot.withdraw();
+                        case "imf_loan", "monkey_nomics" -> coins += slot.depot.loan(unit.profile());
+                        default -> {
+                        }
                     }
                 }
             }

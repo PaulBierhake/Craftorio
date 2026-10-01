@@ -33,12 +33,27 @@ public final class TowerProfile {
      * empty for all towers, including the one that gives it if {@code self}).
      */
     public record Aura(String id, Buffs buff, double radius, String towers, boolean self) {
+        /** Primary towers: the ones the village's training upgrades are for. */
+        public static final java.util.Set<String> PRIMARY = java.util.Set.of("crossbow_tower", "flamethrower_turret", "mortar_turret",
+                "frost_tower", "glue_turret");
+
+        /** Does the aura reach a tower of this kind ({@code towers}: empty for all, "primary", or tower ids separated by commas)? */
+        public boolean appliesTo(String towerId) {
+            if (towers.isEmpty()) {
+                return true;
+            }
+            if (towers.equals("primary")) {
+                return PRIMARY.contains(towerId);
+            }
+            return java.util.Arrays.asList(towers.split(",")).contains(towerId);
+        }
     }
 
     /** An activated ability: its id, cooldown and duration in seconds. */
-    public record Ability(String id, double cooldown, double duration, Buffs buff, double shareRadius, int shareMax, boolean passive) {
+    public record Ability(String id, double cooldown, double duration, Buffs buff, double shareRadius, int shareMax, boolean passive,
+                          String shareTowers) {
         public Ability(String id, double cooldown, double duration) {
-            this(id, cooldown, duration, null, 0, 0, false);
+            this(id, cooldown, duration, null, 0, 0, false, "");
         }
     }
 
@@ -156,7 +171,8 @@ public final class TowerProfile {
                         effect.has("buff") ? buff(effect.getAsJsonObject("buff")) : null,
                         effect.has("share_radius") ? effect.get("share_radius").getAsDouble() : 0,
                         effect.has("share_max") ? effect.get("share_max").getAsInt() : 0,
-                        effect.has("passive") && effect.get("passive").getAsBoolean()));
+                        effect.has("passive") && effect.get("passive").getAsBoolean(),
+                        effect.has("share_towers") ? effect.get("share_towers").getAsString() : ""));
             }
             case "child" -> {
                 Attack parent = attack(effect.has("attack") ? effect.get("attack").getAsString() : "main");
@@ -229,6 +245,13 @@ public final class TowerProfile {
             case "unlimited_range" -> attack.unlimitedRange = value.getAsBoolean();
             case "ability_id" -> attack.abilityId = value.getAsString();
             case "maim" -> attack.maim = (int) Math.round(number(attack.maim, operation, value));
+            case "brittle" -> attack.brittle = number(attack.brittle, operation, value);
+            case "brittle_seconds" -> attack.brittleSeconds = number(attack.brittleSeconds, operation, value);
+            case "glue_boss" -> attack.glueBoss = number(attack.glueBoss, operation, value);
+            case "glue_boss_seconds" -> attack.glueBossSeconds = number(attack.glueBossSeconds, operation, value);
+            case "glue_level" -> attack.glueLevel = (int) Math.round(number(attack.glueLevel, operation, value));
+            case "camo_only" -> attack.camoOnly = value.getAsBoolean();
+            case "free" -> attack.free = value.getAsBoolean();
             case "soak" -> attack.soak = value.getAsBoolean();
             case "follow_range" -> attack.followRange = value.getAsBoolean();
             case "strip_camo" -> attack.stripCamo = value.getAsBoolean();

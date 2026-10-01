@@ -610,6 +610,54 @@ public final class DefenseGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = LARGE, timeoutTicks = 300)
+    public static void aFrostTowerFreezesEnemiesAroundIt(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(5, 1, 5);
+        helper.setBlock(towerPos, ModBlocks.FROST_TOWER.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        tower.energy().setEnergy(tower.energy().getMaxEnergyStored());
+        LevelRun run = track(helper, 1);
+        run.simulation().spawn("crystal_golem");
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(run.simulation().enemies().stream().anyMatch(enemy -> enemy.frozen()), "nothing frozen");
+            run.end(helper.getLevel());
+        });
+    }
+
+    @GameTest(template = LARGE, timeoutTicks = 300)
+    public static void aGlueTurretSlowsEnemiesDown(GameTestHelper helper) {
+        BlockPos towerPos = new BlockPos(7, 1, 3);
+        helper.setBlock(towerPos, ModBlocks.GLUE_TURRET.get());
+        TowerBlockEntity tower = helper.getBlockEntity(towerPos);
+        helper.assertTrue(tower.ammo().isItemValid(0, new ItemStack(ModItems.PLASTIC_BAR.get())), "it takes plastic bars");
+        tower.ammo().insertItem(0, new ItemStack(ModItems.PLASTIC_BAR.get(), 4), false);
+        LevelRun run = track(helper, 1);
+        run.simulation().spawn("red_crawler");
+
+        helper.succeedWhen(() -> {
+            helper.assertTrue(run.simulation().enemies().stream().anyMatch(enemy -> enemy.slowed()), "nobody is slowed down");
+            run.end(helper.getLevel());
+        });
+    }
+
+    @GameTest(template = EMPTY)
+    public static void aCommandPostMakesUpgradesCheaper(GameTestHelper helper) {
+        Setup setup = buildArena(helper, "VillageTest");
+        ServerPlayer player = setup.player;
+        TowerBlockEntity tower = arenaTower(setup, TowerType.CROSSBOW, 2, 2);
+        TowerBlockEntity village = arenaTower(setup, TowerType.VILLAGE, 4, 2);
+        tower.setPaid(200);
+        setup.defense.setCoins(setup.zone(), 10_000);
+        helper.assertTrue(tower.upgrade(player, 0), "Sharp Shots (140)");
+        helper.assertValueEqual(setup.zone().coins(), 9_860L, "no discount without a business upgrade");
+        village.setTiers(0, 0, 1);
+        helper.assertTrue(tower.upgrade(player, 0), "Razor Sharp Shots (200 - 10 %)");
+        helper.assertValueEqual(setup.zone().coins(), 9_680L, "10 % off");
+        helper.assertValueEqual(tower.paid(), 200L + 140 + 180, "paid is what was really paid");
+        helper.succeed();
+    }
+
     @GameTest(template = LARGE, timeoutTicks = 400, batch = "defense_decor")
     public static void decoratedMapsKeepPathsAndTowerSpotsFree(GameTestHelper helper) {
         Setup setup = buildArena(helper, "DecorTest");

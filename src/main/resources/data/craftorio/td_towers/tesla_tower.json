@@ -25,81 +25,387 @@
       {
         "btd6": "Guided Magic",
         "cost": 175,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "homing": true
+            }
+          }
+        ]
       },
       {
         "btd6": "Arcane Blast",
         "cost": 450,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 2,
+              "radius": 0.6
+            }
+          }
+        ]
       },
       {
         "btd6": "Arcane Mastery",
         "cost": 1450,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 2.0
+          },
+          {
+            "type": "attack",
+            "set": {
+              "damage": 3,
+              "pierce": 7
+            },
+            "mul": {
+              "cooldown": 0.5
+            }
+          }
+        ]
       },
       {
         "btd6": "Arcane Spike",
         "cost": 10000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 6,
+              "damage_kind": "plasma"
+            },
+            "mul": {
+              "cooldown": 0.5
+            },
+            "bonus": {
+              "moab": 10
+            }
+          }
+        ]
       },
       {
         "btd6": "Archmage",
         "cost": 32000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "set": {
+              "damage": 8,
+              "pierce": 11
+            },
+            "mul": {
+              "cooldown": 0.5
+            },
+            "bonus": {
+              "moab": 9
+            }
+          },
+          {
+            "type": "new_attack",
+            "id": "shimmer",
+            "attack": {
+              "kind": "area",
+              "cooldown": 1.0,
+              "pierce": 500,
+              "damage": 0,
+              "damage_kind": "normal",
+              "radius": 7.5,
+              "camo_only": true,
+              "strip_camo": true,
+              "free": true
+            }
+          },
+          {
+            "type": "new_attack",
+            "id": "dragons_breath",
+            "attack": {
+              "kind": "projectile",
+              "cooldown": 0.05,
+              "projectiles": 1,
+              "pierce": 3,
+              "damage": 2,
+              "damage_kind": "plasma",
+              "radius": 0.6,
+              "length": 6.0,
+              "burn": 0.67,
+              "burn_seconds": 3.1,
+              "homing": true,
+              "bonus": {
+                "moab": 8
+              },
+              "follow_range": true
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Fireball",
         "cost": 300,
-        "effects": []
+        "effects": [
+          {
+            "type": "new_attack",
+            "id": "fireball",
+            "attack": {
+              "kind": "area",
+              "cooldown": 2.2,
+              "pierce": 15,
+              "damage": 1,
+              "damage_kind": "explosion",
+              "radius": 1.0
+            }
+          }
+        ]
       },
       {
         "btd6": "Wall of Fire",
         "cost": 800,
-        "effects": []
+        "effects": [
+          {
+            "type": "new_attack",
+            "id": "wall_of_fire",
+            "attack": {
+              "kind": "area",
+              "cooldown": 6.5,
+              "pierce": 10,
+              "damage": 1,
+              "damage_kind": "fire",
+              "radius": 1.5,
+              "burn": 6.67,
+              "burn_seconds": 3.0
+            }
+          }
+        ]
       },
       {
         "btd6": "Dragon's Breath",
         "cost": 3300,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "attack": "fireball",
+            "set": {
+              "damage": 3,
+              "radius": 1.4,
+              "pierce": 45
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "wall_of_fire",
+            "set": {
+              "cooldown": 4.5,
+              "pierce": 20,
+              "burn": 10.0
+            }
+          },
+          {
+            "type": "new_attack",
+            "id": "dragons_breath",
+            "attack": {
+              "kind": "projectile",
+              "cooldown": 0.135,
+              "projectiles": 1,
+              "pierce": 3,
+              "damage": 2,
+              "damage_kind": "plasma",
+              "radius": 0.6,
+              "length": 4.0,
+              "burn": 0.67,
+              "burn_seconds": 3.1,
+              "follow_range": true
+            }
+          }
+        ]
       },
       {
         "btd6": "Summon Phoenix",
         "cost": 6000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "attack": "dragons_breath",
+            "set": {
+              "projectiles": 2,
+              "spread": 10
+            }
+          },
+          {
+            "type": "new_attack",
+            "id": "phoenix",
+            "attack": {
+              "kind": "area",
+              "cooldown": 0.5,
+              "pierce": 8,
+              "damage": 3,
+              "damage_kind": "fire",
+              "radius": 1.5,
+              "free": true
+            }
+          }
+        ]
       },
       {
         "btd6": "Wizard Lord Phoenix",
         "cost": 50000,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "attack": "fireball",
+            "set": {
+              "damage": 9
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "wall_of_fire",
+            "set": {
+              "damage": 5,
+              "burn": 50.0
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "dragons_breath",
+            "set": {
+              "projectiles": 3,
+              "spread": 15,
+              "pierce": 15
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "phoenix",
+            "set": {
+              "cooldown": 0.25,
+              "pierce": 20,
+              "damage": 15,
+              "radius": 2.5
+            }
+          }
+        ]
       }
     ],
     [
       {
         "btd6": "Intense Magic",
         "cost": 300,
-        "effects": []
+        "effects": [
+          {
+            "type": "attack",
+            "add": {
+              "pierce": 5
+            }
+          }
+        ]
       },
       {
         "btd6": "Monkey Sense",
         "cost": 300,
-        "effects": []
+        "effects": [
+          {
+            "type": "camo"
+          },
+          {
+            "type": "range",
+            "add": 1.0
+          }
+        ]
       },
       {
         "btd6": "Shimmer",
         "cost": 1500,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 1.0
+          },
+          {
+            "type": "new_attack",
+            "id": "shimmer",
+            "attack": {
+              "kind": "area",
+              "cooldown": 2.0,
+              "pierce": 500,
+              "damage": 0,
+              "damage_kind": "normal",
+              "radius": 7.5,
+              "camo_only": true,
+              "strip_camo": true,
+              "free": true
+            }
+          }
+        ]
       },
       {
         "btd6": "Necromancer: Unpopped Army",
         "cost": 2800,
-        "effects": []
+        "effects": [
+          {
+            "type": "new_attack",
+            "id": "reanimate",
+            "attack": {
+              "kind": "area",
+              "cooldown": 1.5,
+              "pierce": 6,
+              "damage": 2,
+              "damage_kind": "normal",
+              "radius": 0.5,
+              "homing": true,
+              "free": true
+            }
+          }
+        ]
       },
       {
         "btd6": "Prince of Darkness",
         "cost": 26500,
-        "effects": []
+        "effects": [
+          {
+            "type": "range",
+            "add": 2.0
+          },
+          {
+            "type": "attack",
+            "attack": "main",
+            "mul": {
+              "cooldown": 0.25
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "shimmer",
+            "set": {
+              "cooldown": 1.0,
+              "radius": 10.0
+            }
+          },
+          {
+            "type": "attack",
+            "attack": "reanimate",
+            "add": {
+              "damage": 3
+            }
+          },
+          {
+            "type": "new_attack",
+            "id": "undead_boss",
+            "attack": {
+              "kind": "area",
+              "cooldown": 3.0,
+              "pierce": 50,
+              "damage": 100,
+              "damage_kind": "normal",
+              "radius": 2.0,
+              "boss_only": true,
+              "free": true
+            }
+          }
+        ]
       }
     ]
   ]

@@ -12,7 +12,7 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class TowerMenu extends MachineMenuBase {
-    public static final int DATA_COUNT = 15;
+    public static final int DATA_COUNT = 16;
     /** Button ids 0 to 2 buy the next tier of the path with that index. */
     public static final int BUTTON_UPGRADE = 0;
     public static final int BUTTON_TARGET = 3;
@@ -87,6 +87,11 @@ public final class TowerMenu extends MachineMenuBase {
 
     public int debt() {
         return data.get(13);
+    }
+
+    /** Discount of the command posts nearby, in percent, on towers and upgrades up to tier 3. */
+    public int discountPercent() {
+        return data.get(15);
     }
 
     public boolean basketDelivered() {

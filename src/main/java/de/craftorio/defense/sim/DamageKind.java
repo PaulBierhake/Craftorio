@@ -10,8 +10,26 @@ public enum DamageKind {
     COLD,
     ENERGY,
     FIRE,
+    /** Cold that also hurts leaden enemies (glacier ice); whites still shrug it off. */
+    GLACIER,
+    /** Energy that also hurts leaden enemies (plasma); purples still shrug it off. */
+    PLASMA,
     /** Hits everything. */
     NORMAL;
+
+    /** The kind whose immunities count for this one. */
+    public DamageKind proxy() {
+        return switch (this) {
+            case GLACIER -> COLD;
+            case PLASMA -> ENERGY;
+            default -> this;
+        };
+    }
+
+    /** Hits leaden enemies even if the proxy kind would not. */
+    public boolean hitsLead() {
+        return this == GLACIER || this == PLASMA;
+    }
 
     public String id() {
         return name().toLowerCase(Locale.ROOT);
