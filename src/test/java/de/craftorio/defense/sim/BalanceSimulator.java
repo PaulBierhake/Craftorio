@@ -253,10 +253,20 @@ final class BalanceSimulator {
         return new Result(first, leaked, (long) coins, to);
     }
 
+    /** A player uses assassins and similar abilities when there is something to hit: an attack that only hits MOAB-class enemies needs one on the path. */
+    private boolean worthUsing(TowerUnit unit, TowerProfile.Ability ability) {
+        for (Attack attack : unit.profile().attacks) {
+            if (attack.abilityId.equals(ability.id()) && attack.bossOnly) {
+                return sim.enemies().stream().anyMatch(enemy -> enemy.def().boss());
+            }
+        }
+        return true;
+    }
+
     private void abilities(Slot slot) {
         TowerUnit unit = slot.unit;
         for (int i = 0; i < unit.abilityCount(); i++) {
-            if (!unit.profile().abilities.get(i).passive() && sim.count() > 0) {
+            if (!unit.profile().abilities.get(i).passive() && sim.count() > 0 && worthUsing(unit, unit.profile().abilities.get(i))) {
                 TowerProfile.Ability used = unit.activate(i, 1);
                 if (used != null) {
                     if (used.buff() != null) {
