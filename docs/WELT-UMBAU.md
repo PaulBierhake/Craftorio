@@ -150,7 +150,7 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
 | Paket | Inhalt | Akzeptanz |
 |---|---|---|
 | **W1 – Geländegenerator** ✅ | `FactoryTerrain`, Rauschfelder, Dichtefunktion `factory_height`, Noise-Einstellung `craftorio:factory` (Datagen), Carver/Aquifere/Erzadern aus, Spalten-Cache | Unit-Test `FactoryTerrain` über 2.048 × 2.048 Spalten (fester Seed): ≥ 75 % Grundebene; nur die Höhen aus §4.1; Spawn-Radius 192 nur Grundebene; keine Fläche einer Stufe < 6 × 6 (Stichprobe). Laufzeit < 50 ns pro Spalte |
-| **W2 – Biome und Welttyp** | Biomquelle nur Land (§5), World-Preset `craftorio:factory`, Vorauswahl im Erstellen-Bildschirm, Server-Doku, `LayerCheck`-Hinweis, Strukturen-Auswahl | GameTest bzw. Server-Start mit `level-type=craftorio:factory`: Chunks um den Spawn haben Oberfläche y = 64; in 1.024 × 1.024 Blöcken mindestens 6 verschiedene Biome, kein Ozean |
+| **W2 – Biome und Welttyp** ✅ | Biomquelle nur Land (§5), World-Preset `craftorio:factory`, Vorauswahl im Erstellen-Bildschirm, Server-Doku, `LayerCheck`-Hinweis, Strukturen-Auswahl | GameTest bzw. Server-Start mit `level-type=craftorio:factory`: Chunks um den Spawn haben Oberfläche y = 64; in 1.024 × 1.024 Blöcken mindestens 6 verschiedene Biome, kein Ozean |
 | **W3 – Kompatibilität** | Höhlen- und Minenschicht unverändert (Test: unter y = 50 Deckgestein und Füllung), Erzfelder liegen eben, Starter-Felder in der Spawn-Ebene, Höhleneingang auf y = 64 setzbar, Arena-Dimension unberührt | GameTests für Schichten, Starter-Felder und Höhleneingang in einer Craftorio-Welt |
 | **W4 – Werkzeuge** | Landfüller, Sprengstoff, Klippensprengstoff, Forschungen, Rezepte (Rezepttabellen-Test erweitern) | GameTests: Landfüller füllt 3×3 Wasser; Klippensprengstoff senkt 5×5 einer Hochebene ab |
 | **W5 – Dekoration und Feinschliff** | Felsbrocken, keine Bäume auf Kanten, ausgedünnte Wälder am Spawn, Ufer, Handbuch-Seite „Die Welt", README mit Screenshots (Grundebene, Hochebene mit Kante, See, drei Biome) | Client-Prüfung mit Screenshots, alle Tests grün |
@@ -173,3 +173,9 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
   `craftorio:factory` per Datagen (Vanilla-Klima, Aquifere, Erzadern und Rauschhöhlen aus, Meeresspiegel 64, Wasser
   bis y = 63). Config `terrain.plateaus` und `terrain.spawnRadius`. Die Vanilla-Carver hängen an den Biomen und werden
   in W2 mit der Biomquelle abgeschaltet.
+- **W2 ✅:** Chunk-Generator `craftorio:factory` (`FactoryChunkGenerator`, ein `NoiseBasedChunkGenerator` ohne Carver; die
+  Struktursätze Mineshafts, Festungen, Ancient Cities, Trial Chambers, Ozean-Ruinen/-Monumente, Wracks und vergrabene
+  Schätze fehlen); Biomquelle `multi_noise` mit fester Liste aus dem Biomtabellen-Raster (nur Land, Temperatur × Feuchte);
+  Welt-Preset `craftorio:factory` (Netherwelt und End wie Vanilla) im Tag `minecraft:normal`; Vorauswahl im
+  Erstellen-Bildschirm (Client-Config `world.preselectWorldType`); `LayerCheck`-Hinweis für Operatoren. Bewusst auf W5
+  verschoben: Ebene statt dichter Wälder im Spawn-Radius 64 (gehört zur Ausdünnung am Spawn).

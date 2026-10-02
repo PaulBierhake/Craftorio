@@ -3,6 +3,7 @@ package de.craftorio;
 import com.mojang.logging.LogUtils;
 import de.craftorio.registry.ModBlockEntities;
 import de.craftorio.registry.ModBlocks;
+import de.craftorio.registry.ModChunkGenerators;
 import de.craftorio.registry.ModCreativeTabs;
 import de.craftorio.registry.ModDataComponents;
 import de.craftorio.registry.ModDensityFunctions;
@@ -33,11 +34,13 @@ public final class Craftorio {
         ModCreativeTabs.TABS.register(modBus);
         ModFeatures.FEATURES.register(modBus);
         ModDensityFunctions.TYPES.register(modBus);
+        ModChunkGenerators.TYPES.register(modBus);
         ModMenus.MENUS.register(modBus);
         ModRecipes.TYPES.register(modBus);
         ModRecipes.SERIALIZERS.register(modBus);
 
         container.registerConfig(ModConfig.Type.SERVER, CraftorioConfig.SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, CraftorioClientConfig.SPEC);
     }
 
     public static ResourceLocation id(String path) {

@@ -1,6 +1,7 @@
 package de.craftorio.world.cave;
 
 import de.craftorio.Craftorio;
+import de.craftorio.world.terrain.FactoryChunkGenerator;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +25,11 @@ public final class LayerCheck {
         return server.overworld().getChunkSource().getGenerator() instanceof FlatLevelSource;
     }
 
+    /** True if the overworld is not a Craftorio world type (flat building ground is recommended). */
+    public static boolean notFactoryWorld(MinecraftServer server) {
+        return !(server.overworld().getChunkSource().getGenerator() instanceof FactoryChunkGenerator);
+    }
+
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {
         if (noLayers(event.getServer())) {
@@ -33,8 +39,12 @@ public final class LayerCheck {
 
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player && player.hasPermissions(2) && noLayers(player.server)) {
-            player.sendSystemMessage(Component.translatable("craftorio.cave.error.flat_world"));
+        if (event.getEntity() instanceof ServerPlayer player && player.hasPermissions(2)) {
+            if (noLayers(player.server)) {
+                player.sendSystemMessage(Component.translatable("craftorio.cave.error.flat_world"));
+            } else if (notFactoryWorld(player.server)) {
+                player.sendSystemMessage(Component.translatable("craftorio.world.hint.not_factory"));
+            }
         }
     }
 }

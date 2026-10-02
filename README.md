@@ -209,7 +209,15 @@ und das Handbuch-Ersatzbuch.
 
 - **Arena-Karten (D7)**: Bodenpaletten mit Rausch-Flecken je Thema (Wald: Gras, Podsol, grobe Erde; Berg: Stein, Andesit, Tuff, Diorit; Feuer: Blackstone, Basalt, Seelensand; Wasser: Gras, Sand, Kies, Ton; Kolosseum: Sand, roter Sand), Bäume in mehreren Arten (Eiche, Birke, Fichte, Büsche, Pilze) und kleine Bauten auf gesperrten 3×3-Flächen (Hütte, Brunnen, Ruinen, Bogen, Schmiede, Steg, Säulen). Wege und Turmplätze bleiben frei (Test). Banner in Themenfarbe an den Wänden.
 - **Höhlen-Deko (E2)**: Beim Aushöhlen bekommt jeder Chunk deterministisch Tropfstein, Leuchtflechten (etwas Licht), Pilze, Moos, Spinnweben und Amethyst; in den Minen Holzstützen. Erzfelder und Ölquellen bleiben frei, die Steinwände haben Andesit- und Tuff-Flecken.
-- **Normale Welt nötig**: Die Schichten erzeugt der Weltgenerator; in Superflat-Welten (Oberfläche y = −60) und in vor dem Höhlen-Update erzeugten Chunks gibt es keine. Der Eingang meldet das beim Setzen, der Server warnt im Log und Operatoren beim Beitritt. Ein eigenes Welt-Preset ist nicht nötig: jeder normale Welttyp enthält die Schichten. Der Eingang hat ein Menü mit Anforderungen, Fortschrittsbalken und Einwurf-Slot (Automatik per Greifarm/Band bleibt).
+- **Normale Welt nötig**: Die Schichten erzeugt der Weltgenerator; in Superflat-Welten (Oberfläche y = −60) und in vor dem Höhlen-Update erzeugten Chunks gibt es keine. Der Eingang meldet das beim Setzen, der Server warnt im Log und Operatoren beim Beitritt. Jeder normale Welttyp enthält die Schichten; empfohlen ist der Welttyp **Craftorio** (siehe „Welttyp Craftorio"). Der Eingang hat ein Menü mit Anforderungen, Fortschrittsbalken und Einwurf-Slot (Automatik per Greifarm/Band bleibt).
+- **Welttyp Craftorio**: ebenes Bauland statt Vanilla-Gelände (Grundebene y = 64, im Radius von 192 Blöcken um den
+  Spawn garantiert eben und ohne Wasser; seltene Seen, Flüsse und Hochebenen mit senkrechten 4-Block-Kanten), nur
+  Land-Biome, keine Vanilla-Höhlen an der Oberfläche; Mineshafts, Festungen, Ancient Cities, Trial Chambers und
+  Ozean-Strukturen entfallen. Einzelspieler: beim Erstellen einer Welt ist er vorausgewählt (Client-Config
+  `world.preselectWorldType`, Standard an; unter „Weitere“ → „Welttyp“ änderbar). Dedizierter Server: in
+  `server.properties` `level-type=craftorio\:factory` setzen, bevor die Welt zum ersten Mal erzeugt wird. Server-Config:
+  `terrain.plateaus` (`none`/`rare`/`normal`, Standard `rare`) und `terrain.spawnRadius` (Standard 192). Bestehende
+  Welten bleiben unverändert; Operatoren erhalten in anderen Welttypen beim Beitritt einen Hinweis.
 - **Warenaufzug** (Bauplan nach dem Höhleneingang, 2 Stück pro Bau): Zwei Aufzüge in derselben Spalte
   (gleiches X/Z) verbinden sich automatisch – auch durch Deckgestein und massiven Fels, bis 256 Blöcke weit.
   Rechtsklick wechselt den Modus: *nach oben senden*, *nach unten senden* oder *empfangen*. Sender nehmen

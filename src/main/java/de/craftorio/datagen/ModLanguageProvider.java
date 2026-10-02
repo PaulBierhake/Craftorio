@@ -441,6 +441,8 @@ public final class ModLanguageProvider {
             add("craftorio.cave.opened", "A cave entrance has opened! The cave area around chunk %s, %s is being dug out.");
             add("craftorio.cave.error.overworld_only", "Cave entrances only work in the overworld.");
             add("craftorio.cave.error.too_deep", "Build cave entrances on the surface (Y 50 or higher).");
+            add("generator.craftorio.factory", "Craftorio");
+            add("craftorio.world.hint.not_factory", "Hint: this world does not use the Craftorio world type. The Craftorio world type (flat building ground with rare cliffs, lakes and rivers) is recommended for large factories.");
             add("craftorio.cave.error.flat_world", "Warning: this is a superflat world without Craftorio cave and mine layers – cave entrances cannot be built here. Create the world with a normal world type.");
             add("craftorio.cave.error.no_layer", "This spot has no Craftorio cave layer: it is a superflat world or an area generated before the cave update. Use a normal world type (or explore new chunks).");
 
@@ -1358,6 +1360,8 @@ public final class ModLanguageProvider {
             add("craftorio.cave.opened", "Ein Höhleneingang wurde geöffnet! Der Höhlenbereich um Chunk %s, %s wird ausgehöhlt.");
             add("craftorio.cave.error.overworld_only", "Höhleneingänge gibt es nur in der Oberwelt.");
             add("craftorio.cave.error.too_deep", "Höhleneingänge an der Oberfläche bauen (ab Y 50).");
+            add("generator.craftorio.factory", "Craftorio");
+            add("craftorio.world.hint.not_factory", "Hinweis: Diese Welt nutzt nicht den Craftorio-Welttyp. Für große Fabriken wird der Craftorio-Welttyp empfohlen (ebenes Bauland mit seltenen Klippen, Seen und Flüssen).");
             add("craftorio.cave.error.flat_world", "Warnung: Das ist eine Superflat-Welt ohne Craftorio-Höhlen- und Minenschichten – hier lassen sich keine Höhleneingänge bauen. Erstelle die Welt mit einem normalen Welttyp.");
             add("craftorio.cave.error.no_layer", "Hier gibt es keine Craftorio-Höhlenschicht: Superflat-Welt oder ein Gebiet, das vor dem Höhlen-Update erzeugt wurde. Nutze einen normalen Welttyp (oder erkunde neue Chunks).");
 
