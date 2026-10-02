@@ -145,4 +145,40 @@ class FactoryTerrainTest {
         System.out.println("TERRAIN ns per column " + perColumn + " (" + sum + ")");
         assertTrue(perColumn < 50, perColumn + " ns per column");
     }
+
+    /** Regression: a cache per terrain instance (1.3 MB each) filled the heap, because the density function is copied for every chunk. */
+    @Test
+    void manyTerrainsOfOneSeedShareOneCachePerThread() throws InterruptedException {
+        int[] created = new int[1];
+        Thread thread = new Thread(() -> {
+            int before = FactoryTerrain.cachesCreated();
+            long sum = 0;
+            for (int i = 0; i < 300; i++) {
+                sum += new FactoryTerrain(4242L).height(i * 16, i * 7);
+            }
+            created[0] = FactoryTerrain.cachesCreated() - before;
+            assertTrue(sum > 0);
+        });
+        thread.start();
+        thread.join();
+        assertEquals(1, created[0], "one cache for the whole thread");
+    }
+
+    @Test
+    void terrainsWithDifferentSettingsNeverShareWrongEntries() {
+        FactoryTerrain a = new FactoryTerrain(1L);
+        FactoryTerrain b = new FactoryTerrain(2L);
+        int[] expectedA = new int[200];
+        int[] expectedB = new int[200];
+        for (int i = 0; i < 200; i++) {
+            expectedA[i] = a.height(i * 40, i * 13);
+        }
+        for (int i = 0; i < 200; i++) {
+            expectedB[i] = b.height(i * 40, i * 13);
+        }
+        for (int i = 0; i < 200; i++) {
+            assertEquals(expectedA[i], a.height(i * 40, i * 13));
+            assertEquals(expectedB[i], b.height(i * 40, i * 13));
+        }
+    }
 }

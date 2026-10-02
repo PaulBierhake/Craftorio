@@ -17,6 +17,14 @@ public final class FactoryHeight implements DensityFunction.SimpleFunction {
     ).apply(instance, FactoryHeight::new));
     public static final KeyDispatchDataCodec<FactoryHeight> CODEC = KeyDispatchDataCodec.of(DATA_CODEC);
 
+    /** Terrains by their settings: the density function is copied for every chunk, the terrain behind it must not be. */
+    private static final java.util.Map<String, FactoryTerrain> TERRAINS = new java.util.LinkedHashMap<>(8, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(java.util.Map.Entry<String, FactoryTerrain> eldest) {
+            return size() > 6;
+        }
+    };
+
     private final DensityFunction.NoiseHolder seedNoise;
     private volatile FactoryTerrain terrain;
 
@@ -39,12 +47,19 @@ public final class FactoryHeight implements DensityFunction.SimpleFunction {
                     // an unseeded noise (the datapack's own copy) has none; the level's copy gives the seed
                     long seed = Double.doubleToLongBits(seedNoise.getValue(0.0, 0.0, 0.0))
                             ^ Double.doubleToLongBits(seedNoise.getValue(1000.0, 0.0, 1000.0)) * 31;
-                    built = new FactoryTerrain(seed, CraftorioConfig.terrainPlateaus(), CraftorioConfig.spawnRadius());
+                    built = shared(seed, CraftorioConfig.terrainPlateaus(), CraftorioConfig.spawnRadius());
                     terrain = built;
                 }
             }
         }
         return built;
+    }
+
+    private static FactoryTerrain shared(long seed, FactoryTerrain.Plateaus plateaus, int spawnRadius) {
+        String key = seed + "/" + plateaus + "/" + spawnRadius;
+        synchronized (TERRAINS) {
+            return TERRAINS.computeIfAbsent(key, k -> new FactoryTerrain(seed, plateaus, spawnRadius));
+        }
     }
 
     @Override

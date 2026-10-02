@@ -48,9 +48,13 @@ public final class FactoryTerrain {
     private final FactoryNoise river;
     private final Plateaus plateaus;
     private final int spawnRadius;
-    private final ThreadLocal<Cache> cache = ThreadLocal.withInitial(Cache::new);
+    private final long seed;
+    /** One cache per thread, shared by every terrain: it is reset when the terrain's settings change (never one per instance). */
+    private static final ThreadLocal<Cache> CACHE = ThreadLocal.withInitial(Cache::new);
+    private static final java.util.concurrent.atomic.AtomicInteger CACHES_CREATED = new java.util.concurrent.atomic.AtomicInteger();
 
     public FactoryTerrain(long seed, Plateaus plateaus, int spawnRadius) {
+        this.seed = seed;
         this.plateau = new FactoryNoise(seed * 31 + 1, 260, 3);
         this.lake = new FactoryNoise(seed * 31 + 2, 200, 3);
         this.river = new FactoryNoise(seed * 31 + 3, 520, 2);
@@ -65,7 +69,9 @@ public final class FactoryTerrain {
     /** The top block of the surface in this column. */
     public int height(int x, int z) {
         long key = key(Math.floorDiv(x, CELL), Math.floorDiv(z, CELL));
-        return cache.get().height(this, key, Math.floorDiv(x, CELL), Math.floorDiv(z, CELL));
+        Cache cache = CACHE.get();
+        cache.bind(this);
+        return cache.height(this, key, Math.floorDiv(x, CELL), Math.floorDiv(z, CELL));
     }
 
     private static long key(int cellX, int cellZ) {
@@ -220,6 +226,11 @@ public final class FactoryTerrain {
         };
     }
 
+    /** How many caches were allocated so far (one per thread is expected; for the tests). */
+    static int cachesCreated() {
+        return CACHES_CREATED.get();
+    }
+
     /** A per-thread cache of cells, so a column costs a lookup and a cell a handful of noise values. */
     private static final class Cache {
         private static final int BITS = 14;
@@ -233,7 +244,29 @@ public final class FactoryTerrain {
         private final long[] riverKeys = new long[1 << BITS];
         private final int[] rivers = new int[1 << BITS];
 
+        private boolean bound;
+        private long seed;
+        private Plateaus plateaus;
+        private int spawnRadius;
+
         Cache() {
+            CACHES_CREATED.incrementAndGet();
+            clear();
+        }
+
+        /** Makes the cache valid for this terrain: terrains with the same settings are the same function and share the entries. */
+        void bind(FactoryTerrain terrain) {
+            if (bound && seed == terrain.seed && plateaus == terrain.plateaus && spawnRadius == terrain.spawnRadius) {
+                return;
+            }
+            clear();
+            bound = true;
+            seed = terrain.seed;
+            plateaus = terrain.plateaus;
+            spawnRadius = terrain.spawnRadius;
+        }
+
+        private void clear() {
             java.util.Arrays.fill(heightKeys, Long.MIN_VALUE);
             for (long[] keys : layerKeys) {
                 java.util.Arrays.fill(keys, Long.MIN_VALUE);
