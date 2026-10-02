@@ -74,6 +74,11 @@ public final class FluidRecipes {
                             List.of(new ItemStack(ModItems.SULFUR.get(), 5), new ItemStack(Items.IRON_INGOT, 1)),
                             List.of(new FluidStack(Fluids.WATER, 100)),
                             ItemStack.EMPTY, List.of(new FluidStack(ModFluids.SULFURIC_ACID.get(), 50)), 20),
+                    // Wiki 1.1: explosives 4 s, 1 coal + 1 sulfur + 10 water make 2
+                    recipe("chem/explosives", FluidMachineType.CHEMICAL_PLANT,
+                            List.of(new ItemStack(Items.COAL, 1), new ItemStack(ModItems.SULFUR.get(), 1)),
+                            List.of(new FluidStack(Fluids.WATER, 10)),
+                            new ItemStack(ModItems.EXPLOSIVES.get(), 2), List.of(), 80),
                     recipe("chem/battery", FluidMachineType.CHEMICAL_PLANT,
                             List.of(new ItemStack(Items.IRON_INGOT, 1), new ItemStack(Items.COPPER_INGOT, 1)),
                             List.of(new FluidStack(ModFluids.SULFURIC_ACID.get(), 20)),

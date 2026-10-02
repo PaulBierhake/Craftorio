@@ -10,6 +10,8 @@ import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.Rarity;
+import de.craftorio.world.tool.CliffExplosivesItem;
+import de.craftorio.world.tool.LandfillItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -151,6 +153,9 @@ public final class ModItems {
     public static final DeferredItem<Item> URANIUM_FUEL_CELL = ITEMS.registerSimpleItem("uranium_fuel_cell", new Item.Properties().stacksTo(50));
     public static final DeferredItem<Item> USED_UP_FUEL_CELL = ITEMS.registerSimpleItem("used_up_fuel_cell", new Item.Properties().stacksTo(50));
     public static final DeferredItem<Item> URANIUM_MAGAZINE = ITEMS.registerSimpleItem("uranium_magazine");
+    public static final DeferredItem<Item> EXPLOSIVES = ITEMS.registerSimpleItem("explosives");
+    public static final DeferredItem<Item> LANDFILL = ITEMS.registerItem("landfill", LandfillItem::new, new Item.Properties());
+    public static final DeferredItem<Item> CLIFF_EXPLOSIVES = ITEMS.registerItem("cliff_explosives", CliffExplosivesItem::new, new Item.Properties());
     public static final DeferredItem<Item> SULFUR = ITEMS.registerSimpleItem("sulfur");
     public static final DeferredItem<Item> BATTERY = ITEMS.registerSimpleItem("battery");
     public static final DeferredItem<Item> ADVANCED_CIRCUIT = ITEMS.registerSimpleItem("advanced_circuit");

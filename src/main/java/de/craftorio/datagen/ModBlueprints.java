@@ -155,6 +155,10 @@ public final class ModBlueprints {
         add(context, "ap_magazine", stack(ModItems.AP_MAGAZINE.get(), 1),
                 SizedIngredient.of(ModItems.MAGAZINE.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), copper(5));
         add(context, "grenade", stack(ModItems.GRENADE.get(), 1), SizedIngredient.of(Items.COAL, 5), iron(5));
+        add(context, "landfill", stack(ModItems.LANDFILL.get(), 1), SizedIngredient.of(Items.COBBLESTONE, 20));
+        add(context, "cliff_explosives", stack(ModItems.CLIFF_EXPLOSIVES.get(), 1),
+                SizedIngredient.of(ModItems.EXPLOSIVES.get(), 10), SizedIngredient.of(ModItems.GRENADE.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1));
         add(context, "stone_wall", stack(ModItems.STONE_WALL.get(), 1), SizedIngredient.of(ModItems.STONE_BRICK.get(), 5));
         add(context, "military_science", stack(ModItems.MILITARY_SCIENCE.get(), 2),
                 SizedIngredient.of(ModItems.AP_MAGAZINE.get(), 1), SizedIngredient.of(ModItems.GRENADE.get(), 1),

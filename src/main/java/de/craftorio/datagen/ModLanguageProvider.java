@@ -111,6 +111,14 @@ public final class ModLanguageProvider {
             add(ModItems.AP_MAGAZINE.get(), "Armour-Piercing Magazine");
             add(ModItems.GRENADE.get(), "Grenade");
             add(ModItems.STONE_WALL.get(), "Stone Wall");
+            add(ModItems.EXPLOSIVES.get(), "Explosives");
+            add(ModItems.LANDFILL.get(), "Landfill");
+            add(ModItems.CLIFF_EXPLOSIVES.get(), "Cliff Explosives");
+            add("craftorio.research.landfill", "Landfill");
+            add("craftorio.research.explosives", "Explosives");
+            add("craftorio.research.cliff_explosives", "Cliff Explosives");
+            add("craftorio.tool.landfill.no_water", "Aim at water: landfill fills a 3x3 area of water with earth.");
+            add("craftorio.tool.cliff.no_cliff", "No cliff here: cliff explosives lower a 5x5 area of a plateau by one step. Click the plateau near its edge.");
             add(ModBlocks.FLAMETHROWER_TURRET.get(), "Flamethrower Turret");
             add(ModBlocks.MORTAR_TURRET.get(), "Mortar Turret");
             add(ModBlocks.SUPPLY_DEPOT.get(), "Supply Depot");
@@ -352,6 +360,8 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.magazine.desc", "Magazine: 4 iron plates, ammunition for the gun turret.");
             add("craftorio.blueprint.ap_magazine.desc", "Armour-piercing magazine: a magazine, a steel plate and 5 copper plates.");
             add("craftorio.blueprint.grenade.desc", "Grenade: 5 coal and 5 iron plates; an ingredient of the military science pack.");
+            add("craftorio.blueprint.landfill.desc", "Landfill: 20 cobblestone. Right-click water to fill a 3x3 area with earth up to the water surface.");
+            add("craftorio.blueprint.cliff_explosives.desc", "Cliff explosives: 10 explosives, a grenade and a steel plate. Right-click a plateau near its edge to lower a 5x5 area by one step.");
             add("craftorio.blueprint.stone_wall.desc", "Stone wall: 5 stone bricks; an ingredient of the military science pack.");
             add("craftorio.blueprint.military_science.desc", "Military science pack: an armour-piercing magazine, a grenade and 2 walls make two packs.");
             add("craftorio.blueprint.mortar_turret.desc", "Mortar turret: lobs grenades from the arena reserve, an explosion that hits many enemies and, upgraded, stuns or flattens them.");
@@ -1031,6 +1041,14 @@ public final class ModLanguageProvider {
             add(ModItems.AP_MAGAZINE.get(), "Panzerbrechendes Magazin");
             add(ModItems.GRENADE.get(), "Granate");
             add(ModItems.STONE_WALL.get(), "Steinmauer");
+            add(ModItems.EXPLOSIVES.get(), "Sprengstoff");
+            add(ModItems.LANDFILL.get(), "Landfüller");
+            add(ModItems.CLIFF_EXPLOSIVES.get(), "Klippensprengstoff");
+            add("craftorio.research.landfill", "Landfüller");
+            add("craftorio.research.explosives", "Explosivstoffe");
+            add("craftorio.research.cliff_explosives", "Klippensprengstoff");
+            add("craftorio.tool.landfill.no_water", "Ziele auf Wasser: Der Landfüller füllt ein 3x3-Feld Wasser mit Erde.");
+            add("craftorio.tool.cliff.no_cliff", "Hier ist keine Klippe: Klippensprengstoff senkt ein 5x5-Feld einer Hochebene um eine Stufe ab. Klicke auf die Hochebene nahe der Kante.");
             add(ModBlocks.FLAMETHROWER_TURRET.get(), "Flammenwerfer-Turm");
             add(ModBlocks.MORTAR_TURRET.get(), "Mörser-Turm");
             add(ModBlocks.SUPPLY_DEPOT.get(), "Nachschublager");
@@ -1271,6 +1289,8 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.magazine.desc", "Magazin: 4 Eisenplatten, Munition für den Geschützturm.");
             add("craftorio.blueprint.ap_magazine.desc", "Panzerbrechendes Magazin: ein Magazin, eine Stahlplatte und 5 Kupferplatten.");
             add("craftorio.blueprint.grenade.desc", "Granate: 5 Kohle und 5 Eisenplatten; Zutat des Militärpakets.");
+            add("craftorio.blueprint.landfill.desc", "Landfüller: 20 Bruchstein. Rechtsklick auf Wasser füllt ein 3x3-Feld bis zur Wasseroberfläche mit Erde.");
+            add("craftorio.blueprint.cliff_explosives.desc", "Klippensprengstoff: 10 Sprengstoff, eine Granate und eine Stahlplatte. Rechtsklick auf eine Hochebene nahe der Kante senkt ein 5x5-Feld um eine Stufe ab.");
             add("craftorio.blueprint.stone_wall.desc", "Steinmauer: 5 Steinziegel; Zutat des Militärpakets.");
             add("craftorio.blueprint.military_science.desc", "Militärpaket (grau): ein panzerbrechendes Magazin, eine Granate und 2 Mauern ergeben zwei Pakete.");
             add("craftorio.blueprint.mortar_turret.desc", "Mörser-Turm: wirft Granaten aus dem Arena-Vorrat, eine Explosion trifft viele Gegner und betäubt oder wirft sie, aufgerüstet, zurück.");

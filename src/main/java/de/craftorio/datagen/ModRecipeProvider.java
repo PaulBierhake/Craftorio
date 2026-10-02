@@ -147,6 +147,11 @@ public final class ModRecipeProvider extends RecipeProvider {
                 SizedIngredient.of(ModItems.MAGAZINE.get(), 1), SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1), SizedIngredient.of(Items.COPPER_INGOT, 5));
         assemble(output, "grenade", new ItemStack(ModItems.GRENADE.get()), 160,
                 SizedIngredient.of(Items.COAL, 5), SizedIngredient.of(Items.IRON_INGOT, 5));
+        // Terrain tools (wiki 1.1): landfill 0.5 s, cliff explosives 8 s (the empty barrel is replaced by a steel plate)
+        assemble(output, "landfill", new ItemStack(ModItems.LANDFILL.get()), 10, SizedIngredient.of(Items.COBBLESTONE, 20));
+        assemble(output, "cliff_explosives", new ItemStack(ModItems.CLIFF_EXPLOSIVES.get()), 160,
+                SizedIngredient.of(ModItems.EXPLOSIVES.get(), 10), SizedIngredient.of(ModItems.GRENADE.get(), 1),
+                SizedIngredient.of(ModItems.STEEL_PLATE.get(), 1));
         assemble(output, "stone_wall", new ItemStack(ModItems.STONE_WALL.get()), 10, SizedIngredient.of(ModItems.STONE_BRICK.get(), 5));
         assemble(output, "military_science", new ItemStack(ModItems.MILITARY_SCIENCE.get(), 2), 200,
                 SizedIngredient.of(ModItems.AP_MAGAZINE.get(), 1), SizedIngredient.of(ModItems.GRENADE.get(), 1),

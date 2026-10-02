@@ -27,7 +27,7 @@ public final class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.STEEL_PLATE.get(), ModItems.STONE_BRICK.get(), ModItems.IRON_GEAR.get(), ModItems.COPPER_CABLE.get(),
                 ModItems.IRON_STICK.get(), ModItems.PIPE.get(), ModItems.CIRCUIT.get(), ModItems.ADVANCED_CIRCUIT.get(),
                 ModItems.PROCESSING_UNIT.get(), ModItems.MOTOR.get(), ModItems.ELECTRIC_ENGINE.get(), ModItems.FLYING_ROBOT_FRAME.get(),
-                ModItems.LOW_DENSITY_STRUCTURE.get(), ModItems.PLASTIC_BAR.get(), ModItems.SULFUR.get(), ModItems.BATTERY.get(),
+                ModItems.LOW_DENSITY_STRUCTURE.get(), ModItems.PLASTIC_BAR.get(), ModItems.SULFUR.get(), ModItems.EXPLOSIVES.get(), ModItems.BATTERY.get(),
                 ModItems.SOLID_FUEL.get(), ModItems.URANIUM_235.get(), ModItems.URANIUM_238.get(),
                 ModItems.RED_SCIENCE.get(), ModItems.GREEN_SCIENCE.get(), ModItems.BLUE_SCIENCE.get(), ModItems.MILITARY_SCIENCE.get()};
         tag(ProductivityRules.ALLOWED).add(intermediates);

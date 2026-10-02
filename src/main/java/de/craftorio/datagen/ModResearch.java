@@ -58,6 +58,11 @@ public final class ModResearch {
         add(context, "battery", 150, 30, R_G, List.of("sulfur_processing"), List.of("chem/battery"));
         add(context, "military_2", 20, 15, R_G, List.of("turrets", "logistic_science_pack"),
                 List.of("ap_magazine", "grenade", "assembling/ap_magazine", "assembling/grenade", "mortar_turret"));
+        // Terrain tools (docs/WELT-UMBAU.md §6, values from wiki 1.1)
+        add(context, "landfill", 50, 30, R_G, List.of("logistic_science_pack"), List.of("landfill", "assembling/landfill"));
+        add(context, "explosives", 100, 15, R_G, List.of("sulfur_processing"), List.of("chem/explosives"));
+        add(context, "cliff_explosives", 200, 15, R_G, List.of("explosives", "military_2"),
+                List.of("cliff_explosives", "assembling/cliff_explosives"));
         add(context, "stone_walls", 10, 10, List.of(), List.of("stone_wall", "assembling/stone_wall"));
         // Tower technology (T3): upgrade tiers 3, 4 and 5 of every tower need these (replacing the XP of Bloons TD 6).
         add(context, "tower_tech_1", 75, 30, R_G, List.of("turrets", "logistic_science_pack"), List.of());

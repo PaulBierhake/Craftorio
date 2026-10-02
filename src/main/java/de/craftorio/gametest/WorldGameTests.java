@@ -4,6 +4,7 @@ import de.craftorio.Craftorio;
 import de.craftorio.world.terrain.FactoryChunkGenerator;
 import de.craftorio.world.terrain.FactoryTerrain;
 import de.craftorio.world.OreFieldFeature;
+import de.craftorio.world.tool.WorldTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
@@ -108,5 +109,67 @@ public final class WorldGameTests {
         helper.assertBlock(new BlockPos(3, 1, 3), block -> block == Blocks.IRON_BLOCK, () -> "field under the tree");
         helper.assertBlock(new BlockPos(3, 2, 3), block -> block == Blocks.AIR, () -> "trunk removed above the field");
         helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void landfillFillsThreeByThreeOfWater(GameTestHelper helper) {
+        var level = helper.getLevel();
+        BlockPos center = helper.absolutePos(BlockPos.ZERO).offset(96, 0, 0).atY(FactoryTerrain.SEA_LEVEL - 1);
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                level.setBlock(center.offset(dx, -3, dz), Blocks.DIRT.defaultBlockState(), 2);
+                for (int y = -2; y <= 0; y++) {
+                    level.setBlock(center.offset(dx, y, dz), Blocks.WATER.defaultBlockState(), 2);
+                }
+                level.setBlock(center.offset(dx, 1, dz), Blocks.AIR.defaultBlockState(), 2);
+            }
+        }
+        int filled = WorldTools.landfill(level, center);
+        helper.assertTrue(filled == 9, "filled " + filled + " columns instead of 9");
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                helper.assertTrue(level.getBlockState(center.offset(dx, 0, dz)).is(Blocks.GRASS_BLOCK), "grass on top at " + dx + "," + dz);
+                helper.assertTrue(level.getBlockState(center.offset(dx, -1, dz)).is(Blocks.DIRT), "earth below at " + dx + "," + dz);
+                helper.assertTrue(level.getBlockState(center.offset(dx, -2, dz)).is(Blocks.DIRT), "earth at the bottom at " + dx + "," + dz);
+            }
+        }
+        helper.assertTrue(level.getBlockState(center.offset(2, 0, 0)).is(Blocks.WATER), "the water around stays");
+        helper.assertTrue(level.getBlockState(center.offset(0, 0, 2)).is(Blocks.WATER), "the water around stays");
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void cliffExplosivesLowerFiveByFiveOfAPlateau(GameTestHelper helper) {
+        var level = helper.getLevel();
+        BlockPos center = helper.absolutePos(BlockPos.ZERO).offset(160, 0, 0).atY(FactoryTerrain.PLATEAU_ONE);
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -6; dz <= 6; dz++) {
+                int top = dx <= 0 ? FactoryTerrain.PLATEAU_ONE : FactoryTerrain.GROUND;
+                for (int y = FactoryTerrain.GROUND - 4; y <= FactoryTerrain.PLATEAU_TWO + 2; y++) {
+                    var state = y > top ? Blocks.AIR.defaultBlockState() : y == top ? Blocks.GRASS_BLOCK.defaultBlockState()
+                            : y > top - 4 ? Blocks.DIRT.defaultBlockState() : Blocks.STONE.defaultBlockState();
+                    level.setBlock(center.offset(dx, y - FactoryTerrain.PLATEAU_ONE, dz), state, 2);
+                }
+            }
+        }
+        int lowered = WorldTools.blastCliff(level, center);
+        helper.assertTrue(lowered == 15, "lowered " + lowered + " columns instead of 15 (3 columns of the plateau in the 5 x 5 area)");
+        for (int dx = -2; dx <= 0; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                BlockPos column = center.offset(dx, 0, dz);
+                for (int y = FactoryTerrain.GROUND + 1; y <= FactoryTerrain.PLATEAU_ONE; y++) {
+                    helper.assertTrue(level.getBlockState(column.atY(y)).isAir(), "air at " + dx + "," + y + "," + dz);
+                }
+                helper.assertTrue(level.getBlockState(column.atY(FactoryTerrain.GROUND)).is(Blocks.GRASS_BLOCK), "grass on the new level");
+            }
+        }
+        helper.assertTrue(!level.getBlockState(center.offset(-3, 0, 0)).isAir(), "outside the 5 x 5 area the plateau stays");
+        helper.assertTrue(!level.getBlockState(center.offset(0, 0, 3)).isAir(), "outside the 5 x 5 area the plateau stays");
+        helper.assertTrue(blastOfFlatGround(level, center.offset(5, 0, 0).atY(FactoryTerrain.GROUND)) == 0, "no cliff on the ground level");
+        helper.succeed();
+    }
+
+    private static int blastOfFlatGround(net.minecraft.world.level.Level level, BlockPos pos) {
+        return WorldTools.blastCliff(level, pos);
     }
 }

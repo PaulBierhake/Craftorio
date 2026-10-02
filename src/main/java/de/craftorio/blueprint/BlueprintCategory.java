@@ -11,7 +11,7 @@ public enum BlueprintCategory {
 
     static {
         add(PARTS, "iron_gear", "copper_cable", "circuit", "iron_stick", "pipe", "red_science", "green_science", "military_science",
-                "chemical_science", "rail", "flying_robot_frame", "low_density_structure");
+                "chemical_science", "rail", "flying_robot_frame", "low_density_structure", "landfill", "cliff_explosives");
         add(LOGISTICS, "conveyor_belt", "fast_belt", "underground_belt", "fast_underground_belt", "splitter", "fast_splitter", "inserter",
                 "long_inserter", "fast_inserter", "filter_inserter", "elevator", "trading_post", "terminal");
         add(PRODUCTION, "stone_furnace", "steel_furnace", "electric_furnace", "burner_drill", "electric_drill", "deep_drill", "assembler",
