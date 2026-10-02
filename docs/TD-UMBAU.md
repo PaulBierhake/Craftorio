@@ -38,7 +38,7 @@ Werte vor der Umsetzung gegen **https://www.bloonswiki.com** prüfen; die Seiten
 | Türme mit 3 Pfaden × 5 Stufen | Arena-Türme mit 3 Pfaden × 5 Stufen, Stufen 3–5 durch **Forschung** freigeschaltet |
 | Affen-Wissen (Meta-Fortschritt) | Forschungszweig **„Arena-Wissen"** (Militär-Pakete) |
 | XP-Freischaltung von Aufrüstungen | Forschung in der Fabrik |
-| Feste Strecke | Spieler legt den Pfad mit dem Pfadstab, aber mit **Längenfenster** (§5.4) |
+| Feste Karten mit fester Strecke | **Feste Karten nach BTD6-Vorbild** mit vorgegebener Strecke, Kategorien Anfänger bis Experte (§13, Paket T8). Bis T8 umgesetzt ist: Pfadstab mit Längenfenster (§5.4) |
 
 Die Fabrik bleibt mit der Arena verbunden:
 - Türme werden in der Fabrik **gebaut** (Item, Forschung).
@@ -399,7 +399,10 @@ blockiert, blockiert weiterhin Pfad und Türme.
 
 Wie BTD6: **Erster, Letzter, Nächster, Stärkster** (ersetzt Schwächster). Tarnung hat keine Sonderpriorität.
 
-### 5.4 Pfadlänge
+### 5.4 Pfadlänge (wird durch T8 ersetzt)
+
+> Gilt nur bis Paket T8. Danach gibt es keinen Pfadstab mehr; die Länge kommt aus der Karte (§13).
+
 
 Die BTD6-Balance setzt eine feste Streckenlänge voraus. Der Pfadstab erzwingt deshalb ein **Längenfenster**:
 - Mindestens **100**, höchstens **160 Blöcke**. Prüfung gegen das Wiki: Die Seiten der Karten geben die Streckenlänge
@@ -717,4 +720,133 @@ Werte sind damit ohne Code anpassbar (Datapack, `/reload`).
 | TD-E5 | Exotische Stufe-4/5-Effekte (Nekromant, Sonnentempel-Opfer, Fanclub-Verwandlung) 1:1? | Soweit mit der Gegner-Engine machbar ja; sonst gleichwertiger Ersatz mit denselben Kosten, im Dokument festhalten |
 | TD-E6 | Gegner greifen keine Türme mehr an (Turm-HP, Ruinen, Reparatur entfallen)? | **Ja**, wie BTD6 |
 | TD-E7 | Helden (BTD6-Heroes) übernehmen? | **Später** (eigenes Paket T8), weil sie viel eigene Mechanik haben |
-| TD-E8 | Pfadlängen-Fenster 100–160 Blöcke? | **Ja**, im Spieltest mit dem Simulator nachjustieren |
+| TD-E8 | Pfadlängen-Fenster 100–160 Blöcke? | ~~Ja~~ → **ersetzt durch T8** (feste Karten, §13) |
+
+---
+
+## 13. T8 – Karten nach BTD6 (feste Strecken)
+
+In BTD6 legt der Spieler **keinen** Weg: Jede Karte hat eine feste Strecke, die Abwechslung kommt aus vielen Karten in
+vier Schwierigkeitskategorien. Das übernehmen wir. Der Pfadstab und der Zufallsgenerator für das Feldinnere
+(`ArenaLayout.generate`) entfallen. Die Themen-Paletten aus D7 bleiben für die Optik.
+
+### 13.1 Was wir übernehmen und was nicht
+
+| Übernehmen (Regeln und Zahlen) | Nicht übernehmen |
+|---|---|
+| Kategorien Anfänger, Fortgeschritten, Profi, Experte | Kartennamen, Grafiken, Texte |
+| Pro Karte: Anzahl Eingänge, Ausgänge, Kreuzungen, **Streckenlänge in „Red Bloon Seconds" (RBS)**, Wasseranteil, Sichtblocker, entfernbare Hindernisse mit Preisen, Sondermechanik | Die exakte Streckenform abpausen |
+
+Unsere Karten werden **nachgebaut**: eigene Strecke, aber mit denselben Kennzahlen wie ein bestimmtes BTD6-Vorbild,
+damit die BTD6-Balance stimmt. Die Vorbilder stehen intern in den Kartendaten (Feld `reference`), nicht im Spiel.
+
+### 13.2 Kategorien
+
+Laut bloonswiki.com, „List of maps in BTD6": 89 Karten; Spannweite der Streckenlänge (Schwer, RBS):
+
+| Kategorie | Anzahl in BTD6 | Länge (Schwer) | Typische Merkmale |
+|---|---|---|---|
+| Anfänger | 26 | 26,5–53,4 s | ein langer Weg, viel Platz, kaum Hindernisse |
+| Fortgeschritten | 26 | 16,0–35,5 s | Wasser, erste Sichtblocker, teils 2 Wege |
+| Profi | 23 | 8,5–25,2 s | kurze Wege, wenig Platz, entfernbare Hindernisse, Sondermechaniken |
+| Experte | 14 | 3,5–19,4 s | sehr kurz oder viele Eingänge (z. B. 4 Eingänge → 1 Ausgang), Spezialregeln |
+
+**Umrechnung:**
+- Streckenlänge in Blöcken = RBS (Leicht) × 2,5. Wiki-Werte für Mittel ×1,1, für Schwer ×1,25 auf Leicht umrechnen.
+- Beispiele:
+  - Vorbild Monkey Meadow: Leicht 36,5 s → **91 Blöcke**
+  - Vorbild Infernal: 2 Wege à Leicht 24,4/24,1 s → je ca. **61 Blöcke**, Eingänge im Wechsel pro Runde
+  - Vorbild Dark Castle: 4 Eingänge (Leicht 12,5/11,4/11,4/12,5 s → 31/29/29/31 Blöcke) zu 1 Ausgang, 2 Kreuzungen;
+    Bäume über den Eingängen machen Gegner unverwundbar und kosten je 1.000 ⛁ zum Entfernen
+
+### 13.3 Kartenformat (datengetrieben)
+
+- `data/craftorio/td_maps/<id>.json`:
+  - `name`: Sprachschlüssel
+  - `category`, `theme` (Wald/Berge/Feuer/Wasser/Kolosseum)
+  - `size`: Standard 41 × 41, Anfänger-Karten bis 61 × 61
+  - `reference`: BTD6-Vorbild, nur intern
+  - `grid`: ASCII-Raster, ein Zeichen pro Block
+
+    | Zeichen | Bedeutung |
+    |---|---|
+    | `.` | Boden, Turm erlaubt |
+    | `#` | Hindernis, blockiert Sicht |
+    | `~` | Wasser, kein Turm |
+    | `^` | Plateau, Turm erlaubt, blockiert Sicht von unten |
+    | `R` | entfernbar (Kosten in `removables`) |
+    | `=` | Strecke (nur zur Kontrolle, siehe `paths`) |
+  - `paths`: Liste von Wegen, jeweils Eingang, Wegpunkte (gerade Abschnitte zwischen Blockkoordinaten) und Ausgang;
+    Kreuzungen über gemeinsame Wegpunkte
+  - `removables`: Position/Fläche, Preis in ⛁, was sich danach ändert (Sichtblocker weg, Bauplatz frei, Typ wechselt)
+  - `mechanics`: optionale Sondermechanik, siehe §13.5
+- Der `ArenaBuilder` baut die Karte aus Raster + Themen-Palette (D7). Strecke als Pfadblöcke, Eingänge als Portale in
+  der Wand, Ausgänge als **Leck-Tore** zum Kern (mehrere Ausgänge teilen sich die Leben).
+- Das ASCII-Format lässt sich gut ohne Spiel erstellen und prüfen; jede Karte hat eine Vorschau als PNG
+  (`docs/screenshots/maps/<id>.png`, Datagen-Skript).
+
+### 13.4 Erster Kartensatz (20 Karten)
+
+Pro Karte ein BTD6-Vorbild. Die Kennzahlen (Wege, RBS je Weg, Wasser, Sichtblocker, entfernbare Hindernisse mit
+Preisen, Mechanik) liest die Umsetzung von der Wiki-Seite `https://www.bloonswiki.com/<Name>_(BTD6)` ab und trägt sie
+in die JSON ein.
+
+| Kategorie | Anzahl | Vorbilder (Vorschlag) |
+|---|---|---|
+| Anfänger | 6 | Monkey Meadow, Logs, Tree Stump, Town Center, Alpine Run, Park Path |
+| Fortgeschritten | 6 | Balance, Encrypted, Bazaar, Spring Spring, Moon Landing, Streambed |
+| Profi | 5 | Cornfield, Dark Path, Spillway, Cargo, Peninsula |
+| Experte | 3 | Infernal, Dark Castle, Ravine |
+
+Themen-Zuordnung frei nach Optik (z. B. Feuer für Infernal, Wasser für Streambed). Nicht zu Minecraft passende
+Mechaniken bekommen einen gleichwertigen Ersatz, im JSON dokumentiert.
+
+### 13.5 Kartenmechaniken
+
+| Mechanik | BTD6 | Umsetzung |
+|---|---|---|
+| Sichtlinie | Hindernisse und höheres Gelände blockieren das Zielen | Strahlprüfung Turm → Gegner über das Raster; **Mörser** (schießt nach oben), zielsuchendes Tesla (Pfad 1 Stufe 1) und Frost-Aura ignorieren Sichtlinien; Geschütz trotz unendlicher Reichweite **nicht** |
+| Entfernbare Hindernisse | Preise fest, unabhängig vom Schwierigkeitsgrad | Rechtsklick in der Arena → Bestätigung → ⛁ abziehen, Blöcke ersetzen |
+| Mehrere Eingänge gleichzeitig | Gruppen einer Runde werden auf die Eingänge verteilt (Wiki je Karte) | `paths` mit Gewichten; Standard: reihum |
+| Wechselnde Eingänge | Infernal: ungerade Runden oben, gerade unten | `mechanics: alternate_entrances` |
+| Deckung am Eingang | Dark Castle: unter Bäumen unverwundbar, bis entfernt | `mechanics: entrance_cover` + Entfernbar |
+| Wasser | Bauplatz nur für Wasser-Türme | kein Wasserturm im Turmsatz → Wasser ist nicht bebaubar (später ggf. ein Boot-Turm) |
+
+### 13.6 Kartenwahl in der Kampagne
+
+| Variante | Ablauf | Nähe zu BTD6 |
+|---|---|---|
+| **A – Akte (Empfehlung)** | Die Kampagne hat **5 Akte à 10 Level** (Level 1–10, 11–20 …). Zu Beginn jedes Akts wählt das Team **eine Karte aus drei angebotenen**; sie bleibt für den ganzen Akt (20 Runden) | hoch: In BTD6 spielt man ein ganzes Spiel auf einer Karte und baut seine Verteidigung dort aus |
+| B – Neue Karte pro Level | Jedes Level (2 Runden) eine neue Karte aus dem Pool, wie bisher | geringer: Verteidigung muss alle 2 Runden neu aufgestellt werden |
+
+- Angeboten werden Karten aus Kategorien, die zum Akt passen: Akt 1 nur Anfänger; ab Akt 2 je eine Karte aus zwei
+  Kategorien; ab Akt 4 auch Experte.
+- **Credits-Belohnung nach Kategorie:** Anfänger ×1,0; Fortgeschritten ×1,15; Profi ×1,3; Experte ×1,5 (Vorschlag,
+  angelehnt an die höheren Belohnungen schwerer Karten in BTD6).
+- Sterne und Rangliste werden pro Karte gespeichert (wie Medaillen in BTD6).
+- Bei Variante A wandern Türme nur beim **Aktwechsel** ins Depot; innerhalb eines Akts bleibt alles stehen.
+- Variante A **ändert** eine frühere Entscheidung (Arena-Umbau: „Das Innere der Zone soll sich jedes Level
+  verändern"). Abwechslung entsteht dann durch die Kartenwahl pro Akt statt durch eine neue Karte alle 2 Runden.
+
+### 13.7 Paket T8
+
+| Inhalt | Akzeptanz |
+|---|---|
+| Kartenformat §13.3 inkl. Loader und Validierung | Unit-Test pro Karte: Strecke zusammenhängend, alle Eingänge erreichen einen Ausgang, Längen je Weg = Vorbild-RBS × 2,5 ± 10 %, Kreuzungen und Eingänge wie Vorbild, mindestens so viel Bauland wie das Vorbild grob vorgibt (≥ 150 Blöcke Anfänger … ≥ 60 Experte) |
+| 20 Karten nach §13.4 | Vorschau-PNGs im Repo |
+| `ArenaBuilder` baut Karten; Leck-Tore; Mechaniken §13.5 | GameTests: Sichtblocker verhindert Zielen; Entfernen kostet ⛁ und öffnet Bauplatz; wechselnde Eingänge wechseln pro Runde |
+| Kartenwahl §13.6 (Akte), Belohnungsfaktor, Sterne pro Karte | GameTest: Akt-Start bietet 3 Karten an; Wahl bleibt 10 Level |
+| Pfadstab und `ArenaLayout.generate` entfernen; Migration: Pfadstab-Items verschwinden, laufende Zonen bekommen beim nächsten Level-Start eine Karte | alle bisherigen Tests angepasst und grün |
+| Balancing-Simulator nutzt die echten Kartenlängen | Referenz-Sets schaffen Runde 1–100 auf je einer Anfänger- und einer Profi-Karte; Experte nur mit erweitertem Set |
+| Handbuch-Seite „Karten", README | – |
+
+### 13.8 Entscheidungen T8
+
+| ID | Frage | Empfehlung (gilt, falls nichts anderes entschieden wird) |
+|---|---|---|
+| T8-E1 | Feste Karten statt Pfadstab? | **Ja** (BTD6 1:1) |
+| T8-E2 | Nachbauen mit gleichen Kennzahlen statt Strecken 1:1 abpausen? | **Ja**: gleiche Balance, eigene Gestaltung, keine Übernahme fremder Kartendesigns |
+| T8-E3 | Kartenwahl: Akte à 10 Level (A) oder neue Karte pro Level (B)? | **A**, näher an BTD6 und weniger Neuaufbau in Minecraft |
+| T8-E4 | Umfang zum Start? | 20 Karten (6/6/5/3), später erweiterbar |
+| T8-E5 | Wasser-Türme (Boot) für Wasserflächen? | **Später**; vorerst ist Wasser nicht bebaubar |
+
