@@ -118,13 +118,13 @@ eigene Erhebungen, die Wüste nehmen.
 
 ## 6. Werkzeuge für den Rest
 
-Factorio-Vorbild 1:1 *(Werte gegen wiki.factorio.com 1.1 prüfen)*:
+Factorio-Vorbild 1:1. Die Werte sind gegen wiki.factorio.com geprüft (Stand 1.1; die Wiki-Historie nennt die Änderungen der Version 2.0):
 
 | Item | Rezept | Wirkung | Forschung |
 |---|---|---|---|
-| **Landfüller** | 0,5 s · 20 Stein → 1 *(prüfen: 20 oder 50)* | Rechtsklick auf Wasser füllt ein **3×3**-Feld bis zur Wasseroberfläche (Oberkante y = 63) mit Erde, oben Gras bzw. Biom-Boden | „Landfüller" 50 × R+G, 30 s *(prüfen)* |
-| **Sprengstoff** | 4 s · 1 Kohle + 1 Schwefel + 10 Wasser → 2 *(prüfen)* | Zwischenprodukt | „Explosivstoffe" 100 × R+G, 15 s *(prüfen)* |
-| **Klippensprengstoff** | 8 s · 10 Sprengstoff + 1 Granate + 1 Fass *(Fass gibt es nicht: durch 1 Stahl ersetzen)* | Wurf oder Rechtsklick auf eine Kante: senkt ein **5×5**-Feld der Hochebene auf die angrenzende tiefere Stufe ab; Abraum fällt als Stein | „Klippensprengstoff" 200 × R+G+B, 15 s *(prüfen)* |
+| **Landfüller** | 0,5 s · 20 Stein → 1 *(1.1; seit Factorio 2.0.7 sind es 50 Stein, hier gilt 1.1)* | Rechtsklick auf Wasser füllt ein **3×3**-Feld bis zur Wasseroberfläche (Oberkante y = 63) mit Erde, oben Gras bzw. Biom-Boden | „Landfüller" 50 × R+G, 30 s |
+| **Sprengstoff** | 4 s · 1 Kohle + 1 Schwefel + 10 Wasser → 2 | Zwischenprodukt | „Explosivstoffe" 100 × R+G, 15 s |
+| **Klippensprengstoff** | 8 s · 10 Sprengstoff + 1 Granate + 1 Fass *(Fass gibt es nicht: durch 1 Stahl ersetzen)* | Wurf oder Rechtsklick auf eine Kante: senkt ein **5×5**-Feld der Hochebene auf die angrenzende tiefere Stufe ab; Abraum fällt als Stein | „Klippensprengstoff" 200 × R+G (ohne blaue Packs), 15 s; Voraussetzungen „Explosivstoffe" und „Militär 2" |
 
 **Felsbrocken** (Factorio-Felsen) als Dekoration:
 - groß: 3×3×2 aus Stein, Andesit und Moosbruchstein; abgebaut 24–50 Stein + 10–25 Kohle
@@ -149,7 +149,7 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
 
 | Paket | Inhalt | Akzeptanz |
 |---|---|---|
-| **W1 – Geländegenerator** | `FactoryTerrain`, Rauschfelder, Dichtefunktion `factory_height`, Noise-Einstellung `craftorio:factory` (Datagen), Carver/Aquifere/Erzadern aus, Spalten-Cache | Unit-Test `FactoryTerrain` über 2.048 × 2.048 Spalten (fester Seed): ≥ 75 % Grundebene; nur die Höhen aus §4.1; Spawn-Radius 192 nur Grundebene; keine Fläche einer Stufe < 6 × 6 (Stichprobe). Laufzeit < 50 ns pro Spalte |
+| **W1 – Geländegenerator** ✅ | `FactoryTerrain`, Rauschfelder, Dichtefunktion `factory_height`, Noise-Einstellung `craftorio:factory` (Datagen), Carver/Aquifere/Erzadern aus, Spalten-Cache | Unit-Test `FactoryTerrain` über 2.048 × 2.048 Spalten (fester Seed): ≥ 75 % Grundebene; nur die Höhen aus §4.1; Spawn-Radius 192 nur Grundebene; keine Fläche einer Stufe < 6 × 6 (Stichprobe). Laufzeit < 50 ns pro Spalte |
 | **W2 – Biome und Welttyp** | Biomquelle nur Land (§5), World-Preset `craftorio:factory`, Vorauswahl im Erstellen-Bildschirm, Server-Doku, `LayerCheck`-Hinweis, Strukturen-Auswahl | GameTest bzw. Server-Start mit `level-type=craftorio:factory`: Chunks um den Spawn haben Oberfläche y = 64; in 1.024 × 1.024 Blöcken mindestens 6 verschiedene Biome, kein Ozean |
 | **W3 – Kompatibilität** | Höhlen- und Minenschicht unverändert (Test: unter y = 50 Deckgestein und Füllung), Erzfelder liegen eben, Starter-Felder in der Spawn-Ebene, Höhleneingang auf y = 64 setzbar, Arena-Dimension unberührt | GameTests für Schichten, Starter-Felder und Höhleneingang in einer Craftorio-Welt |
 | **W4 – Werkzeuge** | Landfüller, Sprengstoff, Klippensprengstoff, Forschungen, Rezepte (Rezepttabellen-Test erweitern) | GameTests: Landfüller füllt 3×3 Wasser; Klippensprengstoff senkt 5×5 einer Hochebene ab |
@@ -165,3 +165,11 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
 | W-E4 | Vanilla-Strukturen? | Nur Land-Dekoration (Dörfer, Ruinen); Untergrund- und Ozeanstrukturen aus |
 | W-E5 | Bestehende Welten umwandeln? | **Nein**; der Testdurchlauf startet in einer neuen Craftorio-Welt |
 | W-E6 | Größe der Spawn-Ebene? | **192 Blöcke Radius** (garantiert eben, ohne Wasser); Config `terrain.spawnRadius` |
+
+### Umsetzungsstand
+
+- **W1 ✅:** `FactoryTerrain` (reine Logik, 4×4-Zellen, Mehrheitsglättung) mit `FactoryNoise`; Dichtefunktion
+  `craftorio:factory_height` (`FactoryHeight`, Seed aus der Noise `craftorio:terrain_seed`), Noise-Einstellung
+  `craftorio:factory` per Datagen (Vanilla-Klima, Aquifere, Erzadern und Rauschhöhlen aus, Meeresspiegel 64, Wasser
+  bis y = 63). Config `terrain.plateaus` und `terrain.spawnRadius`. Die Vanilla-Carver hängen an den Biomen und werden
+  in W2 mit der Biomquelle abgeschaltet.

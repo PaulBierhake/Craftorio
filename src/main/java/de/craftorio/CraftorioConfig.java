@@ -1,5 +1,6 @@
 package de.craftorio;
 
+import de.craftorio.world.terrain.FactoryTerrain;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 /** Server-side settings; stored per world in serverconfig/craftorio-server.toml. */
@@ -50,6 +51,14 @@ public final class CraftorioConfig {
             .comment("Always day and clear weather in the overworld.")
             .define("world.eternalDay", true);
 
+    public static final ModConfigSpec.EnumValue<FactoryTerrain.Plateaus> TERRAIN_PLATEAUS = BUILDER
+            .comment("Plateaus with 4-block cliffs in a Craftorio world: none, rare or normal. Applies to chunks generated afterwards.")
+            .defineEnum("terrain.plateaus", FactoryTerrain.Plateaus.RARE);
+
+    public static final ModConfigSpec.IntValue TERRAIN_SPAWN_RADIUS = BUILDER
+            .comment("Radius in blocks around the world spawn that is guaranteed flat ground without water in a Craftorio world.")
+            .defineInRange("terrain.spawnRadius", 192, 16, 1024);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private CraftorioConfig() {
@@ -65,6 +74,22 @@ public final class CraftorioConfig {
 
     public static double researchCost() {
         return value(RESEARCH_COST, 1.0);
+    }
+
+    public static FactoryTerrain.Plateaus terrainPlateaus() {
+        try {
+            return TERRAIN_PLATEAUS.get();
+        } catch (IllegalStateException notLoaded) {
+            return FactoryTerrain.Plateaus.RARE;
+        }
+    }
+
+    public static int spawnRadius() {
+        try {
+            return TERRAIN_SPAWN_RADIUS.get();
+        } catch (IllegalStateException notLoaded) {
+            return 192;
+        }
     }
 
     /** A crafting or smelting time in ticks with the pacing factor applied (at least one tick). */

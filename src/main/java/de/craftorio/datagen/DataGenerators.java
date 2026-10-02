@@ -4,6 +4,7 @@ import de.craftorio.Craftorio;
 import de.craftorio.registry.ModRegistries;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
@@ -41,7 +42,9 @@ public final class DataGenerators {
         generator.addProvider(event.includeServer(), new ModItemTagsProvider(output, lookup, blockTags.contentsGetter(), fileHelper));
         generator.addProvider(event.includeServer(), new DatapackBuiltinEntriesProvider(output, lookup,
                 new RegistrySetBuilder().add(ModRegistries.BLUEPRINTS, ModBlueprints::bootstrap)
-                        .add(ModRegistries.RESEARCH, ModResearch::bootstrap), Set.of(Craftorio.MOD_ID)));
+                        .add(ModRegistries.RESEARCH, ModResearch::bootstrap)
+                        .add(Registries.NOISE, ModWorldgen::bootstrapNoises)
+                        .add(Registries.NOISE_SETTINGS, ModWorldgen::bootstrapNoiseSettings), Set.of(Craftorio.MOD_ID)));
         generator.addProvider(event.includeServer(), new ModSellPriceProvider(output, lookup));
         generator.addProvider(event.includeServer(), new ModRecipeProvider(output, lookup));
         generator.addProvider(event.includeServer(), new LootTableProvider(output, Set.of(),
