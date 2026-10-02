@@ -3,6 +3,7 @@ package de.craftorio.gametest;
 import de.craftorio.Craftorio;
 import de.craftorio.world.terrain.FactoryChunkGenerator;
 import de.craftorio.world.terrain.FactoryTerrain;
+import de.craftorio.registry.ModBlocks;
 import de.craftorio.world.OreFieldFeature;
 import de.craftorio.world.tool.WorldTools;
 import net.minecraft.core.BlockPos;
@@ -171,5 +172,49 @@ public final class WorldGameTests {
 
     private static int blastOfFlatGround(net.minecraft.world.level.Level level, BlockPos pos) {
         return WorldTools.blastCliff(level, pos);
+    }
+
+    private static int drops(GameTestHelper helper, net.minecraft.world.item.Item item) {
+        return helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                        new net.minecraft.world.phys.AABB(helper.absolutePos(new BlockPos(0, 0, 0))).inflate(8))
+                .stream().filter(entity -> entity.getItem().is(item)).mapToInt(entity -> entity.getItem().getCount()).sum();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void bigBoulderMinedWithAPickaxeGivesStoneAndCoal(GameTestHelper helper) {
+        for (int dx = 1; dx <= 3; dx++) {
+            for (int dz = 1; dz <= 3; dz++) {
+                helper.setBlock(new BlockPos(dx, 1, dz), ModBlocks.ROCK.get());
+            }
+        }
+        helper.setBlock(new BlockPos(2, 2, 2), ModBlocks.ROCK.get());
+        // Mock players always count as creative; a fake player is a plain survival player.
+        var player = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(helper.getLevel());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE));
+        helper.assertTrue(player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 1, 1))), "the rock breaks");
+        for (int dx = 1; dx <= 3; dx++) {
+            for (int dz = 1; dz <= 3; dz++) {
+                helper.assertBlock(new BlockPos(dx, 1, dz), block -> block != ModBlocks.ROCK.get(), () -> "the whole boulder is gone");
+            }
+        }
+        helper.assertBlock(new BlockPos(2, 2, 2), block -> block != ModBlocks.ROCK.get(), () -> "the top is gone too");
+        int stone = drops(helper, net.minecraft.world.item.Items.COBBLESTONE);
+        int coal = drops(helper, net.minecraft.world.item.Items.COAL);
+        helper.assertTrue(stone >= 24 && stone <= 50, "stone " + stone);
+        helper.assertTrue(coal >= 10 && coal <= 25, "coal " + coal);
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void rockMinedByHandBreaksOnlyOneBlockAndGivesNothing(GameTestHelper helper) {
+        helper.setBlock(new BlockPos(1, 1, 1), ModBlocks.SMALL_ROCK.get());
+        helper.setBlock(new BlockPos(2, 1, 1), ModBlocks.SMALL_ROCK.get());
+        // Mock players always count as creative; a fake player is a plain survival player.
+        var player = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(helper.getLevel());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
+        helper.assertTrue(player.gameMode.destroyBlock(helper.absolutePos(new BlockPos(1, 1, 1))), "the rock breaks");
+        helper.assertBlock(new BlockPos(2, 1, 1), block -> block == ModBlocks.SMALL_ROCK.get(), () -> "the neighbour stays");
+        helper.assertTrue(drops(helper, net.minecraft.world.item.Items.COBBLESTONE) == 0, "no stone without a pickaxe");
+        helper.succeed();
     }
 }

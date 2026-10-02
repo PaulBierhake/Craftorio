@@ -141,6 +141,8 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CAVE_RUBBLE = ITEMS.registerSimpleBlockItem("cave_rubble", ModBlocks.CAVE_RUBBLE);
     public static final DeferredItem<BlockItem> CAVE_ENTRANCE = ITEMS.registerSimpleBlockItem("cave_entrance", ModBlocks.CAVE_ENTRANCE);
     public static final DeferredItem<BlockItem> WOOD_FIELD = ITEMS.registerSimpleBlockItem("wood_field", ModBlocks.WOOD_FIELD);
+    public static final DeferredItem<BlockItem> ROCK = ITEMS.registerSimpleBlockItem("rock", ModBlocks.ROCK);
+    public static final DeferredItem<BlockItem> SMALL_ROCK = ITEMS.registerSimpleBlockItem("small_rock", ModBlocks.SMALL_ROCK);
     public static final DeferredItem<BlockItem> STONE_FIELD = ITEMS.registerSimpleBlockItem("stone_field", ModBlocks.STONE_FIELD);
 
     // Cave resources and their products

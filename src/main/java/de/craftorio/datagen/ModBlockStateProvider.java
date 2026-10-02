@@ -28,6 +28,8 @@ public final class ModBlockStateProvider extends BlockStateProvider {
                 modLoc("block/trading_post_side"), modLoc("block/trading_post_bottom"), modLoc("block/trading_post_top")));
 
         oreField(ModBlocks.IRON_ORE_FIELD.get());
+        oreField(ModBlocks.ROCK.get());
+        oreField(ModBlocks.SMALL_ROCK.get());
         oreField(ModBlocks.COPPER_ORE_FIELD.get());
         oreField(ModBlocks.COAL_FIELD.get());
         oreField(ModBlocks.STONE_FIELD.get());

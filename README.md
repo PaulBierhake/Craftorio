@@ -218,6 +218,12 @@ und das Handbuch-Ersatzbuch.
   `server.properties` `level-type=craftorio\:factory` setzen, bevor die Welt zum ersten Mal erzeugt wird. Server-Config:
   `terrain.plateaus` (`none`/`rare`/`normal`, Standard `rare`) und `terrain.spawnRadius` (Standard 192). Bestehende
   Welten bleiben unverändert; Operatoren erhalten in anderen Welttypen beim Beitritt einen Hinweis.
+  Zur Orientierung: ![Karte des Geländes](docs/screenshots/world-map.png) (Karte aus dem Generator, 4 Blöcke je Pixel,
+  Seed 20260101; weiß: der garantiert ebene Spawn-Radius von 192 Blöcken; grün: Grundebene, beige/braun: Hochebenen I und II,
+  blau: Seen und Flüsse). Dazu Felsbrocken (mit der Spitzhacke 24–50 Stein und 10–25 Kohle, kleine 5–10 Stein), keine Bäume
+  auf Klippenkanten, am Ufer und im Radius 64 um den Spawn, Sand an den Ufern und Sand/Kies auf den Gewässerböden. Mit dem
+  **Landfüller** (Rechtsklick auf Wasser: 3×3 füllen) und dem **Klippensprengstoff** (Rechtsklick auf eine Hochebene am Rand:
+  5×5 um eine Stufe absenken) lässt sich das Gelände anpassen; beide werden erforscht (Handbuch-Seite „Die Welt“).
 - **Warenaufzug** (Bauplan nach dem Höhleneingang, 2 Stück pro Bau): Zwei Aufzüge in derselben Spalte
   (gleiches X/Z) verbinden sich automatisch – auch durch Deckgestein und massiven Fels, bis 256 Blöcke weit.
   Rechtsklick wechselt den Modus: *nach oben senden*, *nach unten senden* oder *empfangen*. Sender nehmen

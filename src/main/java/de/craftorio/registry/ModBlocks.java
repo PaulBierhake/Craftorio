@@ -24,6 +24,7 @@ import de.craftorio.logistics.InserterType;
 import de.craftorio.machine.DrillBlock;
 import de.craftorio.machine.DrillTier;
 import de.craftorio.world.OreFieldBlock;
+import de.craftorio.world.rock.RockBlock;
 import de.craftorio.world.cave.CaveEntranceBlock;
 import de.craftorio.world.cave.Layer;
 import net.minecraft.world.item.Items;
@@ -317,6 +318,18 @@ public final class ModBlocks {
                         .requiresCorrectToolForDrops()
                         .lightLevel(state -> state.getValue(DrillBlock.LIT) ? 10 : 0)
                         .sound(SoundType.METAL));
+    }
+
+    public static final DeferredBlock<RockBlock> ROCK = BLOCKS.registerBlock("rock", properties -> new RockBlock(true, properties), rockProperties());
+    public static final DeferredBlock<RockBlock> SMALL_ROCK = BLOCKS.registerBlock("small_rock", properties -> new RockBlock(false, properties), rockProperties());
+
+    private static BlockBehaviour.Properties rockProperties() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .strength(2.0F, 6.0F)
+                .requiresCorrectToolForDrops()
+                .noLootTable()
+                .sound(SoundType.STONE);
     }
 
     private static DeferredBlock<OreFieldBlock> oreField(String name, Supplier<? extends ItemLike> resource, MapColor color) {

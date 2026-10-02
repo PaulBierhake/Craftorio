@@ -6,6 +6,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -46,6 +47,12 @@ public final class FactoryChunkGenerator extends NoiseBasedChunkGenerator {
     @Override
     public void applyCarvers(WorldGenRegion region, long seed, RandomState random, BiomeManager biomes,
                              StructureManager structures, ChunkAccess chunk, GenerationStep.Carving step) {
+    }
+
+    @Override
+    public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structures) {
+        super.applyBiomeDecoration(level, chunk, structures);
+        FactoryFinish.apply(level, chunk);
     }
 
     @Override

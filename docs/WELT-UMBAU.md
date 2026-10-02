@@ -153,7 +153,7 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
 | **W2 – Biome und Welttyp** ✅ | Biomquelle nur Land (§5), World-Preset `craftorio:factory`, Vorauswahl im Erstellen-Bildschirm, Server-Doku, `LayerCheck`-Hinweis, Strukturen-Auswahl | GameTest bzw. Server-Start mit `level-type=craftorio:factory`: Chunks um den Spawn haben Oberfläche y = 64; in 1.024 × 1.024 Blöcken mindestens 6 verschiedene Biome, kein Ozean |
 | **W3 – Kompatibilität** ✅ | Höhlen- und Minenschicht unverändert (Test: unter y = 50 Deckgestein und Füllung), Erzfelder liegen eben, Starter-Felder in der Spawn-Ebene, Höhleneingang auf y = 64 setzbar, Arena-Dimension unberührt | GameTests für Schichten, Starter-Felder und Höhleneingang in einer Craftorio-Welt |
 | **W4 – Werkzeuge** ✅ | Landfüller, Sprengstoff, Klippensprengstoff, Forschungen, Rezepte (Rezepttabellen-Test erweitern) | GameTests: Landfüller füllt 3×3 Wasser; Klippensprengstoff senkt 5×5 einer Hochebene ab |
-| **W5 – Dekoration und Feinschliff** | Felsbrocken, keine Bäume auf Kanten, ausgedünnte Wälder am Spawn, Ufer, Handbuch-Seite „Die Welt", README mit Screenshots (Grundebene, Hochebene mit Kante, See, drei Biome) | Client-Prüfung mit Screenshots, alle Tests grün |
+| **W5 – Dekoration und Feinschliff** ✅ | Felsbrocken, keine Bäume auf Kanten, ausgedünnte Wälder am Spawn, Ufer, Handbuch-Seite „Die Welt", README mit Screenshots (Grundebene, Hochebene mit Kante, See, drei Biome) | Client-Prüfung mit Screenshots, alle Tests grün |
 
 ## 9. Entscheidungen (getroffen: alle wie empfohlen)
 
@@ -195,3 +195,14 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
   10 Sprengstoff + 1 Granate + 1 Stahlplatte (Assembler und Handwerk). Forschungen: „Landfüller" (nach Logistik-Wissenschaftspaket),
   „Explosivstoffe" (nach Schwefelverarbeitung), „Klippensprengstoff" (nach Explosivstoffe und Militär 2). Die Rezepttabellen-Tests
   enthalten die neuen Zeilen. Bewusst nicht umgesetzt: der Wurf (nur Rechtsklick auf den Block).
+- **W5 ✅:** Felsbrocken (`craftorio:rock`, `craftorio:small_rock`, Feature `craftorio:rocks`, 1 von 3 Chunks, nur in der
+  Craftorio-Welt, nicht im Radius 64, nur auf ebenem Boden; groß 3×3×2, klein 1–2 Blöcke; ein Schlag mit der Spitzhacke
+  entfernt den ganzen Brocken und gibt 24–50 Stein + 10–25 Kohle bzw. 5–10 Stein, ohne Spitzhacke bricht nur ein Block ohne
+  Drop). Abweichung: Stein, Andesit und Moosbruchstein sind eine gemischte Textur statt dreier Blocksorten. Nachbearbeitung
+  nach der Vanilla-Dekoration (`FactoryFinish`, Regeln in `EdgeRules` mit Unit-Test): keine Bäume auf Kanten, an Ufern und im
+  Radius 64 um den Spawn; Sand an Ufern (2 Blöcke), Sand/Kies auf Gewässerböden. Handbuch-Seite „Die Welt“ (Lexikon).
+  Auf einem echten Server geprüft (Seed 424242): im Quadrat ±30 um den Spawn kein einziger Stamm und kein Laub, außerhalb
+  über 150 Stämme; Gewässerböden aus Sand/Kies, Ufer-Sand bis 2 Blöcke. **Nicht umgesetzt:** Spielscreenshots (in dieser
+  Umgebung gibt es keinen Grafik-Client); stattdessen eine Karte aus dem Generator (`docs/screenshots/world-map.png`, erzeugt
+  mit `CRAFTORIO_RENDER_MAP=1 ./gradlew test --tests '*WorldMapRenderer*'`). Die Client-Prüfung mit echten Screenshots (Grundebene,
+  Hochebene mit Kante, See, drei Biome) bleibt offen.

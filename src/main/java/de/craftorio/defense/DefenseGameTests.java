@@ -766,7 +766,7 @@ public final class DefenseGameTests {
     @GameTest(template = EMPTY)
     public static void theHandbooksReferencePartHasAPageForEverything(GameTestHelper helper) {
         var pages = de.craftorio.guide.Lexicon.pages();
-        helper.assertValueEqual(pages.size(), 4 + 5 + 10, "economy, difficulties, challenges, knowledge, 17 enemies on five pages, ten towers");
+        helper.assertValueEqual(pages.size(), 5 + 5 + 10, "economy, difficulties, challenges, knowledge, the world, 17 enemies on five pages, ten towers");
         for (var page : pages) {
             helper.assertTrue(!page.lines().isEmpty(), "every page has content");
         }

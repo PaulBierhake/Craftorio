@@ -13,6 +13,8 @@ import de.craftorio.defense.sim.RoundRules;
 import de.craftorio.defense.sim.TowerDef;
 import de.craftorio.defense.sim.TowerDefs;
 import de.craftorio.economy.Credits;
+import de.craftorio.world.rock.RockLoot;
+import de.craftorio.world.terrain.FactoryTerrain;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ public final class Lexicon {
         pages.add(difficulties());
         pages.add(challenges());
         pages.add(knowledge());
+        pages.add(world());
         List<EnemyDef> enemies = EnemyDefs.all();
         for (int i = 0; i < enemies.size(); i += ENEMIES_PER_PAGE) {
             pages.add(enemies(enemies.subList(i, Math.min(enemies.size(), i + ENEMIES_PER_PAGE))));
@@ -53,6 +56,19 @@ public final class Lexicon {
 
     private static Component t(String key, Object... args) {
         return Component.translatable("craftorio.lexicon." + key, args);
+    }
+
+    private static Page world() {
+        List<Component> lines = new ArrayList<>();
+        lines.add(t("world.ground", FactoryTerrain.GROUND, FactoryTerrain.PLATEAU_ONE, FactoryTerrain.PLATEAU_TWO));
+        lines.add(t("world.spawn", 192));
+        lines.add(t("world.water", FactoryTerrain.SEA_LEVEL - 1));
+        lines.add(t("world.landfill"));
+        lines.add(t("world.cliffs"));
+        lines.add(t("world.rocks", RockLoot.BIG_STONE_MIN, RockLoot.BIG_STONE_MAX, RockLoot.BIG_COAL_MIN, RockLoot.BIG_COAL_MAX));
+        lines.add(t("world.trees"));
+        lines.add(t("world.type"));
+        return new Page(t("world.title"), lines);
     }
 
     private static Page economy() {
