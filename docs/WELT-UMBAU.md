@@ -151,7 +151,7 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
 |---|---|---|
 | **W1 – Geländegenerator** ✅ | `FactoryTerrain`, Rauschfelder, Dichtefunktion `factory_height`, Noise-Einstellung `craftorio:factory` (Datagen), Carver/Aquifere/Erzadern aus, Spalten-Cache | Unit-Test `FactoryTerrain` über 2.048 × 2.048 Spalten (fester Seed): ≥ 75 % Grundebene; nur die Höhen aus §4.1; Spawn-Radius 192 nur Grundebene; keine Fläche einer Stufe < 6 × 6 (Stichprobe). Laufzeit < 50 ns pro Spalte |
 | **W2 – Biome und Welttyp** ✅ | Biomquelle nur Land (§5), World-Preset `craftorio:factory`, Vorauswahl im Erstellen-Bildschirm, Server-Doku, `LayerCheck`-Hinweis, Strukturen-Auswahl | GameTest bzw. Server-Start mit `level-type=craftorio:factory`: Chunks um den Spawn haben Oberfläche y = 64; in 1.024 × 1.024 Blöcken mindestens 6 verschiedene Biome, kein Ozean |
-| **W3 – Kompatibilität** | Höhlen- und Minenschicht unverändert (Test: unter y = 50 Deckgestein und Füllung), Erzfelder liegen eben, Starter-Felder in der Spawn-Ebene, Höhleneingang auf y = 64 setzbar, Arena-Dimension unberührt | GameTests für Schichten, Starter-Felder und Höhleneingang in einer Craftorio-Welt |
+| **W3 – Kompatibilität** ✅ | Höhlen- und Minenschicht unverändert (Test: unter y = 50 Deckgestein und Füllung), Erzfelder liegen eben, Starter-Felder in der Spawn-Ebene, Höhleneingang auf y = 64 setzbar, Arena-Dimension unberührt | GameTests für Schichten, Starter-Felder und Höhleneingang in einer Craftorio-Welt |
 | **W4 – Werkzeuge** | Landfüller, Sprengstoff, Klippensprengstoff, Forschungen, Rezepte (Rezepttabellen-Test erweitern) | GameTests: Landfüller füllt 3×3 Wasser; Klippensprengstoff senkt 5×5 einer Hochebene ab |
 | **W5 – Dekoration und Feinschliff** | Felsbrocken, keine Bäume auf Kanten, ausgedünnte Wälder am Spawn, Ufer, Handbuch-Seite „Die Welt", README mit Screenshots (Grundebene, Hochebene mit Kante, See, drei Biome) | Client-Prüfung mit Screenshots, alle Tests grün |
 
@@ -179,3 +179,10 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
   Welt-Preset `craftorio:factory` (Netherwelt und End wie Vanilla) im Tag `minecraft:normal`; Vorauswahl im
   Erstellen-Bildschirm (Client-Config `world.preselectWorldType`); `LayerCheck`-Hinweis für Operatoren. Bewusst auf W5
   verschoben: Ebene statt dichter Wälder im Spawn-Radius 64 (gehört zur Ausdünnung am Spawn).
+- **W3 ✅:** Schichten, Erzfelder und Starter-Felder arbeiten unverändert auf dem neuen Gelände. Gefunden und behoben:
+  Felder und Starter-Felder sahen einen Baumstamm als Boden (Starter-Eisen: 0 Blöcke, Feld y = 71); `OreFieldFeature.groundY`
+  überspringt jetzt Stämme und Laub, ein Stamm über dem Feld wird entfernt. Geprüft auf einem echten Server mit
+  `level-type=craftorio:factory` (per RCON): Oberfläche y = 64, darunter Deckgestein (y 40–49), Höhlenfüllung (0–39),
+  Deckgestein II, Minenfüllung und Grundgestein; alle fünf Starter-Felder liegen auf y = 64 (Spawn-Ebene); dieselben
+  Schichten in 500 Blöcken Abstand. Höhleneingänge prüfen nur y ≥ 50, y = 64 geht also. Arena-Dimension unberührt
+  (eigene Dimension, nicht Teil des Presets).

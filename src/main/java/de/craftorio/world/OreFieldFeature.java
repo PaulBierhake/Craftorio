@@ -54,14 +54,15 @@ public final class OreFieldFeature extends Feature<OreFieldConfiguration> {
         int placed = 0;
         while (placed < size && !frontier.isEmpty()) {
             BlockPos column = frontier.remove(random.nextInt(frontier.size()));
-            int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column.getX(), column.getZ()) - 1;
+            int y = groundY(level, column.getX(), column.getZ());
             BlockPos pos = new BlockPos(column.getX(), y, column.getZ());
             if (!canReplace(level.getBlockState(pos))) {
                 continue;
             }
             level.setBlock(pos, state, Block.UPDATE_CLIENTS);
             BlockState above = level.getBlockState(pos.above());
-            if (!above.isAir() && above.canBeReplaced() && above.getFluidState().isEmpty()) {
+            if (!above.isAir() && (above.canBeReplaced() || above.is(BlockTags.LOGS) || above.is(BlockTags.LEAVES))
+                    && above.getFluidState().isEmpty()) {
                 level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
             }
             placed++;
@@ -74,6 +75,19 @@ public final class OreFieldFeature extends Feature<OreFieldConfiguration> {
             }
         }
         return placed;
+    }
+
+    /** The top ground block of the column: trees (trunks) standing on it do not count as ground. */
+    public static int groundY(WorldGenLevel level, int x, int z) {
+        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+        while (y > level.getMinBuildHeight()) {
+            BlockState state = level.getBlockState(new BlockPos(x, y, z));
+            if (!state.is(BlockTags.LOGS) && !state.is(BlockTags.LEAVES)) {
+                break;
+            }
+            y--;
+        }
+        return y;
     }
 
     private static boolean canReplace(BlockState state) {

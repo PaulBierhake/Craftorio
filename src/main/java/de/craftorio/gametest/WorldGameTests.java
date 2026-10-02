@@ -3,7 +3,11 @@ package de.craftorio.gametest;
 import de.craftorio.Craftorio;
 import de.craftorio.world.terrain.FactoryChunkGenerator;
 import de.craftorio.world.terrain.FactoryTerrain;
+import de.craftorio.world.OreFieldFeature;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -81,6 +85,28 @@ public final class WorldGameTests {
             helper.assertTrue(!biome.contains("ocean") && !biome.contains("beach") && !biome.contains("river"),
                     "water biome " + biome);
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = EMPTY)
+    public static void starterFieldIgnoresTreesStandingOnTheGround(GameTestHelper helper) {
+        for (int x = 1; x <= 5; x++) {
+            for (int z = 1; z <= 5; z++) {
+                helper.setBlock(new BlockPos(x, 1, z), Blocks.GRASS_BLOCK);
+                helper.setBlock(new BlockPos(x, 6, z), Blocks.AIR); // the barrier ceiling of the test box would count as ground
+            }
+        }
+        helper.setBlock(new BlockPos(3, 2, 3), Blocks.OAK_LOG);
+        helper.setBlock(new BlockPos(3, 3, 3), Blocks.OAK_LOG);
+        helper.setBlock(new BlockPos(3, 4, 3), Blocks.OAK_LEAVES);
+        BlockPos column = helper.absolutePos(new BlockPos(3, 1, 3));
+        helper.assertTrue(OreFieldFeature.groundY(helper.getLevel(), column.getX(), column.getZ()) == column.getY(),
+                "the ground under the tree is not found");
+        int placed = OreFieldFeature.placeField(helper.getLevel(), column.above(), Blocks.IRON_BLOCK.defaultBlockState(), 9,
+                RandomSource.create(1));
+        helper.assertTrue(placed == 9, "placed " + placed + " blocks of 9");
+        helper.assertBlock(new BlockPos(3, 1, 3), block -> block == Blocks.IRON_BLOCK, () -> "field under the tree");
+        helper.assertBlock(new BlockPos(3, 2, 3), block -> block == Blocks.AIR, () -> "trunk removed above the field");
         helper.succeed();
     }
 }

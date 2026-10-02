@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -42,7 +41,7 @@ public final class StarterFields {
 
     private static void place(ServerLevel level, BlockPos near, Block block, RandomSource random) {
         level.getChunk(near); // generate the chunk before reading its surface
-        BlockPos origin = new BlockPos(near.getX(), level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, near.getX(), near.getZ()), near.getZ());
+        BlockPos origin = new BlockPos(near.getX(), OreFieldFeature.groundY(level, near.getX(), near.getZ()) + 1, near.getZ());
         int placed = OreFieldFeature.placeField(level, origin, block.defaultBlockState(), SIZE, random);
         Craftorio.LOGGER.info("Placed starter {} with {} blocks at {}", block, placed, origin);
     }
