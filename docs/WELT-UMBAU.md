@@ -1,6 +1,6 @@
 # Craftorio – Ebene Factorio-Welt mit Biomen
 
-Status: **Entwurf zur Freigabe** (Entscheidungen in §9). Arbeitsweise, Befehle und Definition of Done wie in
+Status: **entschieden** (alle Entscheidungen in §9 wie empfohlen). Arbeitsweise, Befehle und Definition of Done wie in
 `docs/BACKLOG-Testrunde-1.md` Abschnitt 0.
 
 ---
@@ -155,9 +155,9 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
 | **W4 – Werkzeuge** | Landfüller, Sprengstoff, Klippensprengstoff, Forschungen, Rezepte (Rezepttabellen-Test erweitern) | GameTests: Landfüller füllt 3×3 Wasser; Klippensprengstoff senkt 5×5 einer Hochebene ab |
 | **W5 – Dekoration und Feinschliff** | Felsbrocken, keine Bäume auf Kanten, ausgedünnte Wälder am Spawn, Ufer, Handbuch-Seite „Die Welt", README mit Screenshots (Grundebene, Hochebene mit Kante, See, drei Biome) | Client-Prüfung mit Screenshots, alle Tests grün |
 
-## 9. Entscheidungen
+## 9. Entscheidungen (getroffen: alle wie empfohlen)
 
-| ID | Frage | Empfehlung (gilt, falls nichts anderes entschieden wird) |
+| ID | Frage | Entscheidung |
 |---|---|---|
 | W-E1 | Flüsse ja/nein? | **Ja, selten** (ca. 2 % der Fläche): geben der Welt Struktur; Landfüller und Unterflurbänder überbrücken sie |
 | W-E2 | Hochebenen mit 4-Block-Kanten? | **Ja**, selten (I ca. 12 %, II ca. 3 %); Server-Config `terrain.plateaus = none/rare/normal` (Standard `rare`) |
