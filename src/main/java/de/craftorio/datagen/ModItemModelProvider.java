@@ -45,7 +45,6 @@ public final class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.SULFUR.get());
         basicItem(ModItems.EXPLOSIVES.get());
         basicItem(ModItems.LANDFILL.get());
-        basicItem(ModItems.CLIFF_EXPLOSIVES.get());
         basicItem(ModItems.BATTERY.get());
         basicItem(ModItems.RED_SCIENCE.get());
         basicItem(ModItems.GREEN_SCIENCE.get());

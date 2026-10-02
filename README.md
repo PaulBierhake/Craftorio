@@ -222,8 +222,8 @@ und das Handbuch-Ersatzbuch.
   Seed 20260101; weiß: der garantiert ebene Spawn-Radius von 192 Blöcken; grün: Grundebene, beige/braun: Hochebenen I und II,
   blau: Seen und Flüsse). Dazu Felsbrocken (mit der Spitzhacke 24–50 Stein und 10–25 Kohle, kleine 5–10 Stein), keine Bäume
   auf Klippenkanten, am Ufer und im Radius 64 um den Spawn, Sand an den Ufern und Sand/Kies auf den Gewässerböden. Mit dem
-  **Landfüller** (Rechtsklick auf Wasser: 3×3 füllen) und dem **Klippensprengstoff** (Rechtsklick auf eine Hochebene am Rand:
-  5×5 um eine Stufe absenken) lässt sich das Gelände anpassen; beide werden erforscht (Handbuch-Seite „Die Welt“).
+  **Landfüller** (Rechtsklick auf Wasser: 3×3 füllen) und dem **Klippensprengstoff** (wie C4: Ladung auf eine Hochebene am Rand
+  setzen und mit Rechtsklick sprengen, das 5×5-Feld sinkt um eine Stufe) lässt sich das Gelände anpassen; beide werden erforscht (Handbuch-Seite „Die Welt“).
 - **Warenaufzug** (Bauplan nach dem Höhleneingang, 2 Stück pro Bau): Zwei Aufzüge in derselben Spalte
   (gleiches X/Z) verbinden sich automatisch – auch durch Deckgestein und massiven Fels, bis 256 Blöcke weit.
   Rechtsklick wechselt den Modus: *nach oben senden*, *nach unten senden* oder *empfangen*. Sender nehmen

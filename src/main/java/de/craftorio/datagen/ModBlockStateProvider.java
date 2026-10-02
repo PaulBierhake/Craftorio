@@ -28,6 +28,7 @@ public final class ModBlockStateProvider extends BlockStateProvider {
                 modLoc("block/trading_post_side"), modLoc("block/trading_post_bottom"), modLoc("block/trading_post_top")));
 
         oreField(ModBlocks.IRON_ORE_FIELD.get());
+        explosiveCharge(ModBlocks.CLIFF_EXPLOSIVES.get());
         oreField(ModBlocks.ROCK.get());
         oreField(ModBlocks.SMALL_ROCK.get());
         oreField(ModBlocks.COPPER_ORE_FIELD.get());
@@ -254,6 +255,19 @@ public final class ModBlockStateProvider extends BlockStateProvider {
         ModelFile on = models().orientable(name + "_on", modLoc("block/" + name + "_side"), modLoc("block/" + name + "_front_on"), modLoc("block/" + name + "_top"));
         horizontalBlock(block, state -> state.getValue(DrillBlock.LIT) ? on : off);
         simpleBlockItem(block, off);
+    }
+
+    /** The charge of cliff explosives: a flat brick of 10 x 4 x 8 pixels. */
+    private void explosiveCharge(Block block) {
+        String name = "cliff_explosives";
+        var model = models().getBuilder("block/" + name)
+                .texture("top", modLoc("block/" + name + "_top"))
+                .texture("side", modLoc("block/" + name + "_side"))
+                .texture("particle", modLoc("block/" + name + "_side"));
+        model.element().from(3, 0, 4).to(13, 4, 12).allFaces((direction, face) -> face.texture(
+                direction.getAxis() == net.minecraft.core.Direction.Axis.Y ? "#top" : "#side").cullface(null)).end();
+        horizontalBlock(block, model);
+        simpleBlockItem(block, model);
     }
 
     private void oreField(Block block) {

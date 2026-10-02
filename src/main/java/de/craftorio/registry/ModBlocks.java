@@ -25,6 +25,7 @@ import de.craftorio.machine.DrillBlock;
 import de.craftorio.machine.DrillTier;
 import de.craftorio.world.OreFieldBlock;
 import de.craftorio.world.rock.RockBlock;
+import de.craftorio.world.tool.CliffExplosivesBlock;
 import de.craftorio.world.cave.CaveEntranceBlock;
 import de.craftorio.world.cave.Layer;
 import net.minecraft.world.item.Items;
@@ -322,6 +323,14 @@ public final class ModBlocks {
 
     public static final DeferredBlock<RockBlock> ROCK = BLOCKS.registerBlock("rock", properties -> new RockBlock(true, properties), rockProperties());
     public static final DeferredBlock<RockBlock> SMALL_ROCK = BLOCKS.registerBlock("small_rock", properties -> new RockBlock(false, properties), rockProperties());
+
+    public static final DeferredBlock<CliffExplosivesBlock> CLIFF_EXPLOSIVES = BLOCKS.registerBlock("cliff_explosives", CliffExplosivesBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_GREEN)
+                    .strength(0.5F)
+                    .noOcclusion()
+                    .pushReaction(PushReaction.DESTROY)
+                    .sound(SoundType.WOOL));
 
     private static BlockBehaviour.Properties rockProperties() {
         return BlockBehaviour.Properties.of()

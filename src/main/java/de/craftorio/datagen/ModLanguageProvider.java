@@ -115,12 +115,12 @@ public final class ModLanguageProvider {
             add(ModItems.STONE_WALL.get(), "Stone Wall");
             add(ModItems.EXPLOSIVES.get(), "Explosives");
             add(ModItems.LANDFILL.get(), "Landfill");
-            add(ModItems.CLIFF_EXPLOSIVES.get(), "Cliff Explosives");
+            add(ModBlocks.CLIFF_EXPLOSIVES.get(), "Cliff Explosives");
             add("craftorio.research.landfill", "Landfill");
             add("craftorio.research.explosives", "Explosives");
             add("craftorio.research.cliff_explosives", "Cliff Explosives");
             add("craftorio.tool.landfill.no_water", "Aim at water: landfill fills a 3x3 area of water with earth.");
-            add("craftorio.tool.cliff.no_cliff", "No cliff here: cliff explosives lower a 5x5 area of a plateau by one step. Click the plateau near its edge.");
+            add("craftorio.tool.cliff.no_cliff", "No cliff here: place the charge on a plateau near its edge, then right-click it.");
             add(ModBlocks.FLAMETHROWER_TURRET.get(), "Flamethrower Turret");
             add(ModBlocks.MORTAR_TURRET.get(), "Mortar Turret");
             add(ModBlocks.SUPPLY_DEPOT.get(), "Supply Depot");
@@ -363,7 +363,7 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.ap_magazine.desc", "Armour-piercing magazine: a magazine, a steel plate and 5 copper plates.");
             add("craftorio.blueprint.grenade.desc", "Grenade: 5 coal and 5 iron plates; an ingredient of the military science pack.");
             add("craftorio.blueprint.landfill.desc", "Landfill: 20 cobblestone. Right-click water to fill a 3x3 area with earth up to the water surface.");
-            add("craftorio.blueprint.cliff_explosives.desc", "Cliff explosives: 10 explosives, a grenade and a steel plate. Right-click a plateau near its edge to lower a 5x5 area by one step.");
+            add("craftorio.blueprint.cliff_explosives.desc", "Cliff explosives: 10 explosives, a grenade and a steel plate. Place the charge on a plateau near its edge, then right-click it to lower a 5x5 area by one step.");
             add("craftorio.blueprint.stone_wall.desc", "Stone wall: 5 stone bricks; an ingredient of the military science pack.");
             add("craftorio.blueprint.military_science.desc", "Military science pack: an armour-piercing magazine, a grenade and 2 walls make two packs.");
             add("craftorio.blueprint.mortar_turret.desc", "Mortar turret: lobs grenades from the arena reserve, an explosion that hits many enemies and, upgraded, stuns or flattens them.");
@@ -573,7 +573,7 @@ public final class ModLanguageProvider {
             add("craftorio.lexicon.world.spawn", "Around the spawn (radius %s) the ground is always flat, without water, plateaus or trees. The starter fields lie there.");
             add("craftorio.lexicon.world.water", "Lakes and rivers are rare; the water reaches up to y = %s. Their shores are sand, their beds sand and gravel.");
             add("craftorio.lexicon.world.landfill", "Landfill (research \"Landfill\"): right-click on water fills a 3x3 area with earth up to the water surface.");
-            add("craftorio.lexicon.world.cliffs", "Cliff explosives (research \"Cliff Explosives\"): right-click a plateau near its edge to lower a 5x5 area by one step.");
+            add("craftorio.lexicon.world.cliffs", "Cliff explosives (research \"Cliff Explosives\"): place the charge on a plateau near its edge, then right-click it to lower a 5x5 area by one step.");
             add("craftorio.lexicon.world.rocks", "Boulders: mined with a pickaxe the whole boulder gives %s-%s stone and %s-%s coal, small rocks only 5-10 stone.");
             add("craftorio.lexicon.world.trees", "No trees stand on cliff edges, at the shore or around the spawn; everywhere else forests grow as usual.");
             add("craftorio.lexicon.world.type", "Choose the world type \"Craftorio\" when creating the world (server: level-type=craftorio\\:factory). Existing worlds keep their terrain.");
@@ -1056,12 +1056,12 @@ public final class ModLanguageProvider {
             add(ModItems.STONE_WALL.get(), "Steinmauer");
             add(ModItems.EXPLOSIVES.get(), "Sprengstoff");
             add(ModItems.LANDFILL.get(), "Landfüller");
-            add(ModItems.CLIFF_EXPLOSIVES.get(), "Klippensprengstoff");
+            add(ModBlocks.CLIFF_EXPLOSIVES.get(), "Klippensprengstoff");
             add("craftorio.research.landfill", "Landfüller");
             add("craftorio.research.explosives", "Explosivstoffe");
             add("craftorio.research.cliff_explosives", "Klippensprengstoff");
             add("craftorio.tool.landfill.no_water", "Ziele auf Wasser: Der Landfüller füllt ein 3x3-Feld Wasser mit Erde.");
-            add("craftorio.tool.cliff.no_cliff", "Hier ist keine Klippe: Klippensprengstoff senkt ein 5x5-Feld einer Hochebene um eine Stufe ab. Klicke auf die Hochebene nahe der Kante.");
+            add("craftorio.tool.cliff.no_cliff", "Hier ist keine Klippe: Platziere die Ladung auf einer Hochebene nahe der Kante und klicke sie dann mit Rechtsklick an.");
             add(ModBlocks.FLAMETHROWER_TURRET.get(), "Flammenwerfer-Turm");
             add(ModBlocks.MORTAR_TURRET.get(), "Mörser-Turm");
             add(ModBlocks.SUPPLY_DEPOT.get(), "Nachschublager");
@@ -1303,7 +1303,7 @@ public final class ModLanguageProvider {
             add("craftorio.blueprint.ap_magazine.desc", "Panzerbrechendes Magazin: ein Magazin, eine Stahlplatte und 5 Kupferplatten.");
             add("craftorio.blueprint.grenade.desc", "Granate: 5 Kohle und 5 Eisenplatten; Zutat des Militärpakets.");
             add("craftorio.blueprint.landfill.desc", "Landfüller: 20 Bruchstein. Rechtsklick auf Wasser füllt ein 3x3-Feld bis zur Wasseroberfläche mit Erde.");
-            add("craftorio.blueprint.cliff_explosives.desc", "Klippensprengstoff: 10 Sprengstoff, eine Granate und eine Stahlplatte. Rechtsklick auf eine Hochebene nahe der Kante senkt ein 5x5-Feld um eine Stufe ab.");
+            add("craftorio.blueprint.cliff_explosives.desc", "Klippensprengstoff: 10 Sprengstoff, eine Granate und eine Stahlplatte. Platziere die Ladung auf einer Hochebene nahe der Kante und klicke sie mit Rechtsklick an: Das 5x5-Feld sinkt um eine Stufe.");
             add("craftorio.blueprint.stone_wall.desc", "Steinmauer: 5 Steinziegel; Zutat des Militärpakets.");
             add("craftorio.blueprint.military_science.desc", "Militärpaket (grau): ein panzerbrechendes Magazin, eine Granate und 2 Mauern ergeben zwei Pakete.");
             add("craftorio.blueprint.mortar_turret.desc", "Mörser-Turm: wirft Granaten aus dem Arena-Vorrat, eine Explosion trifft viele Gegner und betäubt oder wirft sie, aufgerüstet, zurück.");
@@ -1513,7 +1513,7 @@ public final class ModLanguageProvider {
             add("craftorio.lexicon.world.spawn", "Rund um den Spawn (Radius %s) ist der Boden immer eben, ohne Wasser, Hochebenen und Bäume. Dort liegen die Starter-Felder.");
             add("craftorio.lexicon.world.water", "Seen und Flüsse sind selten; das Wasser reicht bis y = %s. Ihre Ufer sind Sand, ihre Böden Sand und Kies.");
             add("craftorio.lexicon.world.landfill", "Landfüller (Forschung „Landfüller“): Rechtsklick auf Wasser füllt ein 3x3-Feld bis zur Wasseroberfläche mit Erde.");
-            add("craftorio.lexicon.world.cliffs", "Klippensprengstoff (Forschung „Klippensprengstoff“): Rechtsklick auf eine Hochebene nahe der Kante senkt ein 5x5-Feld um eine Stufe ab.");
+            add("craftorio.lexicon.world.cliffs", "Klippensprengstoff (Forschung „Klippensprengstoff“): Platziere die Ladung auf einer Hochebene nahe der Kante und klicke sie mit Rechtsklick an: Das 5x5-Feld sinkt um eine Stufe.");
             add("craftorio.lexicon.world.rocks", "Felsbrocken: Mit der Spitzhacke gibt der ganze Brocken %s-%s Stein und %s-%s Kohle, kleine Felsen nur 5-10 Stein.");
             add("craftorio.lexicon.world.trees", "Auf Klippenkanten, am Ufer und rund um den Spawn stehen keine Bäume; sonst wachsen Wälder wie gewohnt.");
             add("craftorio.lexicon.world.type", "Wähle beim Erstellen der Welt den Welttyp „Craftorio“ (Server: level-type=craftorio\\:factory). Bestehende Welten behalten ihr Gelände.");

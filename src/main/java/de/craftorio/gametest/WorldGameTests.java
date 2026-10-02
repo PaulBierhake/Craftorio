@@ -140,7 +140,7 @@ public final class WorldGameTests {
     }
 
     @GameTest(template = EMPTY)
-    public static void cliffExplosivesLowerFiveByFiveOfAPlateau(GameTestHelper helper) {
+    public static void cliffExplosivesPlacedAndBlownLowerFiveByFiveOfAPlateau(GameTestHelper helper) {
         var level = helper.getLevel();
         BlockPos center = helper.absolutePos(BlockPos.ZERO).offset(160, 0, 0).atY(FactoryTerrain.PLATEAU_ONE);
         for (int dx = -6; dx <= 6; dx++) {
@@ -153,8 +153,12 @@ public final class WorldGameTests {
                 }
             }
         }
-        int lowered = WorldTools.blastCliff(level, center);
-        helper.assertTrue(lowered == 15, "lowered " + lowered + " columns instead of 15 (3 columns of the plateau in the 5 x 5 area)");
+        var player = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+        BlockPos charge = center.above();
+        level.setBlock(charge, ModBlocks.CLIFF_EXPLOSIVES.get().defaultBlockState(), 3);
+        var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(charge), net.minecraft.core.Direction.UP, charge, false);
+        helper.assertTrue(level.getBlockState(charge).useWithoutItem(level, player, hit).consumesAction(), "the charge blows");
+        helper.assertTrue(level.getBlockState(charge).isAir(), "the charge is used up");
         for (int dx = -2; dx <= 0; dx++) {
             for (int dz = -2; dz <= 2; dz++) {
                 BlockPos column = center.offset(dx, 0, dz);
@@ -166,12 +170,12 @@ public final class WorldGameTests {
         }
         helper.assertTrue(!level.getBlockState(center.offset(-3, 0, 0)).isAir(), "outside the 5 x 5 area the plateau stays");
         helper.assertTrue(!level.getBlockState(center.offset(0, 0, 3)).isAir(), "outside the 5 x 5 area the plateau stays");
-        helper.assertTrue(blastOfFlatGround(level, center.offset(5, 0, 0).atY(FactoryTerrain.GROUND)) == 0, "no cliff on the ground level");
+        BlockPos flat = center.offset(5, 0, 0).atY(FactoryTerrain.GROUND + 1);
+        level.setBlock(flat, ModBlocks.CLIFF_EXPLOSIVES.get().defaultBlockState(), 3);
+        var flatHit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(flat), net.minecraft.core.Direction.UP, flat, false);
+        level.getBlockState(flat).useWithoutItem(level, player, flatHit);
+        helper.assertTrue(level.getBlockState(flat).is(ModBlocks.CLIFF_EXPLOSIVES.get()), "without a cliff the charge stays");
         helper.succeed();
-    }
-
-    private static int blastOfFlatGround(net.minecraft.world.level.Level level, BlockPos pos) {
-        return WorldTools.blastCliff(level, pos);
     }
 
     private static int drops(GameTestHelper helper, net.minecraft.world.item.Item item) {

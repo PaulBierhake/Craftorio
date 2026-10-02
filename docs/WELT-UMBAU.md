@@ -206,3 +206,8 @@ Häufigkeit 1 pro 2–4 Chunks, nicht im Spawn-Radius. Abbau mit der Starter-Spi
   Umgebung gibt es keinen Grafik-Client); stattdessen eine Karte aus dem Generator (`docs/screenshots/world-map.png`, erzeugt
   mit `CRAFTORIO_RENDER_MAP=1 ./gradlew test --tests '*WorldMapRenderer*'`). Die Client-Prüfung mit echten Screenshots (Grundebene,
   Hochebene mit Kante, See, drei Biome) bleibt offen.
+- **Nachtrag (C4-Mechanik, Texturen):** Der Klippensprengstoff ist jetzt ein setzbarer Block (`CliffExplosivesBlock`, wie C4): Ladung
+  auf die Hochebene setzen, dann mit Rechtsklick sprengen. Die Ladung selbst zählt nicht als Boden (sie wird für die
+  Berechnung entfernt); ohne Kante in der Nähe bleibt sie stehen und meldet das. Die Ladung lässt sich abbauen (gibt sich selbst
+  zurück) und braucht festen Boden unter sich. Alle Texturen der Welt-Erweiterung (Felsbrocken, kleiner Fels, Landfüller,
+  Sprengstoff, C4-Ladung oben und seitlich) sind im Stil der bestehenden Pixelgrafiken neu gezeichnet.
